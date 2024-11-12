@@ -1,0 +1,64 @@
+{
+    "name": "nutnet/laravel-sms",
+    "description": "Package for sending SMS form your Laravel app, includes pre-installed sms providers and your custom.",
+    "require": {
+        "illuminate/support": ">=5.0"
+    },
+    "keywords": [
+        "sms",
+        "laravel sms",
+        "laravel smsc.ru",
+        "laravel sms.ru",
+        "laravel smpp",
+        "laravel iqsms"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Nutnet\\LaravelSms\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "suggest": {
+        "illuminate/log": "Required for Log provider",
+        "franzose/laravel-smpp": "Required for SMPP provider",
+        "zelenin/smsru": "Required for Sms.Ru provider"
+    },
+    "conflict": {
+        "zelenin/smsru": "<5.0.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Nutnet\\LaravelSms\\ServiceProvider"
+            ]
+        }
+    },
+    "require-dev": {
+        "zelenin/smsru": "^5.0",
+        "phpunit/phpunit": "^9.3",
+        "illuminate/log": ">=5.0",
+        "franzose/laravel-smpp": "^1.1",
+        "infection/infection": "^0.26",
+        "psr/log": "^1.0"
+    },
+    "scripts": {
+        "test": [
+            "phpunit"
+        ],
+        "test-coverage": [
+            "phpdbg -qrr ./vendor/bin/phpunit --coverage-text"
+        ],
+        "test-mutation": [
+            "PHP_BINARY=phpdbg phpdbg -qrr vendor/bin/infection --ansi"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "infection/extension-installer": true
+        }
+    }
+}

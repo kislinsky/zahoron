@@ -1,0 +1,21 @@
+branches:
+  only:
+    - master
+    - develop
+
+language: php
+
+php:
+  - 7.4
+  - 8.1
+env:
+  - LARAVEL_VERSION=8.*
+
+matrix:
+  fast_finish: true
+
+before_script:
+  - composer install
+
+script:
+  - phpunit
