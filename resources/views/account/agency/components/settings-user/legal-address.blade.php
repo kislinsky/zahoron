@@ -3,7 +3,7 @@
     <div class="flex_search_form">
         <div class="block_inpit_form_search">
             <label class='label_input'>Регион</label>
-            <div class="select">
+            <div class="select edge_for_ajax">
                 <select name="edge_id" id="">
                     @foreach ($edges as $edge)
                         <option <?php if($edge->id == $user->edge_id){echo 'selected';}?> value="{{$edge->id}}">{{$edge->title}}</option>   
@@ -16,7 +16,7 @@
         </div>
         <div class="block_inpit_form_search">
             <label class='label_input'>Город</label>
-            <div class="select">
+            <div class="select city_from_edge_ajax">
                 <select name="city_id" id="">
                     @foreach ($cities as $city)
                         <option <?php if($city->id == $user->city_id){echo 'selected';}?> value="{{$city->id}}">{{$city->title}}</option>   
@@ -36,3 +36,27 @@
         </div>
     </div>
 </div>
+
+
+<script>
+
+$( ".edge_for_ajax select" ).on( "change", function() {
+    
+    let edge_id= $(this).children('option:checked').val();
+    $.ajax({
+        type: 'GET',
+        url: '{{ route("city.from.edge.ajax") }}',
+        data: {
+            "_token": "{{ csrf_token() }}",
+            'edge_id': edge_id,
+        }, success: function (result) {
+            console.log(result)
+            $('.city_from_edge_ajax select').html(result)
+        },
+        error: function () {
+            alert('Ошибка');
+        }
+    });
+
+});
+</script>

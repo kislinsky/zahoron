@@ -23,5 +23,13 @@ class CityService {
         return view('components.components_form.cities',compact('cities'));
     }
 
-    
+    public static function ajaxCityFromEdge($edge_id){
+        $cities=City::orderBy('title','asc')->where('edge_id',$edge_id)->get();
+        return view('components.city.city-form-edge',compact('cities'));
+    }
+
+    public static function ajaxCityInInput($city){
+        $cities=City::orderBy('title','asc')->where('title','like',$city.'%')->get();
+        return view('components.components_form.cities-input',compact('cities'));
+    }
 }

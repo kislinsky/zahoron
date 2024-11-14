@@ -14,54 +14,14 @@ class AgencyController extends Controller
     }
 
 
-    public static function chooseOrganization($id){
-        return AgencyService::chooseOrganization($id);
-    }
-
-    public static function serviceIndex(){
-        return AgencyService::serviceIndex();
-    }
-    public static function serviceFilter($status){
-        return AgencyService::serviceFilter($status);
-    }
-
-    public static function acceptService($id){
-        return AgencyService::acceptService($id);
-    }
-
-
-
     public static function settings(){
+
         return AgencyService::settings();
     }
 
     public static function organizationSettingsUpdate(Request $request){
         $user=user();
-        if($user->organizational_form=='user'){
-            $data=request()->validate([
-                'name'=>['string','nullable'],
-                'surname'=>['string','nullable'],
-                'patronymic'=>['string','nullable'],
-                'phone'=>['required','string'],
-                'city'=>['string','nullable'],
-                'adres'=>['string','nullable'],
-                'email'=>['string','email','nullable'],
-               'whatsapp'=>['string','nullable'],
-                'telegram'=>['string','nullable'],
-               'password'=>['string','nullable','min:8',],
-                'password_new'=>['string','nullable','min:8',],
-                'password_new_2'=>['string','nullable','min:8',],
-                'email_notifications'=>['nullable','integer'],
-                'sms_notifications'=>['nullable','integer'],
-               'language'=>['nullable','integer'],
-               'theme'=>['nullable','string'],
-               'inn'=>['required','string'],
-               'number_cart'=>['nullable','string'],
-               'bank'=>['nullable','string'],
-               'name_organization'=>['nullable','string'],
-            ]);
-        }
-        elseif($user->organizational_form=='ep'){
+        if($user->organizational_form=='ep'){
             $data=request()->validate([
                 'name'=>['string','nullable'],
                 'surname'=>['string','nullable'],
@@ -113,36 +73,51 @@ class AgencyController extends Controller
             ]);
         }
 
-
-        
-
         return AgencyService::organizationSettingsUpdate($data);
     }
 
 
+    public static function chooseOrganization($id){
+        return AgencyService::chooseOrganization($id);
+    }
+
+
+
+    
+    // public static function serviceIndex(){
+    //     return AgencyService::serviceIndex();
+    // }
+    // public static function serviceFilter($status){
+    //     return AgencyService::serviceFilter($status);
+    // }
+
+    // public static function acceptService($id){
+    //     return AgencyService::acceptService($id);
+    // }
+
 
  
-    public static function addUploadSeal(Request $request){
-        $data=request()->validate([
-            'file_print'=>["required"]
-        ]);
+    // public static function addUploadSeal(Request $request){
+    //     $data=request()->validate([
+    //         'file_print'=>["required"]
+    //     ]);
 
-        return AgencyService::addUploadSeal($data);
-    }
+    //     return AgencyService::addUploadSeal($data);
+    // }
 
-    public static function deleteUploadSeal($id){
-        return AgencyService::deleteUploadSeal($id);
-    }
+    // public static function deleteUploadSeal($id){
+    //     return AgencyService::deleteUploadSeal($id);
+    // }
 
 
 
-    public static function rentService(Request $request){
-        $data=request()->validate([
-            'order_id'=>["required",'integer'],
-            'file_services'=>["required"],
-        ]);
-        return AgencyService::rentService($data);
-    }
+    // public static function rentService(Request $request){
+    //     $data=request()->validate([
+    //         'order_id'=>["required",'integer'],
+    //         'file_services'=>["required"],
+    //     ]);
+    //     return AgencyService::rentService($data);
+    // }
 
 
     // public static function organizationDeleteCemetery($id){
@@ -157,13 +132,13 @@ class AgencyController extends Controller
         return AgencyService::addCemetery($data);
     }
 
-    public static function beautificationsIndex(){
-        return AgencyService::beautificationsIndex();
-    }
+    // public static function beautificationsIndex(){
+    //     return AgencyService::beautificationsIndex();
+    // }
 
-    public static function acceptBeatification($id){
-        return AgencyService ::acceptBeatification($id);
-    }
+    // public static function acceptBeatification($id){
+    //     return AgencyService ::acceptBeatification($id);
+    // }
     
     
 }

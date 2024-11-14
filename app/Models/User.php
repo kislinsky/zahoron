@@ -92,4 +92,9 @@ class User extends Authenticatable
         $organizations=Organization::where('user_id',$this->id)->get();
         return $organizations;
     }
+    public function organizationInAccount(){
+        $organization=Organization::find($this->organization_id);
+        return $organization;
+    }
+
 }

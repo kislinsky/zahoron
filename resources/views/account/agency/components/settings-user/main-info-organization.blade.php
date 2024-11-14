@@ -41,10 +41,13 @@
 
 <div class="flex_search_form">
     <div class="block_inpit_form_search">
+        <?php $in_faces=json_decode(get_acf(7,'in_face'));?>
         <label class='label_input'> В лице</label>
         <div class="select">
             <select name="in_face" id="">
-                <option value="Директора">Директора</option>
+                @foreach($in_faces as $in_face)
+                    <option value="{{$in_face}}">{{$in_face}}</option>
+                @endforeach
             </select>
         </div>
         @error('in_face')

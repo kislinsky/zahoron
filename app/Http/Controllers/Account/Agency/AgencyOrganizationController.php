@@ -53,4 +53,42 @@ class AgencyOrganizationController extends Controller
         return AgencyOrganizationService::searchOrganizations($data);
     }
    
+    public static function aplications(){
+        
+        return AgencyOrganizationService::aplications();
+    }
+
+    public static function buyAplicationsFuneralServices(Request $request){ 
+ 
+        $data=request()->validate([
+            'applications_funeral_services'=>['required','integer'],
+        ]);
+
+        return AgencyOrganizationService::buyAplicationsFuneralServices($data['applications_funeral_services']);
+    }
+
+    public static function buyAplicationsCallsOrganization(Request $request){  
+        $data=request()->validate([
+            'calls_organization'=>['required','integer'],
+        ]);
+        return AgencyOrganizationService::buyAplicationsCallsOrganization($data['calls_organization']);
+    }
+
+    public static function buyAplicationsProductRequestsFromMarketplace(Request $request){  
+        $data=request()->validate([
+            'product_requests_from_marketplace'=>['required','integer'],
+        ]);
+        return AgencyOrganizationService::buyAplicationsProductRequestsFromMarketplace($data['product_requests_from_marketplace']);
+    }
+
+    public static function buyAplicationsImprovemenGraves(Request $request){  
+        $data=request()->validate([
+            'applications_improvemen_graves'=>['required','integer'],
+        ]);
+        return AgencyOrganizationService::buyAplicationsImprovemenGraves($data['applications_improvemen_graves']);
+    }
+
+
+
+
 }

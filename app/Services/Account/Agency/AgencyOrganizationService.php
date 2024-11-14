@@ -89,7 +89,11 @@ class AgencyOrganizationService {
             'Saturday',
             'Sunday'
         ];
-        $holidays=$data['holiday_day'];
+        $holidays=[];
+        if(isset($data['holiday_day'])){
+            $holidays=$data['holiday_day'];
+        }
+        
         $working_days=$data['working_day'];
         foreach($days as $key=>$day){
             
@@ -176,4 +180,43 @@ class AgencyOrganizationService {
     }
     
 
+
+    public static function aplications(){
+        $organization=user()->organizationInAccount();
+        $user=user();
+        return view('account.agency.organization.pay.buy-applications',compact('user','organization'));
+    }
+
+
+    public static function buyAplicationsFuneralServices($count){  
+        $organization=user()->organizationInAccount();
+        $organization->update([
+            'applications_funeral_services'=>$organization->applications_funeral_services+$count,
+        ]);
+        return redirect()->back()->with('message_cart','Зявки успешно куплены');
+    }
+
+    public static function buyAplicationsCallsOrganization($count){  
+        $organization=user()->organizationInAccount();
+        $organization->update([
+            'calls_organization'=>$organization->calls_organization+$count,
+        ]);
+        return redirect()->back()->with('message_cart','Зявки успешно куплены');
+    }
+
+    public static function buyAplicationsProductRequestsFromMarketplace($count){ 
+        $organization=user()->organizationInAccount();
+        $organization->update([
+            'product_requests_from_marketplace'=>$organization->product_requests_from_marketplace+$count,
+        ]);
+        return redirect()->back()->with('message_cart','Зявки успешно куплены');
+    }
+
+    public static function buyAplicationsImprovemenGraves($count){  
+        $organization=user()->organizationInAccount();
+        $organization->update([
+            'applications_improvemen_graves'=>$organization->applications_improvemen_graves+$count,
+        ]);
+        return redirect()->back()->with('message_cart','Зявки успешно куплены');
+    }
 }

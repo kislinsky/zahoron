@@ -108,7 +108,9 @@
 
                 <div class="block_input" >
                     <label for="">Город отправки</label>
-                    <input type="text" name="city_from" id="" placeholder="Город отправки">
+                    <div class="block_search_input_city">
+                        <input type="text" name="city_from" id="" placeholder="Город отправки">
+                    </div>
                     @error('city_from')
                         <div class='error-text'>{{ $message }}</div>
                     @enderror  
@@ -116,7 +118,9 @@
 
                 <div class="block_input" >
                     <label for="">Город прибытия</label>
-                    <input type="text" name="city_to" id="" placeholder="Город прибытия">
+                    <div class="block_search_input_city">
+                        <input type="text" name="city_to" id="" placeholder="Город прибытия">
+                    </div>
                     @error('city_to')
                         <div class='error-text'>{{ $message }}</div>
                     @enderror  
@@ -171,7 +175,7 @@ function init() {
 }
 
 
-    $( ".add_to_cart_product" ).on( "click", function() {
+$( ".add_to_cart_product" ).on( "click", function() {
     let this_btn=$(this)
     let id_product= $(this).attr('id_product');
     $.ajax({
@@ -192,14 +196,29 @@ function init() {
             }
         },
         error: function () {
-            alert('Ошибка');
+        
         }
     });
+}); 
 
-
-    
-
+$( ".block_search_input_city input" ).on( "input", function() {
+    let s=$(this)
+    $.ajax({
+        type: 'GET',
+        url: '{{ route("city.input.ajax") }}',
+        data: {
+            "_token": "{{ csrf_token() }}",
+            's': s.val(),
+        }, success: function (result) {
+            s.siblings('.abs_cities_input').remove()  
+            s.parent('.block_search_input_city').append(result)  
+        },
+        error: function () {
+            $('.abs_cities_input').remove()
+        }
+    });
 });
+
 </script>
 @include('components.cats-product') 
 

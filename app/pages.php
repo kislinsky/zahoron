@@ -56,6 +56,11 @@ function organizationPages(){
             ['Настройки','account.agency.settings']
            ]
         ],
+        ['Оплаты','storage/uploads/Icon_sidebar_2.svg',
+            [
+                ['Заявки','account.agency.applications']
+            ]
+        ]
        
     ];
     return $pages;

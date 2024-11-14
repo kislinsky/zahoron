@@ -156,12 +156,17 @@ Route::prefix($city)->group(function () {
         Route::get('/funeral-service/cemetery', [FuneralController::class, 'ajaxCemetery'])->name('funeral-service.ajax.cemetery');
 
         Route::get('/city', [CityController::class, 'ajaxCity'])->name('city.ajax');
+        Route::get('/city/input', [CityController::class, 'ajaxCityInInput'])->name('city.input.ajax');
+        Route::get('/city/from/edge', [CityController::class, 'ajaxCityFromEdge'])->name('city.from.edge.ajax');
 
 
         Route::get('/category/children', [OrganizationController::class, 'ajaxProductsChildrenCat'])->name('organization.category.ajax.children');
         Route::get('/category/main', [OrganizationController::class, 'ajaxProductsMainCat'])->name('organization.category.ajax.main');
         Route::get('/categories/children', [OrganizationController::class, 'ajaxProductsMainCatUlChildren'])->name('organization.categories.ajax.children');
 
+   
+   
+        
     });
 
     Route::group(['prefix'=>'marketplace'], function() {
@@ -392,6 +397,13 @@ Route::prefix($city)->group(function () {
 
                 Route::get('add-organization', [AgencyOrganizationController::class, 'searchOrganizations'])->name('account.agency.add.organization');     
                 
+                Route::get('applications', [AgencyOrganizationController::class, 'aplications'])->name('account.agency.applications');     
+
+                Route::get('buy-applications-funeral-services', [AgencyOrganizationController::class, 'buyAplicationsFuneralServices'])->name('account.agency.applications.funeral-services.buy');     
+                Route::get('buy-applications-calls-organization', [AgencyOrganizationController::class, 'buyAplicationsCallsOrganization'])->name('account.agency.applications.calls-organization.buy');     
+                Route::get('buy-applications-product-marketplace', [AgencyOrganizationController::class, 'buyAplicationsProductRequestsFromMarketplace'])->name('account.agency.applications.product-marketplace.buy');     
+                Route::get('buy-applications-improvemen-graves', [AgencyOrganizationController::class, 'buyAplicationsImprovemenGraves'])->name('account.agency.applications.improvemen-graves.buy');     
+
             });
 
         });

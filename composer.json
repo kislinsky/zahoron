@@ -21,7 +21,8 @@
         "movemoveapp/laravel-dadata": "^1.0",
         "nutnet/laravel-sms": "^0.11.0",
         "phpoffice/phpspreadsheet": "^3.3",
-        "smsaero/smsaero_api": "^1.0"
+        "smsaero/smsaero_api": "^1.0",
+        "yoomoney/yookassa-sdk-php": "^3.7"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

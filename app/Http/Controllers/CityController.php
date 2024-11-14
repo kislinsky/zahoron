@@ -17,4 +17,20 @@ class CityController extends Controller
         ]);
         return CityService::ajaxCity($data['city_id']);
     }
+
+    public static function ajaxCityFromEdge(Request $request){
+        $data=request()->validate([
+            'edge_id'=>['required','string'],
+        ]);
+        return CityService::ajaxCityFromEdge($data['edge_id']);
+    }
+
+    public static function ajaxCityInInput(Request $request){
+        $data=request()->validate([
+            's'=>['required','string'],
+        ]);
+        return CityService::ajaxCityInInput($data['s']);
+    }
+
+
 }

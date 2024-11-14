@@ -5429,7 +5429,7 @@ background: #F7F7F8;
     gap: 40px;
     padding: 20px 0px;
     min-height: 100%;
-    min-width: 250px;
+    min-width: 255px;
     max-width: 260px;
     background: #F7F7F8;
 }
@@ -6080,7 +6080,7 @@ text-decoration-skip-ink: none;
     margin-top: 10px;
 }
 .info_li_search_add_organization .blue_btn{
-    max-width: 200px;
+    width: 200px;
 }
 
 
@@ -6134,4 +6134,66 @@ border-bottom: 1px solid #808080;
     background: white;
     border: 1px solid white;
     color: #808080;
+}
+
+
+.block_buy_aplication{
+    display: flex;
+    margin-top: 40px;
+    flex-direction: column;
+    gap:20px;
+}
+
+
+.li_buy_aplication{
+    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.li_buy_aplication .block_input{
+    max-width: 350px;
+}
+.li_buy_aplication .blue_btn{
+    min-width: 200px;
+}
+
+.text_no_search_organizations{
+    margin: 40px 0px;
+    text-align: center;
+}
+
+.block_search_input_city{
+    position: relative;
+}
+
+.abs_cities_input{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 101%;
+    z-index: 10;
+    left: 0px;
+    background-color: white;
+    width: 100%;
+    box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+    max-height: 200px;
+    overflow-y: scroll;
+}
+.city_li_input{
+    transition: all ease-in-out 0.2s;
+    color: #000000;
+font-size: 16px;
+font-weight: 400;
+cursor: pointer;
+border-top:1px solid #E9E8EA;
+border-bottom: 1px solid #E9E8EA;
+
+padding: 10px;
+line-height: 24px;
+text-align: left;
+}
+.city_li_input:hover{
+    color: #0080D7;
+    
 }

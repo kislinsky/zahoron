@@ -32,11 +32,7 @@ class AgencyService {
 
     public static function settings(){
         $user=user();
-        if($user->organizational_form=='user'){
-            return view('account.agency.settings.settings',compact('user'));
-
-        }
-        elseif($user->organizational_form=='ep'){
+        if($user->organizational_form=='ep'){
             $edges=Edge::orderBy('title','asc')->get();
             $cities=City::orderBy('title','asc')->where('edge_id',$user->edge_id)->get();
             return view('account.agency.settings.settings-ep',compact('user','edges','cities'));
@@ -46,6 +42,7 @@ class AgencyService {
             $cities=City::orderBy('title','asc')->where('edge_id',$user->edge_id)->get();
             return view('account.agency.settings.settings-organization',compact('user','edges','cities'));
         }
+        return redirect()->back();
 
     }
 
@@ -154,37 +151,11 @@ class AgencyService {
                     ]);
                 }
 
-                if($user->organizational_form!='user'){
-                    $user->update([
-                        'name'=>$name_user_org,
-                        'surname'=>$surname_user_org,
-                        'patronymic'=>$patronymic_user_org,   
-                    ]);
-                }
-
-
-
-                if(isset($data['name']) && $user->organizational_form=='user'){
-                    $user->update([
-                        'name'=>$data['name'],
-                    ]);
-                }
-                if(isset($data['surname']) && $user->organizational_form=='user'){
-                    $user->update([
-                        'surname'=>$data['surname'],
-                    ]);
-                }
-                if(isset($data['patronymic']) && $user->organizational_form=='user'){
-                    $user->update([
-                        'patronymic'=>$data['patronymic'],
-                    ]);
-                }
-
                 return redirect()->back();
             }
             return redirect()->back()->with("error", 'Такой телефон или email уже существует');
         }
-        redirect()->back()->with('cart_message','Не существующий или не действуйющий инн');
+        redirect()->back()->with('error','Не существующий или не действуйющий инн');
         
     }
 
@@ -194,17 +165,17 @@ class AgencyService {
 
 
 
-    // public static function chooseOrganization($id){
-    //     $organization=Organization::findOrFail($id);
-    //     $user=Auth::user();
-    //     if($organization->user_id==$user->id){
-    //         $user->update([
-    //             'organization_id'=>$id,
-    //         ]);
-    //     }
-    //     return redirect()->back()->with('message_cart','Выбрана новая организация');
+    public static function chooseOrganization($id){
+        $organization=Organization::findOrFail($id);
+        $user=Auth::user();
+        if($organization->user_id==$user->id){
+            $user->update([
+                'organization_id'=>$id,
+            ]);
+        }
+        return redirect()->back()->with('message_cart','Выбрана новая организация');
         
-    // }
+    }
 
 
 

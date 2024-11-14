@@ -1075,4 +1075,15 @@ function checkOrganizationInn($inn){
      $result = $dadata->findById("party", $inn, 1);
      return $result[0]['data'];
      
- }
+}
+
+
+function btnAddOrganization($id_organization){
+    $user=user();
+    $organization=Organization::find($id_organization);
+    if($organization->user_id==$user->id){
+        $route=route('account.agency.organization.settings',$organization->id);
+        return "<a href='{$route}' class='blue_btn'>Доступ уже есть</a>";
+    }
+    return "<a href='#' class='blue_btn'>Получить доступ</a>";
+}
