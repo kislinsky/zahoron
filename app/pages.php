@@ -60,7 +60,15 @@ function organizationPages(){
             [
                 ['Заявки','account.agency.applications']
             ]
+            ],
+
+        ['Товар','storage/uploads/Icon_sidebar_2.svg',
+            [
+                ['Создать товар','account.agency.add.product'],
+                ['Все товары','account.agency.products'],
+            ]
         ]
+
        
     ];
     return $pages;

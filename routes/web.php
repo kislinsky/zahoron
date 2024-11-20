@@ -404,6 +404,15 @@ Route::prefix($city)->group(function () {
                 Route::get('buy-applications-product-marketplace', [AgencyOrganizationController::class, 'buyAplicationsProductRequestsFromMarketplace'])->name('account.agency.applications.product-marketplace.buy');     
                 Route::get('buy-applications-improvemen-graves', [AgencyOrganizationController::class, 'buyAplicationsImprovemenGraves'])->name('account.agency.applications.improvemen-graves.buy');     
 
+                Route::get('products', [AgencyOrganizationController::class, 'allProducts'])->name('account.agency.products');     
+                Route::get('add-product', [AgencyOrganizationController::class, 'addProduct'])->name('account.agency.add.product');     
+                Route::get('delete-product/{id}', [AgencyOrganizationController::class, 'deleteProduct'])->name('account.agency.delete.product');     
+                Route::get('update-product-price', [AgencyOrganizationController::class, 'updatePriceProduct'])->name('account.agency.update.product.price');     
+                Route::get('search-product', [AgencyOrganizationController::class, 'searchProduct'])->name('account.agency.search.product');     
+                Route::get('filters-product', [AgencyOrganizationController::class, 'filtersProduct'])->name('account.agency.filters.product');     
+                Route::post('create-product', [AgencyOrganizationController::class, 'createProduct'])->name('account.agency.create.product');     
+
+                
             });
 
         });

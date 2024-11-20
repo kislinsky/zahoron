@@ -89,6 +89,70 @@ class AgencyOrganizationController extends Controller
     }
 
 
+    public static function addProduct(){
+        return AgencyOrganizationService::addProduct();
+    }
 
+    public static function allProducts(){
+        $data=request()->validate([
+            'category_id'=>['nullable','string'],
+            'parent_category_id'=>['nullable','string'],
+            's'=>['nullable','string'],
+        ]);
+        return AgencyOrganizationService::allProducts($data);
+    }
+
+    public static function deleteProduct($id){
+        return AgencyOrganizationService::deleteProduct($id);
+    }
+
+
+    public static function updatePriceProduct(Request $request){
+        $data=request()->validate([
+            'price'=>['required','integer'],
+            'product_id'=>['required','integer'],
+        ]);
+        return AgencyOrganizationService::updatePriceProduct($data);
+    }
+
+
+    public static function searchProduct(Request $request){
+        $data=request()->validate([
+            's'=>['nullable','string'],
+        ]);
+        return AgencyOrganizationService::searchProduct($data);
+    }
+
+    public static function filtersProduct(Request $request){
+        $data=request()->validate([
+            'category_id'=>['nullable','string'],
+            'parent_category_id'=>['nullable','string'],
+        ]);
+        return AgencyOrganizationService::filtersProduct($data);
+
+    }
+
+    public static function createProduct(Request $request){
+        $data=request()->validate([
+            'title'=>['required','string'],
+            'content'=>['required','string'],
+            'price'=>['required','string'],
+            'price_sale'=>['nullable','integer'],
+            'material'=>['nullable','string'],
+            'size'=>['nullable','string'],
+            'your_size'=>['nullable','string'],
+            'parameters'=>['nullable','string'],
+            'width'=>['nullable','string'],
+            'longitude'=>['nullable','string'],
+            'menus'=>['nullable','string'],
+            'images'=>['required'],
+            'cat'=>['required','integer'],
+            'cat_children'=>['required','integer'],
+        ]);
+
+        return AgencyOrganizationService::createProduct($data);
+    }
+   
+            
 
 }

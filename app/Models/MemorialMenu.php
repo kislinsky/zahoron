@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class MemorialMenu extends Model
 {
     use HasFactory;
+    protected $guarded =[];
+
 }

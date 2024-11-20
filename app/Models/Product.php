@@ -29,6 +29,14 @@ class Product extends Model
         return CategoryProduct::find($this->category_id);
     }
 
+    public function parentCategory(){
+        $cat= CategoryProduct::find($this->category_id);
+        $parent_cat=CategoryProduct::find($cat->parent_id);
+        return $parent_cat;
+    }
+    
+    
+
     public function district(){
         return District::find($this->district_id);
     }

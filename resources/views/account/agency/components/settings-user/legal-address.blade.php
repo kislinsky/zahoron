@@ -50,7 +50,6 @@ $( ".edge_for_ajax select" ).on( "change", function() {
             "_token": "{{ csrf_token() }}",
             'edge_id': edge_id,
         }, success: function (result) {
-            console.log(result)
             $('.city_from_edge_ajax select').html(result)
         },
         error: function () {

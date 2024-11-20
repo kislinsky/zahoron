@@ -1087,3 +1087,34 @@ function btnAddOrganization($id_organization){
     }
     return "<a href='#' class='blue_btn'>Получить доступ</a>";
 }
+
+function filtersProductsOrganizations($data){
+    $organization=user()->organization();
+    
+    if(isset($data['parent_category_id'])){
+        $categories_children=CategoryProduct::where('parent_id',$data['parent_category_id'])->pluck('id');
+        $products=Product::where('organization_id',$organization->id)->whereIn('category_id',$categories_children)->paginate(10);
+    }
+    elseif(isset($data['category_id'])){
+        $products=Product::where('organization_id',$organization->id)->where('category_id',$data['category_id'])->paginate(10);
+
+    }
+    elseif(isset( $data['s']) && $data['s']!=null){
+        $s=$data['s'];
+        $products=Product::where('title','like','%'.$s.'%')->where('organization_id',$organization->id)->paginate(10);
+    }
+    else{
+        $products=Product::where('organization_id',$organization->id)->paginate(10);
+    }
+    return $products;
+}
+
+
+function slugCheckProduct($slug){
+    $products=Product::where('slug','like','%'.$slug.'%')->get();
+    if($products->count()>0){
+        return $slug.'-'.$products->count()+1;
+    }
+    return $slug;
+}
+
