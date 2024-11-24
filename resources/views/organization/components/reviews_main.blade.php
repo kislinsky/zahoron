@@ -29,6 +29,9 @@
                         </div>
                     @endif
                     <div class="text_black margin_top_review_organization">{{$review->content}}</div>
+                    @if($review->organization_response!=null)
+                        {!!alert($review->organization_response)!!}
+                    @endif
                 </div>
             @endforeach
         </div>

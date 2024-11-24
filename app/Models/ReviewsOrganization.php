@@ -10,4 +10,20 @@ class ReviewsOrganization extends Model
     use HasFactory;
     protected $guarded =[];
 
+    function organization(){
+        return Organization::find($this->organization_id);
+    }
+
+    
+
+    function btnReviewAccept(){
+        if($this->status==0){
+            $route=route('account.agency.review.organization.accept',$this->id);
+            return "<a href='$route' class='blue_btn'>Одобрить</a>";
+        }
+        elseif($this->status==1){
+            return "<div content='$this->content' id_review='$this->id' class='blue_btn open_review_update_content_form'>Редактировать</div>";
+        }
+    }
+
 }

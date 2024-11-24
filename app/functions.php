@@ -483,6 +483,22 @@ function raitingOrganization($organization){
     return $rating_reviews;
 }
 
+
+function raitingProduct($product){
+    $reviews=CommentProduct::orderBy('id','desc')->where('product_id',$product->id)->where('status',1)->get();
+    $rating_reviews=null;
+    if($reviews!=null && $reviews->count()>1){
+        $rating_reviews=explode('.',strval($reviews->pluck('rating')->sum()/$reviews->count()));
+        if(count($rating_reviews)>1){
+            $rating_reviews=$rating_reviews[0].".".substr($rating_reviews[1],0,1);
+        }else{
+            $rating_reviews=$reviews->pluck('rating')->sum()/$reviews->count();
+        }
+    }
+    return $rating_reviews;
+}
+
+
 function countReviewsOrganization($organization){
     $reviews=ReviewsOrganization::orderBy('id','desc')->where('organization_id',$organization->id)->where('status',1)->get();
     if($reviews!=null && count($reviews)>0){
@@ -1093,18 +1109,18 @@ function filtersProductsOrganizations($data){
     
     if(isset($data['parent_category_id'])){
         $categories_children=CategoryProduct::where('parent_id',$data['parent_category_id'])->pluck('id');
-        $products=Product::where('organization_id',$organization->id)->whereIn('category_id',$categories_children)->paginate(10);
+        $products=Product::orderBy('id','desc')->where('organization_id',$organization->id)->whereIn('category_id',$categories_children)->paginate(10);
     }
     elseif(isset($data['category_id'])){
-        $products=Product::where('organization_id',$organization->id)->where('category_id',$data['category_id'])->paginate(10);
+        $products=Product::orderBy('id','desc')->where('organization_id',$organization->id)->where('category_id',$data['category_id'])->paginate(10);
 
     }
     elseif(isset( $data['s']) && $data['s']!=null){
         $s=$data['s'];
-        $products=Product::where('title','like','%'.$s.'%')->where('organization_id',$organization->id)->paginate(10);
+        $products=Product::orderBy('id','desc')->where('title','like','%'.$s.'%')->where('organization_id',$organization->id)->paginate(10);
     }
     else{
-        $products=Product::where('organization_id',$organization->id)->paginate(10);
+        $products=Product::orderBy('id','desc')->where('organization_id',$organization->id)->paginate(10);
     }
     return $products;
 }
@@ -1118,3 +1134,17 @@ function slugCheckProduct($slug){
     return $slug;
 }
 
+
+function btnStatusReview($status){
+    if($status==0){
+        return "<div class='light_blue_btn'>Ожидает модерацию</div>";
+    }
+    elseif($status==1){
+        return "<div class='green_btn'>Одобрен</div>";
+    }
+}
+
+
+function alert($text, $type = "success", $margin_bottom = 16, $class = ""){
+    return "<div class='alert alert-$type $class' role='alert' style='margin-bottom:$margin_bottom px'>$text</div>";
+}

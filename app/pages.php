@@ -67,8 +67,16 @@ function organizationPages(){
                 ['Создать товар','account.agency.add.product'],
                 ['Все товары','account.agency.products'],
             ]
-        ]
+        ],
 
+        ['Отзывы','storage/uploads/Icon_sidebar_2.svg',
+            [
+                ['Об организации','account.agency.reviews.organization'],
+                ['О товарах','account.agency.reviews.product'],
+                
+            ]
+        ],
+        
        
     ];
     return $pages;

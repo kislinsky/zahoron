@@ -93,4 +93,13 @@ class Organization extends Model
         }
         return 'Выходной';
     }
+
+
+
+    function updateRating(){
+        $rating=raitingOrganization($this);
+        $this->update([
+            'rating'=>$rating,
+        ]);   
+    }
 }

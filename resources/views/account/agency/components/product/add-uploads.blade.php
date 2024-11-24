@@ -16,37 +16,29 @@
 </div>
 
 
-
 <script>
-    $(document).ready(function() {
-        $('#input__file_3').change(function(event) {
-            let file = event.target.files[0];
 
-            if (file) {
-                var newFileInput = $("<input type='file' name='images[]' class='newInputFile' />");
-                // Создаем DataTransfer для передачи файла
-                var dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                // Устанавливаем файлы в новый input
-                newFileInput[0].files = dataTransfer.files;
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    $('.ul_add_img_product').append("<div class='li_img_product_organization'><img class='image_product_organization' src='"+e.target.result+"' ></div>")
-                    $('.ul_add_img_product').append(newFileInput)
+$(document).ready(function() {
+    $('#input__file_3').change(function(event) {
+        let file = event.target.files[0];
 
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    });
+        if (file) {
+            var newFileInput = $("<input type='file' name='images[]' class='newInputFile' />");
+            // Создаем DataTransfer для передачи файла
+            var dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            // Устанавливаем файлы в новый input
+            newFileInput[0].files = dataTransfer.files;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('.ul_add_img_product').append("<div class='li_img_product_organization' ><div class='delete_img_product_organization' onclick='$(this).parent().remove()'></div> <img class='image_product_organization' src='"+e.target.result+"' ></div>")
+                $('.ul_add_img_product').append(newFileInput)
 
-
-
-    $(document).ready(function() {
-    // Обработчик события нажатия на кнопку
-    $('#transferButton').click(function() {
-        
+            };
+            reader.readAsDataURL(file);
+        }
     });
 });
+
 
 </script>

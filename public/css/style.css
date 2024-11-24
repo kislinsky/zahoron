@@ -4995,6 +4995,7 @@ background: #F7F7F8;
 }
 .li_logo_organization .img_logo_organization{
     max-width: 83px;
+    height: 83px;
     width: 100%;
 
 }
@@ -6440,9 +6441,118 @@ padding: 5px 20px;
     position: relative;
     background: #F7F7F8;
     min-width: 190px;
+    max-width: 190px;
     height: 190px;
+    overflow: hidden;
+    border-radius: 10px;
+    cursor: pointer;
 }
+.li_img_product_organization .delete_img_product_organization{
+    z-index: 3;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    background-repeat: no-repeat !important;
+    height: 34px;
+    background-image: url("/storage/uploads/Min.svg");
+    background-size: contain;
+}
+
 
 .newInputFile{
     display: none !important;
+}
+
+.fa-star-o:before{
+    content: "";
+       width: 20px;
+       height: 20px;
+       display: block;
+       background-image: url("/storage/uploads/Frame 338.svg");
+       background-repeat: no-repeat
+ }
+ .star-rating__ico{
+    position: relative;
+    width: 20px;
+    height: 20px;
+ }
+ 
+.star-rating__ico:hover:before,
+.star-rating__ico:hover ~ .star-rating__ico:before,
+.star-rating__input:checked ~ .star-rating__ico:before
+{
+    content: "";
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-image: url("/storage/uploads/Frame 334.svg");
+    background-repeat: no-repeat
+}
+
+
+.checkbox::before{
+    background-image: url("/storage/uploads/Галочка_on_not.svg");
+    background-repeat: no-repeat
+}
+.checkbox.active_checkbox::before{
+    background-image: url("/storage/uploads/Галочка.svg");
+    background-repeat: no-repeat
+}
+    
+.select::before{
+        background-image: url("/storage/uploads/Vector_select.svg");
+       background-repeat: no-repeat
+}
+.margin_top_down_20{
+    margin: 20px 0px;
+}
+
+.text_align_start{
+    text-align: start;
+}
+
+.ul_reviews_organiaztions{
+    display: flex;
+    margin-top: 20px;
+    flex-direction: column;
+    gap: 20px;
+}
+.li_review_in_panel{
+    padding: 20px;
+    border: 1px solid #F1F1F1;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    gap: 15px;
+
+}
+.info_review{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.flex_info_review_in_panel{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+.flex_info_review_in_panel .light_blue_btn,.flex_info_review_in_panel .green_btn{
+    min-width: 220px;
+}
+
+.flex_info_review_in_panel{
+    padding-bottom: 15px;
+    border-bottom: 2px solid #808080 ;
+}
+
+.form_update_review textarea{
+    min-height: 200px;
+}
+
+.alert{
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: 400;
 }

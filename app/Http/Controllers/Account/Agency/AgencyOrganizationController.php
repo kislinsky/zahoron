@@ -154,5 +154,71 @@ class AgencyOrganizationController extends Controller
     }
    
             
+    public static function reviewsOrganization(){
+        return AgencyOrganizationService::reviewsOrganization();
+    }
 
+    public static function reviewsProduct(){
+        return AgencyOrganizationService::reviewsProduct();
+    }
+
+
+    public static function reviewOrganizationAccept($id){
+        return AgencyOrganizationService::reviewOrganizationAccept($id);
+
+    }
+
+    public static function reviewProductAccept($id){
+        return AgencyOrganizationService::reviewProductAccept($id);
+
+    }
+
+
+    public static function reviewOrganizationDelete($id){
+        return AgencyOrganizationService::reviewOrganizationDelete($id);
+
+    }
+
+    public static function reviewProductDelete($id){
+        return AgencyOrganizationService::reviewProductDelete($id);
+
+    }
+
+    public static function updateReviewOrganization(Request $request){
+        $data=request()->validate([
+            'id_review'=>['required','integer'],
+            'content_review'=>['required','string'],
+        ]);
+        return AgencyOrganizationService::updateReviewOrganization($data);
+
+    }
+
+    public static function updateReviewProduct(Request $request){
+        $data=request()->validate([
+            'id_review'=>['required','integer'],
+            'content_review'=>['required','string'],
+        ]);
+        return AgencyOrganizationService::updateReviewProduct($data);
+
+    }
+
+
+    public static function updateOrganizationResponseReviewOrganization(Request $request){
+        $data=request()->validate([
+            'id_review'=>['required','integer'],
+            'organization_response_review'=>['required','string'],
+        ]);
+        return AgencyOrganizationService::updateOrganizationResponseReviewOrganization($data);
+
+    }
+
+    public static function updateOrganizationResponseReviewProduct(Request $request){
+        $data=request()->validate([
+            'id_review'=>['required','integer'],
+            'organization_response_review'=>['required','string'],
+        ]);
+        return AgencyOrganizationService::updateOrganizationResponseReviewProduct($data);
+
+    }
+    
 }

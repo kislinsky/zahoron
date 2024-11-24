@@ -58,5 +58,12 @@ class Product extends Model
         return route('product.single',$this->slug);
     }
 
+    function updateRating(){
+        $rating=raitingProduct($this);
+        $this->update([
+            'rating'=>$rating,
+        ]);   
+    }
+
    
 }

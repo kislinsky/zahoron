@@ -13,6 +13,7 @@
         "ausi/slug-generator": "^1.1",
         "dadata/apiclient": "^2.0",
         "guzzlehttp/guzzle": "^7.9",
+        "harvesthq/chosen": "^1.8",
         "hflabs/dadata": "^24.4",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",

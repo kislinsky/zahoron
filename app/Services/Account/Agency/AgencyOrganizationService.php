@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use App\Models\Beautification;
 use App\Models\CategoryProduct;
 use App\Models\City;
+use App\Models\CommentProduct;
 use App\Models\FavouriteBurial;
 use App\Models\ImageAgency;
 use App\Models\ImageOrganization;
@@ -23,6 +24,7 @@ use App\Models\MemorialMenu;
 use App\Models\Organization;
 use App\Models\Product;
 use App\Models\ProductParameters;
+use App\Models\ReviewsOrganization;
 use App\Models\WorkingHoursOrganization;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -389,10 +391,72 @@ class AgencyOrganizationService {
             }
             
         }
-
-
         return redirect()->back()->with('message_cart','Товар успешно добавлен');
+    }
 
+    public static function reviewsOrganization(){
+        $organization=user()->organization();
+        $reviews=ReviewsOrganization::orderBy('id','desc')->where('organization_id',$organization->id)->paginate(10);
+        return view('account.agency.organization.reviews.reviews-organization',compact('reviews'));
+    }
+
+    public static function reviewsProduct(){
+        $organization=user()->organization();
+        $reviews=CommentProduct::orderBy('id','desc')->where('organization_id',$organization->id)->paginate(10);
+        return view('account.agency.organization.reviews.reviews-product',compact('reviews'));
+    }
+
+
+    public static function reviewOrganizationDelete($id){
+        $review=ReviewsOrganization::find($id);
+        $organization=$review->organization();
+        $review->delete();
+        $organization->updateRating();
+        return redirect()->back()->with('message_cart','Отзыв успешно удален');
+
+    }
+
+    public static function reviewProductDelete($id){
+        $review=CommentProduct::find($id);
+        $review->delete();
+        return redirect()->back()->with('message_cart','Отзыв успешно удален');
+
+    }
+    
+
+    public static function reviewOrganizationAccept($id){
+        $review=ReviewsOrganization::find($id);
+        $review->update(['status'=>1]);
+        $review->organization()->updateRating();
+        return redirect()->back()->with('message_cart','Статус успешно обновлен');
+
+    }
+
+    public static function reviewProductAccept($id){
+        $review=CommentProduct::find($id);
+        $review->update(['status'=>1]);
+        return redirect()->back()->with('message_cart','Статус успешно обновлен');
+
+    }
+
+    public static function updateReviewOrganization($data){
+        $review=ReviewsOrganization::find($data['id_review'])->update(['content'=>$data['content_review']]);
+        return 'готово';
+    }
+
+    public static function updateReviewProduct($data){
+        $review=CommentProduct::find($data['id_review'])->update(['content'=>$data['content_review']]);
+        return 'готово';
+    }
+
+    public static function updateOrganizationResponseReviewOrganization($data){
+        $review=ReviewsOrganization::find($data['id_review'])->update(['organization_response'=>$data['organization_response_review']]);
+        return $data['organization_response_review'];
+    }
+
+    public static function updateOrganizationResponseReviewProduct($data){
+        $review=CommentProduct::find($data['id_review'])->update(['organization_response'=>$data['organization_response_review']]);
+        return 'готово';
     }
 
 }

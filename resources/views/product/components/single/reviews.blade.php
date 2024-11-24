@@ -11,6 +11,9 @@
                         <div class="text_comment">{{ $comment->created_at }}</div>
                     </div>
                     <div class="text_comment">{{ $comment->content }}</div>
+                    @if($comment->organization_response!=null)
+                        {!!alert('Ответ организации: '.$comment->organization_response)!!}
+                    @endif
                 </div>
             @endforeach
         @endif

@@ -59,49 +59,6 @@
  </footer>
  
 
-<style>
-.fa-star-o:before{
-   content: "";
-      width: 20px;
-      height: 20px;
-      display: block;
-      background: url('{{asset("storage/uploads/Frame 338.svg")}}');
-      background-repeat: no-repeat
-}
-.star-rating__ico{
-   position: relative;
-   width: 20px;
-   height: 20px;
-}
-
-   .star-rating__ico:hover:before,
-   .star-rating__ico:hover ~ .star-rating__ico:before,
-   .star-rating__input:checked ~ .star-rating__ico:before
-   {
-      content: "";
-      display: block;
-      width: 20px;
-      height: 20px;
-      background: url('{{asset("storage/uploads/Frame 334.svg")}}');
-      background-repeat: no-repeat
-   }
-
-
-   .checkbox::before{
-      background: url('{{asset("storage/uploads/Галочка_on_not.svg")}}');
-      background-repeat: no-repeat
-   }
-   .checkbox.active_checkbox::before{
-      background: url('{{asset("storage/uploads/Галочка.svg")}}');
-      background-repeat: no-repeat
-   }
-    
-   .select::before{
-      background: url('{{asset("storage/uploads/Vector_select.svg")}}');
-      background-repeat: no-repeat
-}
-</style>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>

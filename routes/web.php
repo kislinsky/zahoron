@@ -80,7 +80,6 @@ if(city_by_slug($city) == null){
         setcookie("city", $c_b_s__->id, time()+20*24*60*60,'/');
         header("Refresh:0");
         die;
-
     }
 }
 }
@@ -411,7 +410,17 @@ Route::prefix($city)->group(function () {
                 Route::get('search-product', [AgencyOrganizationController::class, 'searchProduct'])->name('account.agency.search.product');     
                 Route::get('filters-product', [AgencyOrganizationController::class, 'filtersProduct'])->name('account.agency.filters.product');     
                 Route::post('create-product', [AgencyOrganizationController::class, 'createProduct'])->name('account.agency.create.product');     
-
+                
+                Route::get('reviews-organization', [AgencyOrganizationController::class, 'reviewsOrganization'])->name('account.agency.reviews.organization');     
+                Route::get('reviews-products', [AgencyOrganizationController::class, 'reviewsProduct'])->name('account.agency.reviews.product');     
+                Route::get('review-organization/{id}/delete', [AgencyOrganizationController::class, 'reviewOrganizationDelete'])->name('account.agency.review.organization.delete');     
+                Route::get('review-product/{id}/delete', [AgencyOrganizationController::class, 'reviewProductDelete'])->name('account.agency.review.product.delete');     
+                Route::get('review-organization/{id}/accept', [AgencyOrganizationController::class, 'reviewOrganizationAccept'])->name('account.agency.review.organization.accept');     
+                Route::get('review-product/{id}/accept', [AgencyOrganizationController::class, 'reviewProductAccept'])->name('account.agency.review.product.accept');     
+                Route::get('review-organization/update', [AgencyOrganizationController::class, 'updateReviewOrganization'])->name('account.agency.review.organization.update');     
+                Route::get('review-product/update', [AgencyOrganizationController::class, 'updateReviewProduct'])->name('account.agency.review.product.update');     
+                Route::get('review-organization/update/organization-response', [AgencyOrganizationController::class, 'updateOrganizationResponseReviewOrganization'])->name('account.agency.review.organization.update.organization-response');     
+                Route::get('review-product/update/organization-response', [AgencyOrganizationController::class, 'updateOrganizationResponseReviewProduct'])->name('account.agency.review.product.update.organization-response');     
                 
             });
 
