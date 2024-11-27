@@ -12,8 +12,8 @@ class CemeteriesController extends Controller
         return CemeteryService::index();
     }
 
-    public static function singleCemetery($id){
-        return CemeteryService::singleCemetery($id);
+    public static function singleCemetery(Cemetery $cemetery){
+        return CemeteryService::singleCemetery($cemetery);
     }
 
     public static function ajaxCemetery(Request $request){

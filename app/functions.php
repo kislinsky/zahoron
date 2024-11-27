@@ -1148,3 +1148,10 @@ function btnStatusReview($status){
 function alert($text, $type = "success", $margin_bottom = 16, $class = ""){
     return "<div class='alert alert-$type $class' role='alert' style='margin-bottom:$margin_bottom px'>$text</div>";
 }
+
+function btnOPenOrNot($item){
+    if($item=='Открыто'){
+        return "<div class='btn_green'>Открыто</div>";
+    }
+    return "<div class='red_btn'>Закрыто</div>";
+}

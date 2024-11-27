@@ -12,7 +12,7 @@
                         @foreach($payments as $payment)
                         <div class="li_payment_decoder">
                             <div class="text_black_big">Оплата №{{$payment->id}} от {{$payment->created_at->format('d.m.Y')}} г. {{$payment->title}} {{$payment->count}} шт.</div>
-                            <div class="text_black_big_bold">{{$payment->price*$payment->count}} руб.</div>
+                            <div class="text_black_big_bold">{{$payment->price}} руб.</div>
                         </div>
                         @endforeach
                     @endif  

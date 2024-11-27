@@ -220,5 +220,5 @@ class AgencyOrganizationController extends Controller
         return AgencyOrganizationService::updateOrganizationResponseReviewProduct($data);
 
     }
-    
+  
 }

@@ -94,7 +94,10 @@ class Organization extends Model
         return 'Выходной';
     }
 
-
+    public function timeCity(){
+        $time=getTimeByCoordinates($this->width,$this->longitude)['current_time'];
+        return $time;
+    }
 
     function updateRating(){
         $rating=raitingOrganization($this);

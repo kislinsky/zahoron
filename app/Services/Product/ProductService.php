@@ -199,10 +199,13 @@ class ProductService
     }
 
     public static function addReview($data){
+        $product=Product::find($data['product_id']);
         CommentProduct::create([
             'name'=>$data['name'],
             'surname'=>$data['surname'],
-            'product_id'=>$data['product_id'],
+            'product_id'=>$product->id,
+            'category_id'=>$product->category_id,
+            'organization_id'=>$product->organization_id,
             'content'=>$data['message'],
         ]);
         return redirect()->back()->with("message_words_memory", 'Отзыв отправлен на проверку');

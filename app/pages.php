@@ -76,6 +76,14 @@ function organizationPages(){
                 
             ]
         ],
+
+        ['Поставщики','storage/uploads/Icon_sidebar_2.svg',
+            [
+                ['Заявки','account.agency.provider.requests.products.add'],
+                ['Избранное','account.agency.provider.like.organizations'],
+               
+            ]
+        ],
         
        
     ];

@@ -153,6 +153,7 @@ class DecoderService {
         if($payment_last!=null){
             $payment_last->update([
                 'count'=>$payment_last->count+1,
+                'price'=>$payment_last->price+$burial->cemetery()->price_decode,
             ]);
 
         }else{

@@ -29,8 +29,8 @@ class CemeteryService {
         return view('cemetery.index',compact('cemeteries','page','city','products','usefuls','cemeteries_map'));
     }
 
-    public static function singleCemetery($id){
-        $cemetery=Cemetery::find($id);
+    public static function singleCemetery($cemetery){
+        $id=$cemetery->id;
         $reviews=ReviewCemetery::orderBy('id','desc')->where('status',1)->where('cemetery_id',$id)->get();
         $reviews_main=$reviews->take(3);
         $organizations_our=$cemetery->cemeteryOrganiaztions();

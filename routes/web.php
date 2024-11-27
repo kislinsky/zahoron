@@ -14,6 +14,7 @@ use App\Http\Controllers\Account\AccountController;
 use App\Http\Controllers\Account\Admin\AdminRitualObjectsController;
 use App\Http\Controllers\Account\AdminController;
 use App\Http\Controllers\Account\Agency\AgencyOrganizationController;
+use App\Http\Controllers\Account\Agency\AgencyOrganizationProviderController;
 use App\Http\Controllers\Account\HomeController;
 
 
@@ -269,7 +270,7 @@ Route::prefix($city)->group(function () {
 
 
     Route::group(['prefix'=>'cemetery'], function() {
-        Route::get('/{id}', [CemeteriesController::class, 'singleCemetery'])->name('cemeteries.single');
+        Route::get('/{cemetery}', [CemeteriesController::class, 'singleCemetery'])->name('cemeteries.single');
         Route::get('/review/add', [CemeteriesController::class, 'addReview'])->name('cemetery.review.add');
 
     });
@@ -421,6 +422,13 @@ Route::prefix($city)->group(function () {
                 Route::get('review-product/update', [AgencyOrganizationController::class, 'updateReviewProduct'])->name('account.agency.review.product.update');     
                 Route::get('review-organization/update/organization-response', [AgencyOrganizationController::class, 'updateOrganizationResponseReviewOrganization'])->name('account.agency.review.organization.update.organization-response');     
                 Route::get('review-product/update/organization-response', [AgencyOrganizationController::class, 'updateOrganizationResponseReviewProduct'])->name('account.agency.review.product.update.organization-response');     
+                
+                Route::get('provider/requests/products/add', [AgencyOrganizationProviderController::class, 'requestsCostProductSuppliers'])->name('account.agency.provider.requests.products.add');     
+                Route::get('provider/requests/products/create', [AgencyOrganizationProviderController::class, 'addRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.create');     
+
+                Route::get('like-organizations', [AgencyOrganizationProviderController::class, 'likeOrganizations'])->name('account.agency.provider.like.organizations');     
+
+                
                 
             });
 
