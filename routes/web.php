@@ -425,10 +425,30 @@ Route::prefix($city)->group(function () {
                 
                 Route::get('provider/requests/products/add', [AgencyOrganizationProviderController::class, 'requestsCostProductSuppliers'])->name('account.agency.provider.requests.products.add');     
                 Route::get('provider/requests/products/create', [AgencyOrganizationProviderController::class, 'addRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.create');     
+                Route::get('provider/requests/products/answer', [AgencyOrganizationProviderController::class, 'answerRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.answer');     
+                Route::delete('provider/request/products/{request}/delete', [AgencyOrganizationProviderController::class, 'deletRequest'])->name('account.agency.provider.request.delete');     
+
+                
+                
 
                 Route::get('like-organizations', [AgencyOrganizationProviderController::class, 'likeOrganizations'])->name('account.agency.provider.like.organizations');     
 
-                
+                Route::get('provider/stocks', [AgencyOrganizationProviderController::class, 'stocksOrganizationProviders'])->name('account.agency.provider.stocks');     
+                Route::get('provider/discounts', [AgencyOrganizationProviderController::class, 'discountsOrganizationProviders'])->name('account.agency.provider.discounts');     
+
+                Route::get('provider/offer/add', [AgencyOrganizationProviderController::class, 'addOfferToProvider'])->name('account.agency.provider.offer.add');     
+                Route::post('provider/offer/add', [AgencyOrganizationProviderController::class, 'createOfferToProvider'])->name('account.agency.provider.offer.create');     
+
+                Route::get('provider/offers/created', [AgencyOrganizationProviderController::class, 'createdOfferToProvider'])->name('account.agency.provider.offer.created');     
+                Route::get('provider/offers/answers', [AgencyOrganizationProviderController::class, 'answerOfferToProvider'])->name('account.agency.provider.offer.answers'); 
+
+
+                Route::get('provider/offers/created/category', [AgencyOrganizationProviderController::class, 'filterCategoryCreatedOfferToProvider'])->name('account.agency.provider.offer.created.category');     
+                Route::get('provider/offers/answers/category', [AgencyOrganizationProviderController::class, 'filterCategoryAnswerOfferToProvider'])->name('account.agency.provider.offer.answers.category'); 
+
+
+                Route::delete('provider/offer/{offer}/delete', [AgencyOrganizationProviderController::class, 'deleteOffer'])->name('account.agency.provider.offer.delete');     
+
                 
             });
 

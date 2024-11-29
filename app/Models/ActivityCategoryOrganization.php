@@ -13,6 +13,7 @@ class ActivityCategoryOrganization extends Model
     protected $guarded =[];
 
     public function organization(){
+        //return $this->belongsTo(Organization::class);
         return Organization::find($this->organization_id);
     }
 
@@ -23,5 +24,5 @@ class ActivityCategoryOrganization extends Model
     public function categoryProductProvider(){
         return CategoryProductProvider::find($this->category_children_id);
     }
-
 }
+

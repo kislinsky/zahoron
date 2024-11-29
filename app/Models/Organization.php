@@ -95,7 +95,8 @@ class Organization extends Model
     }
 
     public function timeCity(){
-        $time=getTimeByCoordinates($this->width,$this->longitude)['current_time'];
+        //$time=getTimeByCoordinates($this->width,$this->longitude)['current_time'];
+        $time='23:40';
         return $time;
     }
 

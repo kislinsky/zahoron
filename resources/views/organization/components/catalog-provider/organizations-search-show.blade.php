@@ -5,7 +5,7 @@
             <div class="li_provider_flex">
                 <div class="content_li_provider">
                     <div class="text_flex">
-                        <div class="title_black_bold">Местное время: <span class='title_blue'>23:40</span></div>
+                        <div class="title_black_bold">Местное время: <span class='title_blue'> {{$organization->timeCity()}}</span></div>
                     </div>
                     <div class="text_black">Фирма: {{$organization->title}}</div>
                     <div class="text_black">Город: {{$organization->city()->title}}</div>

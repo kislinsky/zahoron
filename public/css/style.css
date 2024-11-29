@@ -5206,6 +5206,9 @@ margin: 0 auto;
 
 .li_organization_provider{
     padding: 30px;
+    width: 100%; /* Ширина родительского блока */
+    overflow: hidden; /* Скрывает любое переполнение родительского блока */
+    position: relative; 
     transition: all ease-in-out 0.2s;
     box-shadow: 4px 4px 8px -3px rgba(34, 60, 80, 0.2);
     border: 1px solid #E9E8EA;
@@ -5227,7 +5230,7 @@ margin: 0 auto;
     align-items: center;
     gap: 15px;
 }
-.li_provider_btn_flex .blue_btn{
+.li_provider_btn_flex .blue_btn,.li_provider_btn_flex .gray_btn{
     width: 100%;
     text-align: center;
 }
@@ -6593,4 +6596,121 @@ padding: 5px 20px;
 
 .margin_top_20{
     margin-top: 20px;
+}
+.text_center{
+    text-align: center;
+}
+.flex_align_start{
+    align-items:normal;
+
+}
+
+.flex_btn  .img_width_50{
+    width: 50px !important;
+}
+
+
+.ul_images_offers_to_provider{
+    display: flex;
+    margin: 20px 0px;
+    gap: 20px;
+    width: 100%;
+    width: 100%; /* Ширина скроллируемого блока */
+    overflow-x: auto; /* Позволяет горизонтальную прокрутку */
+    white-space: nowrap; 
+    overflow-x: scroll;
+}
+.li_image_to_provider{
+    padding: 10px;
+    background: #F7F7F8;
+}
+.li_image_to_provider img{
+    width:  250px;
+    height: 186px;
+    object-fit: cover;
+
+}
+
+.li_request_created_to_provider{
+    display: flex;
+    align-items: start;
+    gap: 20px;
+}
+.delete_offer button{
+    background: none;
+    border: none;
+    outline: none;
+}
+
+
+
+.block_answer_from_provider{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    border: 1px solid #E9E8EA;
+
+
+}
+.block_answer_from_provider .item_answer_from_provider{
+    border-left: 1px solid #E9E8EA;
+}
+
+.item_answer_from_provider{
+    display: flex;
+    padding: 10px;
+    flex-direction: column;
+    gap: 10px;
+}
+.flex_answer_from_provider{
+    display: flex;
+    gap: 15px;
+}
+
+.ul_btn_answer_from_provider{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.table_answer_from_provider{
+    width: 100%;   
+    margin: 20px 0px;
+}
+
+
+.table_answer_from_provider th{
+    padding: 10px;
+    background: #F7F7F8;
+
+}
+.table_answer_from_provider td{
+    padding: 5px;
+    border: 1px solid #F7F7F8;
+}
+
+.ul_answer_product_request{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 15px 0px;
+}
+
+.flex_gap_10_column{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+.flex_gap_5_column{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.li_bottom_gray_border{
+    margin-bottom: 10px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #F1F1F1;
 }

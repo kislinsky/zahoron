@@ -145,7 +145,13 @@ class AgencyOrganizationController extends Controller
             'width'=>['nullable','string'],
             'longitude'=>['nullable','string'],
             'menus'=>['nullable','string'],
-            'images'=>['required'],
+            "images" => ["required", "array"],
+            "images.*" => [
+                "required",
+                'image',
+                'mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif',
+                'max:2048'
+            ],
             'cat'=>['required','integer'],
             'cat_children'=>['required','integer'],
         ]);

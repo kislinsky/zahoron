@@ -12,8 +12,13 @@
         <div class="ul_add_img_product">
             
         </div>
+        
     </div>
+    @error('images')
+        <div class='error-text'>{{ $message }}</div>
+    @enderror
 </div>
+
 
 
 <script>
@@ -32,7 +37,7 @@ $(document).ready(function() {
             var reader = new FileReader();
             reader.onload = function(e) {
                 $('.ul_add_img_product').append("<div class='li_img_product_organization' ><div class='delete_img_product_organization' onclick='$(this).parent().remove()'></div> <img class='image_product_organization' src='"+e.target.result+"' ></div>")
-                $('.ul_add_img_product').append(newFileInput)
+                $('.ul_add_img_product .li_img_product_organization:last-child').append(newFileInput)
 
             };
             reader.readAsDataURL(file);

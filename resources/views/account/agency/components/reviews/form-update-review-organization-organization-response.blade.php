@@ -40,7 +40,7 @@
     });
 
 
-     $('.update_organization_response_review').on( "click", function() {
+    $('.update_organization_response_review').on( "click", function() {
 
         let id_review=$('#organization_response_review_id').val() 
         let content_resonse=$('#organization_response_review').val() 

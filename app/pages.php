@@ -80,8 +80,14 @@ function organizationPages(){
         ['Поставщики','storage/uploads/Icon_sidebar_2.svg',
             [
                 ['Заявки','account.agency.provider.requests.products.add'],
+                ['Ответы на заявки','account.agency.provider.requests.products.answer'],
                 ['Избранное','account.agency.provider.like.organizations'],
-               
+                ['Акции','account.agency.provider.stocks'],
+                ['Скидки','account.agency.provider.discounts'],
+                ['Создание запроса','account.agency.provider.offer.add'],
+                ['Созданные запросы','account.agency.provider.offer.created'],
+                ['Ответы на запросы','account.agency.provider.offer.answers'],
+                
             ]
         ],
         
