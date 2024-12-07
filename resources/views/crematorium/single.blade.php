@@ -3,7 +3,7 @@
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-            <div class="index_title">Крематорий {{ $crematorium->title }} в г.{{$city->title}}</div>    
+            <div class="index_title">Крематорий {{ $crematorium->title }} в г.{{$crematorium->city->title}}</div>    
         </div>
         <img class='rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
         

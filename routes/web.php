@@ -11,6 +11,7 @@ use App\Http\Controllers\Account\AgentController;
 use App\Http\Controllers\Account\Agency\AgencyController;
 use App\Http\Controllers\Account\DecoderController;
 use App\Http\Controllers\Account\AccountController;
+use App\Http\Controllers\Account\Admin\AdminOrganizationController;
 use App\Http\Controllers\Account\Admin\AdminRitualObjectsController;
 use App\Http\Controllers\Account\AdminController;
 use App\Http\Controllers\Account\Agency\AgencyOrganizationController;
@@ -68,19 +69,16 @@ if(city_by_slug($city) == null){
     setcookie('city', '', -1, '/');
     setcookie("city", first_city_id(), time()+20*24*60*60,'/');
     header("location: /".first_city_slug());
-    die;
 } else{
     $c_b_s__ = city_by_slug($city);
     if(!isset($_COOKIE['city'])){
         setcookie("city", first_city_id(), time()+20*24*60*60,'/');
         header("Refresh:0");
-        die;
     }
     if($_COOKIE['city'] != $c_b_s__->id){
         setcookie('city', '', -1, '/');
         setcookie("city", $c_b_s__->id, time()+20*24*60*60,'/');
         header("Refresh:0");
-        die;
     }
 }
 }
@@ -390,6 +388,7 @@ Route::prefix($city)->group(function () {
         Route::group(['prefix'=>'account'], function() {
             
             Route::group(['prefix'=>'agency'], function() {
+
                 Route::get('settings', [AgencyController::class, 'settings'])->name('account.agency.settings');
                 Route::get('organization/settings/{id}', [AgencyOrganizationController::class, 'settings'])->name('account.agency.organization.settings');
                 Route::get('choose-organization/{id}', [AgencyController::class, 'chooseOrganization'])->name('account.agency.choose.organization');
@@ -411,7 +410,14 @@ Route::prefix($city)->group(function () {
                 Route::get('search-product', [AgencyOrganizationController::class, 'searchProduct'])->name('account.agency.search.product');     
                 Route::get('filters-product', [AgencyOrganizationController::class, 'filtersProduct'])->name('account.agency.filters.product');     
                 Route::post('create-product', [AgencyOrganizationController::class, 'createProduct'])->name('account.agency.create.product');     
+                Route::get('product/orders/new', [AgencyOrganizationController::class, 'ordersNew'])->name('account.agency.product.orders.new');     
+                Route::get('product/orders/completed', [AgencyOrganizationController::class, 'ordersCompleted'])->name('account.agency.product.orders.completed');     
+                Route::patch('product/order/{order}/complete', [AgencyOrganizationController::class, 'orderComplete'])->name('account.agency.product.order.complete');     
+
                 
+
+
+
                 Route::get('reviews-organization', [AgencyOrganizationController::class, 'reviewsOrganization'])->name('account.agency.reviews.organization');     
                 Route::get('reviews-products', [AgencyOrganizationController::class, 'reviewsProduct'])->name('account.agency.reviews.product');     
                 Route::get('review-organization/{id}/delete', [AgencyOrganizationController::class, 'reviewOrganizationDelete'])->name('account.agency.review.organization.delete');     
@@ -425,6 +431,7 @@ Route::prefix($city)->group(function () {
                 
                 Route::get('provider/requests/products/add', [AgencyOrganizationProviderController::class, 'requestsCostProductSuppliers'])->name('account.agency.provider.requests.products.add');     
                 Route::get('provider/requests/products/create', [AgencyOrganizationProviderController::class, 'addRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.create');     
+                Route::get('provider/requests/products/created', [AgencyOrganizationProviderController::class, 'createdRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.created');     
                 Route::get('provider/requests/products/answer', [AgencyOrganizationProviderController::class, 'answerRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.answer');     
                 Route::delete('provider/request/products/{request}/delete', [AgencyOrganizationProviderController::class, 'deletRequest'])->name('account.agency.provider.request.delete');     
 
@@ -449,6 +456,8 @@ Route::prefix($city)->group(function () {
 
                 Route::delete('provider/offer/{offer}/delete', [AgencyOrganizationProviderController::class, 'deleteOffer'])->name('account.agency.provider.offer.delete');     
 
+
+                
                 
             });
 
@@ -524,6 +533,15 @@ Route::prefix($city)->group(function () {
 
         Route::group(['prefix'=>'account'], function() {
             Route::group(['prefix'=>'admin'], function() {
+
+                Route::group(['prefix'=>'organization'], function() {
+                    Route::get('/parser', [AdminOrganizationController::class, 'parser'])->name('account.admin.parser.organization');
+                    Route::post('/import', [AdminOrganizationController::class, 'import'])->name('account.admin.parsing.organization');
+                    Route::post('/import/reviews', [AdminOrganizationController::class, 'importReviews'])->name('account.admin.parsing.organization.reviews');
+                    Route::post('/import/prices', [AdminOrganizationController::class, 'importPrices'])->name('account.admin.parsing.organization.prices');
+                    
+                });
+                
 
 
                 Route::group(['prefix'=>'cemetery'], function() {

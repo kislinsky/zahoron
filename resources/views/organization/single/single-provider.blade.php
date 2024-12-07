@@ -3,7 +3,7 @@
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-            <div class="index_title">Организация: {{$organization->title}} в г. {{$city->title}}</div>    
+            <div class="index_title">Организация: {{$organization->title}} в г. {{$organization->city->title}}</div>    
         </div>
         <img class='rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
         
@@ -62,7 +62,7 @@
 
                     {{view('organization.components.faq',compact('organization'))}}
 
-                    {{view('organization.components.map',compact('organization_all','organization'))}}
+                    {{view('organization.components.map',compact('organization'))}}
 
 
                     <div class="block_content_organization_single info_about_organization">

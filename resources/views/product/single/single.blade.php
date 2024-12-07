@@ -74,7 +74,7 @@
                     </div>
                 </div>
                 <div class="cats_news product_sidebar_block">
-                    <div class="title_news">Выберите размер памятника</div>
+                    <div class="title_news">Выберите размер</div>
                     <select name="size" id="">
                         @if (count($size)>0)
                             @foreach ($size as $one_size)

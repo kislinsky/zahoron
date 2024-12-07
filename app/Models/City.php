@@ -13,19 +13,22 @@ class City extends Model
     protected $guarded =[];
 
     public function cityOrganizations(){
-        return $oganizations=Organization::where('city_id',$this->id)->where('role','organization')->get();
+        return $this->hasMany(Organization::class);
     }
 
     public function cemeteries(){
-        return Cemetery::where('city_id',$this->id)->get();
+        return $this->hasMany(Cemetery::class);
+        // return Cemetery::where('city_id',$this->id)->get();
     }
 
     public function mortuaries(){
-        return Mortuary::where('city_id',$this->id)->get();
+        return $this->hasMany(Mortuary::class);
+        // return Mortuary::where('city_id',$this->id)->get();
     }
 
     public function districts(){
-        return District::where('city_id',$this->id)->get();
+        return $this->hasMany(District::class);
+        // return District::where('city_id',$this->id)->get();
     }
 
     public function route(){

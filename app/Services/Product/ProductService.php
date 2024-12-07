@@ -35,18 +35,18 @@ class ProductService
         }
         $size=explode('|',$product->size);
         $comments=$product->reviews();
-        $images=$product->getImages();
-        $parameters=$product->getParam();
+        $images=$product->getImages;
+        $parameters=$product->getParam;
         $category=$product->category();
         $sales=ActivityCategoryOrganization::where('organization_id',$organization->id)->where('category_children_id',$category->id)->where('sales','!=',null)->get();
         $city=selectCity();  
-        $cemeteries=$city->cemeteries();
-        $mortuaries=$city->mortuaries();
+        $cemeteries=$city->cemeteries;
+        $mortuaries=$city->mortuaries;
         $category_products=Product::orderBy('id','desc')->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('city_id',$product->city_id)->get();
 
         if($category->id==46){
-            $district=$product->district();
-            $memorial_menu=$product->memorialMenu();
+            $district=$product->district;
+            $memorial_menu=$product->memorialMenu;
             return view('product.single.single-menu',compact('product','sales','agent','city','district','images','organization','memorial_menu','category','additionals','comments','category_products'));
         }
 
@@ -93,14 +93,14 @@ class ProductService
         $cats=CategoryProduct::orderBy('id','desc')->where('parent_id',null)->get();
         $products=filterProducts($data);
         $faqs=faqCatsProduct($data);
-        $cemeteries_all=$city->cemeteries();
+        $cemeteries_all=$city->cemeteries;
         $cemetery=cemeteryProduct($data);
         $district=null;
         if(isset($data['district_id'])  && $data['district_id']!='undefined'){
            $district=District::find($data['district_id']);
         }
         $category=ajaxCatContent($data);
-        $districts_all=$city->districts();
+        $districts_all=$city->districts;
         return view('product.marketplace',compact('district','layerings','sort','districts_all','cemeteries_all','reviews','products','city','cats','price_all','materials_filter','faqs','cemetery','category','page'));
 
     }

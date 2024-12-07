@@ -19,7 +19,7 @@
                             <div class="green_btn text_center">Местное время: 23:40</div>
                             {!!btnOPenOrNot($request->organizationProvider()->openOrNot())!!}
                             <div class="text_black"><strong>Фирма:</strong>{{$request->organizationProvider()->title}}</div>
-                            <div class="text_black"><strong>Город:</strong>{{$request->organizationProvider()->city()->title}}</div>
+                            <div class="text_black"><strong>Город:</strong>{{$request->organizationProvider()->city->title}}</div>
                         </div>
 
                         <div class="ul_btn_answer_from_provider">

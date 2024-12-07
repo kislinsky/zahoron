@@ -36,6 +36,10 @@ class AgencyOrganizationProviderController extends Controller
         return AgencyOrganizationProviderService::answerRequestsCostProductSuppliers();
     }
 
+    public static function createdRequestsCostProductSuppliers(){
+        return AgencyOrganizationProviderService::createdRequestsCostProductSuppliers();
+    }
+
     public static function likeOrganizations(){
         return AgencyOrganizationProviderService::likeOrganizations();
     }

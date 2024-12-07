@@ -16,7 +16,7 @@ use App\Models\Product;
                     <div class="swiper-slide">
                         <div class="li_memorial_dinner">
                             <div class="flex_info_memorial_dinner">
-                                <?php $organization=$product_memorial_dinner->organization();?>
+                                <?php $organization=$product_memorial_dinner->organization;?>
 
                                 <img src="{{$organization->urlImg()}}" alt="">
                                 <div class="content_memorial_dinner">

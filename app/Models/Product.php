@@ -18,11 +18,11 @@ class Product extends Model
     protected $guarded =[];
 
     public function getImages(){
-        return ImageProduct::where("product_id", $this->id)->get();
+        return $this->hasMany(ImageProduct::class);
     }
 
     public function getParam(){
-        return ProductParameters::where('product_id',$this->id)->get();
+        return $this->hasMany(ProductParameters::class);
     }
 
     public function category(){
@@ -38,15 +38,15 @@ class Product extends Model
     
 
     public function district(){
-        return District::find($this->district_id);
+        return $this->belongsTo(District::class);
     }
 
     public function memorialMenu(){
-        return  MemorialMenu::where('product_id',$this->id)->get();
+        return $this->hasMany(MemorialMenu::class);
     }
 
     public function organization(){
-        return  Organization::find($this->organization_id);
+        return $this->belongsTo(Organization::class);
     }
 
     public function reviews(){

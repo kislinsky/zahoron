@@ -31,10 +31,10 @@ class CrematoriumService {
         $city=selectCity();
         $organizations_our=$city->cityOrganizations();
         $crematorium_all=Crematorium::all();
-        $services=ServiceCrematorium::where('crematorium_id',$id)->get();
+        $services=$crematorium->services;
         $faqs=FaqCrematorium::orderBy('id','desc')->get();
         $characteristics=json_decode($crematorium->characteristics);
-        $images=ImageCrematorium::where('crematorium_id',$crematorium->id)->get();
+        $images=$crematorium->images;
         $similar_crematoriums=Crematorium::where('city_id',$crematorium->city_id)->where('id','!=',$crematorium->id)->get();
         return view('crematorium.single',compact('organizations_our','images','similar_crematoriums','crematorium','reviews','reviews_main','services','city','faqs','crematorium_all','characteristics'));
     }

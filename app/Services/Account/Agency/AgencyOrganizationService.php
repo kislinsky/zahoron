@@ -21,6 +21,7 @@ use App\Models\ImageAgency;
 use App\Models\ImageOrganization;
 use App\Models\ImageProduct;
 use App\Models\MemorialMenu;
+use App\Models\OrderProduct;
 use App\Models\Organization;
 use App\Models\Product;
 use App\Models\ProductParameters;
@@ -457,6 +458,25 @@ class AgencyOrganizationService {
     public static function updateOrganizationResponseReviewProduct($data){
         $review=CommentProduct::find($data['id_review'])->update(['organization_response'=>$data['organization_response_review']]);
         return 'готово';
+    }
+
+
+    public static function ordersNew(){
+        $organization=user()->organization();
+        $orders=$organization->ordersNew;
+        return view('account.agency.organization.product.orders.new',compact('orders'));
+    }
+
+    public static function ordersCompleted(){
+        $organization=user()->organization();
+        $orders=$organization->ordersCompleted;
+        // $orders=user()->organization()->with('ordersCompleted')->paginate(1);
+        return view('account.agency.organization.product.orders.completed',compact('orders'));
+    }
+
+    public static function orderComplete($order){
+        $order->update(['status'=>2]);
+        return redirect()->back()->with('message_cart','Статус успешно обновлен');
     }
 
 }

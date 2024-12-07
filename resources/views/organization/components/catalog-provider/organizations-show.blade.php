@@ -1,7 +1,7 @@
 
 @if($organizations_category!=null && $organizations_category->count()>0)
     @foreach ($organizations_category as $organization_category)
-        <?php $organization=$organization_category->organization();?>
+        <?php $organization=$organization_category->organization;?>
         <div class="li_organization_provider">
             <div class="li_provider_flex">
                 <div class="content_li_provider">

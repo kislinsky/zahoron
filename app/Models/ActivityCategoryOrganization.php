@@ -13,8 +13,8 @@ class ActivityCategoryOrganization extends Model
     protected $guarded =[];
 
     public function organization(){
-        //return $this->belongsTo(Organization::class);
-        return Organization::find($this->organization_id);
+        return $this->belongsTo(Organization::class);
+        // return Organization::find($this->organization_id);
     }
 
     public function categoryProduct(){

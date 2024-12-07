@@ -16,6 +16,7 @@ use App\Models\CategoryProduct;
 use App\Models\CategoryProductPriceList;
 use App\Models\CategoryProductProvider;
 use App\Models\CommentProduct;
+use App\Models\District;
 use App\Models\FaqCategoryProduct;
 use App\Models\FaqService;
 use App\Models\Mortuary;
@@ -253,7 +254,7 @@ function selectCity(){
 
 function priceProductOrder($cart_item){
     $product=Product::findOrFail($cart_item[0]);
-    $price=$product->price;
+    $price=priceProduct($product);
     if($cart_item[1]!=[]){
         foreach($cart_item[1] as $additional){
             $price+=AdditionProduct::findOrFail($additional)->price;
@@ -545,7 +546,7 @@ function orgniaztionsFilters($data){
     if(isset($data['filter_work']) && $data['filter_work']!=null){
         if($data['filter_work']=='on'){
             $organizations_category_ids=$organizations_category->get()->map(function ($organization) {
-                $organization_choose=$organization->organization();
+                $organization_choose=$organization->organization;
                 if( $organization_choose->openOrNot()=='Открыто'){
                     $organization->open=1;
                     return $organization;
@@ -580,7 +581,7 @@ function organizationsPrices($data){
     if(isset($data['filter_work']) && $data['filter_work']!=null){
         if($data['filter_work']=='on'){
             $organizations_prices_ids=$organizations_prices->get()->map(function ($organization) {
-                $organization_choose=$organization->organization();
+                $organization_choose=$organization->organization;
                 if( $organization_choose->openOrNot()=='Открыто'){
                     $organization->open=1;
                     return $organization;
@@ -669,7 +670,7 @@ function orgniaztionsProviderFilters($data){
     if(isset($data['filter_work']) && $data['filter_work']!=null){
         if($data['filter_work']=='on'){
             $organizations_category_ids=$organizations_category->get()->map(function ($organization) {
-                $organization_choose=$organization->organization();
+                $organization_choose=$organization->organization;
                 if( $organization_choose->openOrNot()=='Открыто'){
                     $organization->open=1;
                     return $organization;
@@ -700,7 +701,7 @@ function organizationsProviderPrices($data){
     if(isset($data['filter_work']) && $data['filter_work']!=null){
         if($data['filter_work']=='on'){
             $organizations_prices_ids=$organizations_prices->get()->map(function ($organization) {
-                $organization_choose=$organization->organization();
+                $organization_choose=$organization->organization;
                 if( $organization_choose->openOrNot()=='Открыто'){
                     $organization->open=1;
                     return $organization;
@@ -800,6 +801,17 @@ function slug($item){
 
     return $generator->generate($item); 
 
+}
+
+
+function slugOrganization($item){
+    $generator = new SlugGenerator(); 
+    $slug=$generator->generate($item); 
+    $orgainizations=Organization::where('slug',$slug)->get();
+    if($orgainizations->count()>0){
+        $slug=$slug.'-'.$orgainizations->count()+1;
+    }
+    return $slug;
 }
 
 function getBurial($id){
@@ -970,6 +982,33 @@ function createCity($city_name,$edge_name){
         ]);
     }
     return $city;
+
+}
+
+
+function createDistrict($district_name,$city_name){
+
+    if($city_name==null || $district_name==null){
+        return null;
+    }
+
+    $city=City::where('title',$city_name)->first();
+    $district=District::where('title',$district_name)->first();
+
+    if($city==null){
+        $city=City::create([
+            'title'=>$city_name,
+            'slug'=>slug($city_name),
+        ]);
+    }
+    if($district==null){
+        $district=District::create([
+            'title'=>$district_name,
+            'city_id'=> $city->id,
+            
+        ]);
+    }
+    return $district->id;
 
 }
 

@@ -26,20 +26,18 @@
 function init() {
     var myMap = new ymaps.Map("map_organization_single", {
             center: [{{  $organization->width}}, {{$organization->longitude}}],
-            zoom: 10
+            zoom: 13
         }, {
             searchControlProvider: 'yandex#search'
         });
 
-@if(count($organization_all)>0)
-    @foreach($organization_all as $organization_one)
+
       myMap.geoObjects
-        .add(new ymaps.Placemark(['{{$organization_one->width}}', '{{$organization_one->longitude}}'], {
-            balloonContent: '{!!$organization_one->title!!}',
-            iconCaption: '{!!$organization_one->title!!}'
+        .add(new ymaps.Placemark(['{{$organization->width}}', '{{$organization->longitude}}'], {
+            balloonContent: '{!!$organization->title!!}',
+            iconCaption: '{!!$organization->title!!}'
         },));
-    @endforeach
-@endif
+
 }
 
 

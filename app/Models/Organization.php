@@ -12,7 +12,7 @@ class Organization extends Model
 
     
     public function city(){
-        return City::find($this->city_id);
+        return $this->belongsTo(City::class);
     }
 
     public function openOrNot(){
@@ -106,4 +106,13 @@ class Organization extends Model
             'rating'=>$rating,
         ]);   
     }
+
+    function ordersNew(){
+        return $this->hasMany(OrderProduct::class)->orderBy('id','desc')->where('status',1);
+    }
+
+    function ordersCompleted(){
+        return $this->hasMany(OrderProduct::class)->orderBy('id','desc')->where('status',2);
+    }
+    
 }

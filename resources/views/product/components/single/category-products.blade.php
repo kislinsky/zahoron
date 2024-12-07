@@ -2,14 +2,14 @@
     <div class="ul_products">
         @foreach($category_products as $category_product)
             <div class="li_product_market">
-                <?php $images=$category_product->getImages();?>
+                <?php $images=$category_product->getImages;?>
                     @if (isset($images))
                         @if (count($images)>0)
                             <img class='img_market_product' src="{{ asset('storage/uploads_product/'.$images[0]->title) }}" alt="">
                         @endif
                     @endif
                     <a href='{{ $category_product->route() }}'class="title_product_market">{{ $category_product->title }}</a>
-                    <?php $organization_product=$category_product->organization();?>
+                    <?php $organization_product=$category_product->organization;?>
                     <div class="flex_raiting">
                         <div class="text_gray_mini">{{$organization_product->title}}</div>
                         <div class="flex_stars">

@@ -19,16 +19,17 @@ class Burial extends Model
     }
 
     function cemetery(){
-        return Cemetery::find($this->cemetery_id);
+        return $this->belongsTo(Cemetery::class);
+        //return Cemetery::find($this->cemetery_id);
     }
 
 
     function imagesMonument(){
-        return ImageMonument::where('burial_id',$this->id)->where('status',1)->get();
+        return $this->hasMany(ImageMonument::class)->where('status',1);
     }
 
     function imagesPersonal(){
-        return ImagePersonal::where('burial_id',$this->id)->where('status',1)->get();
+        return $this->hasMany(ImagePersonal::class)->where('status',1);
     }
 
     function services(){
@@ -36,7 +37,7 @@ class Burial extends Model
     }
 
     function lifeStory(){
-        return LifeStoryBurial::orderBy('id', 'desc')->where('burial_id',$this->id)->get();
+        return $this->hasMany(LifeStoryBurial::class)->orderBy('id', 'desc');
     }
 
     function productsNames(){

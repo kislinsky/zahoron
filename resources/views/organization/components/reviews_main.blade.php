@@ -10,7 +10,7 @@
                 <div class="li_review_organization_single_page">
                     <div class="flex_single_organization">
                         <div class="title_rewies">{{$review->name}}</div>
-                        <div class="text_black">{{$review->created_at}}</div>
+                        <div class="text_black">{{$review->created_at->format('d.m.Y')}}</div>
                     </div>
                     @if($review->rating==5 || ($review->rating!=null && $review->rating!=0))
                         <div class="flex_single_organization">

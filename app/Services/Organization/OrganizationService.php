@@ -33,7 +33,6 @@ class OrganizationService
         $categories_organization=CategoryProduct::whereIn('id',ActivityCategoryOrganization::where('organization_id',$id)->pluck('category_main_id'))->get();
 
         $city=selectCity();
-        $organization_all=Organization::where('width','!=',null)->where('longitude','!=',null)->get();
         $user_organization=User::find($organization->user_id);
         $images=ImageOrganization::orderBy('id','desc')->where('organization_id', $organization->id)->get();
         $ritual_products=Product::orderBy('id','desc')->where('organization_id',$organization->id)->where('type','ritual-product')->get();
@@ -53,7 +52,7 @@ class OrganizationService
         $products_our=Product::orderBy('id','desc')->where('organization_id',$organization->id)->where('type','product')->get()->take(8);
 
         if($organization->role=='organization'){
-            return view('organization.single.single-agency',compact('categories_organization','city','similar_organizations','main_categories','children_categories','organization_all','rating_reviews','organization','images','reviews','products_our','reviews','reviews_main','ritual_products'));
+            return view('organization.single.single-agency',compact('categories_organization','city','similar_organizations','main_categories','children_categories','rating_reviews','organization','images','reviews','products_our','reviews','reviews_main','ritual_products'));
         }
         
         if($organization->role=='organization-provider' && Auth::check() && user()->role=='organization'){
@@ -62,7 +61,7 @@ class OrganizationService
             $price_lists=PriceListOrganization::orderBy('id','desc')->where('organization_id',$id)->where('type','price-list')->get();
             $product_stocks=StockProduct::orderBy('id','desc')->where('organization_id',$id)->get();
 
-            return view('organization.single.single-provider',compact('categories_organization','city','similar_organizations','children_categories','main_categories','price_lists','organization_all','remnants_ritual_goods','rating_reviews','organization','product_stocks','images','reviews','reviews','reviews_main','ritual_products'));
+            return view('organization.single.single-provider',compact('categories_organization','city','similar_organizations','children_categories','main_categories','price_lists','remnants_ritual_goods','rating_reviews','organization','product_stocks','images','reviews','reviews','reviews_main','ritual_products'));
 
         }
         return redirect()->back();

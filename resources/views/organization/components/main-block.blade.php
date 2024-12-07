@@ -8,6 +8,8 @@
             <div class="flex_single_organization">
                 <div class="title_li">{{$organization->title}}</div>
             </div>
+            <div class="text_black name_type_organization">{{$organization->name_type}}</div>
+
             <div class="flex_single_organization">
                 
                 <div class="flex_single_organization_2">
@@ -62,13 +64,5 @@
             </a>
             <div class="text_black">Избранное</div>
         </div>
-        <div class="block_btn_single_organization">
-            <div class="icon_btn_single_organization open_all_reviews_organization">
-                <img  class='blue_icon'src="{{asset('storage/uploads/Vector (4).svg')}}" alt="">
-                <img  class='white_icon'src="{{asset('storage/uploads/Vector (6).svg')}}" alt="">
-            </div>
-            <div class="text_black">Отзывы</div>
-        </div>
     </div>
-
 </div>

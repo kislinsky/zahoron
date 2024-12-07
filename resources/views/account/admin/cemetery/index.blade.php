@@ -18,7 +18,7 @@
             <tr>
                 <th scope="row">{{$cemetery->id}}</th>
                 <td><a href="#" class='text_black'></a>{{$cemetery->title}}</td>
-                <td>{{$cemetery->city()->title}}</td>
+                <td>{{$cemetery->city->title}}</td>
                 <td><a href="#">Изменить</a></td>
                 <td><a href="{{route('account.admin.cemetery.delete',$cemetery->id)}}">Удалить</a></td>
             </tr>

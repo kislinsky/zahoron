@@ -18,7 +18,7 @@ use App\Models\ImageProduct;
                                 <img class='img_market_product' src="{{ asset('storage/uploads_product/'.$images[0]->title) }}" alt="">
                             @endif
                         @endif
-                        <a href='{{route('product.single',$product_our->id)}}'class="text_gray">{{$product_our->title}} </a>
+                        <a href='{{$product_our->route()}}'class="text_gray">{{$product_our->title}} </a>
                         <div class="title_blue">{{ priceProduct($product_our) }} руб.</div>
                     </div>
                 </div>

@@ -13,13 +13,11 @@ class Cemetery extends Model
 
 
     public function city(){
-        $cemetery=City::find($this->city_id);
-        return $cemetery;
+        return $this->belongsTo(City::class);
     }
 
     public function district(){
-        $district=District::find($this->district_id);
-        return $district;
+        return $this->belongsTo(District::class);
     }
 
     public function cemeteryOrganiaztions(){

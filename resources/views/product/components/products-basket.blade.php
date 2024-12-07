@@ -20,7 +20,7 @@ use App\Models\AdditionProduct;
                         <td class='title_cart'>
                             <div class="grid_two_cart">
                                 <div class='image_product_cart'>
-                                    <?php $images=$product->getImages();?>
+                                    <?php $images=$product->getImages;?>
                                     @if (isset($images))
                                         @if (count($images)>0)
                                             <img  src="{{ asset('storage/uploads_product/'.$images[0]->title) }}" alt="">

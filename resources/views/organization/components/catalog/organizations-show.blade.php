@@ -1,7 +1,11 @@
 
 @if($organizations_category!=null && $organizations_category->count()>0)
     @foreach ($organizations_category as $organization_category)
-        <?php $organization=$organization_category->organization();?>
+        <?php $organization=$organization_category->organization;
+        
+if($organization==null){
+    dd($organization_category);
+}        ?>
         <div class="li_organization">
             <div class="li_logo_organization">
                 <img class='img_logo_organization'src="{{$organization->urlImg()}}" alt="">

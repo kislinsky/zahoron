@@ -486,6 +486,8 @@ margin-bottom: 20px;
  
 .order_prduct_img{
     width: 100%;
+    height: 230px;
+    object-fit: cover;
 }
  .li_rewies{
      min-height: 380px;
@@ -1761,10 +1763,20 @@ text-align: left;
 .li_order{
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: 20px;
+    gap: 10px;
+    padding: 15px;
     border: 1px solid #E9E8EA;
 }
+
+
+
+.li_order_btns{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+}
+
 .li_order .btn_border_blue{
     max-width: 150px;
 }
@@ -1876,13 +1888,18 @@ text-align: left;
     justify-content: center;
     text-align: center;
 font-size: 16px;
+transition: all ease-in-out 0.2s;
 font-weight: 600;
 line-height: 24px;
 text-align: left;
-
     background-color: #F6FFEA;
     color: #579C00;
 }
+
+.green_btn:hover{
+    background-color: #eefcdb;
+}
+
 .li_order .light_blue_btn,.li_order .green_btn,.li_order .gray_btn{
     max-width: 160px;
     text-align: center;
@@ -3135,6 +3152,10 @@ text-align: left;
 
 }
 
+.li_order .order_product_price{
+    margin-top: 20px;
+}
+
 .single_service{
     padding: 40px 0px;
 }
@@ -3847,6 +3868,8 @@ line-height: 24px;
 text-align: left;
 
 }
+
+
 .text_blue{
     color: #0080D7;
 }
@@ -6063,8 +6086,7 @@ text-align: left;
 .info_li_search_add_organization{
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 20px;
+    gap: 10px;
 }
 .title_middle_black_bold{
 font-family: Golos Text;
@@ -6082,9 +6104,11 @@ text-decoration-skip-ink: none;
 .title_middle_black_bold:hover{
     color: #0080D7;
 }
-.info_li_search_add_organization .text_black{
-    margin-top: 10px;
+
+.name_type_organization{
+    margin-bottom: 10px;
 }
+
 .info_li_search_add_organization .blue_btn{
     width: 200px;
 }
@@ -6713,4 +6737,39 @@ padding: 5px 20px;
     margin-bottom: 10px;
     padding-bottom: 15px;
     border-bottom: 1px solid #F1F1F1;
+}
+
+.accept_order .green_btn{
+    width: 100%;
+    border: none;
+    max-width: 100%;
+    outline: none;
+    cursor: pointer;
+}
+
+.li_order_additional{
+    margin: 5x 0px;
+    display: flex;
+    margin-bottom: 10px;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.box_width_border_gray{
+    padding: 10px;
+    border: 1px solid #E9E8EA;
+}
+.orders_organization{
+    margin: 30px 0px;
+}
+.title_product_market{
+    margin-top: 10px;
+}
+
+.created_offers{
+    padding: 20px;
+}
+.created_offers .ul_answer_product_request{
+    margin: 0px;
+    margin-bottom: 10px;
 }
