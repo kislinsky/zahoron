@@ -3614,7 +3614,7 @@ text-align: left;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    
+    text-align: center;
     width: 100%;
     justify-content: center;
 }
@@ -5458,8 +5458,8 @@ background: #F7F7F8;
     gap: 40px;
     padding: 20px 0px;
     min-height: 100%;
-    min-width: 255px;
-    max-width: 260px;
+    min-width: 277px;
+    max-width: 280px;
     background: #F7F7F8;
 }
 
@@ -5487,7 +5487,9 @@ a.title_page_sidebar:hover{
     color: #0069B0;
 }
 .icon_page{
+    max-width: 25px;
     width: 25px;
+    max-height: 30px;
 }
 .pages_children_sidebar{
     display: none;
@@ -6621,9 +6623,7 @@ padding: 5px 20px;
 .margin_top_20{
     margin-top: 20px;
 }
-.text_center{
-    text-align: center;
-}
+
 .flex_align_start{
     align-items:normal;
 
@@ -6739,7 +6739,7 @@ padding: 5px 20px;
     border-bottom: 1px solid #F1F1F1;
 }
 
-.accept_order .green_btn{
+.accept_order .green_btn,.accept_order .blue_btn{
     width: 100%;
     border: none;
     max-width: 100%;
@@ -6772,4 +6772,62 @@ padding: 5px 20px;
 .created_offers .ul_answer_product_request{
     margin: 0px;
     margin-bottom: 10px;
+}
+
+
+.li_aplication{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    border: 1px solid #F1F1F1;
+
+}
+
+.border__bottom_aplication{
+    padding-bottom: 10px;
+    border-bottom: 1px solid #F1F1F1;
+}
+
+.aplication_flex{
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+}
+
+.title_aplication{
+    font-family: 'EB Garamond';
+font-size: 22px;
+font-weight: 700;
+line-height: 26.4px;
+text-align: left;
+text-decoration-line: underline;
+text-decoration-style: solid;
+text-underline-position: from-font;
+text-decoration-skip-ink: none;
+
+}
+
+
+.aplication_flex .green_btn{
+    max-width: 140px;
+    padding: 8px 16px 8px 16px;
+    gap: 10px;
+    opacity: 0px;
+    font-family: Golos Text;
+font-size: 12px;
+font-weight: 600;
+line-height: 18px;
+text-align: center;
+text-underline-position: from-font;
+text-decoration-skip-ink: none;
+
+}
+.service_filter{
+    max-width: 350px;
+}
+
+.li_aplication .blue_btn{
+    margin-top: auto;
 }

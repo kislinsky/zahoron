@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 
 class CityService {
+    
     public static function selectCity($id){
         $city=City::findOrFail($id);
         $new_url = insert_city_into_url(url()->previous(), $city->slug);

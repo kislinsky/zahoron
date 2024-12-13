@@ -804,3 +804,67 @@ $(".open_working_times").click(function() {
   $('.ul_working_days').slideToggle(200)
   $(this).toggleClass('rotate_arrow_open')
 });
+
+
+$("button[type='submit']").click(function() {
+  $( ".input_time_now" ).each(function() {
+    $(this).val(new Date())
+  })
+})
+
+// $( ".time_end_aplication" ).each(function() {
+//   // Время, до которого нужно отсчитывать (в формате "HH:MM")
+//   const targetTime = $(this).html();
+
+//   // Функция для запуска таймера
+//   function startTimer(targetTime) {
+//       // Получаем текущее время
+//       const now = new Date();
+
+//       // Разбираем целевое время
+//       const [hours, minutes] = targetTime.split(':').map(Number);
+
+//       // Устанавливаем целевое время
+//       const targetDate = new Date();
+//       targetDate.setHours(hours, minutes, 0, 0);
+
+//       // Если целевое время уже прошло, добавляем один день
+//       if (targetDate <= now) {
+//           targetDate.setDate(targetDate.getDate() + 1);
+//       }
+
+//       // Функция для обновления таймера
+//       function updateTimer() {
+//           const now = new Date();
+//           const timeDifference = targetDate - now;
+
+//           // Если время истекло
+//           if (timeDifference <= 0) {
+//               clearInterval(interval);
+//               $(this).html('Время истекло!');
+//               return;
+//           }
+
+//           // Вычисляем часы, минуты и секунды
+//           const hoursLeft = Math.floor(timeDifference / (1000 * 60 * 60));
+//           const minutesLeft = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+//           const secondsLeft = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+//           // Форматируем время в "HH:MM:SS"
+//           const formattedTime = `${String(hoursLeft).padStart(2, '0')}:${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
+
+//           // Обновляем текст таймера
+//           console.log(formattedTime)
+//           $(this).html(formattedTime);
+//       }
+
+//       // Обновляем таймер каждую секунду
+//       const interval = setInterval(updateTimer, 1000);
+
+//       // Запускаем таймер сразу
+//       updateTimer();
+//   }
+
+//   // Запускаем таймер
+//   startTimer(targetTime);
+// });

@@ -3,12 +3,10 @@
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\City;
-use App\Models\Mortuary;
-use App\Models\Cemetery;
 
 $cities_funeral_services=City::orderBy('title','asc')->get();
-$mortuaries=Mortuary::orderBy('title','asc')->where('city_id',selectCity()->id)->get();
-$cemeteries_beatification=Cemetery::orderBy('title','asc')->where('city_id',selectCity()->id)->get();
+$mortuaries=selectCity()->mortuaries;
+$cemeteries_beatification=selectCity()->cemeteries;;
 
 $user=null;
 if(Auth::check()){
@@ -32,6 +30,7 @@ if(Auth::check()){
                 </div>
                 <form action="{{ route('funeral-service.send') }}" method="get" class='form_popup'>
                     @csrf
+                    <input type="hidden" name="time_now" class='input_time_now'>
 
                     <div class="flex_input_form_contacts flex_beautification_form">
                         <div class="block_input" >

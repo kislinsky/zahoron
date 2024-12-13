@@ -3,10 +3,9 @@
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\City;
-use App\Models\Mortuary;
 
 $cities_dead=City::orderBy('title','asc')->get();
-$mortuaries=Mortuary::orderBy('title','asc')->where('city_id',selectCity()->id)->get();
+$mortuaries=selectCity()->mortuaries;
 $user=null;
 if(Auth::check()){
     $user=Auth::user();
@@ -28,6 +27,7 @@ if(Auth::check()){
                 </div>
                 <form action="{{ route('dead.send') }}" method="get" class='form_popup'>
                     @csrf
+                    <input type="hidden" name="time_now" class='input_time_now'>
 
                     <div class="flex_input_form_contacts flex_beautification_form">
                         <div class="block_input" >

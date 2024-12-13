@@ -41,7 +41,6 @@
 
                         </div>
                         <a href='tel:{{$order->user->phone}}' class="blue_btn">Позвонить</a>
-                        
                     </div>
                     
                    

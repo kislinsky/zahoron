@@ -108,11 +108,15 @@ class Organization extends Model
     }
 
     function ordersNew(){
-        return $this->hasMany(OrderProduct::class)->orderBy('id','desc')->where('status',1);
+        return $this->hasMany(OrderProduct::class)->orderBy('id','desc')->where('status',0);
     }
 
     function ordersCompleted(){
         return $this->hasMany(OrderProduct::class)->orderBy('id','desc')->where('status',2);
+    }
+
+    function ordersInWork(){
+        return $this->hasMany(OrderProduct::class)->orderBy('id','desc')->where('status',1);
     }
     
 }

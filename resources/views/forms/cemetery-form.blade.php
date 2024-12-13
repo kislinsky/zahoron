@@ -1,7 +1,6 @@
 <?php 
 
-use App\Models\Cemetery;
-$cemeteries=Cemetery::orderBy('title','asc')->where('city_id',selectCity()->id)->get();
+$cemeteries=selectCity()->cemeteries;
 ?>
 
 <div class="modal fade" id="cemetery_form" tabindex="-1" aria-labelledby="cemetery_form" aria-hidden="true">

@@ -89,6 +89,15 @@ class AgencyOrganizationController extends Controller
     }
 
 
+    public static function buyAplicationsMemorial(Request $request){  
+
+        $data=request()->validate([
+            'aplications_memorial'=>['required','integer'],
+        ]);
+        return AgencyOrganizationService::buyAplicationsMemorial($data['aplications_memorial']);
+    }
+
+
     public static function addProduct(){
         return AgencyOrganizationService::addProduct();
     }
@@ -231,12 +240,20 @@ class AgencyOrganizationController extends Controller
         return AgencyOrganizationService::ordersNew();
     }
 
+    public static function ordersInWork(){
+        return AgencyOrganizationService::ordersInWork();
+    }
+
     public static function ordersCompleted(){
         return AgencyOrganizationService::ordersCompleted();
     }
 
     public static function orderComplete(OrderProduct $order){
         return AgencyOrganizationService::orderComplete($order);
+    }
+
+    public static function orderAccept(OrderProduct $order){
+        return AgencyOrganizationService::orderAccept($order);
     }
     
 }

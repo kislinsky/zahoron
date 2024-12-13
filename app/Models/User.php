@@ -86,15 +86,14 @@ class User extends Authenticatable
             return $organization;
         }
         return null;
+
+        //return $this->belongsTo(Organization::class);
     }
 
     public function organizations(){
         return $this->hasMany(Organization::class);
 
     }
-    public function organizationInAccount(){
-        $organization=Organization::find($this->organization_id);
-        return $organization;
-    }
+
 
 }

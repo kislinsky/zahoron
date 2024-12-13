@@ -2,8 +2,7 @@
 
 namespace App\Services\FuneralService;
 
-
-
+use App\Jobs\CloseApplicationJob;
 use App\Models\City;
 use App\Models\Mortuary;
 use App\Models\Cemetery;
@@ -20,6 +19,10 @@ class FuneralServiceService {
         if(Auth::check()){
             $user=Auth::user();
         }
+
+        $time=60*30;
+        $time_now=convertToCarbon($data['time_now']);
+
         if($data['funeral_service']==1){
             $funeral_service=FuneralService::create([
                 'service'=>$data['funeral_service'],
@@ -29,6 +32,7 @@ class FuneralServiceService {
                 'status_death'=>$data['status_death_people_funeral_service'],
                 'civilian_status_death'=>$data['civilian_status_people_funeral_service'],
                 'user_id'=>$user->id,
+                'call_time'=>$time_now->format('H:i'),
             ]); 
             
         }
@@ -40,6 +44,7 @@ class FuneralServiceService {
                 'status_death'=>$data['status_death_people_funeral_service'],
                 'civilian_status_death'=>$data['civilian_status_people_funeral_service'],
                 'user_id'=>$user->id,
+                'call_time'=>$time_now->format('H:i'),
             ]); 
             
         }
@@ -52,8 +57,13 @@ class FuneralServiceService {
                 'status_death'=>$data['status_death_people_funeral_service'],
                 'civilian_status_death'=>$data['civilian_status_people_funeral_service'],
                 'user_id'=>$user->id,
+                'call_time'=>$time_now->format('H:i'),
+
             ]);
         }
+
+
+
         if(!isset($data['none_mortuary'])){
             $funeral_service->update([
                 'mortuary_id'=>$data['mortuary_funeral_service'],
@@ -72,12 +82,19 @@ class FuneralServiceService {
         if(isset($data['call_time'])){
             if($data['call_time']!=null){
                 $funeral_service->update(['call_time'=>$data['call_time']]);
+                $time=secondsUntilAM($data['call_time'],$time_now);
+
             }
         }
         if(isset($data['call_tomorrow'])){
             $d = strtotime("+1 day");
             $funeral_service->update(['call_time'=>date("d.m.Y", $d)]);
+            $time=secondsUntilEndOfTomorrow($time_now);
+
         }
+
+        CloseApplicationJob::dispatch($funeral_service)->delay($time);
+
         return redirect()->back()->with("message_words_memory", 'Заявка отправлена');
            
     }

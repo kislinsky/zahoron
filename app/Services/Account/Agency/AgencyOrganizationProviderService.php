@@ -5,12 +5,10 @@ namespace App\Services\Account\Agency;
 use App\Models\CategoryProductProvider;
 use App\Models\LikeOrganization;
 use App\Models\Organization;
-use App\Models\Product;
 use App\Models\ProductRequestToSupplier;
 use App\Models\PromotionsВiscountProvider;
 use App\Models\RequestsCostProductsSupplier;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+
 
 class AgencyOrganizationProviderService {
 

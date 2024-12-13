@@ -4,13 +4,11 @@
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\City;
-use App\Models\Cemetery;
-use App\Models\ProductPriceList;
-use App\Models\CategoryProductPriceList;
+
 
 $cities_memorial=City::orderBy('title','asc')->get();
-$cemeteries_beatification=Cemetery::orderBy('title','asc')->where('city_id',selectCity()->id)->get();
-$categories_product_price_list=CategoryProductPriceList::where('parent_id',null)->get();
+$cemeteries_beatification=selectCity()->cemeteries;
+$categories_product_price_list=childrenCategoryPriceList();
 $user=null;
 if(Auth::check()){
     $user=Auth::user();
@@ -36,6 +34,8 @@ if(Auth::check()){
                     @if(isset($product))
                         <input type="hidden" name="burial_id_beautification" value={{$product->id}}>
                     @endif
+                    <input type="hidden" name="time_now" class='input_time_now'>
+
                     <div class="flex_input_form_contacts flex_beautification_form">
                         <div class="block_input" >
                             <label for="">Выберите город</label>

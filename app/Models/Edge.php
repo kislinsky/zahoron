@@ -10,4 +10,8 @@ class Edge extends Model
     use HasFactory;
     protected $guarded =[];
 
+    function cities(){
+        return $this->hasMany(City::class);
+    }
+
 }

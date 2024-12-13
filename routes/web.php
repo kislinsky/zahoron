@@ -13,9 +13,12 @@ use App\Http\Controllers\Account\DecoderController;
 use App\Http\Controllers\Account\AccountController;
 use App\Http\Controllers\Account\Admin\AdminOrganizationController;
 use App\Http\Controllers\Account\Admin\AdminRitualObjectsController;
-use App\Http\Controllers\Account\AdminController;
 use App\Http\Controllers\Account\Agency\AgencyOrganizationController;
 use App\Http\Controllers\Account\Agency\AgencyOrganizationProviderController;
+use App\Http\Controllers\Account\Agency\Aplication\AgencyOrganizationAplicationBeautificationController;
+use App\Http\Controllers\Account\Agency\Aplication\AgencyOrganizationAplicationDeadController;
+use App\Http\Controllers\Account\Agency\Aplication\AgencyOrganizationAplicationFuneralServiceController;
+use App\Http\Controllers\Account\Agency\Aplication\AgencyOrganizationAplicationMemorialController;
 use App\Http\Controllers\Account\HomeController;
 
 
@@ -44,9 +47,7 @@ use App\Http\Controllers\LifeStoryBurialController;
 use App\Http\Controllers\MemorialController;
 use App\Http\Controllers\MortuaryController;
 use App\Http\Controllers\ProductPriceListController;
-use App\Models\CategoryProduct;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -63,22 +64,26 @@ use Illuminate\Support\Facades\Artisan;
 #убирать die когда нужно использовать artisan 
 $city = @explode("/", explode("//", request()->fullUrl())[1])[1];
 
+
 if (!request()->is('storage/*') && !request()->is('css/*') && !request()->is('js/*')) {
     
 if(city_by_slug($city) == null){
     setcookie('city', '', -1, '/');
     setcookie("city", first_city_id(), time()+20*24*60*60,'/');
     header("location: /".first_city_slug());
+    die;
 } else{
     $c_b_s__ = city_by_slug($city);
     if(!isset($_COOKIE['city'])){
         setcookie("city", first_city_id(), time()+20*24*60*60,'/');
         header("Refresh:0");
+        die;
     }
     if($_COOKIE['city'] != $c_b_s__->id){
         setcookie('city', '', -1, '/');
         setcookie("city", $c_b_s__->id, time()+20*24*60*60,'/');
         header("Refresh:0");
+        die;
     }
 }
 }
@@ -305,19 +310,7 @@ Route::prefix($city)->group(function () {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 
     Route::group(['middleware'=>'auth'],function(){
@@ -389,6 +382,54 @@ Route::prefix($city)->group(function () {
             
             Route::group(['prefix'=>'agency'], function() {
 
+                Route::group(['prefix'=>'aplication'], function() {
+
+                    Route::group(['prefix'=>'dead'], function() {
+                        Route::get('new', [AgencyOrganizationAplicationDeadController::class, 'new'])->name('account.agency.organization.aplication.dead.new');
+                        Route::get('in-work', [AgencyOrganizationAplicationDeadController::class, 'inWork'])->name('account.agency.organization.aplication.dead.in-work');
+                        Route::get('completed', [AgencyOrganizationAplicationDeadController::class, 'completed'])->name('account.agency.organization.aplication.dead.completed');
+                        // Route::get('not-completed', [AgencyOrganizationAplicationDeadController::class, 'Notcompleted'])->name('account.agency.organization.aplication.dead.not-completed');
+                        Route::patch('{aplication}/complete', [AgencyOrganizationAplicationDeadController::class, 'complete'])->name('account.agency.organization.aplication.dead.complete');     
+                        Route::patch('{aplication}/accept', [AgencyOrganizationAplicationDeadController::class, 'accept'])->name('account.agency.organization.aplication.dead.accept');     
+
+                    });
+
+                    Route::group(['prefix'=>'memorial'], function() {
+                        Route::get('new', [AgencyOrganizationAplicationMemorialController::class, 'new'])->name('account.agency.organization.aplication.memorial.new');
+                        Route::get('in-work', [AgencyOrganizationAplicationMemorialController::class, 'inWork'])->name('account.agency.organization.aplication.memorial.in-work');
+                        Route::get('completed', [AgencyOrganizationAplicationMemorialController::class, 'completed'])->name('account.agency.organization.aplication.memorial.completed');
+                        Route::get('not-completed', [AgencyOrganizationAplicationMemorialController::class, 'Notcompleted'])->name('account.agency.organization.aplication.memorial.not-completed');
+                        Route::patch('{aplication}/complete', [AgencyOrganizationAplicationMemorialController::class, 'complete'])->name('account.agency.organization.aplication.memorial.complete');     
+                        Route::patch('{aplication}/accept', [AgencyOrganizationAplicationMemorialController::class, 'accept'])->name('account.agency.organization.aplication.memorial.accept');     
+
+                    });
+
+
+                    Route::group(['prefix'=>'beautification'], function() {
+                        Route::get('new', [AgencyOrganizationAplicationBeautificationController::class, 'new'])->name('account.agency.organization.aplication.beautification.new');
+                        Route::get('in-work', [AgencyOrganizationAplicationBeautificationController::class, 'inWork'])->name('account.agency.organization.aplication.beautification.in-work');
+                        Route::get('completed', [AgencyOrganizationAplicationBeautificationController::class, 'completed'])->name('account.agency.organization.aplication.beautification.completed');
+                        Route::get('not-completed', [AgencyOrganizationAplicationBeautificationController::class, 'Notcompleted'])->name('account.agency.organization.aplication.beautification.not-completed');
+                        Route::patch('{aplication}/accept', [AgencyOrganizationAplicationBeautificationController::class, 'accept'])->name('account.agency.organization.aplication.beautification.accept');     
+                        Route::patch('{aplication}/complete', [AgencyOrganizationAplicationBeautificationController::class, 'complete'])->name('account.agency.organization.aplication.beautification.complete');     
+
+                    });
+
+                    Route::group(['prefix'=>'funeral-service'], function() {
+                        Route::get('new', [AgencyOrganizationAplicationFuneralServiceController::class, 'new'])->name('account.agency.organization.aplication.funeral-service.new');
+                        Route::get('in-work', [AgencyOrganizationAplicationFuneralServiceController::class, 'inWork'])->name('account.agency.organization.aplication.funeral-service.in-work');
+                        Route::get('completed', [AgencyOrganizationAplicationFuneralServiceController::class, 'completed'])->name('account.agency.organization.aplication.funeral-service.completed');
+                        Route::get('not-completed', [AgencyOrganizationAplicationFuneralServiceController::class, 'Notcompleted'])->name('account.agency.organization.aplication.funeral-service.not-completed');
+                        Route::get('filter-service', [AgencyOrganizationAplicationFuneralServiceController::class, 'filterService'])->name('account.agency.organization.aplication.funeral-service.filter');
+                        Route::patch('{aplication}/accept', [AgencyOrganizationAplicationFuneralServiceController::class, 'accept'])->name('account.agency.organization.aplication.funeral-service.accept');     
+                        Route::patch('{aplication}/complete', [AgencyOrganizationAplicationFuneralServiceController::class, 'complete'])->name('account.agency.organization.aplication.funeral-service.complete');     
+                    });
+                    
+                });
+
+
+                
+
                 Route::get('settings', [AgencyController::class, 'settings'])->name('account.agency.settings');
                 Route::get('organization/settings/{id}', [AgencyOrganizationController::class, 'settings'])->name('account.agency.organization.settings');
                 Route::get('choose-organization/{id}', [AgencyController::class, 'chooseOrganization'])->name('account.agency.choose.organization');
@@ -402,6 +443,10 @@ Route::prefix($city)->group(function () {
                 Route::get('buy-applications-calls-organization', [AgencyOrganizationController::class, 'buyAplicationsCallsOrganization'])->name('account.agency.applications.calls-organization.buy');     
                 Route::get('buy-applications-product-marketplace', [AgencyOrganizationController::class, 'buyAplicationsProductRequestsFromMarketplace'])->name('account.agency.applications.product-marketplace.buy');     
                 Route::get('buy-applications-improvemen-graves', [AgencyOrganizationController::class, 'buyAplicationsImprovemenGraves'])->name('account.agency.applications.improvemen-graves.buy');     
+                Route::get('buy-applications-memorial', [AgencyOrganizationController::class, 'buyAplicationsMemorial'])->name('account.agency.applications.memorial.buy');     
+                
+
+
 
                 Route::get('products', [AgencyOrganizationController::class, 'allProducts'])->name('account.agency.products');     
                 Route::get('add-product', [AgencyOrganizationController::class, 'addProduct'])->name('account.agency.add.product');     
@@ -410,9 +455,11 @@ Route::prefix($city)->group(function () {
                 Route::get('search-product', [AgencyOrganizationController::class, 'searchProduct'])->name('account.agency.search.product');     
                 Route::get('filters-product', [AgencyOrganizationController::class, 'filtersProduct'])->name('account.agency.filters.product');     
                 Route::post('create-product', [AgencyOrganizationController::class, 'createProduct'])->name('account.agency.create.product');     
-                Route::get('product/orders/new', [AgencyOrganizationController::class, 'ordersNew'])->name('account.agency.product.orders.new');     
+                Route::get('product/orders/new', [AgencyOrganizationController::class, 'ordersNew'])->name('account.agency.product.orders.new');  
+                Route::get('product/orders/in-work', [AgencyOrganizationController::class, 'ordersInWork'])->name('account.agency.product.orders.in-work');  
                 Route::get('product/orders/completed', [AgencyOrganizationController::class, 'ordersCompleted'])->name('account.agency.product.orders.completed');     
                 Route::patch('product/order/{order}/complete', [AgencyOrganizationController::class, 'orderComplete'])->name('account.agency.product.order.complete');     
+                Route::patch('product/order/{order}/accept', [AgencyOrganizationController::class, 'orderAccept'])->name('account.agency.product.order.accept');     
 
                 
 

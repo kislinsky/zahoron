@@ -19,7 +19,7 @@ class MemorialController extends Controller
          'count_time'=>['required','integer'],
          'call_time'=>['nullable'],
          'call_tomorrow'=>['nullable'],
-
+         'time_now'=>['required',]
         ]);
         return MemorialService::memorialAdd($data);
     }

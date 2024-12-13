@@ -124,13 +124,13 @@ class AgencyController extends Controller
     //     return AgencyService::agentDeleteCemetery($id);
     // }
 
-    public static function addCemetery(Request $request){
-        $data=request()->validate([
-            'id_location'=>["nullable",'integer'],
-            'name_location'=>["required",'string'],
-        ]);
-        return AgencyService::addCemetery($data);
-    }
+    // public static function addCemetery(Request $request){
+    //     $data=request()->validate([
+    //         'id_location'=>["nullable",'integer'],
+    //         'name_location'=>["required",'string'],
+    //     ]);
+    //     return AgencyService::addCemetery($data);
+    // }
 
     // public static function beautificationsIndex(){
     //     return AgencyService::beautificationsIndex();

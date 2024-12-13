@@ -40,11 +40,10 @@
                             <div class="title_label">Комментарий заказчика: <span class="text_li">{{ $order->customer_comment }}</span></div>
 
                         </div>
-                        <a href='tel:{{$order->user->phone}}' class="blue_btn">Позвонить</a>
-                        <form class='accept_order' action="{{route('account.agency.product.order.complete',$order->id)}}" method="post">
+                        <form class='accept_order' action="{{route('account.agency.product.order.accept',$order->id)}}" method="post">
                             @csrf
                             @method('PATCH')
-                            <button class='green_btn'>Завершить</button>
+                            <button class='blue_btn'>Принять</button>
                         </form>
                     </div>
                     

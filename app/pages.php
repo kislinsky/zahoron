@@ -60,16 +60,61 @@ function organizationPages(){
         ['Организации','storage/uploads/Icon_sidebar_2.svg',
             $ul_organizations
         ],
+
+        ['Заявки по умершему','storage/uploads/Vector (17).svg',
+            [
+                ['Новые','account.agency.organization.aplication.dead.new'],  
+                ['В работе','account.agency.organization.aplication.dead.in-work'],                
+                ['Завершенные','account.agency.organization.aplication.dead.completed'],                
+                // ['Незавершенные','account.agency.organization.aplication.dead.not-completed'],                
+            ]
+        ],
+
+        ['Заявки по поминкам','storage/uploads/Vector (17).svg',
+            [
+                ['Новые','account.agency.organization.aplication.memorial.new'], 
+                ['В работе','account.agency.organization.aplication.memorial.in-work'],
+                ['Завершенные','account.agency.organization.aplication.memorial.completed'],                
+                ['Незавершенные','account.agency.organization.aplication.memorial.not-completed'],                
+            ]
+        ],
+
+
+        ['Заявки по облогораживанию','storage/uploads/Vector (17).svg',
+            [
+                ['Новые','account.agency.organization.aplication.beautification.new'],                
+                ['В работе','account.agency.organization.aplication.beautification.in-work'],  
+                ['Завершенные','account.agency.organization.aplication.beautification.completed'],         
+                ['Незавершенные','account.agency.organization.aplication.beautification.not-completed'],                
+       
+
+                              
+            ]
+        ],
+
+        ['Заявки по ритуальным услугам','storage/uploads/Vector (17).svg',
+            [
+                ['Новые','account.agency.organization.aplication.funeral-service.new'],    
+                ['В работе','account.agency.organization.aplication.funeral-service.in-work'], 
+                ['Завершенные','account.agency.organization.aplication.funeral-service.completed'],                
+                ['Незавершенные','account.agency.organization.aplication.funeral-service.not-completed'],                
+            ]
+        ],
+
+        
         ['Настройки','storage/uploads/icon_sidebar.svg',
            [
             ['Настройки','account.agency.settings']
            ]
         ],
-        ['Оплаты','storage/uploads/Icon_sidebar_2.svg',
+
+
+        ['Оплаты','storage/uploads/Icon_pay_aplication.svg',
             [
                 ['Заявки','account.agency.applications']
             ]
-            ],
+        ],
+
 
         ['Товар','storage/uploads/Icon_sidebar_2.svg',
             [
@@ -77,6 +122,7 @@ function organizationPages(){
                 ['Все товары','account.agency.products'],
             ]
         ],
+
 
         ['Отзывы','storage/uploads/Icon_sidebar_2.svg',
             [
@@ -88,7 +134,8 @@ function organizationPages(){
 
         ['Заказы с маркетплэйса','storage/uploads/Icon_sidebar_2.svg',
             [
-                ['Новые','account.agency.product.orders.new'],                
+                ['Новые','account.agency.product.orders.new'],            
+                ['В работе','account.agency.product.orders.in-work'],                
                 ['Завершенные','account.agency.product.orders.completed'],                
             ]
         ],
@@ -108,6 +155,8 @@ function organizationPages(){
                 ['Ответы на запросы','account.agency.provider.offer.answers'],  
             ]
         ],
+        
+
         
        
     ];

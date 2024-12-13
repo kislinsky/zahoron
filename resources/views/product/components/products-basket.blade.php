@@ -66,8 +66,8 @@ use App\Models\AdditionProduct;
                     </tr>
                     <?php $total+=(priceProduct($product)+$total_additionals)*$cart_item[2];?>
             @endforeach
-            
             <tfoot>
+                
                 <tr>
                     <td><div class="title_cart">Итого:</div></td>
                     <td><div class="title_middle total_price_cart"><span>{{ $total }}</span> ₽</div></td>

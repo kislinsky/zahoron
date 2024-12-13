@@ -26,6 +26,7 @@ use App\Models\Service;
 use App\Models\ServiceReviews;
 use App\Models\User;
 use Ausi\SlugGenerator\SlugGenerator;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Auth;
@@ -1194,3 +1195,53 @@ function btnOPenOrNot($item){
     }
     return "<div class='red_btn'>Закрыто</div>";
 }
+
+function childrenCategoryPriceList(){
+    return CategoryProductPriceList::where('parent_id','!=',null)->get();
+}
+
+
+
+
+function secondsUntilAM($time,$time_now)
+{
+    $time=explode(':',$time);
+    // Текущее время
+    $now = $time_now;
+    // Установим дату и время следующей точки в 6 утра
+    $am = $now->copy()->setTime($time[0], $time[1], 0);
+
+
+    // Если текущее время уже после 6 утра, то берем 6 утра завтрашнего дня
+    if ($now->greaterThanOrEqualTo($am)) {
+        $am = $am->addDay();
+    }
+
+    // Разница в секундах
+    return $am->diffInSeconds($now);
+}
+
+function secondsUntilEndOfTomorrow($time_now)
+{
+    // Текущее время
+    $now = $time_now;
+    // Завтрашний день в 23:59:59
+    $endOfTomorrow = $now->copy()->addDay()->endOfDay();
+
+    // Разница в секундах
+    return $endOfTomorrow->diffInSeconds($now);
+}
+
+
+function convertToCarbon($dateString)
+{
+    // Убираем лишние части строки, оставляя только дату и время
+    $cleanedString = preg_replace('/GMT\+[0-9]{4} \(.*\)/', '', $dateString);
+
+    // Преобразуем строку в объект Carbon
+    $carbonDate = Carbon::parse($cleanedString);
+
+    return $carbonDate;
+}
+
+
