@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Organization;
-
 function adminPages(){
     $pages=[
         ['Кладбища','storage/uploads/mdi_grave-stone (1).svg',
@@ -49,8 +47,49 @@ function adminPages(){
 
 
 
+function userPages(){
+    $pages=[
+        
+        ['Настройки','storage/uploads/icon_sidebar.svg',
+           [
+            ['Настройки','account.user.settings']
+           ]
+        ],
+        ['Геолокации','storage/uploads/icon_sidebar.svg',
+           [
+            ['Список','account.user.burial'],
+            ['Избранное','account.user.burial.favorite'],
+           ]
+        ],
+
+        ['Заказаы с маркетплэйса','storage/uploads/icon_sidebar.svg',
+            [
+                ['Заказы','account.user.products'],
+            ]
+        ],
+
+        ['Услуги','storage/uploads/icon_sidebar.svg',
+            [
+                ['Список','account.user.services.index'],
+            ]
+        ],
+
+        ['Поиск могил','storage/uploads/icon_sidebar.svg',
+            [
+                ['Список','account.user.burial-request.index'],
+            ]
+        ],
+        
+        
+    ];
+    return $pages;
+
+}
+
+
+
 function organizationPages(){
-    $organizations=Organization::where('user_id',user()->id)->get();
+    $organizations=user()->organizations;
     $ul_organizations=[];
     foreach($organizations as $organization){
         $ul_organizations[]=[$organization->title,'account.agency.organization.settings',$organization->id];

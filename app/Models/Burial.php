@@ -9,6 +9,8 @@ use App\Models\WordsMemory;
 use App\Models\ImageMonument;
 use App\Models\ImagePersonal;
 use App\Models\LifeStoryBurial;
+use Illuminate\Support\Facades\Auth;
+
 class Burial extends Model
 {
     use HasFactory;
@@ -50,6 +52,17 @@ class Burial extends Model
 
     function memoryWords(){
         return WordsMemory::orderBy('id', 'desc')->where('product_id',$this->id)->where('status',1)->get();
+    }
+
+    function userHave(){
+        if(Auth::check()){
+            $order=OrderBurial::where('user_id',user()->id)->where('burial_id',$this->id)->count();
+            if($order>0){
+                return true;
+            }
+            return null;
+        }
+        return null;
     }
 
 }

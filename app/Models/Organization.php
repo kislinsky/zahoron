@@ -30,9 +30,10 @@ class Organization extends Model
     }
 
     public function countReviews(){
-        return ReviewsOrganization::where('organization_id',$this->id)->where('status',1)->count();
+        return $this->hasMany(ReviewsOrganization::class)->where('status',1)->count();
     }
 
+    
     public function route(){
         return route('organization.single',$this->slug);
     }

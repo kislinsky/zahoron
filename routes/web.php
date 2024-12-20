@@ -10,7 +10,7 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\Account\AgentController;
 use App\Http\Controllers\Account\Agency\AgencyController;
 use App\Http\Controllers\Account\DecoderController;
-use App\Http\Controllers\Account\AccountController;
+use App\Http\Controllers\Account\User\AccountController;
 use App\Http\Controllers\Account\Admin\AdminOrganizationController;
 use App\Http\Controllers\Account\Admin\AdminRitualObjectsController;
 use App\Http\Controllers\Account\Agency\AgencyOrganizationController;
@@ -315,11 +315,44 @@ Route::prefix($city)->group(function () {
 
     Route::group(['middleware'=>'auth'],function(){
 
+
+        Route::group(['middleware'=>'auth'],function(){
+
+            Route::group(['prefix'=>'account'], function() {
+            
+
+                Route::group(['prefix'=>'user'], function() {
+
+                    Route::group(['prefix'=>'products'], function() {
+                        Route::get('/', [AccountController::class, 'products'])->name('account.user.products');
+                        Route::delete('/{order}/delete', [AccountController::class, 'productDelete'])->name('account.user.product.delete');        
+                    }); 
+
+
+                    Route::get('/settings', [AccountController::class, 'userSettings'])->name('account.user.settings');
+                    Route::post('/update', [AccountController::class, 'userSettingsUpdate'])->name('account.user.settings.update');
+            
+            
+                    Route::get('/services', [AccountController::class, 'services'])->name('account.user.services.index');       
+
+                    Route::get('/burials', [AccountController::class, 'burials'])->name('account.user.burial');            
+                    Route::get('/burial-requests', [AccountController::class, 'burialRequestIndex'])->name('account.user.burial-request.index');
+                    Route::delete('/burial-request/{burial_request}/delete', [AccountController::class, 'burialRequestDelete'])->name('account.user.burial-request.delete');
+
+
+                    Route::get('/burial/{id}/delete', [AccountController::class, 'burialDelete'])->name('account.burial.delete');
+                    Route::get('/burials/favorite', [AccountController::class, 'favoriteProduct'])->name('account.user.burial.favorite');
+                    Route::get('/favorite', [AccountController::class, 'favoriteProduct'])->name('account.user.burial.favorite');
+
+                });
+            
+            });
+        });
+
+
         Route::get('/organization/like/add/{id}', [OrganizationController::class, 'addLikeOrganization'])->name('organization.like.add');
         
-        Route::get('/account/products', [AccountController::class, 'products'])->name('account.user.products');
-        Route::get('/account/products/{status}/status', [AccountController::class, 'productFilter'])->name('account.user.products.status');
-        Route::get('/account/products/{id}/delete', [AccountController::class, 'productDelete'])->name('account.user.products.delete');
+       
 
         Route::post('/burial-info/image-personal/add', [InfoEditBurialController::class, 'imagePersonalBurialEdit'])->name('burial.image-personal.add');
         Route::post('/burial-info/image-monument/add', [InfoEditBurialController::class, 'imageMonumentBurialEdit'])->name('burial.image-monument.add');
@@ -328,26 +361,12 @@ Route::prefix($city)->group(function () {
         Route::get('/life-story/{id}/add', [LifeStoryBurialController::class, 'lifeStoryAdd'])->name('life-story.add');
         Route::get('/burial-info/{id}/edit', [InfoEditBurialController::class, 'infoBurialEdit'])->name('info-burial.edit');
 
-        
+       
 
-        Route::get('/account/settings', [AccountController::class, 'userSettings'])->name('account.user.settings');
-        Route::get('/account/update', [AccountController::class, 'userSettingsUpdate'])->name('account.user.settings.update');
-
-        Route::get('/account/burial/{id}/delete', [AccountController::class, 'burialDelete'])->name('account.burial.delete');
-
-        Route::get('/account/favorite', [AccountController::class, 'favoriteProduct'])->name('account.burial.favorite');
         Route::get('/favorite/{id}/add', [BurialController::class, 'favoriteAdd'])->name('favorite.add');
         Route::get('/favorite/{id}/delete', [BurialController::class, 'favoriteDelete'])->name('favorite.delete');
 
-        Route::get('/account/services', [AccountController::class, 'serviceIndex'])->name('account.services.index');
-        Route::get('/account/services/{status}/status', [AccountController::class, 'serviceFilter'])->name('account.services.filter');
-
-        Route::get('/account/burials', [AccountController::class, 'burialIndex'])->name('account.burial.index');
-        Route::get('/account/burials/{status}/status', [AccountController::class, 'burialFilter'])->name('account.burial.filter');
-
-        Route::get('/account/burial-request', [AccountController::class, 'burialRequestIndex'])->name('account.burial-request.index');
-        Route::get('/account/burial-request/{status}/status', [AccountController::class, 'burialRequestFilter'])->name('account.burial-request.filter');
-
+      
     });
 
 
@@ -502,9 +521,7 @@ Route::prefix($city)->group(function () {
 
 
                 Route::delete('provider/offer/{offer}/delete', [AgencyOrganizationProviderController::class, 'deleteOffer'])->name('account.agency.provider.offer.delete');     
-
-
-                
+             
                 
             });
 

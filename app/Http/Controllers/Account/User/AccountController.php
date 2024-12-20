@@ -1,42 +1,53 @@
 <?php
 
-namespace App\Http\Controllers\Account;
+namespace App\Http\Controllers\Account\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\OrderProduct;
+use App\Models\SearchBurial;
 use Illuminate\Http\Request;
-use App\Services\Account\UserService;
+use App\Services\Account\User\UserService;
 use App\Services\Order\OrderBurialService;
 
 class AccountController extends Controller
 {
-    public static function serviceIndex(){
-        return UserService::serviceIndex();
+
+    public static function index(){
+        return UserService::index();
+
     }
 
-    public static function serviceFilter($status){
-        return UserService::serviceFilter($status);
+    public static function services(Request $request){
+        $data=request()->validate([
+            'status'=>['integer','nullable'],
+        ]);
+        return UserService::services($data);
     }
-
     
-    public static function burialRequestIndex(){
-        return UserService::burialRequestIndex();
+    public static function burialRequestIndex(Request $request){
+        $data=request()->validate([
+            'status'=>['integer','nullable'],
+        ]);
+        return UserService::burialRequestIndex($data);
     }
 
-    public static function burialRequestFilter($status){
-        return UserService::burialRequestFilter($status);
+    public static function burialRequestDelete(SearchBurial $burial_request){
+        return UserService::burialRequestDelete($burial_request);
     }
 
-    public static function burialIndex(){
-        return UserService::burialIndex();
+
+    public static function burials(Request $request){
+        $data=request()->validate([
+            'status'=>['integer','nullable'],
+        ]);
+        return UserService::burials($data);
     }
 
     public static function burialDelete($id){
         return OrderBurialService::burialDelete($id);
     }
 
-    public static function burialFilter($status){
-        return UserService::burialFilter($status);
-    }
+    
     public static function favoriteProduct(){
         return UserService::favoriteProduct();
     }
@@ -69,12 +80,16 @@ class AccountController extends Controller
         return UserService::userSettingsUpdate($data);
     }
 
-    public static function products(){
-        return UserService::products();
+    public static function products(Request $request){
+        $data=request()->validate([
+            'status'=>['integer','nullable'],
+            'cemetery'=>['integer','nullable'],
+        ]);
+        return UserService::products($data);
     }
 
-    public static function productDelete($id){
-        return UserService::productDelete($id);
+    public static function productDelete(OrderProduct $order){
+        return UserService::productDelete($order);
     }
 
     public static function productFilter($status){

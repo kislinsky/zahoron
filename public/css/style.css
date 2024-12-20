@@ -196,6 +196,17 @@ text-align: center;
 .li_order .red_btn{
     max-width: 160px;
 }
+
+.li_order .blue_btn{
+    margin-top: auto;
+
+}
+
+
+.margin_left_auto{
+    margin-left: auto;
+}
+
 .blue_btn:hover,.flex_btn_li_product_market .blue_btn:hover{
 background: #0080FC;
 color: white;
@@ -461,11 +472,12 @@ margin-bottom: 20px;
      gap: 20px;
      margin-bottom: 20px;
  }
- .btn_border_blue{
+ .btn_border_blue,button.btn_border_blue {
      padding: 12px 20px;
  color: #0080D7;
  text-decoration: none;
      font-size: 16px;
+     background: white;
      cursor: pointer;
      display: flex;
      align-items: center;
@@ -477,6 +489,8 @@ margin-bottom: 20px;
  text-align: left;
  border: 1px solid #0080D7;
  }
+
+
  .btn_border_blue:hover{
     opacity: 0.8;
  }
@@ -1804,6 +1818,19 @@ text-align: left;
     width: 20px;
     margin-right: 8px;
 }
+
+
+.favorite_btn .white_icon{
+    display: none;
+
+}
+.favorite_btn:hover .white_icon{
+    display: block;
+}
+.favorite_btn:hover .black_icon{
+    display: none;
+}
+
 .flex_titles_account{
     display: flex;
     align-items: center;
@@ -1909,7 +1936,6 @@ text-align: left;
 }
 .ul_imgs_order{
     display: grid;
-    margin-top: 20px;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 10px;
 }
@@ -6616,6 +6642,12 @@ padding: 5px 20px;
     gap: 20px;
 
 }
+
+.li_order .delete_order_user .btn_border_blue{
+    max-width: 100%;
+    width: 100%;
+}
+
 .delete_cart.delete_li_request_to_provider img{
     width: 65px;
 }
@@ -6830,4 +6862,58 @@ text-decoration-skip-ink: none;
 
 .li_aplication .blue_btn{
     margin-top: auto;
+}
+
+
+.margin_top_auto{
+    margin-top: auto;
+}
+
+.reason_failure_btn{
+    max-width: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+.li_order .reason_failure_btn{
+    max-width: 100%  !important;
+
+}
+
+.open_reason_failure_btn{
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.open_reason_failure_btn img{
+    width: 14px;
+    transition: all ease-in-out 0.2s;
+    height: 9px;
+}
+.reason_failure_btn .text_black{
+    display: none;
+}
+.text_align_start{
+    text-align: start;
+}
+
+.flex_direction_column{
+    flex-direction: column;
+    align-items: start;
+}
+
+.block_services_order .title_label.flex_direction_column{
+    align-items: start;
+}
+.block_services_order{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 10px;
 }

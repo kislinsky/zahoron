@@ -868,3 +868,11 @@ $("button[type='submit']").click(function() {
 //   // Запускаем таймер
 //   startTimer(targetTime);
 // });
+
+
+
+
+$(".open_reason_failure_btn").click(function() {
+  $(this).children('img').toggleClass('rotate_arrow_open')
+  $(this).siblings('.text_black').slideToggle(200)
+});

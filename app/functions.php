@@ -879,54 +879,66 @@ function phoneImport($phone){
 }
 
 
-
 function parseWorkingHours($input) {
-    // Массив с названиями дней недели
-    $days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-    $daysEnglish = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    // Arrays for days
+    $daysRu = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+    $daysEn = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-    // Массив для хранения результатов
-    $result = [];
+    // Initialize result array with all days set to "Выходной"
+    $result = array_fill(0, 7, [
+        'day' => '',
+        'time_start_work' => 'Выходной',
+        'time_end_work' => 'Выходной',
+    ]);
 
-    // Регулярное выражение для поиска форматов
-    if (preg_match('/([ПнВтСрЧтПтСбВс]+)(?:-([ПнВтСрЧтПтСбВс]+))?:\s*([0-9]{2}:[0-9]{2})-([0-9]{2}:[0-9]{2})/', $input, $matches)) {
-        // Формат "Пн-Вс: 09:00-17:00"
-        $startDay = array_search($matches[1], $days);
-        $endDay = array_search($matches[2], $days);
-        $startTime = $matches[3];
-        $endTime = $matches[4];
+    // Fill 'day' keys with English day names
+    foreach ($daysEn as $index => $day) {
+        $result[$index]['day'] = $day;
+    }
 
-        for ($i = $startDay; $i <= $endDay; $i++) {
-            $result[] = [
-                'day' => $daysEnglish[$i],
-                'time_start_work' => $startTime,
-                'time_end_work' => $endTime,
-            ];
+    // Split input by commas to get individual day-time pairs
+    $pairs = explode(', ', $input);
+
+    foreach ($pairs as $pair) {
+        // Check for range format "Пн-Пт: 09:00-17:00"
+        if (preg_match('/([ПнВтСрЧтПтСбВс]+)-([ПнВтСрЧтПтСбВс]+):\s*([0-9]{2}:[0-9]{2})-([0-9]{2}:[0-9]{2})/', $pair, $matches)) {
+            $startDayRu = $matches[1];
+            $endDayRu = $matches[2];
+            $startTime = $matches[3];
+            $endTime = $matches[4];
+
+            $startDayIndex = array_search($startDayRu, $daysRu);
+            $endDayIndex = array_search($endDayRu, $daysRu);
+
+            for ($i = $startDayIndex; $i <= $endDayIndex; $i++) {
+                $result[$i]['time_start_work'] = $startTime;
+                $result[$i]['time_end_work'] = $endTime;
+            }
         }
-    } elseif (preg_match('/([ПнВтСрЧтПтСбВс]+):\s*([0-9]{2}:[0-9]{2})-([0-9]{2}:[0-9]{2})/', $input, $matches)) {
-        // Формат "Пн: 09:00-17:00"
-        $dayIndex = array_search($matches[1], $days);
-        $startTime = $matches[2];
-        $endTime = $matches[3];
+        // Check for single day with times "Пн: 09:00-17:00"
+        elseif (preg_match('/([ПнВтСрЧтПтСбВс]+):\s*([0-9]{2}:[0-9]{2})-([0-9]{2}:[0-9]{2})/', $pair, $matches)) {
+            $dayRu = $matches[1];
+            $startTime = $matches[2];
+            $endTime = $matches[3];
 
-        $result[] = [
-            'day' => $daysEnglish[$dayIndex],
-            'time_start_work' => $startTime,
-            'time_end_work' => $endTime,
-        ];
-    } elseif (preg_match('/([ПнВтСрЧтПтСбВс]+):\s*(Выходной)/', $input, $matches)) {
-        // Формат "Пн: Выходной"
-        $dayIndex = array_search($matches[1], $days);
-        $result[] = [
-            'day' => $daysEnglish[$dayIndex],
-            'time_start_work' => 'Выходной',
-            'time_end_work' => 'Выходной',
-        ];
+            $dayIndex = array_search($dayRu, $daysRu);
+
+            $result[$dayIndex]['time_start_work'] = $startTime;
+            $result[$dayIndex]['time_end_work'] = $endTime;
+        }
+        // Check for single day with "Выходной" "Вс: Выходной"
+        elseif (preg_match('/([ПнВтСрЧтПтСбВс]+):\s*(Выходной)/', $pair, $matches)) {
+            $dayRu = $matches[1];
+
+            $dayIndex = array_search($dayRu, $daysRu);
+
+            $result[$dayIndex]['time_start_work'] = 'Выходной';
+            $result[$dayIndex]['time_end_work'] = 'Выходной';
+        }
     }
 
     return $result;
 }
-
 
 
 function extractServiceNames($html) {

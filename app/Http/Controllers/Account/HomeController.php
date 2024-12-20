@@ -8,7 +8,7 @@ use App\Services\Account\Admin\AdminService;
 use App\Services\Account\Agency\AgencyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Services\Account\UserService;
+use App\Services\Account\User\UserService;
 use App\Services\Account\AgentService;
 use App\Services\Account\DecoderService;
 
