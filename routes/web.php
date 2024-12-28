@@ -390,12 +390,12 @@ Route::prefix($city)->group(function () {
     });
 
 
-
-
+    Route::group(['middleware'=>['auth','catalog.provider']],function(){   
+        Route::get('/organizations-provider', [OrganizationController::class, 'catalogOrganizationProvider'])->name('organizations.provider');
+    });
+    
 
     Route::group(['middleware'=>['auth','organization']],function(){
-
-        Route::get('/organizations-provider', [OrganizationController::class, 'catalogOrganizationProvider'])->name('organizations.provider');
 
         Route::group(['prefix'=>'account'], function() {
             

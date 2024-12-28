@@ -55,7 +55,7 @@ use App\Models\AdditionProduct;
                 </div>
                 <div class="block_checkout_form">
                     <label for="">Номер телефона</label>
-                    <input type="text" name="phone" id="" placeholder="Номер телефона" <?php if(isset($user)){if($user!=null){echo 'value="'.$user->phone.'"';}}?> >
+                    <input type="text" class='phone' name="phone" id="" placeholder="Номер телефона" <?php if(isset($user)){if($user!=null){echo 'value="'.$user->phone.'"';}}?> >
                     @error('phone')
                     <div class='error-text'>{{ $message }}</div>
                     @enderror

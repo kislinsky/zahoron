@@ -63,7 +63,7 @@
                         <div class="flex_search_form">
                             <div class="block_inpit_form_search">
                                 <label class='label_input'>Телефон</label>
-                                <input type="phone" name='phone' value='{{ $user->phone }}'placeholder='Телефон'>
+                                <input type="phone" class='phone' name='phone' value='{{ $user->phone }}'placeholder='Телефон'>
                                 @error('phone')
                                     <div class='error-text'>{{ $message }}</div>
                                 @enderror

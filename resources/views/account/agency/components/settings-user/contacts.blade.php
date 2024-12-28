@@ -26,7 +26,7 @@
         </div>
         <div class="block_inpit_form_search">
             <label class='label_input'>WhatsApp </label>
-            <input type="text" name='whatsapp' value='{{ $user->whatsapp }}'placeholder='+758435348053'>
+            <input type="text" class='phone' name='whatsapp' value='{{ $user->whatsapp }}'placeholder='+758435348053'>
             @error('watsapp')
                 <div class='error-text'>{{ $message }}</div>
             @enderror

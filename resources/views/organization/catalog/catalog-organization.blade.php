@@ -55,7 +55,7 @@
 
 <section class="block">
     <div class="container">
-        <div class="grid_two">
+        <div class="grid_two mobile_block_info_1_grid">
             <img src="{{asset('storage/uploads/002-spisok-uslug-2 1.png')}}" alt="" class="img_text_block">
             <div class="text_block_index">
                 <div class="title_text_block">Получите расчет стоимости ритуальных
@@ -79,7 +79,7 @@
 
 <section class="block">
     <div class="container">
-        <div class="grid_two">
+        <div class="grid_two mobile_block_info_1_grid">
             <img src="{{asset('storage/uploads/002-spisok-uslug-2 2.png')}}" alt="" class="img_text_block">
             <div class="text_block_index">
                 <div class="title_text_block">Получите прямой расчёт

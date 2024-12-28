@@ -6,6 +6,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\AgencyMiddleware;
 use App\Http\Middleware\UserMiddleware;
 use App\Http\Middleware\AgentMiddleware;
+use App\Http\Middleware\CatalogProviderMiddleware;
 use App\Http\Middleware\DecoderMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -74,6 +75,7 @@ class Kernel extends HttpKernel
         'organization'=>AgencyMiddleware::class,
         'decoder'=>DecoderMiddleware::class,
         'admin'=>AdminMiddleware::class,
+        'catalog.provider'=>CatalogProviderMiddleware::class,
 
     ];
 }

@@ -7,7 +7,7 @@
 
 <section class="orders">
     <div class="title_middle">Последние заказы</div>
-    <div class="grid_two margin_top_20">
+    <div class="grid_two grid_mobile_1 margin_top_20">
 
         {{view('account.user.components.burials.show',compact('orders_burials'))}}
 

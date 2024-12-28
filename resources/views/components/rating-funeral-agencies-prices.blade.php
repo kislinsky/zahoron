@@ -10,6 +10,8 @@ $organizations=organizationRatingFuneralAgenciesPrices($city->id);
     <div class="container">
         <div class="title_our_works">Рейтинг ритуальных агентств в г. {{$city->title}}: 10 лучших предложений по ценам</div>
         <div class="text_block">* Цены являются приблизительными. Уточняйте стоимость, позвонив в агентство.</div>
+        
+    <div class="table_rating_block">
         <table class="raiting_table">
             <thead>
                 <tr>
@@ -44,6 +46,8 @@ $organizations=organizationRatingFuneralAgenciesPrices($city->id);
                     @endforeach
             </tbody>
         </table>
+    </div>
+
     </div>
 </section>
 @endif

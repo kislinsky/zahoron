@@ -1257,3 +1257,12 @@ function convertToCarbon($dateString)
 }
 
 
+function minPriceCategoryProductOrganization($slug){
+    $cat=CategoryProduct::where('slug',$slug)->first();
+    $price=ActivityCategoryOrganization::where('city_id',selectCity()->id)->where('category_children_id',$cat->id)->orderBy('price','asc')->first();
+    if($price!=null){
+        return $price->price;
+    }
+    return 10000;
+}
+

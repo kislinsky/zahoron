@@ -4,7 +4,6 @@ $city=selectCity();
 ?>
 
 
-
 <!DOCTYPE html>
 <html lang="ru">
     <head>
@@ -29,9 +28,10 @@ $city=selectCity();
 
     </head>
 
-<body>
-
+<body >
+<div class="margin_top_for_header"></div>
 @include('components.all-forms-message')
+@include('header.header-mobile')
 
 
 <div class="bac_black city_question">
@@ -51,7 +51,7 @@ $city=selectCity();
 </div>
 
 
-<header>
+<header class='header_main'>
    
     <div class="container">  
         <a class='logo' href='{{route('index')}}'>
@@ -90,7 +90,7 @@ $city=selectCity();
         <div class='flex_icon_header'>
             <img class='open_big_header' src="{{asset('storage/uploads/menu-svgrepo-com.svg')}}" alt="">
             <div class='icon_header'><img src='{{asset('storage/uploads/Group 23.svg')}}'></div>
-            <a href='{{ route('login') }}' class='icon_header'><img src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
+            <a href='{{ route('login') }}' class='icon_header icon_login'><img src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
         </div>
     </div>
 </header>
@@ -135,7 +135,7 @@ $city=selectCity();
                     <li>
                         <a class='text_black' href='{{ route('organizations') }}'>Каталог</a>
                     </li>
-                    @if(@$user->role=='organization')
+                    @if(@$user->role=='organization' || @$user->role=='organization-provider' || @$user->role=='admin')
                         <li>
                             <a class='text_black' href='{{ route('organizations.provider') }}'>Каталог поставщиков</a>
                         </li>
@@ -157,5 +157,18 @@ $city=selectCity();
                 </ul>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="mobile_header_mini_info">
+    <div data-bs-toggle="modal" data-bs-target="#beautification_form" class="btn_border_blue">
+        <img src="{{asset('storage/uploads/Frame (3).svg')}}" alt="">
+        Облагородить 
+    </div>
+    <div class="flex_icon_header">
+        <a href='{{ route('login') }}' class='icon_header'><img src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
+        <a class='gray_circle icon_header open_mobile_header' >
+            <img src="{{asset('storage/uploads/Group 29.svg')}}" alt="">
+        </a>
     </div>
 </div>

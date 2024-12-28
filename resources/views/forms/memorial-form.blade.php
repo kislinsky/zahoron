@@ -98,7 +98,7 @@ if(Auth::check()){
                             </div> 
                             <div class="block_input">
                                 <label for="">Номер телефона</label>
-                                <input type="text" name="phone_memorial" id="" placeholder="Номер телефона" <?php if(isset($user)){if($user!=null){echo 'value="'.$user->phone.'"';}}?> >
+                                <input type="text" class='phone' name="phone_memorial" id="" placeholder="Номер телефона" <?php if(isset($user)){if($user!=null){echo 'value="'.$user->phone.'"';}}?> >
                                 @error('phone_memorial')
                                     <div class='error-text'>{{ $message }}</div>
                                 @enderror

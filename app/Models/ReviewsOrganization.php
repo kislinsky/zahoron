@@ -11,10 +11,12 @@ class ReviewsOrganization extends Model
     protected $guarded =[];
 
     function organization(){
-        return Organization::find($this->organization_id);
+        return $this->belongsTo(Organization::class);
     }
 
-    
+    function city(){
+        return $this->belongsTo(City::class);
+    }
 
     function btnReviewAccept(){
         if($this->status==0){

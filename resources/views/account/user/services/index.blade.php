@@ -17,7 +17,7 @@
         </div>
 
     </div>
-    <div class="grid_two margin_top_20">
+    <div class="grid_two grid_mobile_1 margin_top_20">
         {{view('account.user.components.services.show',compact('orders_services'))}}
     </div>
     {{ $orders_services->withPath(route('account.user.services.index'))->appends($_GET)->links() }}

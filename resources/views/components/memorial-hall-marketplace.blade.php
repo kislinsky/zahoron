@@ -14,7 +14,7 @@ use App\Models\Product;
                 @foreach($products_memorial_hall as $product_memorial_hall)
                     <div class="swiper-slide">
                         <div class="li_memorial_hall">
-                            <?php $images=$product_memorial_hall->getImage;?>
+                            <?php $images=$product_memorial_hall->getImages;?>
                             @if (isset($images))
                                 @if (count($images)>0)
                                     <img class='img_memorial_hall' src="{{ asset('storage/uploads_product/'.$images[0]->title) }}" alt="">

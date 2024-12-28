@@ -40,8 +40,8 @@
                 <a href='{{$organization->route()}}' class="blue_btn">Страница</a>
                 <div class="blue_btn">Чат</div>
                 <a href='tel:{{$organization->phone}}' class="blue_btn">Позвонить</a>
-
             </div>
+            <a href='tel:{{$organization->phone}}' class="blue_btn mobile_btn_li_organization_provider">Позвонить</a>
         </div>
     @endforeach
     {{ $organizations_category->withPath(route('organizations.provider'))->appends($_GET)->links() }}

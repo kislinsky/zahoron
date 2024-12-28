@@ -3,11 +3,9 @@
 
 @section('content')
 
-    <form action='{{ route('account.user.settings.update') }}' method='post' enctype='multipart/form-data' class="form_settings">
+    <form action='{{ route('account.user.settings.update') }}' method='post' enctype='multipart/form-data' class="form_settings user_settings">
     @csrf
     
-    {{view('account.user.components.settings-user.main-info',compact('user'))}}
-
     {{view('account.user.components.settings-user.data-for-contract',compact('user'))}}
     
     {{view('account.user.components.settings-user.pay',compact('user'))}}

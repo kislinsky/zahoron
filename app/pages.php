@@ -203,4 +203,202 @@ function organizationPages(){
 }
 
 
+
+
+function mobilePages(){
+    return [
+        
+        [
+            ['Главная',route('index')],
+            
+        ],
+    
+        [
+            ['Поиск могил',''],
+
+            [
+                ['Герои',route('page.search.burial.filter')],
+                ['Заявка на поиск',route('page.search.burial.request')],
+            ],
+        ],
+
+        [
+            ['Облогораживание',''],
+
+            [
+                ['Товары и услуги',route('pricelist')],
+                ['Маркетплэйс',route('marketplace')],
+            ],
+        ],
+
+        [
+            ['Оформление заказа',''],
+
+            [
+                ['Продуктов',route('product.checkout')],
+                ['Захоронений',route('checkout.burial')],
+                ['Услуг',route('checkout.service')],
+            ],
+        ],
+
+
+        [
+            ['Места',''],
+
+            [
+                ['Кладбища',route('cemeteries')],
+                ['Морги',route('mortuaries')],
+                ['Колумабрии',route('columbariums')],
+                ['Крематории',route('crematoriums')],
+            ],
+        ],
+
+
+        [
+            ['Организации',''],
+
+            [
+                ['Каталог',route('cemeteries')],
+            ],
+        ],
+
+        [
+            ['Информация',''],
+
+            [
+                ['Наши работы',route('our.products')],
+                ['Статьи',route('news')],
+                ['Контакты',route('contacts')],
+            ],
+        ],
+       
+    ];
+}
+
+
+function mobilePagesAccountUser(){
+    return [
+        
+        [
+            ['Главная',route('home')],
+            
+        ],
+
+        [
+            ['Настройки',route('account.user.settings')],
+            
+        ],
+    
+        [
+            ['Геолокации',''],
+
+            [
+                ['Список',route('account.user.burial')],
+                ['Избранное',route('account.user.burial.favorite')],
+            ],
+        ],
+
+
+        [
+            ['Заказаы с маркетплэйса',route('account.user.products')],
+        ],
+
+        [
+            ['Услуги',route('account.user.services.index')],
+        ],
+
+
+        [
+            ['Поиск могил',route('account.user.burial-request.index')],
+        ],
+
+        
+    
+    ];
+}
+
+
+
+
+function mobilePagesAccountAgecny() {
+    return [
+        [
+            ['Организации', 'storage/uploads/Icon_sidebar_2.svg'],
+        ],
+
+        [
+            ['Заявки по умершему', 'storage/uploads/Vector (17).svg'],
+            ['Новые', route('account.agency.organization.aplication.dead.new')],
+            ['В работе', route('account.agency.organization.aplication.dead.in-work')],
+            ['Завершенные', route('account.agency.organization.aplication.dead.completed')],
+        ],
+
+        [
+            ['Заявки по поминкам', 'storage/uploads/Vector (17).svg'],
+            ['Новые', route('account.agency.organization.aplication.memorial.new')],
+            ['В работе', route('account.agency.organization.aplication.memorial.in-work')],
+            ['Завершенные', route('account.agency.organization.aplication.memorial.completed')],
+            ['Незавершенные', route('account.agency.organization.aplication.memorial.not-completed')],
+        ],
+
+        [
+            ['Заявки по облогораживанию', 'storage/uploads/Vector (17).svg'],
+            ['Новые', route('account.agency.organization.aplication.beautification.new')],
+            ['В работе', route('account.agency.organization.aplication.beautification.in-work')],
+            ['Завершенные', route('account.agency.organization.aplication.beautification.completed')],
+            ['Незавершенные', route('account.agency.organization.aplication.beautification.not-completed')],
+        ],
+
+        [
+            ['Заявки по ритуальным услугам', 'storage/uploads/Vector (17).svg'],
+            ['Новые', route('account.agency.organization.aplication.funeral-service.new')],
+            ['В работе', route('account.agency.organization.aplication.funeral-service.in-work')],
+            ['Завершенные', route('account.agency.organization.aplication.funeral-service.completed')],
+            ['Незавершенные', route('account.agency.organization.aplication.funeral-service.not-completed')],
+        ],
+
+        [
+            ['Настройки', 'storage/uploads/icon_sidebar.svg'],
+            ['Настройки', route('account.agency.settings')],
+        ],
+
+        [
+            ['Оплаты', 'storage/uploads/Icon_pay_aplication.svg'],
+            ['Заявки', route('account.agency.applications')],
+        ],
+
+        [
+            ['Товар', 'storage/uploads/Icon_sidebar_2.svg'],
+            ['Создать товар', route('account.agency.add.product')],
+            ['Все товары', route('account.agency.products')],
+        ],
+
+        [
+            ['Отзывы', 'storage/uploads/Icon_sidebar_2.svg'],
+            ['Об организации', route('account.agency.reviews.organization')],
+            ['О товарах', route('account.agency.reviews.product')],
+        ],
+
+        [
+            ['Заказы с маркетплэйса', 'storage/uploads/Icon_sidebar_2.svg'],
+            ['Новые', route('account.agency.product.orders.new')],
+            ['В работе', route('account.agency.product.orders.in-work')],
+            ['Завершенные', route('account.agency.product.orders.completed')],
+        ],
+
+        [
+            ['Поставщики', 'storage/uploads/Icon_sidebar_2.svg'],
+            ['Заявки', route('account.agency.provider.requests.products.add')],
+            ['Созданные заявки', route('account.agency.provider.requests.products.created')],
+            ['Ответы на заявки', route('account.agency.provider.requests.products.answer')],
+            ['Избранное', route('account.agency.provider.like.organizations')],
+            ['Акции', route('account.agency.provider.stocks')],
+            ['Скидки', route('account.agency.provider.discounts')],
+            ['Создание запроса', route('account.agency.provider.offer.add')],
+            ['Созданные запросы', route('account.agency.provider.offer.created')],
+            ['Ответы на запросы', route('account.agency.provider.offer.answers')],
+        ],
+    ];
+}
+
 ?>

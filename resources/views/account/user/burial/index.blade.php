@@ -14,7 +14,7 @@
         <a href='{{ route('account.user.burial.favorite') }}'class="btn_bac_gray favorite_btn"><img  class='black_icon' src='{{ asset('storage/uploads/Star 1 (2).svg') }}'><img class='white_icon' src='{{ asset('storage/uploads/Star_white.svg') }}'>Избранное </a> 
         
     </div>
-    <div class="grid_two margin_top_20">
+    <div class="grid_two grid_mobile_1 margin_top_20">
         {{view('account.user.components.burials.show',compact('orders_burials'))}}
     </div>
     {{ $orders_burials->withPath(route('account.user.burial'))->appends($_GET)->links() }}

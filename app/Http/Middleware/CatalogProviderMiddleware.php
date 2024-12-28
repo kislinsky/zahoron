@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AgencyMiddleware
+class CatalogProviderMiddleware
 {
     /**
      * Handle an incoming request.
@@ -15,10 +15,10 @@ class AgencyMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(auth()->user()->role!=='organization'){
-            abort(404);
+        if(auth()->user()->role=='organization' || auth()->user()->role=='organization-provider' || auth()->user()->role=='admin'){
+            return $next($request);
         }
         
-        return $next($request);
+        abort(404);
     }
 }

@@ -10,7 +10,7 @@
 </section>
 <section class='main_index_block'>
     <div class="container">
-        <div class="grid_two">
+        <div class="grid_two index_block_grid">
             <div class="gray_index_block_service">
                 <div class="title_li">Организация похорон в городе {{$city->title}}</div>
                 <div class="flex_text_service_index">
@@ -21,8 +21,8 @@
                     <img src="{{asset('storage/uploads/Похороны-Photoroom 1.svg')}}" alt="" class="img_index_service">
                 </div>
                 <div class="grid_btn">
-                    <div class="blue_btn open_funeral_arrangements border_radius_btn">Экономия до {{savingsPrice(32)}} руб.</div>
-                    <a href='{{route('marketplace')}}'class="gray_btn">Каталог</A>
+                    <div class="blue_btn open_funeral_arrangements border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('organizacia-pohoron')}} руб.</div>
+                    <a href='{{route('organizations')}}'class="gray_btn">Каталог</A>
                 </div>
             </div>
 
@@ -34,13 +34,13 @@
                     <img src="{{asset('storage/uploads/airplane 1.svg')}}" alt="" class="img_index_service">
                 </div>
                 <div class="grid_btn">
-                    <div class="blue_btn open_shipping_200 border_radius_btn" >Сэкономьте до {{savingsPrice(34)}} руб.</div>
-                    <a href='{{route('marketplace')}}'class="gray_btn">Каталог</A>
+                    <div class="blue_btn open_shipping_200 border_radius_btn" >Стоимость от {{minPriceCategoryProductOrganization('otpravka-gruz-200')}} руб.</div>
+                    <a href='{{route('organizations')}}'class="gray_btn">Каталог</A>
                 </div>
             </div>
 
         </div>
-        <div class="grid_two">
+        <div class="grid_two ">
             <div class="gray_index_block_service">
                 <div class="title_li">Найти могилу в городе {{$city->title}}</div>
                 <div class="flex_text_service_index">
@@ -66,7 +66,7 @@
                         <div class="flex_text_service_index">
                             <div class="mini_text">Узнайте информацию по
                                 умершему</div>
-                            <img class='mini_index_img'src="{{asset('storage/uploads/Group_index.svg')}}" alt="" class="img_index_service">
+                            <img class='mini_index_img'src="{{asset('storage/uploads/mortuary.svg')}}" alt="" class="img_index_service">
                         </div>
                         <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#dead_form">узнать</div>
                     </div>
@@ -77,7 +77,7 @@
                             <div class="mini_text">Узнайте рабочий режим кладбища, позвоните или
                                 узнайте как
                                 добраться.</div>
-                            <img class='mini_index_img'src="{{asset('storage/uploads/Group_index.svg')}}" alt="" class="img_index_service">
+                            <img class='mini_index_img'src="{{asset('storage/uploads/menu 1.svg')}}" alt="" class="img_index_service">
                         </div>
                         <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#dead_form">Позвонить</div>
                     </div>
@@ -134,7 +134,7 @@
 
 <section class="block">
     <div class="container">
-        <div class="grid_two">
+        <div class="grid_two index_block_grid">
             <img src="{{asset('storage/uploads/002-spisok-uslug-2 1.png')}}" alt="" class="img_text_block">
             <div class="text_block_index">
                 <div class="title_text_block">Получите расчет стоимости ритуальных
@@ -158,7 +158,7 @@
 
 <section class="block">
     <div class="container">
-        <div class="grid_two">
+        <div class="grid_two index_block_grid">
             <img src="{{asset('storage/uploads/002-spisok-uslug-2 2.png')}}" alt="" class="img_text_block">
             <div class="text_block_index">
                 <div class="title_text_block">Получите прямой расчёт

@@ -43,10 +43,13 @@ let memorial_hall_swiper = new Swiper(".memorial_hall_swiper", {
 
   breakpoints: {
     340: {
-      slidesPerView: 1,
-    },
-    1040: {
       slidesPerView: 2,
+    },
+    1100: {
+      slidesPerView: 3,
+    },
+    1290: {
+      slidesPerView: 4,
     },
    
   },
@@ -62,10 +65,8 @@ let news_video_swiper = new Swiper(".news_video_swiper", {
   spaceBetween: 20,
 
   breakpoints: {
+    
     340: {
-      slidesPerView: 1,
-    },
-    1000: {
       slidesPerView: 2,
     },
     1100: {
@@ -84,10 +85,8 @@ let products_monuments_grave = new Swiper(".products_monuments_grave_swiper", {
   spaceBetween: 20,
 
   breakpoints: {
+
     340: {
-      slidesPerView: 1,
-    },
-    1000: {
       slidesPerView: 2,
     },
     1100: {
@@ -110,10 +109,8 @@ let products_funeral_service = new Swiper(".products_funeral_service_swiper", {
   spaceBetween: 20,
 
   breakpoints: {
+
     340: {
-      slidesPerView: 1,
-    },
-    1000: {
       slidesPerView: 2,
     },
     1100: {
@@ -483,6 +480,7 @@ $( ".li_cemetery_3" ).on( "click", function() {
 
   $('input[name="id_cemetery"]').val(value_id)
   $('input[name="location"]').val(value_html)  
+  $('#location_form_2').modal('hide')
 
 });
 
@@ -876,3 +874,18 @@ $(".open_reason_failure_btn").click(function() {
   $(this).children('img').toggleClass('rotate_arrow_open')
   $(this).siblings('.text_black').slideToggle(200)
 });
+
+
+$(".phone").mask("+7 (999) 999-9999");
+
+
+
+$(".open_mobile_header").click(function() {
+  $('.mobile_header').toggleClass('mobile_header_active')
+});
+
+
+$(".open_children_pages").click(function() {
+ $(this).siblings('.children_pages_mobile_header').toggleClass('children_pages_mobile_header_active')
+});
+

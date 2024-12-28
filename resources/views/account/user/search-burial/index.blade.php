@@ -14,7 +14,7 @@
             <a href='{{ route('account.user.burial-request.index') }}?status=1'class="btn_bac_gray<?php if($status!=null && $status==1){echo ' active_label_product';}?>">Отказ </a>
         </div>
     </div>
-    <div class="grid_two margin_top_20">
+    <div class="grid_two grid_mobile_1 margin_top_20">
         {{view('account.user.components.burial-request.show',compact('search_burials'))}}
     </div>
     {{ $search_burials->withPath(route('account.user.burial-request.index'))->appends($_GET)->links() }}

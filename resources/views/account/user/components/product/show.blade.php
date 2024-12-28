@@ -1,4 +1,4 @@
-<div class="orders_organization grid_two"> 
+<div class="orders_organization grid_two grid_mobile_1"> 
     @if(isset($orders_products))
         @if(count($orders_products)>0)
             @foreach ($orders_products as $order)

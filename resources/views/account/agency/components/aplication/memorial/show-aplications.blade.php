@@ -1,4 +1,4 @@
-<div class="grid_two margin_top_20">
+<div class="grid_two grid_mobile_1 margin_top_20">
 
     @foreach($aplications as $aplication)
 
