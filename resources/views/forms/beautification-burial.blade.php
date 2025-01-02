@@ -3,14 +3,6 @@
 <?php 
 
 use Illuminate\Support\Facades\Auth;
-<<<<<<< HEAD
-
-=======
-use App\Models\City;
-
-
-$cities_memorial=City::orderBy('title','asc')->get();
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
 $cemeteries_beatification=selectCity()->cemeteries;
 $categories_product_price_list=childrenCategoryPriceList();
 $user=null;

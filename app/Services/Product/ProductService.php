@@ -37,22 +37,14 @@ class ProductService
         $comments=$product->reviews();
         $images=$product->getImages;
         $parameters=$product->getParam;
-<<<<<<< HEAD
         $category=$product->category;
-=======
-        $category=$product->category();
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
         $sales=ActivityCategoryOrganization::where('organization_id',$organization->id)->where('category_children_id',$category->id)->where('sales','!=',null)->get();
         $city=selectCity();  
         $cemeteries=$city->cemeteries;
         $mortuaries=$city->mortuaries;
         $category_products=Product::orderBy('id','desc')->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('city_id',$product->city_id)->get();
 
-<<<<<<< HEAD
         if($category->slug=='pominal-nyh-obedy'){
-=======
-        if($category->id==46){
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
             $district=$product->district;
             $memorial_menu=$product->memorialMenu;
             return view('product.single.single-menu',compact('product','sales','agent','city','district','images','organization','memorial_menu','category','additionals','comments','category_products'));

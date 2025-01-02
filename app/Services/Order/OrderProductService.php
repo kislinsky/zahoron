@@ -143,7 +143,6 @@ class OrderProductService
              'additional'=>$additionals,
             'organization_id'=>$product->organization->id
 
-<<<<<<< HEAD
             ]);
         }
         else{
@@ -156,8 +155,6 @@ class OrderProductService
                 'size'=>$data['size'],
                 'additional'=>$additionals,
                 'organization_id'=>$product->organization->id
-=======
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
             ]);
         }
         $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';

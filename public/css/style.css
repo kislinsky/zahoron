@@ -7012,11 +7012,7 @@ text-decoration-skip-ink: none;
 .mobile_header{
     min-width: 210px;
     position: fixed;
-<<<<<<< HEAD
     z-index: 101;
-=======
-    z-index: 100;
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
     display: none;
     flex-direction: column;
     gap: 10px;
@@ -7036,11 +7032,8 @@ text-decoration-skip-ink: none;
     flex-direction: column;
     gap: 10px;
     padding: 0px;
-<<<<<<< HEAD
     max-height: 230px;
     overflow-y: scroll;
-=======
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
 }
 
 
@@ -7116,11 +7109,8 @@ text-decoration-skip-ink: none;
 .mobile_header .children_pages_mobile_header{
     padding-left:15px;  
     display: none;  
-<<<<<<< HEAD
     max-height: 100%;
     overflow-y: visible;
-=======
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
     padding-top: 10px;
 }
 

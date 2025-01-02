@@ -206,13 +206,10 @@ function organizationPages(){
 
 
 function mobilePages(){
-<<<<<<< HEAD
     $catalog_organiazations=[['Каталог',route('organizations')],];
     if(Auth::user() && (user()->role=='organization' || user()->role=='organization-provider' || user()->role=='admin')){
         $catalog_organiazations[]=['Каталог поставщиков',route('organizations.provider')];
     }
-=======
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
     return [
         
         [
@@ -242,10 +239,6 @@ function mobilePages(){
             ['Оформление заказа',''],
 
             [
-<<<<<<< HEAD
-=======
-                ['Продуктов',route('product.checkout')],
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
                 ['Захоронений',route('checkout.burial')],
                 ['Услуг',route('checkout.service')],
             ],
@@ -267,13 +260,7 @@ function mobilePages(){
         [
             ['Организации',''],
 
-<<<<<<< HEAD
             $catalog_organiazations,
-=======
-            [
-                ['Каталог',route('cemeteries')],
-            ],
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
         ],
 
         [
@@ -334,7 +321,6 @@ function mobilePagesAccountUser(){
 
 
 
-<<<<<<< HEAD
 function mobilePagesAccountAdmin(){
 
     return [
@@ -452,52 +438,10 @@ function mobilePagesAccountAgecny() {
         ],
 
         [
-=======
-function mobilePagesAccountAgecny() {
-    return [
-        [
-            ['Организации', 'storage/uploads/Icon_sidebar_2.svg'],
-        ],
-
-        [
-            ['Заявки по умершему', 'storage/uploads/Vector (17).svg'],
-            ['Новые', route('account.agency.organization.aplication.dead.new')],
-            ['В работе', route('account.agency.organization.aplication.dead.in-work')],
-            ['Завершенные', route('account.agency.organization.aplication.dead.completed')],
-        ],
-
-        [
-            ['Заявки по поминкам', 'storage/uploads/Vector (17).svg'],
-            ['Новые', route('account.agency.organization.aplication.memorial.new')],
-            ['В работе', route('account.agency.organization.aplication.memorial.in-work')],
-            ['Завершенные', route('account.agency.organization.aplication.memorial.completed')],
-            ['Незавершенные', route('account.agency.organization.aplication.memorial.not-completed')],
-        ],
-
-        [
-            ['Заявки по облогораживанию', 'storage/uploads/Vector (17).svg'],
-            ['Новые', route('account.agency.organization.aplication.beautification.new')],
-            ['В работе', route('account.agency.organization.aplication.beautification.in-work')],
-            ['Завершенные', route('account.agency.organization.aplication.beautification.completed')],
-            ['Незавершенные', route('account.agency.organization.aplication.beautification.not-completed')],
-        ],
-
-        [
-            ['Заявки по ритуальным услугам', 'storage/uploads/Vector (17).svg'],
-            ['Новые', route('account.agency.organization.aplication.funeral-service.new')],
-            ['В работе', route('account.agency.organization.aplication.funeral-service.in-work')],
-            ['Завершенные', route('account.agency.organization.aplication.funeral-service.completed')],
-            ['Незавершенные', route('account.agency.organization.aplication.funeral-service.not-completed')],
-        ],
-
-        [
-            ['Настройки', 'storage/uploads/icon_sidebar.svg'],
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
             ['Настройки', route('account.agency.settings')],
         ],
 
         [
-<<<<<<< HEAD
             ['Оплаты', route('account.agency.applications')],
         ],
     
@@ -548,44 +492,6 @@ function mobilePagesAccountAgecny() {
         ],
     ];
     
-=======
-            ['Оплаты', 'storage/uploads/Icon_pay_aplication.svg'],
-            ['Заявки', route('account.agency.applications')],
-        ],
-
-        [
-            ['Товар', 'storage/uploads/Icon_sidebar_2.svg'],
-            ['Создать товар', route('account.agency.add.product')],
-            ['Все товары', route('account.agency.products')],
-        ],
-
-        [
-            ['Отзывы', 'storage/uploads/Icon_sidebar_2.svg'],
-            ['Об организации', route('account.agency.reviews.organization')],
-            ['О товарах', route('account.agency.reviews.product')],
-        ],
-
-        [
-            ['Заказы с маркетплэйса', 'storage/uploads/Icon_sidebar_2.svg'],
-            ['Новые', route('account.agency.product.orders.new')],
-            ['В работе', route('account.agency.product.orders.in-work')],
-            ['Завершенные', route('account.agency.product.orders.completed')],
-        ],
-
-        [
-            ['Поставщики', 'storage/uploads/Icon_sidebar_2.svg'],
-            ['Заявки', route('account.agency.provider.requests.products.add')],
-            ['Созданные заявки', route('account.agency.provider.requests.products.created')],
-            ['Ответы на заявки', route('account.agency.provider.requests.products.answer')],
-            ['Избранное', route('account.agency.provider.like.organizations')],
-            ['Акции', route('account.agency.provider.stocks')],
-            ['Скидки', route('account.agency.provider.discounts')],
-            ['Создание запроса', route('account.agency.provider.offer.add')],
-            ['Созданные запросы', route('account.agency.provider.offer.created')],
-            ['Ответы на запросы', route('account.agency.provider.offer.answers')],
-        ],
-    ];
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
 }
 
 ?>

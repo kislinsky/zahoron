@@ -1,11 +1,8 @@
-<<<<<<< HEAD
 /**
  * Theme Name: zahoron
  */
 
 
-=======
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
 @media(max-width:1100px){
     .container.grid_two_page{
         display: flex;
@@ -217,7 +214,6 @@
         align-items: center;
         padding: 10px;
     }
-<<<<<<< HEAD
     .ul_variants{
         grid-template-columns: 1fr 1fr 1fr;
     }
@@ -251,15 +247,6 @@
     .ul_info_edit_burial .text_black_big_bold{
         font-size: 18px;
     }
-=======
-}
-
-@media(max-width:820px){
-    .flex_titles_account{
-        flex-wrap: wrap;
-    }
-
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
     .container{
         padding: 0px 10px;
     }
@@ -299,13 +286,7 @@
     .main_block_organization_single{
         gap: 10px;
     }
-<<<<<<< HEAD
  
-=======
-    .content_main_block_organization_single{
-        margin-top: 50px;
-    }
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
     .flex_info_main_single_organization{
         flex-wrap: wrap;
         gap: 10px;
@@ -339,7 +320,6 @@
         gap: 10px;
         align-items: start;
     }
-<<<<<<< HEAD
     .block_answer_from_provider{
         grid-template-columns: 1fr;
     }
@@ -419,12 +399,6 @@
         display: flex;
         flex-direction: column;
     }
-=======
-    
-}
-
-@media(max-width:760px){
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
     .grid_training_materials{
         grid-template-columns: 1fr;
     }
@@ -586,7 +560,6 @@
     .text_middle_blue{
         font-size: 18px;
     }
-<<<<<<< HEAD
     .li_memorial_dinner .grid_btn{
         grid-template-columns: 1fr;
         gap: 10px;
@@ -699,11 +672,6 @@
         width: 100%;
     }
 
-=======
-}
-
-@media(max-width:560px){
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
     .header_decoder_account {
         padding: 10px;
     }
@@ -930,12 +898,8 @@
         font-size: 22px;
     }
     .text_block{
-<<<<<<< HEAD
         font-size: 15px;
         line-height: 1.4;
-=======
-        font-size: 17px;
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
     }
     .li_memory_words{
         flex-direction: column;
@@ -950,10 +914,7 @@
     }
     .blue_btn,.btn_border_blue, .border_blue_btn, .green_btn, .red_btn,.gray_btn{
         font-size: 16px;
-<<<<<<< HEAD
         line-height: 1.4;
-=======
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
     }
     .karta_all{
         padding: 20px 0px;
@@ -964,7 +925,6 @@
     .karta_all .title{
         padding: 0px 20px;
     }
-<<<<<<< HEAD
     .main_index_block .blue_btn,.main_index_block .btn_border_blue, .main_index_block .border_blue_btn,.main_index_block .green_btn,.main_index_block .red_btn,.main_index_block .gray_btn{
         padding: 7px 10px;
         font-size: 12px;
@@ -972,11 +932,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-=======
-    .main_index_block .blue_btn,.main_index_block .btn_border_blue, .main_index_block .border_blue_btn,.main_index_block .green_btn,.main_index_block .red_btn{
-        padding: 7px 10px;
-        font-size: 12px;
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
 
     }
     .flex_monuments_grave{
@@ -1007,7 +962,6 @@
         font-size: 18px;
         line-height: 25px;
     }
-<<<<<<< HEAD
     .ul_advice{
         grid-template-columns: 1fr ;
     }
@@ -1030,8 +984,6 @@
     .logo_organization_single .blue_btn{
         display: none;
     }
-=======
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
     .ul_news{
         grid-template-columns:  1fr;
     }
@@ -1098,7 +1050,6 @@
     .btn_border_blue.img_mini_star{
         height: 40px;
     }
-<<<<<<< HEAD
     .li_our_product .title_blue{
         font-size: 20px;
         padding: 10px 0px;
@@ -1115,6 +1066,4 @@
     .li_place{
         flex-wrap: wrap;
     }
-=======
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
 }
