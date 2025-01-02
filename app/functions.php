@@ -1277,6 +1277,7 @@ function minPriceCategoryProductOrganization($slug){
     return 10000;
 }
 
+
 function mainCategoryProduct(){
     return CategoryProduct::orderBy('id','desc')->where('parent_id',null)->get();
 }
@@ -1284,3 +1285,4 @@ function mainCategoryProduct(){
 function mainCategoryPriceList(){
     return CategoryProductPriceList::orderBy('id','desc')->where('parent_id',null)->get();
 }
+

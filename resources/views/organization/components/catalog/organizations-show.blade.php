@@ -16,7 +16,11 @@
                 </div>
             </div>
 
+<<<<<<< HEAD
             <div class="info_li_org_mobile li_org_mobile"><div class="text_black"><img src="{{ asset('storage/uploads/Frame 334.svg') }}" alt=""> {{ $organization->rating }} - {{countReviewsOrganization($organization)}} оценок</div>   <div class="text_black">{{$organization->timeEndWorkingNow()}}</div></div>
+=======
+            <div class="info_li_org_mobile li_org_mobile"><div class="text_black">{{countReviewsOrganization($organization)}} оценок</div>   <div class="text_black">{{$organization->timeEndWorkingNow()}}</div></div>
+>>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
 
 
             <div class="li_logo_organization li_org_dekstop">
@@ -29,7 +33,11 @@
             <div class="info_li_organization li_org_dekstop">
                 <a href='{{$organization->route()}}'class="title_li_organiaztion">Ритуальное агентство: {{$organization->title}}</a>
                 <div class="text_gray">{{$organization->name_type}}</div>
+<<<<<<< HEAD
                 <div class="text_black"><img src="{{ asset('storage/uploads/Frame 334.svg') }}" alt=""> {{countReviewsOrganization($organization)}} оценки - {{$organization->timeEndWorkingNow()}}</div>
+=======
+                <div class="text_black"><img src="http://127.0.0.1:8000/storage/uploads/Frame 334.svg" alt=""> {{countReviewsOrganization($organization)}} оценки - {{$organization->timeEndWorkingNow()}}</div>
+>>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
             </div>
 
             <div class="info_li_org_mobile li_org_mobile">

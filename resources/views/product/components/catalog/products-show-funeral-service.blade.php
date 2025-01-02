@@ -12,7 +12,11 @@
                     <a href='{{ $product->route() }}'class="title_product_market">{{ $product->title }}</a>
                     
                     <div class="flex_raiting">
+<<<<<<< HEAD
                         <a href='{{$product->organization->route()}}'class="text_gray">{{$product->organization->title}}</a>
+=======
+                        <a href='{{route('organization.single',$product->organization->id)}}'class="text_gray">{{$product->organization->title}}</a>
+>>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
                         <div class="flex_stars">
                             <img src="{{asset('storage/uploads/Frame 334.svg')}}" alt="">
                             <div class="text_black">{{$product->organization->rating}}</div>

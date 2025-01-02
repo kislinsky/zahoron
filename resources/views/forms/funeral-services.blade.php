@@ -2,7 +2,13 @@
 <?php 
 
 use Illuminate\Support\Facades\Auth;
+<<<<<<< HEAD
 
+=======
+use App\Models\City;
+
+$cities_funeral_services=City::orderBy('title','asc')->get();
+>>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
 $mortuaries=selectCity()->mortuaries;
 $cemeteries_beatification=selectCity()->cemeteries;;
 
