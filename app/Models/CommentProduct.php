@@ -11,7 +11,7 @@ class CommentProduct extends Model
     protected $guarded =[];
 
     function product(){
-        return Product::find($this->product_id);
+        return $this->belongsTo(Product::class);
     }
 
     function btnReviewAccept(){

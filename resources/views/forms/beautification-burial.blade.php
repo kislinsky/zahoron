@@ -3,14 +3,9 @@
 <?php 
 
 use Illuminate\Support\Facades\Auth;
-use App\Models\City;
-use App\Models\Cemetery;
-use App\Models\ProductPriceList;
-use App\Models\CategoryProductPriceList;
 
-$cities_memorial=City::orderBy('title','asc')->get();
-$cemeteries_beatification=Cemetery::orderBy('title','asc')->where('city_id',selectCity()->id)->get();
-$categories_product_price_list=CategoryProductPriceList::where('parent_id',null)->get();
+$cemeteries_beatification=selectCity()->cemeteries;
+$categories_product_price_list=childrenCategoryPriceList();
 $user=null;
 if(Auth::check()){
     $user=Auth::user();
@@ -36,17 +31,14 @@ if(Auth::check()){
                     @if(isset($product))
                         <input type="hidden" name="burial_id_beautification" value={{$product->id}}>
                     @endif
+                    <input type="hidden" name="time_now" class='input_time_now'>
+
                     <div class="flex_input_form_contacts flex_beautification_form">
                         <div class="block_input" >
                             <label for="">Выберите город</label>
-                            <div class="select">
-                                <select name="city_beautification" >
-                                @if(count($cities_memorial)>0)
-                                    @foreach ($cities_memorial as $city_memorial)
-                                        <option <?php if(selectCity()->id==$city_memorial->id){echo 'selected';}?> value="{{$city_memorial->id}}">{{$city_memorial->title}}</option>
-                                    @endforeach
-                                @endif
-                                </select>
+                            <div class="block_ajax_input_search_cities">
+                                <input class='input_search_cities' type="text" name="city_search" id="" value='{{ selectCity()->title }}'>
+                                <input type="hidden" name="city_beautification" class='city_id_input' value='{{ selectCity()->id }}'>
                             </div>
                             @error('city_beautification')
                                 <div class='error-text'>{{ $message }}</div>
@@ -92,7 +84,7 @@ if(Auth::check()){
                             </div> 
                             <div class="block_input">
                                 <label for="">Номер телефона</label>
-                                <input type="text" name="phone_beautification" id="" placeholder="Номер телефона" <?php if(isset($user)){if($user!=null){echo 'value="'.$user->phone.'"';}}?> >
+                                <input type="text"   class='phone' name="phone_beautification" id="" placeholder="Номер телефона" <?php if(isset($user)){if($user!=null){echo 'value="'.$user->phone.'"';}}?> >
                                 @error('phone_beautification')
                                     <div class='error-text'>{{ $message }}</div>
                                 @enderror
@@ -124,27 +116,7 @@ if(Auth::check()){
 </div>
 
 
-<script>
-    $( "#beautification_form select[name='city_beautification']" ).on( "change", function() {
-        let data  = {
-            "_token": "{{ csrf_token() }}",
-            'city_id':$(this).children('option:checked').val(),
-        };
 
-        $.ajax({
-            type: 'GET',
-            url: '{{route('beautification.ajax.cemetery')}}',
-            data:  data,
-            success: function (result) {
-                $( "#beautification_form select[name='cemetery_beautification']" ).html(result)
-            },
-            error: function () {
-                alert('Ошибка');
-            }
-        });
-       
-    });
-</script>
 
 
 

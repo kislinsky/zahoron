@@ -9,7 +9,7 @@
                         <div class="text_black"><strong>Условие:</strong> {{$discount->condition}}</div>
                         <div class="text_black"><strong>Скидка:</strong> {{$discount->procent}} %</div>
                         <div class="text_black">Фирма: {{$organization->title}}</div>
-                        <div class="text_black">Город: {{$organization->city()->title}}</div>
+                        <div class="text_black">Город: {{$organization->city->title}}</div>
                     </div>
                     <div class="content_li_provider">
                         <div class="text_flex flex_align_start">

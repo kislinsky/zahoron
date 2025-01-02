@@ -10,7 +10,7 @@
 </section>
 <section class='main_index_block'>
     <div class="container">
-        <div class="grid_two">
+        <div class="grid_two index_block_grid">
             <div class="gray_index_block_service">
                 <div class="title_li">Организация похорон в городе {{$city->title}}</div>
                 <div class="flex_text_service_index">
@@ -21,12 +21,12 @@
                     <img src="{{asset('storage/uploads/Похороны-Photoroom 1.svg')}}" alt="" class="img_index_service">
                 </div>
                 <div class="grid_btn">
-                    <div class="blue_btn open_funeral_arrangements border_radius_btn">Экономия до {{savingsPrice(32)}} руб.</div>
-                    <a href='{{route('marketplace')}}'class="gray_btn">Каталог</A>
+                    <div class="blue_btn open_funeral_arrangements border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('organizacia-pohoron')}} руб.</div>
+                    <a href='{{route('organizations')}}'class="gray_btn">Каталог</A>
                 </div>
             </div>
 
-            <div class="gray_index_block_service">
+            <div class="gray_index_block_service dekstop_index_block">
                 <div class="title_li">Отправка груза 200 в другой город</div>
                 <div class="flex_text_service_index">
                     <div class="text_middle_index">Сравните стоимость услуг по отправке груза 200 в другой город выбрав агентство подходящее под Ваши запросы
@@ -34,13 +34,13 @@
                     <img src="{{asset('storage/uploads/airplane 1.svg')}}" alt="" class="img_index_service">
                 </div>
                 <div class="grid_btn">
-                    <div class="blue_btn open_shipping_200 border_radius_btn" >Сэкономьте до {{savingsPrice(34)}} руб.</div>
-                    <a href='{{route('marketplace')}}'class="gray_btn">Каталог</A>
+                    <div class="blue_btn open_shipping_200 border_radius_btn" >Стоимость от {{minPriceCategoryProductOrganization('otpravka-gruz-200')}} руб.</div>
+                    <a href='{{route('organizations')}}'class="gray_btn">Каталог</A>
                 </div>
             </div>
 
         </div>
-        <div class="grid_two">
+        <div class="grid_two ">
             <div class="gray_index_block_service">
                 <div class="title_li">Найти могилу в городе {{$city->title}}</div>
                 <div class="flex_text_service_index">
@@ -60,24 +60,28 @@
                     </div>  
                 </form>
             </div>
-            <div class="grid_two">
+            <div class="grid_two mobile_grid_index">
                     <div class="gray_index_block_service">
-                        <div class="title_li">Морги в г. {{$city->title}}</div>
+                        <a href='{{ route('mortuaries') }}' class="title_li">Морги в г. {{$city->title}}</a>
                         <div class="flex_text_service_index">
+                            <a href='{{ route('mortuaries') }}' class="title_li title_li_mobile">Морги в г. {{$city->title}}</a>
+
                             <div class="mini_text">Узнайте информацию по
                                 умершему</div>
-                            <img class='mini_index_img'src="{{asset('storage/uploads/Group_index.svg')}}" alt="" class="img_index_service">
+                            <img class='mini_index_img'src="{{asset('storage/uploads/mortuary.svg')}}" alt="" class="img_index_service">
                         </div>
                         <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#dead_form">узнать</div>
                     </div>
                     <div class="gray_index_block_service">
-                        <div class="title_li">Кладбища 
-                            г. {{$city->title}}</div>
+                        <a href='{{ route('cemeteries') }}' class="title_li">Кладбища 
+                            г. {{$city->title}}</a>
                         <div class="flex_text_service_index">
+                            <a href='{{ route('cemeteries') }}' class="title_li title_li_mobile">Кладбища 
+                                г. {{$city->title}}</a>
                             <div class="mini_text">Узнайте рабочий режим кладбища, позвоните или
                                 узнайте как
                                 добраться.</div>
-                            <img class='mini_index_img'src="{{asset('storage/uploads/Group_index.svg')}}" alt="" class="img_index_service">
+                            <img class='mini_index_img'src="{{asset('storage/uploads/menu 1.svg')}}" alt="" class="img_index_service">
                         </div>
                         <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#dead_form">Позвонить</div>
                     </div>
@@ -85,10 +89,10 @@
             </div>
 
         <div class="grid_two">
-            <div class="grid_two">
+            <div class="grid_two dekstop_index_block">
                 <div class="gray_index_block_service">
-                    <div class="title_li">Заказать поминки
-                        г. {{$city->title}}</div>
+                    <a href='{{route('marketplace.category','pominal-nyh-obedy')}}' class="title_li">Заказать поминки
+                        г. {{$city->title}}</a>
                     <div class="flex_text_service_index">
                         <div class="mini_text">Получите ценовое
                             предложения 
@@ -100,8 +104,8 @@
                     <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#memorial_form">Оформить заказ</div>
                 </div>
                 <div class="gray_index_block_service">
-                    <div class="title_li">Организация 
-                        кремации г. {{$city->title}}</div>
+                    <a href='{{route('marketplace.category','organizacia-kremacii')}}' class="title_li">Организация 
+                        кремации г. {{$city->title}}</a>
                     <div class="flex_text_service_index">
                         <div class="mini_text">Вам предоставят цены на кремацию от более 10 ритуальных агентств Иваново для выбора лучшего варианта.</div>
                         <img src="{{asset('storage/uploads/Group_cemetery.svg')}}" alt="" class="img_index_service">
@@ -126,6 +130,48 @@
                 </div>
             </div>
         
+
+            <div class="grid_two mobile_index_block_grid">
+                <div class="gray_index_block_service">
+                    <a href='{{route('marketplace.category','pominal-nyh-obedy')}}' class="title_li">Заказать поминки
+                        г. {{$city->title}}</a>
+                    <div class="flex_text_service_index">
+                        <a href='{{route('marketplace.category','pominal-nyh-obedy')}}' class="title_li title_li_mobile">Заказать поминки
+                            г. {{$city->title}}</a> 
+                        <div class="mini_text">Получите ценовое
+                            предложения 
+                            с разных кафе
+                            вашего района 
+                            в г. Иваново</div>
+                        <img class='mini_index_img' src="{{asset('storage/uploads/Group_index.svg')}}" alt="" class="img_index_service">
+                    </div>
+                    <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#memorial_form">Оформить заказ</div>
+                </div>
+                <div class="gray_index_block_service">
+                    <a href='{{route('marketplace.category','organizacia-kremacii')}}' class="title_li">Организация 
+                        кремации г. {{$city->title}}</a>
+                    <div class="flex_text_service_index">
+                        <a href='{{route('marketplace.category','organizacia-kremacii')}}' class="title_li title_li_mobile">Организация 
+                            кремации г. {{$city->title}}</a> 
+                        <div class="mini_text">Вам предоставят цены на кремацию от более 10 ритуальных агентств Иваново для выбора лучшего варианта.</div>
+                        <img src="{{asset('storage/uploads/Group_cemetery.svg')}}" alt="" class="img_index_service">
+                    </div>
+                    <div class="blue_btn border_radius_btn open_organization_cremation">Узнать цены</div>
+                </div>
+            </div>
+
+
+            <div class="gray_index_block_service mobile_index_block">
+                <div class="flex_text_service_index">
+                    <div class="title_li">Отправка груза 200 в другой город</div>
+
+                    <img src="{{asset('storage/uploads/airplane 1.svg')}}" alt="" class="img_index_service">
+                </div>
+                <div class="grid_btn">
+                    <div class="blue_btn open_shipping_200 border_radius_btn" >Стоимость от {{minPriceCategoryProductOrganization('otpravka-gruz-200')}} руб.</div>
+                    <a href='{{route('organizations')}}'class="gray_btn">Каталог</A>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -134,7 +180,7 @@
 
 <section class="block">
     <div class="container">
-        <div class="grid_two">
+        <div class="grid_two index_block_grid">
             <img src="{{asset('storage/uploads/002-spisok-uslug-2 1.png')}}" alt="" class="img_text_block">
             <div class="text_block_index">
                 <div class="title_text_block">Получите расчет стоимости ритуальных
@@ -158,7 +204,7 @@
 
 <section class="block">
     <div class="container">
-        <div class="grid_two">
+        <div class="grid_two index_block_grid">
             <img src="{{asset('storage/uploads/002-spisok-uslug-2 2.png')}}" alt="" class="img_text_block">
             <div class="text_block_index">
                 <div class="title_text_block">Получите прямой расчёт
@@ -288,6 +334,7 @@
         </div>
     </section>
 @endif
+
 @include('footer.footer') 
 
 

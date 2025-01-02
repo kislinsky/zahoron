@@ -3,10 +3,9 @@
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\City;
-use App\Models\Mortuary;
 
 $cities_dead=City::orderBy('title','asc')->get();
-$mortuaries=Mortuary::orderBy('title','asc')->where('city_id',selectCity()->id)->get();
+$mortuaries=selectCity()->mortuaries;
 $user=null;
 if(Auth::check()){
     $user=Auth::user();
@@ -28,17 +27,15 @@ if(Auth::check()){
                 </div>
                 <form action="{{ route('dead.send') }}" method="get" class='form_popup'>
                     @csrf
+                    <input type="hidden" name="time_now" class='input_time_now'>
 
                     <div class="flex_input_form_contacts flex_beautification_form">
                         <div class="block_input" >
                             <label for="">Выберите город</label>
-                            <div class="select"><select name="city_dead" >
-                                @if(count($cities_dead)>0)
-                                    @foreach ($cities_dead as $city_dead)
-                                        <option <?php if(selectCity()->id==$city_dead->id){echo 'selected';}?> value="{{$city_dead->id}}">{{$city_dead->title}}</option>
-                                    @endforeach
-                                @endif
-                            </select></div>
+                            <div class="block_ajax_input_search_cities">
+                                <input class='input_search_cities' type="text" name="city_search" id="" value='{{ selectCity()->title }}'>
+                                <input type="hidden" name="city_dead" class='city_id_input' value='{{ selectCity()->id }}'>
+                            </div>
                             @error('city_dead')
                                 <div class='error-text'>{{ $message }}</div>
                             @enderror
@@ -72,7 +69,7 @@ if(Auth::check()){
                             </div> 
                             <div class="block_input">
                                 <label for="">Номер телефона</label>
-                                <input type="text" name="phone_dead" id="" placeholder="Номер телефона" <?php if(isset($user)){if($user!=null){echo 'value="'.$user->phone.'"';}}?> >
+                                <input type="text" class='phone' name="phone_dead" id="" placeholder="Номер телефона" <?php if(isset($user)){if($user!=null){echo 'value="'.$user->phone.'"';}}?> >
                                 @error('phone_dead')
                                     <div class='error-text'>{{ $message }}</div>
                                 @enderror
@@ -104,21 +101,3 @@ if(Auth::check()){
 </div>
 
 
-<script>
-    $( "#dead_form select[name='city_dead']" ).on( "change", function() {
-        let data  = {
-            'city_id':$(this).children('option:checked').val(),
-        };
-        $.ajax({
-            type: 'GET',
-            url: '{{route('dead.ajax.mortuary')}}',
-            data:  data,
-            success: function (result) {
-                $( "#dead_form select[name='mortuary_dead']" ).html(result)
-            },
-            error: function () {
-                alert('Ошибка');
-            }
-        });
-    });
-</script>

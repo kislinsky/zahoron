@@ -10,12 +10,13 @@
          </a>
          <div class='pages'>
             <a href='{{ route('page.search.burial.filter') }}'class="no_bac_btn">Герои </a>
-            <a href='{{ route('pricelist') }}'class="no_bac_btn">Маркетплейс</a>
+            <a href='{{ route('marketplace') }}'class="no_bac_btn">Маркетплейс</a>
             <a href='{{ route('page.search.burial.request') }}'class="no_bac_btn">Заявка на поиск</a>
             <a href='{{ route('our.products') }}'class="no_bac_btn">Наши работы</a>
             <a href='{{ route('cemeteries') }}'class="no_bac_btn">Кладбища </a>
             <a href='{{ route('news') }}'class="no_bac_btn">Статьи</a>
             <a href='{{ route('contacts') }}'class="no_bac_btn">Контакты</a>
+            <a href='#'class="no_bac_btn">Партнерам</a>
          </div>
        </div>
  
@@ -59,10 +60,38 @@
  </footer>
  
 
+
+<script src="https://cdn.jsdelivr.net/npm/jquery.maskedinput@1.4.1/src/jquery.maskedinput.min.js" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script type="text/javascript" src="{{asset('js/main.js')}}"></script>
+
+
+<script>
+   $( ".block_ajax_input_search_cities .input_search_cities" ).on( "input", function() {
+         let city_id_input=$(this).siblings('.city_id_input')
+         let this_block=$(this).parent('.block_ajax_input_search_cities')
+         console.log($(this).val())
+        let data  = {
+            "_token": "{{ csrf_token() }}",
+            's':$(this).val(),
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '{{route('ajax.cities.search.input')}}',
+            data:  data,
+            success: function (result) {
+               $('.abs_cities_input_search').remove()
+               this_block.append(result)
+            },
+            error: function () {
+               $('.abs_cities_input_search').remove()
+            }
+        });
+   })
+</script>
 
 </body>
 </html>

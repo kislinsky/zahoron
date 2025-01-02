@@ -25,10 +25,10 @@ let memorial_dinners_swiper = new Swiper(".memorial_dinners_swiper", {
 
   breakpoints: {
     340: {
-      slidesPerView: 1,
+      slidesPerView: 2,
     },
     1040: {
-      slidesPerView: 2,
+      slidesPerView: 3,
     },
    
   },
@@ -43,10 +43,13 @@ let memorial_hall_swiper = new Swiper(".memorial_hall_swiper", {
 
   breakpoints: {
     340: {
-      slidesPerView: 1,
-    },
-    1040: {
       slidesPerView: 2,
+    },
+    1100: {
+      slidesPerView: 3,
+    },
+    1290: {
+      slidesPerView: 4,
     },
    
   },
@@ -62,10 +65,8 @@ let news_video_swiper = new Swiper(".news_video_swiper", {
   spaceBetween: 20,
 
   breakpoints: {
+    
     340: {
-      slidesPerView: 1,
-    },
-    1000: {
       slidesPerView: 2,
     },
     1100: {
@@ -84,10 +85,8 @@ let products_monuments_grave = new Swiper(".products_monuments_grave_swiper", {
   spaceBetween: 20,
 
   breakpoints: {
+
     340: {
-      slidesPerView: 1,
-    },
-    1000: {
       slidesPerView: 2,
     },
     1100: {
@@ -110,10 +109,8 @@ let products_funeral_service = new Swiper(".products_funeral_service_swiper", {
   spaceBetween: 20,
 
   breakpoints: {
+
     340: {
-      slidesPerView: 1,
-    },
-    1000: {
       slidesPerView: 2,
     },
     1100: {
@@ -483,6 +480,7 @@ $( ".li_cemetery_3" ).on( "click", function() {
 
   $('input[name="id_cemetery"]').val(value_id)
   $('input[name="location"]').val(value_html)  
+  $('#location_form_2').modal('hide')
 
 });
 
@@ -688,7 +686,7 @@ $( ".icon_btn_single_organization" ).on( "mouseout", function() {
 
 $(".to_top").click(function() {
     $([document.documentElement, document.body]).animate({
-        scrollTop: $("header").offset().top
+        scrollTop: $("body").offset().top
     }, 80);
 });
 
@@ -804,3 +802,90 @@ $(".open_working_times").click(function() {
   $('.ul_working_days').slideToggle(200)
   $(this).toggleClass('rotate_arrow_open')
 });
+
+
+$("button[type='submit']").click(function() {
+  $( ".input_time_now" ).each(function() {
+    $(this).val(new Date())
+  })
+})
+
+// $( ".time_end_aplication" ).each(function() {
+//   // Время, до которого нужно отсчитывать (в формате "HH:MM")
+//   const targetTime = $(this).html();
+
+//   // Функция для запуска таймера
+//   function startTimer(targetTime) {
+//       // Получаем текущее время
+//       const now = new Date();
+
+//       // Разбираем целевое время
+//       const [hours, minutes] = targetTime.split(':').map(Number);
+
+//       // Устанавливаем целевое время
+//       const targetDate = new Date();
+//       targetDate.setHours(hours, minutes, 0, 0);
+
+//       // Если целевое время уже прошло, добавляем один день
+//       if (targetDate <= now) {
+//           targetDate.setDate(targetDate.getDate() + 1);
+//       }
+
+//       // Функция для обновления таймера
+//       function updateTimer() {
+//           const now = new Date();
+//           const timeDifference = targetDate - now;
+
+//           // Если время истекло
+//           if (timeDifference <= 0) {
+//               clearInterval(interval);
+//               $(this).html('Время истекло!');
+//               return;
+//           }
+
+//           // Вычисляем часы, минуты и секунды
+//           const hoursLeft = Math.floor(timeDifference / (1000 * 60 * 60));
+//           const minutesLeft = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+//           const secondsLeft = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+//           // Форматируем время в "HH:MM:SS"
+//           const formattedTime = `${String(hoursLeft).padStart(2, '0')}:${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
+
+//           // Обновляем текст таймера
+//           console.log(formattedTime)
+//           $(this).html(formattedTime);
+//       }
+
+//       // Обновляем таймер каждую секунду
+//       const interval = setInterval(updateTimer, 1000);
+
+//       // Запускаем таймер сразу
+//       updateTimer();
+//   }
+
+//   // Запускаем таймер
+//   startTimer(targetTime);
+// });
+
+
+
+
+$(".open_reason_failure_btn").click(function() {
+  $(this).children('img').toggleClass('rotate_arrow_open')
+  $(this).siblings('.text_black').slideToggle(200)
+});
+
+
+$(".phone").mask("+7 (999) 999-9999");
+
+
+
+$(".open_mobile_header").click(function() {
+  $('.mobile_header').toggleClass('mobile_header_active')
+});
+
+
+$(".open_children_pages").click(function() {
+ $(this).siblings('.children_pages_mobile_header').toggleClass('children_pages_mobile_header_active')
+});
+

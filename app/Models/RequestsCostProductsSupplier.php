@@ -14,8 +14,8 @@ class RequestsCostProductsSupplier extends Model
         return Organization::find($this->organization_provider_id);
     }
 
-    function findProduct($id_product){
-        return Product::find($id_product);
+    function findCategory($id_category){
+        return CategoryProductProvider::find($id_category);
     }
 
 }

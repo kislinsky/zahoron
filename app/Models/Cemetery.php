@@ -13,13 +13,11 @@ class Cemetery extends Model
 
 
     public function city(){
-        $cemetery=City::find($this->city_id);
-        return $cemetery;
+        return $this->belongsTo(City::class);
     }
 
     public function district(){
-        $district=District::find($this->district_id);
-        return $district;
+        return $this->belongsTo(District::class);
     }
 
     public function cemeteryOrganiaztions(){
@@ -34,8 +32,8 @@ class Cemetery extends Model
     }
 
     public function openOrNot(){
-        //$day=strtotime(getTimeByCoordinates($this->width,$this->longitude)['dayOfTheWeek']);
-        // $time=strtotime(getTimeByCoordinates($this->width,$this->longitude)['current_time']);
+        //$day=getTimeByCoordinates($this->width,$this->longitude)['dayOfTheWeek'];
+        // $time=getTimeByCoordinates($this->width,$this->longitude)['current_time'];
         $time=strtotime('23:00');
         $day='Saturday';
         $get_hours=WorkingHoursCemetery::where('cemetery_id',$this->id)->where('day',$day)->first();
@@ -49,7 +47,7 @@ class Cemetery extends Model
 
 
     public function timeNow(){
-        //$day=strtotime(getTimeByCoordinates($this->width,$this->longitude)['dayOfTheWeek']);
+        //$day=getTimeByCoordinates($this->width,$this->longitude)['dayOfTheWeek'];
         $day='Tuesday';
         $get_hours=WorkingHoursCemetery::where('cemetery_id',$this->id)->where('day',$day)->first();
         if( $get_hours==null){
@@ -76,7 +74,7 @@ class Cemetery extends Model
         $days=WorkingHoursCemetery::where('cemetery_id',$this->id)->orderByRaw("FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')")->get();
         if($days->count()>0){
             foreach($days as $day){
-                //$day_now=strtotime(getTimeByCoordinates($this->width,$this->longitude)['dayOfTheWeek']);
+                //$day_now=getTimeByCoordinates($this->width,$this->longitude)['dayOfTheWeek'];
                 $day_now='Tuesday';
                 if($day->holiday!=1){
                     $text_day=translateDayOfWeek($day->day).': '."{$day->time_start_work}-{$day->time_end_work}";

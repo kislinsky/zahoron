@@ -18,10 +18,10 @@
                 <table class='checkout_table'>
                     <thead>
                         <th>Услуга</th>
-                        <th>Захоронение</th>
-                        <th>Размер участка</th>
+                        <th class='title_basket_burial'>Захоронение</th>
+                        <th class='title_basket_burial'>Размер участка</th>
                         <th>Сумма</th>
-                        <th></th>
+                        <th class='title_basket_burial'></th>
                     </thead>
                     <?php $total=0; ?>
                     @foreach ($cart_items as $cart_item)
@@ -31,15 +31,26 @@
                                 <?php $total+=$service->price;?>
                                     <tr>
                                         <td class='title_cart'><a href="{{ route('service.single',$service->id) }}">{{ $service->title }}</a></td>
-                                        <td><a href='{{ $product->route() }}' class="title_cart decoration_on">{{ $product->surname }} {{ $product->name }} {{ $product->patronymic }}</div></td>
-                                        <td class='title_cart'>{{ $service->price }} ₽</td>
-
-                                        <td>
+                                        <td class='title_basket_burial'><a href='{{ $product->route() }}' class="title_cart decoration_on">{{ $product->surname }} {{ $product->name }} {{ $product->patronymic }}</a></td>
+                                        <td class='title_cart title_basket_burial'>{{ $cart_item[2] }} </td>
+                                        <td class='title_cart'>
+                                            <div class='mobile_basket_burial'>{{ $cart_item[2] }}</div>
+                                            <div>{{ $service->price }} ₽</div>
+                                            <a href='{{ $product->route() }}' class="mobile_basket_burial decoration_on">{{ $product->surname }} {{ $product->name }} {{ $product->patronymic }}</a>
+                                            <form class="mobile_basket_burial" method='get'action='{{ route('burial.service.delete') }}'>
+                                                @csrf 
+                                                <input type="hidden" name="product_id"  value='{{ $product->id }}'>
+                                                <input type="hidden" name='service_id' value='{{ $service->id }}'>
+                                                <button type='submit' class="delete_cart"><img src="{{asset('storage/uploads/Trash.svg')}}" alt=""> Удалить</button>
+                                            </form>
+                                        </td>
+                                        <td class='title_basket_burial'>
                                             <form method='get'action='{{ route('burial.service.delete') }}'>
                                                 @csrf 
                                                 <input type="hidden" name="product_id"  value='{{ $product->id }}'>
                                                 <input type="hidden" name='service_id' value='{{ $service->id }}'>
-                                                <button type='submit' class="delete_cart"><img src="{{asset('storage/uploads/Trash.svg')}}" alt=""> Удалить</button></form>
+                                                <button type='submit' class="delete_cart"><img src="{{asset('storage/uploads/Trash.svg')}}" alt=""> Удалить</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @endforeach

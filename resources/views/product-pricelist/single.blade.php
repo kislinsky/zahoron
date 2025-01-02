@@ -195,7 +195,7 @@
         {{view('product-pricelist.components.faq',compact('faqs'))}}
         @include('forms.search-form') 
 
-        @include('components.cats-product') 
+        @include('components.cats-product-price-list') 
     </div>
 </section>
 

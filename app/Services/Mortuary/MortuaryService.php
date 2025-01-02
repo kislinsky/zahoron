@@ -28,7 +28,7 @@ class MortuaryService {
     public static function index(){
         $city=selectCity();
         $usefuls=UsefulMortuary::orderBy('id','desc')->get();
-        $products=randomProductsPlace();
+        $products=randomProductsPlace(32);
         $mortuaries_map=Mortuary::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $mortuaries=Mortuary::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
         return view('mortuary.index',compact('mortuaries','city','products','usefuls','mortuaries_map'));
@@ -41,10 +41,10 @@ class MortuaryService {
         $city=selectCity();
         $organizations_our=$city->cityOrganizations();
         $mortuary_all=Mortuary::all();
-        $services=ServiceMortuary::where('mortuary_id',$id)->get();
+        $services=$mortuary->services;
         $faqs=FaqMortuary::orderBy('id','desc')->get();
         $characteristics=json_decode($mortuary->characteristics);
-        $images=ImageMortuary::where('mortuary_id',$mortuary->id)->get();
+        $images=$mortuary->images;
         $similar_mortuaries=Mortuary::where('city_id',$mortuary->city_id)->where('id','!=',$mortuary->id)->get();
         return view('mortuary.single',compact('organizations_our','images','similar_mortuaries','mortuary','reviews','reviews_main','services','city','faqs','mortuary_all','characteristics'));
     }

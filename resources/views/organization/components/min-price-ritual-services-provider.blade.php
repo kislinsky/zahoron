@@ -4,7 +4,7 @@
             $categories_children=childrenCategoryOrganizationProvider($organization,$category_organization);
         @endphp
         <div class="block_content_organization_single">
-            <div class="title_li title_price_organization_ritual_services">Минимальная стоимость {{$category_organization->title}}</div>
+            <div class="title_li title_price_organization_ritual_services">Минимальная стоимость {{$category_organization->title}} "{{ $organization->title }}"</div>
             @if($categories_children!=null && count($categories_children)>0)
                 <div class="scroll_block">
                     <table class="block_table_price_organization_ritual_services">

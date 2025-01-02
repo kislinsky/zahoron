@@ -22,11 +22,11 @@ class OrderServiceService
             if(Auth::check()){ 
                 
                 foreach($cart_items as $cart_item){
-                    $order_product=OrderBurial::where('product_id',$cart_item[0])->where('user_id',Auth::user()->id)->get();
+                    $order_product=OrderBurial::where('burial_id',$cart_item[0])->where('user_id',Auth::user()->id)->get();
                     if(count($order_product)>0){
                         if($order_product[0]->status==1){
                             OrderService::create([
-                                'product_id'=>$cart_item[0],
+                                'burial_id'=>$cart_item[0],
                                 'user_id'=>Auth::user()->id,
                                 'services_id'=>json_encode($cart_item[1]),
                                 'size'=>$cart_item[2],

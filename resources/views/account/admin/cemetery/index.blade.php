@@ -3,7 +3,9 @@
 @section('title', 'Все кладбища')
 
 @section('content')
-<table class="table admin_table">
+
+<div class="table_admin">
+  <table class="table admin_table">
     <thead>
       <tr>
         <th scope="col">Id</th>
@@ -18,7 +20,7 @@
             <tr>
                 <th scope="row">{{$cemetery->id}}</th>
                 <td><a href="#" class='text_black'></a>{{$cemetery->title}}</td>
-                <td>{{$cemetery->city()->title}}</td>
+                <td>{{$cemetery->city->title}}</td>
                 <td><a href="#">Изменить</a></td>
                 <td><a href="{{route('account.admin.cemetery.delete',$cemetery->id)}}">Удалить</a></td>
             </tr>
@@ -26,6 +28,8 @@
     </tbody>
   </table>
   {{ $cemeteries->withPath(route('account.admin.cemetery'))->appends($_GET)->links() }}
+</div>
+  
 
 @endsection
 

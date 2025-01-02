@@ -10,41 +10,52 @@
     </div>
 </section>
 
-<div class="container">
-    <div id="map" style="width: 100%; height: 600px"></div>
-</div>
+<div class="block_ritual_objects">
 
-<section class="cemetery">
     <div class="container">
-        <div class="block_places">
-            <div class="ul_places">
-                @if (isset($cemeteries) && $cemeteries->count()>0)
-                    @foreach ($cemeteries as $cemetery)
-                        <div  class="li_place">
-                            <a  href="{{ $cemetery->route() }}"  class="img_place"> <img src="{{$cemetery->urlImg()}}" alt=""> </a>
-                            <div class="content_place_mini">
-                                <a href="{{ $cemetery->route() }}" class="title_blue">{{$cemetery->title}}</a>
-                                <div class="text_black">г.{{$city->title}}</div>
-                            </div>
-                            <div class="btn_border_gray">{{$cemetery->openOrNot()}}</div>
-                        </div>
-                    @endforeach
-                @endif
-                {{ $cemeteries->withPath(route('cemeteries'))->appends($_GET)->links() }}
-
-            </div>
+        <div class="title_middle mobile_title_ritual_object">Кладбища на карте в г. {{$city->title}}</div>
+        <div id="map" style="width: 100%; height: 600px"></div>
+        <div class="mobile_sidebar_ritual_object">
+            <div class="title_middle">Памятники в г. {{ $city->title }}</div>
             {{view('cemetery.components.sidebar',compact('products'))}}
         </div>
-
-
-        <div class="block_info_place">
-            <div class="title_middle">Информация о кладбищах в г. {{$city->title}}</div>
-            <div class="text_black">
-                {!!str_replace('city',$city->title,$city->content_mortuary)!!}
+    </div>
+    
+    <section class="cemetery">
+        <div class="container">
+            <div class="block_places">
+                <div class="ul_places">
+                    @if (isset($cemeteries) && $cemeteries->count()>0)
+                        @foreach ($cemeteries as $cemetery)
+                            <div  class="li_place">
+                                <a  href="{{ $cemetery->route() }}"  class="img_place"> <img src="{{$cemetery->urlImg()}}" alt=""> </a>
+                                <div class="content_place_mini">
+                                    <a href="{{ $cemetery->route() }}" class="title_blue">{{$cemetery->title}}</a>
+                                    <div class="text_black">г.{{$city->title}}</div>
+                                </div>
+                                <div class="btn_border_gray">{{$cemetery->openOrNot()}}</div>
+                            </div>
+                        @endforeach
+                    @endif
+                    {{ $cemeteries->withPath(route('cemeteries'))->appends($_GET)->links() }}
+    
+                </div>
+                <div class="dekstop_sidebar_ritual_object">
+                    {{view('cemetery.components.sidebar',compact('products'))}}
+                </div>
+            </div>
+    
+    
+            <div class="block_info_place">
+                <div class="title_middle">Информация о кладбищах в г. {{$city->title}}</div>
+                <div class="text_black">
+                    {!!str_replace('city',$city->title,$city->content_mortuary)!!}
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</div>
+
 
 {{view('components.useful',compact('usefuls'))}}
 
@@ -55,6 +66,9 @@
 @include('components.rating-uneral-bureaus-raves-prices')
 
 @include('cemetery.components.cities-places') 
+
+@include('components.ritual-objects') 
+
 
 <script >
     ymaps.ready(init);

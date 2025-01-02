@@ -13,7 +13,7 @@
                                         <img src="{{asset('storage/uploads_news/'. $news_video_one->img )}}" alt="">                                
                                     </a>
                                     <div  class="title_news">{{ $news_video_one->title }}</div>
-                                    <div class="text_li">{{ $news_video_one->created_at }}</div>
+                                    <div class="text_li">{{ $news_video_one->created_at->format('d.m.Y') }}</div>
                                 </div>
                             </div>
                         @endforeach

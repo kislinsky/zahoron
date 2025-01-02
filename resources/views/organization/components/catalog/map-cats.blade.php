@@ -19,7 +19,7 @@
                  searchControlProvider: 'yandex#search'
              });
          @foreach($organizations_category as $organization)
-         @php $organization= $organization->organization(); @endphp
+         @php $organization= $organization->organization; @endphp
            myMap.geoObjects
              .add(new ymaps.Placemark(['{{$organization->width}}', '{{$organization->longitude}}'], {
                  balloonContent: '{!!$organization->title.'<br> <img src="'.asset('storage/uploads/Frame 334.svg').'" alt="">  '.$organization->rating.'<br>'.$organization->countReviews().' отзывов' !!}',

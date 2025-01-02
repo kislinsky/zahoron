@@ -8,7 +8,7 @@
                         <div class="title_black_bold">Местное время: <span class='title_blue'> {{$organization->timeCity()}}</span></div>
                     </div>
                     <div class="text_black">Фирма: {{$organization->title}}</div>
-                    <div class="text_black">Город: {{$organization->city()->title}}</div>
+                    <div class="text_black">Город: {{$organization->city->title}}</div>
                     <div class="text_black">Описание: {{$organization->mini_content}}</div>
                 </div>
                 <div class="content_li_provider">

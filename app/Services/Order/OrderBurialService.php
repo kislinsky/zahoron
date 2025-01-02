@@ -4,10 +4,7 @@ namespace App\Services\Order;
 
 
 use App\Models\User;
-use App\Models\Burial;
 use App\Models\OrderBurial;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -19,11 +16,11 @@ class OrderBurialService
         if(isset($_COOKIE['add_to_cart_burial'])){
             $cart_items = json_decode($_COOKIE['add_to_cart_burial']);            
             if(Auth::check()){ 
-                $isset_orderds_burials=OrderBurial::whereIn('product_id',$cart_items)->where('user_id',Auth::user()->id)->get();
+                $isset_orderds_burials=OrderBurial::whereIn('burial_id',$cart_items)->where('user_id',Auth::user()->id)->get();
                 if(count($isset_orderds_burials)==0){
                     foreach($cart_items as $cart_item){
                         OrderBurial::create([
-                            'product_id'=>$cart_item,
+                            'burial_id'=>$cart_item,
                             'user_id'=>Auth::user()->id,
                             'customer_comment'=>$data['message']
                         ]);
@@ -48,7 +45,7 @@ class OrderBurialService
                     ]);
                     foreach($cart_items as $cart_item){
                         OrderBurial::create([
-                            'product_id'=>$cart_item,
+                            'burial_id'=>$cart_item,
                             'user_id'=>$last_id->id,
                             'customer_comment'=>$data['message']
                         ]);

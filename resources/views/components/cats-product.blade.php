@@ -1,7 +1,6 @@
 <?php 
 
-use App\Models\CategoryProduct;
-$cats=CategoryProduct::orderBy('id','desc')->where('parent_id',null)->get();
+$cats=mainCategoryProduct();
 ?>
 
 @if(count($cats)>0)

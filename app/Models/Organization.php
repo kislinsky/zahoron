@@ -10,9 +10,13 @@ class Organization extends Model
     use HasFactory;
     protected $guarded =[];
 
+
+    function user(){
+        return $this->belongsTo(User::class);
+    }
     
     public function city(){
-        return City::find($this->city_id);
+        return $this->belongsTo(City::class);
     }
 
     public function openOrNot(){
@@ -30,9 +34,10 @@ class Organization extends Model
     }
 
     public function countReviews(){
-        return ReviewsOrganization::where('organization_id',$this->id)->where('status',1)->count();
+        return $this->hasMany(ReviewsOrganization::class)->where('status',1)->count();
     }
 
+    
     public function route(){
         return route('organization.single',$this->slug);
     }
@@ -106,4 +111,17 @@ class Organization extends Model
             'rating'=>$rating,
         ]);   
     }
+
+    function ordersNew(){
+        return $this->hasMany(OrderProduct::class)->orderBy('id','desc')->where('status',0);
+    }
+
+    function ordersCompleted(){
+        return $this->hasMany(OrderProduct::class)->orderBy('id','desc')->where('status',2);
+    }
+
+    function ordersInWork(){
+        return $this->hasMany(OrderProduct::class)->orderBy('id','desc')->where('status',1);
+    }
+    
 }

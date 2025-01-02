@@ -9,7 +9,7 @@
                             {!!btnOPenOrNot($organization->openOrNot())!!}
                         </div>
                         <div class="text_black">Фирма: {{$organization->title}}</div>
-                        <div class="text_black">Город: {{$organization->city()->title}}</div>
+                        <div class="text_black">Город: {{$organization->city->title}}</div>
                         <div class="text_black">Описание: {{$organization->mini_content}}</div>
                     </div>
                     <div class="content_li_provider">

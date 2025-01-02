@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\Order\OrderProductService;
+use App\Models\CategoryProduct;
 
 class OrderProductController extends Controller
 {
@@ -19,7 +20,9 @@ class OrderProductController extends Controller
     }
 
     public static function addOrderOne(Request $request){
-        if($request['category_id']==32){
+        $category=CategoryProduct::find($request['category_id']);
+
+        if($category->slug=='organizacia-pohoron'){
             $data=request()->validate([
                 'name'=>['required','string'],
                 'phone'=>['required','string'],
@@ -34,7 +37,7 @@ class OrderProductController extends Controller
 
             return OrderProductService::addOrderOne($data);
         }
-        if($request['category_id']==33){
+        if($category->slug=='organizacia-kremacii'){
             $data=request()->validate([
                 'name'=>['required','string'],
                 'phone'=>['required','string'],
@@ -48,7 +51,7 @@ class OrderProductController extends Controller
 
             return OrderProductService::addOrderOne($data);
         }
-        if($request['category_id']==34){
+        if($category->slug=='otpravka-gruz-200'){
             $data=request()->validate([
                 'city_from'=>['required','string'],
                 'city_to'=>['required','string'],
@@ -64,7 +67,7 @@ class OrderProductController extends Controller
 
             return OrderProductService::addOrderOne($data);
         }
-        if($request['category_id']==35){
+        if($category->slug=='kopka-mogil'){
             $data=request()->validate([
                 'name'=>['required','string'],
                 'phone'=>['required','string'],
@@ -77,7 +80,16 @@ class OrderProductController extends Controller
 
             return OrderProductService::addOrderOne($data);
         }
-        
+        $data=request()->validate([
+            'name'=>['required','string'],
+            'phone'=>['required','string'],
+            'email'=>['required','email'],
+            'message'=>['string','nullable'],
+            'additionals'=>['nullable'],
+            'size'=>['required','string'],
+            'product_id'=>['required','integer'],
+        ]);
+        return OrderProductService::addOrderOne($data);        
     }
     
 }

@@ -18,6 +18,7 @@ use App\Models\Product;
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
         <link rel="stylesheet" href="{{asset('css/style.css')}}">
+        <link rel="stylesheet" href="{{asset('css/mobile.css')}}">
         <script src="https://api-maps.yandex.ru/1.1/index.xml" type="text/javascript"></script>
         <script src="https://api-maps.yandex.ru/2.1/?apikey=373ac95d-ec8d-4dfc-a70c-e48083741c72&lang=ru_RU"></script>
     </head>
@@ -50,6 +51,7 @@ use App\Models\Product;
             <div class='icon_header'><img src='{{asset('storage/uploads/Group 23.svg')}}'></div>
             <a href='/login' class='icon_header'><img src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
             <a class="no_bac_btn logout" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Выйти</a>
+            
         </div>
     </div>
 </header>

@@ -11,9 +11,16 @@
 </section>
 
 
-<div class="container">
-    <div id="map" style="width: 100%; height: 600px"></div>
-</div>
+<div class="block_ritual_objects">
+
+    <div class="container">
+        <div class="title_middle mobile_title_ritual_object">Колумабрии на карте в г. {{$city->title}}</div>
+        <div id="map" style="width: 100%; height: 600px"></div>
+        <div class="mobile_sidebar_ritual_object">
+            <div class="title_middle">Кнопки могил в г. {{ $city->title }}</div>
+            {{view('columbarium.components.sidebar',compact('products'))}}
+        </div>
+    </div>
 
 <section class="cemetery">
     <div class="container">
@@ -34,7 +41,9 @@
                 {{ $columbariums->withPath(route('columbariums'))->appends($_GET)->links() }}
 
             </div>
-            {{view('columbarium.components.sidebar',compact('products'))}}
+            <div class="dekstop_sidebar_ritual_object">
+                {{view('columbarium.components.sidebar',compact('products'))}}
+            </div>
         </div>
 
 
@@ -47,6 +56,8 @@
     </div>
 </section>
 
+</div>
+
 {{view('components.useful',compact('usefuls'))}}
 
 
@@ -58,6 +69,8 @@
 
 
 @include('columbarium.components.cities-places') 
+
+@include('components.ritual-objects') 
 
 <script>
     ymaps.ready(init);

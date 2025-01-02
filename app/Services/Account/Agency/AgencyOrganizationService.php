@@ -21,6 +21,7 @@ use App\Models\ImageAgency;
 use App\Models\ImageOrganization;
 use App\Models\ImageProduct;
 use App\Models\MemorialMenu;
+use App\Models\OrderProduct;
 use App\Models\Organization;
 use App\Models\Product;
 use App\Models\ProductParameters;
@@ -53,7 +54,12 @@ class AgencyOrganizationService {
 
     public static function update($data){
         $organization=Organization::findOrFail($data['id']);
-        $cemeteries=implode(",", $data['cemetery_ids']).',';
+
+        $cemeteries='';
+        if(isset($data['cemetery_ids'])){
+            $cemeteries=implode(",", $data['cemetery_ids']).',';
+
+        }
         $organization->update([
             'title'=>$data['title'],
             'mini_content'=>$data['mini_content'],
@@ -72,18 +78,21 @@ class AgencyOrganizationService {
         
         ]);
         ActivityCategoryOrganization::where('organization_id',$organization->id)->delete();
-        foreach($data['categories_organization'] as $key=>$category_organization){
-            $cat=CategoryProduct::find($category_organization);
-            $active_cetagory_organizaiton=ActivityCategoryOrganization::create([
-                'organization_id'=>$organization->id,
-                'category_main_id'=>$cat->parent_id,
-                'category_children_id'=>$cat->id,
-                'city_id'=>$organization->city_id,
-                'rating'=>$organization->rating,
-                'cemetery_ids'=>$cemeteries,
-                'price'=>$data['price_cats_organization'][$key],
-            ]);
+        if(isset($data['categories_organization'])){
+            foreach($data['categories_organization'] as $key=>$category_organization){
+                $cat=CategoryProduct::find($category_organization);
+                $active_cetagory_organizaiton=ActivityCategoryOrganization::create([
+                    'organization_id'=>$organization->id,
+                    'category_main_id'=>$cat->parent_id,
+                    'category_children_id'=>$cat->id,
+                    'city_id'=>$organization->city_id,
+                    'rating'=>$organization->rating,
+                    'cemetery_ids'=>$cemeteries,
+                    'price'=>$data['price_cats_organization'][$key],
+                ]);
+            }
         }
+      
 
         WorkingHoursOrganization::where('organization_id',$organization->id)->delete();
 
@@ -189,14 +198,14 @@ class AgencyOrganizationService {
 
 
     public static function aplications(){
-        $organization=user()->organizationInAccount();
+        $organization=user()->organization();
         $user=user();
         return view('account.agency.organization.pay.buy-applications',compact('user','organization'));
     }
 
 
     public static function buyAplicationsFuneralServices($count){  
-        $organization=user()->organizationInAccount();
+        $organization=user()->organization();
         $organization->update([
             'applications_funeral_services'=>$organization->applications_funeral_services+$count,
         ]);
@@ -204,7 +213,7 @@ class AgencyOrganizationService {
     }
 
     public static function buyAplicationsCallsOrganization($count){  
-        $organization=user()->organizationInAccount();
+        $organization=user()->organization();
         $organization->update([
             'calls_organization'=>$organization->calls_organization+$count,
         ]);
@@ -212,7 +221,7 @@ class AgencyOrganizationService {
     }
 
     public static function buyAplicationsProductRequestsFromMarketplace($count){ 
-        $organization=user()->organizationInAccount();
+        $organization=user()->organization();
         $organization->update([
             'product_requests_from_marketplace'=>$organization->product_requests_from_marketplace+$count,
         ]);
@@ -220,9 +229,17 @@ class AgencyOrganizationService {
     }
 
     public static function buyAplicationsImprovemenGraves($count){  
-        $organization=user()->organizationInAccount();
+        $organization=user()->organization();
         $organization->update([
             'applications_improvemen_graves'=>$organization->applications_improvemen_graves+$count,
+        ]);
+        return redirect()->back()->with('message_cart','Зявки успешно куплены');
+    }
+
+    public static function buyAplicationsMemorial($count){  
+        $organization=user()->organization();
+        $organization->update([
+            'aplications_memorial'=>$organization->aplications_memorial+$count,
         ]);
         return redirect()->back()->with('message_cart','Зявки успешно куплены');
     }
@@ -459,5 +476,45 @@ class AgencyOrganizationService {
         return 'готово';
     }
 
+
+    public static function ordersNew(){
+        $organization=user()->organization();
+        $orders=$organization->ordersNew;
+        return view('account.agency.organization.product.orders.new',compact('orders'));
+    }
+
+
+    public static function ordersInWork(){
+        $organization=user()->organization();
+        $orders=$organization->ordersInWork;
+        return view('account.agency.organization.product.orders.in-work',compact('orders'));
+    }
+
+
+    public static function ordersCompleted(){
+        $organization=user()->organization();
+        $orders=$organization->ordersCompleted;
+        // $orders=user()->organization()->with('ordersCompleted')->paginate(1);
+        return view('account.agency.organization.product.orders.completed',compact('orders'));
+    }
+
+    public static function orderComplete($order){
+        $order->update(['status'=>2]);
+        return redirect()->back()->with('message_cart','Статус успешно обновлен');
+    }
+
+    public static function orderAccept($order){
+        $organization=user()->organization();
+        if($organization->product_requests_from_marketplace>0){
+            $order->update(['status'=>1]);
+            $organization->update([
+                'product_requests_from_marketplace'=>$organization->product_requests_from_marketplace-1,
+            ]);
+            return redirect()->back()->with('message_cart','Заказ успешно принят');
+        }
+        return redirect()->back()->with('error','Закончились заявки');
+
+    }
+    
 }
 

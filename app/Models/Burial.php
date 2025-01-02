@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Service;
+use App\Models\Cemetery;
 use App\Models\WordsMemory;
 use App\Models\ImageMonument;
 use App\Models\ImagePersonal;
 use App\Models\LifeStoryBurial;
+use Illuminate\Support\Facades\Auth;
+
 class Burial extends Model
 {
     use HasFactory;
@@ -19,16 +22,16 @@ class Burial extends Model
     }
 
     function cemetery(){
-        return Cemetery::find($this->cemetery_id);
+        return $this->belongsTo(Cemetery::class);
     }
 
 
     function imagesMonument(){
-        return ImageMonument::where('burial_id',$this->id)->where('status',1)->get();
+        return $this->hasMany(ImageMonument::class)->where('status',1);
     }
 
     function imagesPersonal(){
-        return ImagePersonal::where('burial_id',$this->id)->where('status',1)->get();
+        return $this->hasMany(ImagePersonal::class)->where('status',1);
     }
 
     function services(){
@@ -36,7 +39,7 @@ class Burial extends Model
     }
 
     function lifeStory(){
-        return LifeStoryBurial::orderBy('id', 'desc')->where('burial_id',$this->id)->get();
+        return $this->hasMany(LifeStoryBurial::class)->orderBy('id', 'desc');
     }
 
     function productsNames(){
@@ -49,6 +52,17 @@ class Burial extends Model
 
     function memoryWords(){
         return WordsMemory::orderBy('id', 'desc')->where('product_id',$this->id)->where('status',1)->get();
+    }
+
+    function userHave(){
+        if(Auth::check()){
+            $order=OrderBurial::where('user_id',user()->id)->where('burial_id',$this->id)->count();
+            if($order>0){
+                return true;
+            }
+            return null;
+        }
+        return null;
     }
 
 }

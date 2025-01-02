@@ -3,8 +3,8 @@
         <div class="li_review_in_panel">
             <div class="flex_info_review_in_panel">
                 <div class="info_review">
-                    <div class="text_black_bold text_align_start">{{$review->organization()->title}}</div>
-                    <div class="text_black_bold text_align_start">{{$review->organization()->adres}}</div>
+                    <div class="text_black_bold text_align_start">{{$review->organization->title}}</div>
+                    <div class="text_black_bold text_align_start">{{$review->organization->adres}}</div>
                     <div class="text_black">{{$review->created_at->format('j F Y');}}</div>
                 </div>
                 

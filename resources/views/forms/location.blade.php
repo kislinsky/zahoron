@@ -1,8 +1,6 @@
 <?php 
 
 use App\Models\Edge;
-use App\Models\City;
-use App\Models\Cemetery;
 $edges=Edge::orderBy('title','asc')->get();
 ?>
 
@@ -23,7 +21,7 @@ $edges=Edge::orderBy('title','asc')->get();
 
                             <div id_edge={{ $edge->id }} class="li_location edge_li">{{ $edge->title }}</div>
 
-                            <?php    $cities=City::orderBy('id','desc')->where('edge_id',$edge->id)->get();?>
+                            <?php    $cities=$edge->cities;?>
 
                             @if(count($cities)>0)
 
@@ -33,7 +31,7 @@ $edges=Edge::orderBy('title','asc')->get();
                                     
                                         <div id_city={{ $city->id }} class="li_location city_li">{{ $city->title }}</div>
 
-                                        <?php $cemeteries=Cemetery::orderBy('id','desc')->where('city_id',$city->id)->get();?>
+                                        <?php $cemeteries=$city->cemeteries;?>
 
                                         @if(count($cemeteries)>0)
 

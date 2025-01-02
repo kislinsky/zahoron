@@ -5,12 +5,10 @@ namespace App\Services\Account\Agency;
 use App\Models\CategoryProductProvider;
 use App\Models\LikeOrganization;
 use App\Models\Organization;
-use App\Models\Product;
 use App\Models\ProductRequestToSupplier;
 use App\Models\PromotionsВiscountProvider;
 use App\Models\RequestsCostProductsSupplier;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+
 
 class AgencyOrganizationProviderService {
 
@@ -30,10 +28,11 @@ class AgencyOrganizationProviderService {
         if(!isset($data['all_lcs']) && isset($data['lcs'])){
             $transport_companies=json_encode($data['lcs']);
         }
+
         RequestsCostProductsSupplier::create([
             'organization_id'=>user()->organization()->id,
             'products'=>json_encode($products),
-            'transport_companies'=>json_encode($transport_companies),
+            'transport_companies'=>$transport_companies,
             'categories_provider_product'=>json_encode($data['products']),
         ]);
         return redirect()->back()->with('message_cart','Заявка успешно отправлена');
@@ -137,12 +136,18 @@ class AgencyOrganizationProviderService {
         
         return view('account.agency.organization.provider.offers.answer',compact('city','requests','categories_products_provider','category_choose'));
     }
+    
 
 
     public static function answerRequestsCostProductSuppliers(){
         $requests=RequestsCostProductsSupplier::orderBy('id','desc')->where('status',1)->paginate(10);
         return view('account.agency.organization.provider.requests.answer',compact('requests'));
 
+    }
+
+    public static function createdRequestsCostProductSuppliers(){
+        $requests=RequestsCostProductsSupplier::orderBy('id','desc')->where('status',0)->paginate(10);
+        return view('account.agency.organization.provider.requests.created',compact('requests'));
     }
 
 

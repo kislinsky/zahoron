@@ -14,10 +14,10 @@ class IndexBurial {
         if($product==null){
             return redirect()->back();
         }
-        $image_monument=$product->imagesMonument();
-        $image_personal=$product->imagesPersonal();
+        $image_monument=$product->imagesMonument;
+        $image_personal=$product->imagesPersonal;
         $services=$product->services();
-        $life_story=$product->lifeStory();
+        $life_story=$product->lifeStory;
         $products_names=$product->productsNames();
         $products_dates=$product->productsDates();
         $memory_words=$product->memoryWords();

@@ -1,7 +1,4 @@
 <?php 
-use App\Models\User;
-use App\Models\City;
-use App\Models\Organization;
 
 $city=selectCity();
 $reviews_organization=reviewsOrganization($city->id);
@@ -18,8 +15,7 @@ $reviews_organization=reviewsOrganization($city->id);
                         <div class="li_review_organization">
                             <div class='name_organization'>
                                 <?php 
-                                    $organization=Organization::find($review_organization->organization_id);
-                                    $user_city=User::find($review_organization->user_id);
+                                    $organization=$review_organization->organization;
                                 ?>
                                 <img src="{{$organization->urlImg()}}" alt="">
                                 <a href='{{$organization->route()}}' class="title_organization">Ритуальное агентство 
@@ -33,7 +29,7 @@ $reviews_organization=reviewsOrganization($city->id);
                                 <div class="content_all">{!!$review_organization->content!!}</div>
                             </div>
                             <div class="text_li">
-                                <?php $city_user=City::find($review_organization->city_id);?>
+                                <?php $city_user=$review_organization->city;?>
                                 {{$review_organization->name}} г. {{$city_user->title}}
                             </div>
                         </div>

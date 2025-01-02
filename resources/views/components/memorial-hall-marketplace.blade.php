@@ -14,7 +14,7 @@ use App\Models\Product;
                 @foreach($products_memorial_hall as $product_memorial_hall)
                     <div class="swiper-slide">
                         <div class="li_memorial_hall">
-                            <?php $images=$product_memorial_hall->getImages();?>
+                            <?php $images=$product_memorial_hall->getImages;?>
                             @if (isset($images))
                                 @if (count($images)>0)
                                     <img class='img_memorial_hall' src="{{ asset('storage/uploads_product/'.$images[0]->title) }}" alt="">
@@ -22,7 +22,7 @@ use App\Models\Product;
                             @endif
                             <div class="grid_two">
                                 <div class="flex_info_hall">
-                                    <?php $organization=$product_memorial_hall->organization();?>
+                                    <?php $organization=$product_memorial_hall->organization;?>
                                     <img src="{{$organization->urlImg()}}" alt="">
                                     <div class="flex_hall">
                                         <a href='{{$product_memorial_hall->route()}}' class="title_memorial_hall">{{$product_memorial_hall->title}}</a>

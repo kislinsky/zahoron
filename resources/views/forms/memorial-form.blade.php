@@ -6,7 +6,7 @@ use App\Models\City;
 use App\Models\District;
 
 $cities_memorial=City::orderBy('title','asc')->get();
-$districts=District::orderBy('title','asc')->where('city_id',selectCity()->id)->get();
+$districts=selectCity()->districts;
 $user=null;
 if(Auth::check()){
     $user=Auth::user();
@@ -29,17 +29,15 @@ if(Auth::check()){
                 </div>
                 <form action="{{ route('memorial.send') }}" method="get" class='form_popup'>
                     @csrf
+                    <input type="hidden" name="time_now" class='input_time_now'>
 
                     <div class="flex_input_form_contacts flex_beautification_form">
                         <div class="block_input" >
                             <label for="">Выберите город</label>
-                            <div class="select"><select name="city_memorial" >
-                                @if(count($cities_memorial)>0)
-                                    @foreach ($cities_memorial as $city_memorial)
-                                    <option <?php if(selectCity()->id==$city_memorial->id){echo 'selected';}?> value="{{$city_memorial->id}}">{{$city_memorial->title}}</option>
-                                    @endforeach
-                                @endif
-                            </select></div>
+                            <div class="block_ajax_input_search_cities">
+                                <input class='input_search_cities' type="text" name="city_search" id="" value='{{ selectCity()->title }}'>
+                                <input type="hidden" name="city_memorial" class='city_id_input' value='{{ selectCity()->id }}'>
+                            </div>
                             @error('city_memorial')
                                 <div class='error-text'>{{ $message }}</div>
                             @enderror
@@ -97,7 +95,7 @@ if(Auth::check()){
                             </div> 
                             <div class="block_input">
                                 <label for="">Номер телефона</label>
-                                <input type="text" name="phone_memorial" id="" placeholder="Номер телефона" <?php if(isset($user)){if($user!=null){echo 'value="'.$user->phone.'"';}}?> >
+                                <input type="text" class='phone' name="phone_memorial" id="" placeholder="Номер телефона" <?php if(isset($user)){if($user!=null){echo 'value="'.$user->phone.'"';}}?> >
                                 @error('phone_memorial')
                                     <div class='error-text'>{{ $message }}</div>
                                 @enderror
@@ -129,23 +127,3 @@ if(Auth::check()){
 </div>
 
 
-<script>
-    $( "#memorial_form select[name='city_memorial']" ).on( "change", function() {
-        let data  = {
-            'city_id':$(this).children('option:checked').val(),
-        };
-
-        $.ajax({
-            type: 'GET',
-            url: '{{route('memorial.ajax.district')}}',
-            data:  data,
-            success: function (result) {
-                $( "#memorial_form select[name='district_memorial']" ).html(result)
-            },
-            error: function () {
-                alert('Ошибка');
-            }
-        });
-       
-    });
-</script>

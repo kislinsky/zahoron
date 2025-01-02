@@ -36,7 +36,7 @@
                         </div>
                         <div class="li_info_edit_burial">
                             <div class="text_black_big_bold">Кладбище: </div>
-                            <div class="text_black">{{$burial->cemetery()->title}}</div>
+                            <div class="text_black">{{$burial->cemetery->title}}</div>
                         </div>
                         <div class="li_info_edit_burial">
                             <div class="text_black_big_bold">Расположение: </div>

@@ -16,6 +16,7 @@ use App\Models\CategoryProduct;
 use App\Models\CategoryProductPriceList;
 use App\Models\CategoryProductProvider;
 use App\Models\CommentProduct;
+use App\Models\District;
 use App\Models\FaqCategoryProduct;
 use App\Models\FaqService;
 use App\Models\Mortuary;
@@ -25,10 +26,13 @@ use App\Models\Service;
 use App\Models\ServiceReviews;
 use App\Models\User;
 use Ausi\SlugGenerator\SlugGenerator;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+
+
 
 
 
@@ -50,6 +54,7 @@ function categoryProductProviderChoose(){
 function childrenCategoryProducts($cat){
     return CategoryProduct::orderBy('id','desc')->where('parent_id',$cat->id)->get();
 }
+
 
 function childrenCategoryProductsPriceList($cat){
     return CategoryProductPriceList::orderBy('id','desc')->where('parent_id',$cat->id)->get();
@@ -253,7 +258,7 @@ function selectCity(){
 
 function priceProductOrder($cart_item){
     $product=Product::findOrFail($cart_item[0]);
-    $price=$product->price;
+    $price=priceProduct($product);
     if($cart_item[1]!=[]){
         foreach($cart_item[1] as $additional){
             $price+=AdditionProduct::findOrFail($additional)->price;
@@ -433,10 +438,11 @@ function priceAdditional($price){
 
 function addToCartProduct($id){
     $product=Product::find($id);
-    if($product->category_id==46 || $product->category_id==47 || $product->category_id==32 || $product->category_id==33 || $product->category_id==34 || $product->category_id==35){
-        return '<a href="'.$product->route().'" class="blue_btn">'.'Оформить</a>';
-    }
-    return '<div id_product="'. $product->id .'" class="blue_btn add_to_cart_product">Купить</div>';
+    // if($product->category_id==46 || $product->category_id==47 || $product->category_id==32 || $product->category_id==33 || $product->category_id==34 || $product->category_id==35){
+    //     return '<a href="'.$product->route().'" class="blue_btn">'.'Оформить</a>';
+    // }
+    // return '<div id_product="'. $product->id .'" class="blue_btn add_to_cart_product">Купить</div>';
+    return '<a href="'.$product->route().'" class="blue_btn">'.'Оформить</a>';
 
 }
 
@@ -545,7 +551,7 @@ function orgniaztionsFilters($data){
     if(isset($data['filter_work']) && $data['filter_work']!=null){
         if($data['filter_work']=='on'){
             $organizations_category_ids=$organizations_category->get()->map(function ($organization) {
-                $organization_choose=$organization->organization();
+                $organization_choose=$organization->organization;
                 if( $organization_choose->openOrNot()=='Открыто'){
                     $organization->open=1;
                     return $organization;
@@ -580,7 +586,7 @@ function organizationsPrices($data){
     if(isset($data['filter_work']) && $data['filter_work']!=null){
         if($data['filter_work']=='on'){
             $organizations_prices_ids=$organizations_prices->get()->map(function ($organization) {
-                $organization_choose=$organization->organization();
+                $organization_choose=$organization->organization;
                 if( $organization_choose->openOrNot()=='Открыто'){
                     $organization->open=1;
                     return $organization;
@@ -669,7 +675,7 @@ function orgniaztionsProviderFilters($data){
     if(isset($data['filter_work']) && $data['filter_work']!=null){
         if($data['filter_work']=='on'){
             $organizations_category_ids=$organizations_category->get()->map(function ($organization) {
-                $organization_choose=$organization->organization();
+                $organization_choose=$organization->organization;
                 if( $organization_choose->openOrNot()=='Открыто'){
                     $organization->open=1;
                     return $organization;
@@ -700,7 +706,7 @@ function organizationsProviderPrices($data){
     if(isset($data['filter_work']) && $data['filter_work']!=null){
         if($data['filter_work']=='on'){
             $organizations_prices_ids=$organizations_prices->get()->map(function ($organization) {
-                $organization_choose=$organization->organization();
+                $organization_choose=$organization->organization;
                 if( $organization_choose->openOrNot()=='Открыто'){
                     $organization->open=1;
                     return $organization;
@@ -802,6 +808,17 @@ function slug($item){
 
 }
 
+
+function slugOrganization($item){
+    $generator = new SlugGenerator(); 
+    $slug=$generator->generate($item); 
+    $orgainizations=Organization::where('slug',$slug)->get();
+    if($orgainizations->count()>0){
+        $slug=$slug.'-'.$orgainizations->count()+1;
+    }
+    return $slug;
+}
+
 function getBurial($id){
     return $product=Burial::findOrFail($id);
 }
@@ -851,8 +868,12 @@ function getCoordinatesCity($city){
 }
 
 
-function randomProductsPlace(){
-    $products=Product::inRandomOrder()->where('city_id',selectCity()->id)->whereIn('category_id',[29,30])->get()->take(2);
+function randomProductsPlace($category=null){
+    if($category!=null){
+        $products=Product::inRandomOrder()->where('city_id',selectCity()->id)->where('category_id',$category)->get()->take(2);
+        return $products;
+    }
+    $products=Product::inRandomOrder()->where('city_id',selectCity()->id)->get()->take(2);
     return $products;
 }
 
@@ -866,54 +887,66 @@ function phoneImport($phone){
 }
 
 
-
 function parseWorkingHours($input) {
-    // Массив с названиями дней недели
-    $days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-    $daysEnglish = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    // Arrays for days
+    $daysRu = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+    $daysEn = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-    // Массив для хранения результатов
-    $result = [];
+    // Initialize result array with all days set to "Выходной"
+    $result = array_fill(0, 7, [
+        'day' => '',
+        'time_start_work' => 'Выходной',
+        'time_end_work' => 'Выходной',
+    ]);
 
-    // Регулярное выражение для поиска форматов
-    if (preg_match('/([ПнВтСрЧтПтСбВс]+)(?:-([ПнВтСрЧтПтСбВс]+))?:\s*([0-9]{2}:[0-9]{2})-([0-9]{2}:[0-9]{2})/', $input, $matches)) {
-        // Формат "Пн-Вс: 09:00-17:00"
-        $startDay = array_search($matches[1], $days);
-        $endDay = array_search($matches[2], $days);
-        $startTime = $matches[3];
-        $endTime = $matches[4];
+    // Fill 'day' keys with English day names
+    foreach ($daysEn as $index => $day) {
+        $result[$index]['day'] = $day;
+    }
 
-        for ($i = $startDay; $i <= $endDay; $i++) {
-            $result[] = [
-                'day' => $daysEnglish[$i],
-                'time_start_work' => $startTime,
-                'time_end_work' => $endTime,
-            ];
+    // Split input by commas to get individual day-time pairs
+    $pairs = explode(', ', $input);
+
+    foreach ($pairs as $pair) {
+        // Check for range format "Пн-Пт: 09:00-17:00"
+        if (preg_match('/([ПнВтСрЧтПтСбВс]+)-([ПнВтСрЧтПтСбВс]+):\s*([0-9]{2}:[0-9]{2})-([0-9]{2}:[0-9]{2})/', $pair, $matches)) {
+            $startDayRu = $matches[1];
+            $endDayRu = $matches[2];
+            $startTime = $matches[3];
+            $endTime = $matches[4];
+
+            $startDayIndex = array_search($startDayRu, $daysRu);
+            $endDayIndex = array_search($endDayRu, $daysRu);
+
+            for ($i = $startDayIndex; $i <= $endDayIndex; $i++) {
+                $result[$i]['time_start_work'] = $startTime;
+                $result[$i]['time_end_work'] = $endTime;
+            }
         }
-    } elseif (preg_match('/([ПнВтСрЧтПтСбВс]+):\s*([0-9]{2}:[0-9]{2})-([0-9]{2}:[0-9]{2})/', $input, $matches)) {
-        // Формат "Пн: 09:00-17:00"
-        $dayIndex = array_search($matches[1], $days);
-        $startTime = $matches[2];
-        $endTime = $matches[3];
+        // Check for single day with times "Пн: 09:00-17:00"
+        elseif (preg_match('/([ПнВтСрЧтПтСбВс]+):\s*([0-9]{2}:[0-9]{2})-([0-9]{2}:[0-9]{2})/', $pair, $matches)) {
+            $dayRu = $matches[1];
+            $startTime = $matches[2];
+            $endTime = $matches[3];
 
-        $result[] = [
-            'day' => $daysEnglish[$dayIndex],
-            'time_start_work' => $startTime,
-            'time_end_work' => $endTime,
-        ];
-    } elseif (preg_match('/([ПнВтСрЧтПтСбВс]+):\s*(Выходной)/', $input, $matches)) {
-        // Формат "Пн: Выходной"
-        $dayIndex = array_search($matches[1], $days);
-        $result[] = [
-            'day' => $daysEnglish[$dayIndex],
-            'time_start_work' => 'Выходной',
-            'time_end_work' => 'Выходной',
-        ];
+            $dayIndex = array_search($dayRu, $daysRu);
+
+            $result[$dayIndex]['time_start_work'] = $startTime;
+            $result[$dayIndex]['time_end_work'] = $endTime;
+        }
+        // Check for single day with "Выходной" "Вс: Выходной"
+        elseif (preg_match('/([ПнВтСрЧтПтСбВс]+):\s*(Выходной)/', $pair, $matches)) {
+            $dayRu = $matches[1];
+
+            $dayIndex = array_search($dayRu, $daysRu);
+
+            $result[$dayIndex]['time_start_work'] = 'Выходной';
+            $result[$dayIndex]['time_end_work'] = 'Выходной';
+        }
     }
 
     return $result;
 }
-
 
 
 function extractServiceNames($html) {
@@ -970,6 +1003,33 @@ function createCity($city_name,$edge_name){
         ]);
     }
     return $city;
+
+}
+
+
+function createDistrict($district_name,$city_name){
+
+    if($city_name==null || $district_name==null){
+        return null;
+    }
+
+    $city=City::where('title',$city_name)->first();
+    $district=District::where('title',$district_name)->first();
+
+    if($city==null){
+        $city=City::create([
+            'title'=>$city_name,
+            'slug'=>slug($city_name),
+        ]);
+    }
+    if($district==null){
+        $district=District::create([
+            'title'=>$district_name,
+            'city_id'=> $city->id,
+            
+        ]);
+    }
+    return $district->id;
 
 }
 
@@ -1087,9 +1147,12 @@ function translateDayOfWeek($day)
 
 function checkOrganizationInn($inn){
     $token = "1a103347bb77291b7c8fb45fb3154a5ac99172ce";
-     $dadata = new \Dadata\DadataClient($token, null);
-     $result = $dadata->findById("party", $inn, 1);
-     return $result[0]['data'];
+    $dadata = new \Dadata\DadataClient($token, null);
+    $result = $dadata->findById("party", $inn, 1);
+    if(isset($result[0]['data'])){
+        return $result[0]['data'];
+    }
+    return null;
      
 }
 
@@ -1154,4 +1217,70 @@ function btnOPenOrNot($item){
         return "<div class='btn_green'>Открыто</div>";
     }
     return "<div class='red_btn'>Закрыто</div>";
+}
+
+function childrenCategoryPriceList(){
+    return CategoryProductPriceList::where('parent_id','!=',null)->get();
+}
+
+
+
+
+function secondsUntilAM($time,$time_now)
+{
+    $time=explode(':',$time);
+    // Текущее время
+    $now = $time_now;
+    // Установим дату и время следующей точки в 6 утра
+    $am = $now->copy()->setTime($time[0], $time[1], 0);
+
+
+    // Если текущее время уже после 6 утра, то берем 6 утра завтрашнего дня
+    if ($now->greaterThanOrEqualTo($am)) {
+        $am = $am->addDay();
+    }
+
+    // Разница в секундах
+    return $am->diffInSeconds($now);
+}
+
+function secondsUntilEndOfTomorrow($time_now)
+{
+    // Текущее время
+    $now = $time_now;
+    // Завтрашний день в 23:59:59
+    $endOfTomorrow = $now->copy()->addDay()->endOfDay();
+
+    // Разница в секундах
+    return $endOfTomorrow->diffInSeconds($now);
+}
+
+
+function convertToCarbon($dateString)
+{
+    // Убираем лишние части строки, оставляя только дату и время
+    $cleanedString = preg_replace('/GMT\+[0-9]{4} \(.*\)/', '', $dateString);
+
+    // Преобразуем строку в объект Carbon
+    $carbonDate = Carbon::parse($cleanedString);
+
+    return $carbonDate;
+}
+
+
+function minPriceCategoryProductOrganization($slug){
+    $cat=CategoryProduct::where('slug',$slug)->first();
+    $price=ActivityCategoryOrganization::where('city_id',selectCity()->id)->where('category_children_id',$cat->id)->orderBy('price','asc')->first();
+    if($price!=null){
+        return $price->price;
+    }
+    return 10000;
+}
+
+function mainCategoryProduct(){
+    return CategoryProduct::orderBy('id','desc')->where('parent_id',null)->get();
+}
+
+function mainCategoryPriceList(){
+    return CategoryProductPriceList::orderBy('id','desc')->where('parent_id',null)->get();
 }

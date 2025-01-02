@@ -17,7 +17,7 @@ class ColumbariumService {
 
     public static function index(){
         $city=selectCity();
-        $products=randomProductsPlace();
+        $products=randomProductsPlace(35);
         $usefuls=UsefulColumbarium::orderBy('id','desc')->get();
         $columbariums_map=Columbarium::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $columbariums=Columbarium::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
@@ -30,12 +30,17 @@ class ColumbariumService {
         $reviews=ReviewColumbarium::orderBy('id','desc')->where('status',1)->where('columbarium_id',$id)->get();
         $reviews_main=$reviews->take(3);
         $city=selectCity();
+        
+        $organizations_our = City::with(['cityOrganizations' => function($query) {
+            $query->where('role','organization'); // или 'asc' для возрастающей сортировки
+        }])->get();
+
         $organizations_our=$city->cityOrganizations();
         $columbarium_all=Columbarium::all();
-        $services=ServiceColumbarium::where('columbarium_id',$id)->get();
+        $services=$columbarium->services;
         $faqs=FaqColumbarium::orderBy('id','desc')->get();
         $characteristics=json_decode($columbarium->characteristics);
-        $images=ImageColumbarium::where('columbarium_id',$columbarium->id)->get();
+        $images=$columbarium->images;
         $similar_columbariums=Columbarium::where('city_id',$columbarium->city_id)->where('id','!=',$columbarium->id)->get();
         return view('columbarium.single',compact('organizations_our','images','similar_columbariums','columbarium','reviews','reviews_main','services','city','faqs','columbarium_all','characteristics'));
     }

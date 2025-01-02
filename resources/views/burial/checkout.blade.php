@@ -17,7 +17,7 @@
             @if (count($cart_items)>0)
                 <table class='checkout_table'>
                     <thead>
-                        <th>Услуга</th>
+                        <th class='title_burial_basket'>Услуга</th>
                         <th>Захоронение</th>
                         <th>Сумма</th>
                         <th></th>
@@ -27,7 +27,7 @@
                         <?php $product=getBurial($cart_item[0]);
                             $total+=$product->price; ?>
                             <tr>
-                                <td class='title_cart'>Предоставление геолокации</td>
+                                <td class='title_cart title_burial_basket'>Предоставление геолокации</td>
                                 <td><a href='{{ $product->route() }}' class="title_cart decoration_on">{{ $product->surname }} {{ $product->name }} {{ $product->patronymic }}</div></td>
                                 <td class='title_cart'>{{ $product->price }} ₽</td>
                                 <td><a href='{{ route('burial.delete',$product->id) }}'class="delete_cart"><img src="{{asset('storage/uploads/Trash.svg')}}" alt=""> Удалить</a></td>

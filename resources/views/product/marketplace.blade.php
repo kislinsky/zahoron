@@ -6,7 +6,9 @@
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-            <div class="index_title text_decoration">Маркетплейс</div> 
+            <h1 class="index_title title_page">
+                {{ view("product.components.catalog.title", compact("category",'cemetery','city','district')) }}
+            </h1>
         </div>
         <img class='rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
         
@@ -14,9 +16,7 @@
 </section>
 <section class="product_market">
     <div class="container">
-        <div class="title_page">
-            {{ view("product.components.catalog.title", compact("category",'cemetery','city','district')) }}
-        </div>
+       
        
         <div class="grid_product_two">
             <div class="one_block_market">

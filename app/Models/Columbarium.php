@@ -11,17 +11,23 @@ class Columbarium extends Model
     protected $guarded =[];
 
     public function city(){
-        $cemetery=City::find($this->city_id);
-        return $cemetery;
+        return $this->belongsTo(City::class);
     }
 
     public function district(){
-        $district=District::find($this->district_id);
-        return $district;
+        return $this->belongsTo(District::class);
     }
 
     public function route(){
         return route('columbarium.single',$this->id);
+    }
+
+    public function images(){
+        return $this->hasMany(ImageColumbarium::class);
+    }
+
+    public function services(){
+        return $this->hasMany(ServiceColumbarium::class);
     }
 
     public function openOrNot(){

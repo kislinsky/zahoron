@@ -8,9 +8,9 @@ use App\Models\AdditionProduct;
         <table class='checkout_table'>
             <thead>
                 <th>Товар</th>
-                <th>Количество</th>
+                <th class='table_busket_th_count'>Количество</th>
                 <th>Сумма</th>
-                <th></th>
+                <th class='table_busket_th_delete'></th>
             </thead>
             <?php $total=0; ?>
             @foreach ($cart_items as $cart_item)
@@ -20,7 +20,7 @@ use App\Models\AdditionProduct;
                         <td class='title_cart'>
                             <div class="grid_two_cart">
                                 <div class='image_product_cart'>
-                                    <?php $images=$product->getImages();?>
+                                    <?php $images=$product->getImages;?>
                                     @if (isset($images))
                                         @if (count($images)>0)
                                             <img  src="{{ asset('storage/uploads_product/'.$images[0]->title) }}" alt="">
@@ -61,13 +61,17 @@ use App\Models\AdditionProduct;
                             </div>
                         </td>
                         <td class='title_cart count_product_checkout'><input id_product='{{ $product->id }}' type="number" name="count_product" value='{{ $cart_item[2] }}'></td>
-                        <td class='title_cart price_cart_checkout'><span>{{ (priceProduct($product)+$total_additionals)*$cart_item[2] }}</span> ₽</td>
+                        <td class='title_cart price_cart_checkout'>
+                            <div class="count_product_checkout"><input class='change_count_busket' id_product='{{ $product->id }}' type="number" name="count_product" value='{{ $cart_item[2] }}'></div>
+                            <div><span>{{ (priceProduct($product)+$total_additionals)*$cart_item[2] }}</span> ₽</div>
+                            <a href='{{ route('product.delete',$product->id) }}'class="delete_cart mobile_delete_cart"><img src="{{asset('storage/uploads/Trash.svg')}}" alt=""> Удалить</a>
+                        </td>
                         <td><a href='{{ route('product.delete',$product->id) }}'class="delete_cart"><img src="{{asset('storage/uploads/Trash.svg')}}" alt=""> Удалить</a></td>
                     </tr>
                     <?php $total+=(priceProduct($product)+$total_additionals)*$cart_item[2];?>
             @endforeach
-            
             <tfoot>
+                
                 <tr>
                     <td><div class="title_cart">Итого:</div></td>
                     <td><div class="title_middle total_price_cart"><span>{{ $total }}</span> ₽</div></td>

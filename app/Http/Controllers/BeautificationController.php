@@ -18,8 +18,7 @@ class BeautificationController extends Controller
             'aplication'=>['required'],
             'call_time'=>['nullable'],
             'call_tomorrow'=>['nullable'],
-
-
+            'time_now'=>['required',]
         ]);
         return BeautificationService::sendBeautification($data);
     }

@@ -2,13 +2,9 @@
 <?php 
 
 use Illuminate\Support\Facades\Auth;
-use App\Models\City;
-use App\Models\Mortuary;
-use App\Models\Cemetery;
 
-$cities_funeral_services=City::orderBy('title','asc')->get();
-$mortuaries=Mortuary::orderBy('title','asc')->where('city_id',selectCity()->id)->get();
-$cemeteries_beatification=Cemetery::orderBy('title','asc')->where('city_id',selectCity()->id)->get();
+$mortuaries=selectCity()->mortuaries;
+$cemeteries_beatification=selectCity()->cemeteries;;
 
 $user=null;
 if(Auth::check()){
@@ -32,6 +28,7 @@ if(Auth::check()){
                 </div>
                 <form action="{{ route('funeral-service.send') }}" method="get" class='form_popup'>
                     @csrf
+                    <input type="hidden" name="time_now" class='input_time_now'>
 
                     <div class="flex_input_form_contacts flex_beautification_form">
                         <div class="block_input" >
@@ -48,13 +45,10 @@ if(Auth::check()){
 
                         <div class="block_input" >
                             <label class='label_city'for="">Город отправки</label>
-                            <div class="select"><select name="city_funeral_service" >
-                                @if(count($cities_funeral_services)>0)
-                                    @foreach ($cities_funeral_services as $city_funeral_services)
-                                        <option <?php if(selectCity()->id==$city_funeral_services->id){echo 'selected';}?> value="{{$city_funeral_services->id}}">{{$city_funeral_services->title}}</option>
-                                    @endforeach
-                                @endif
-                            </select></div>
+                            <div class="block_ajax_input_search_cities">
+                                <input class='input_search_cities' type="text" name="city_search" id="" value='{{ selectCity()->title }}'>
+                                <input type="hidden" name="city_funeral_service" class='city_id_input' value='{{ selectCity()->id }}'>
+                            </div>
                             @error('city_funeral_service')
                                 <div class='error-text'>{{ $message }}</div>
                             @enderror
@@ -74,13 +68,10 @@ if(Auth::check()){
                         </div>  
                         <div class="block_input service_cargo_200" >
                             <div class="flex_input"><label for="">Город получения</label> <label class='flex_input_checkbox checkbox'><input type="checkbox" name='none_mortuary'>Заграница</label></div>
-                            <div class="select"><select name="city_funeral_service_to" >
-                                @if(count($cities_funeral_services)>0)
-                                    @foreach ($cities_funeral_services as $city_funeral_services)
-                                        <option value="{{$city_funeral_services->id}}">{{$city_funeral_services->title}}</option>
-                                    @endforeach
-                                @endif
-                            </select></div>
+                            <div class="block_ajax_input_search_cities">
+                                <input search='false' class='input_search_cities' type="text" name="city_search" id="" value='{{ selectCity()->title }}'>
+                                <input  type="hidden" name="city_funeral_service" class='city_funeral_service_to city_id_input' value='{{ selectCity()->id }}'>
+                            </div>
                             @error('city_funeral_service_to')
                                 <div class='error-text'>{{ $message }}</div>
                             @enderror
@@ -151,7 +142,7 @@ if(Auth::check()){
                             </div> 
                             <div class="block_input">
                                 <label for="">Номер телефона</label>
-                                <input type="text" name="phone_funeral_service" id="" placeholder="Номер телефона" <?php if(isset($user)){if($user!=null){echo 'value="'.$user->phone.'"';}}?> >
+                                <input type="text" class='phone' name="phone_funeral_service" id="" placeholder="Номер телефона" <?php if(isset($user)){if($user!=null){echo 'value="'.$user->phone.'"';}}?> >
                                 @error('phone_memorial')
                                     <div class='error-text'>{{ $message }}</div>
                                 @enderror
@@ -182,35 +173,3 @@ if(Auth::check()){
     </div>
 </div>
 
-
-<script>
-    $( "#funeral_services_form select[name='city_funeral_service']" ).on( "change", function() {
-        let data  = {
-            'city_id':$(this).children('option:checked').val(),
-        };
-
-        $.ajax({
-            type: 'GET',
-            url: '{{route('funeral-service.ajax.mortuary')}}',
-            data:  data,
-            success: function (result) {
-                $( "#funeral_services_form select[name='mortuary_funeral_service']" ).html(result)
-            },
-            error: function () {
-                alert('Ошибка');
-            }
-        });
-        $.ajax({
-            type: 'GET',
-            url: '{{route('funeral-service.ajax.cemetery')}}',
-            data:  data,
-            success: function (result) {
-                $( "#funeral_services_form select[name='cemetery_funeral_service']" ).html(result)
-            },
-            error: function () {
-                alert('Ошибка');
-            }
-        });
-       
-    });
-</script>

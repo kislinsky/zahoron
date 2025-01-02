@@ -14,7 +14,7 @@
                 </thead>
                 <tbody>
                         @foreach($oragnizations_rating as $oragnization_rating)
-                        <?php $organization=$oragnization_rating->organization();?>
+                        <?php $organization=$oragnization_rating->organization;?>
                             <tr>
                                 <td class='name_organization'>
                                     <img src="{{$organization->urlImg()}}" alt="">

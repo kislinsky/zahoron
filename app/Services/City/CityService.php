@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 
 class CityService {
+    
     public static function selectCity($id){
         $city=City::findOrFail($id);
         $new_url = insert_city_into_url(url()->previous(), $city->slug);
@@ -31,5 +32,14 @@ class CityService {
     public static function ajaxCityInInput($city){
         $cities=City::orderBy('title','asc')->where('title','like',$city.'%')->get();
         return view('components.components_form.cities-input',compact('cities'));
+    }
+
+
+    public static function ajaxCitySearchInInput($data){
+        $citites=[];
+        if(isset($data['s']) && $data['s']!=null){
+            $cities=City::orderBy('title','asc')->where('title','like',$data['s'].'%')->get();
+        }
+        return view('components.components_form.cities-input-search',compact('cities'));
     }
 }

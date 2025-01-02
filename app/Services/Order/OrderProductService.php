@@ -40,7 +40,7 @@ class OrderProductService
             }
             foreach($cart_items as $cart_item){
                 $product=Product::findOrFail($cart_item[0]);
-                if($product->type=='product-memorial-menu'){
+                if($product->type=='memorial-menu'){
                     OrderProduct::create([
                         'additional'=>json_encode($cart_item[1]),
                         'product_id'=>$product->id,
@@ -50,6 +50,7 @@ class OrderProductService
                         'price'=>priceProductOrder($cart_item),
                         'date'=>$cart_item[4],
                         'time'=>$cart_item[5],
+                        'organization_id'=>$product->organization->id
                     ]);
                 }else{
                     OrderProduct::create([
@@ -61,6 +62,8 @@ class OrderProductService
                         'price'=>priceProductOrder($cart_item),
                         'size'=>$cart_item[3],
                         'cemetery_id'=>$product->cemetery_id,
+                        'organization_id'=>$product->organization->id
+
                     ]);
                 }
                
@@ -74,7 +77,7 @@ class OrderProductService
     }
 
     public static function addOrderOne($data){
-        $user=Auth::user();
+        $user=user();
         $product=Product::find($data['product_id']);
         $price_product=priceProduct($product);
         $mortuary=null;
@@ -87,7 +90,7 @@ class OrderProductService
         if(isset($data['additionals'])){
             $additionals=json_encode($data['additionals']);
         }
-        if($product->category_id==32){
+        if($product->category->slug=='organizacia-pohoron'){
            $order=OrderProduct::create([
             'product_id'=>$product->id,
             'user_id'=>$user->id,
@@ -97,9 +100,11 @@ class OrderProductService
             'cemetery_id'=>$data['cemetery_id'],
             'mortuary_id'=>$mortuary,
             'additional'=>$additionals,
+            'organization_id'=>$product->organization->id
+
            ]);
         }
-        if($product->category_id==33){
+        if($product->category->slug=='organizacia-kremacii'){
             $order=OrderProduct::create([
              'product_id'=>$product->id,
              'user_id'=>$user->id,
@@ -108,9 +113,11 @@ class OrderProductService
              'price'=>$price_product,
              'mortuary_id'=>$mortuary,
              'additional'=>$additionals,
+            'organization_id'=>$product->organization->id
+
             ]);
         }
-        if($product->category_id==34){
+        if($product->category->slug=='otpravka-gruz-200'){
             $order=OrderProduct::create([
              'product_id'=>$product->id,
              'user_id'=>$user->id,
@@ -121,9 +128,11 @@ class OrderProductService
              'price'=>$price_product,
              'mortuary_id'=>$mortuary,
              'additional'=>$additionals,
+            'organization_id'=>$product->organization->id
+
             ]);
         }
-        if($product->category_id==35){
+        if($product->category->slug=='kopka-mogil'){
             $order=OrderProduct::create([
              'product_id'=>$product->id,
              'user_id'=>$user->id,
@@ -132,6 +141,20 @@ class OrderProductService
              'price'=>$price_product,
              'cemetery_id'=>$data['cemetery_id'],
              'additional'=>$additionals,
+            'organization_id'=>$product->organization->id
+
+            ]);
+        }
+        else{
+            $order=OrderProduct::create([
+                'product_id'=>$product->id,
+                'user_id'=>$user->id,
+                'customer_comment'=>$data['message'],
+                'count'=>1,
+                'price'=>$price_product,
+                'size'=>$data['size'],
+                'additional'=>$additionals,
+                'organization_id'=>$product->organization->id
             ]);
         }
         $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';

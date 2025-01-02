@@ -10,4 +10,8 @@ class FavouriteBurial extends Model
     use HasFactory;
     protected $guarded =[];
 
+    function burial(){
+        return $this->belongsTo(Burial::class);
+    }
+
 }

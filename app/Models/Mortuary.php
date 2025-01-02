@@ -13,13 +13,20 @@ class Mortuary extends Model
 
 
     public function city(){
-        $cemetery=City::find($this->city_id);
-        return $cemetery;
+        return $this->belongsTo(City::class);
     }
 
     public function district(){
-        $district=District::find($this->district_id);
-        return $district;
+        return $this->belongsTo(District::class);
+    }
+
+
+    public function images(){
+        return $this->hasMany(ImageMortuary::class);
+    }
+
+    public function services(){
+        return $this->hasMany(ServiceMortuary::class);
     }
 
     public function route(){

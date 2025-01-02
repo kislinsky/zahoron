@@ -26,49 +26,51 @@ class ProductService
             return redirect()->back();
         }
         $id=$product->id;
-        $organization=Organization::find($product->organization_id);
-        $agent=User::find($organization->id);
+        $organization=$product->organization;
+        $agent=$organization->user;
         $additionals=[];
-        $ids_additionals=CategoryProduct::find($product->category_id);
+        $ids_additionals=$product->category;
         if($ids_additionals->additional!=null){
             $additionals=AdditionProduct::whereIn('id',json_decode($ids_additionals->additional))->get();
         }
         $size=explode('|',$product->size);
         $comments=$product->reviews();
-        $images=$product->getImages();
-        $parameters=$product->getParam();
-        $category=$product->category();
+        $images=$product->getImages;
+        $parameters=$product->getParam;
+        $category=$product->category;
         $sales=ActivityCategoryOrganization::where('organization_id',$organization->id)->where('category_children_id',$category->id)->where('sales','!=',null)->get();
         $city=selectCity();  
-        $cemeteries=$city->cemeteries();
-        $mortuaries=$city->mortuaries();
+        $cemeteries=$city->cemeteries;
+        $mortuaries=$city->mortuaries;
         $category_products=Product::orderBy('id','desc')->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('city_id',$product->city_id)->get();
 
-        if($category->id==46){
-            $district=$product->district();
-            $memorial_menu=$product->memorialMenu();
+        if($category->slug=='pominal-nyh-obedy'){
+            $district=$product->district;
+            $memorial_menu=$product->memorialMenu;
             return view('product.single.single-menu',compact('product','sales','agent','city','district','images','organization','memorial_menu','category','additionals','comments','category_products'));
         }
 
-        if($category->id==32){
+        if($category->slug=='organizacia-pohoron'){
             return view('product.single.single-organization-funeral',compact('mortuaries','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
 
-        if($category->id==33){
+        if($category->slug=='organizacia-kremacii'){
             return view('product.single.single-cremation',compact('product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
 
-        if($category->id==34){
+        if($category->slug=='otpravka-gruz-200'){
             return view('product.single.single-shipment-200-cargo',compact('product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
         
-        if($category->id==35){
+        if($category->slug=='kopka-mogil'){
             return view('product.single.single-button-grave',compact('product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
 
+      
+
         $category_products=Product::orderBy('id','desc')->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('cemetery_id',$product->cemetery_id)->get();
 
-        return view('product.single.single',compact('product','organization','sales','images','parameters','category','size','additionals','comments','category_products'));
+        return view('product.single.single',compact('agent','product','organization','sales','images','parameters','category','size','additionals','comments','category_products'));
     }
 
 
@@ -93,14 +95,14 @@ class ProductService
         $cats=CategoryProduct::orderBy('id','desc')->where('parent_id',null)->get();
         $products=filterProducts($data);
         $faqs=faqCatsProduct($data);
-        $cemeteries_all=$city->cemeteries();
+        $cemeteries_all=$city->cemeteries;
         $cemetery=cemeteryProduct($data);
         $district=null;
         if(isset($data['district_id'])  && $data['district_id']!='undefined'){
            $district=District::find($data['district_id']);
         }
         $category=ajaxCatContent($data);
-        $districts_all=$city->districts();
+        $districts_all=$city->districts;
         return view('product.marketplace',compact('district','layerings','sort','districts_all','cemeteries_all','reviews','products','city','cats','price_all','materials_filter','faqs','cemetery','category','page'));
 
     }

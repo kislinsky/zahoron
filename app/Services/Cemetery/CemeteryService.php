@@ -20,13 +20,12 @@ use Illuminate\Http\Request;
 class CemeteryService {
     
     public static function index(){
-        $page=5;
         $city=selectCity();
-        $products=randomProductsPlace();
+        $products=randomProductsPlace(29);
         $usefuls=UsefulCemetery::orderBy('id','desc')->get();
         $cemeteries_map=Cemetery::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $cemeteries=Cemetery::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
-        return view('cemetery.index',compact('cemeteries','page','city','products','usefuls','cemeteries_map'));
+        return view('cemetery.index',compact('cemeteries','city','products','usefuls','cemeteries_map'));
     }
 
     public static function singleCemetery($cemetery){

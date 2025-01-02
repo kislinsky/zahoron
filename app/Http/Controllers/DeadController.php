@@ -17,6 +17,7 @@ class DeadController extends Controller
          'phone_dead'=>['required','integer'],
          'call_time'=>['nullable'],
          'call_tomorrow'=>['nullable'],
+         'time_now'=>['required',]
 
         ]);
         

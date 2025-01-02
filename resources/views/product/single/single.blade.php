@@ -50,9 +50,10 @@
 
                 
             </div>
-            <form method='get' action='{{ route('product.add.cart.details') }}'class="sidebar">
+            <form method='post' action='{{ route('order.product.add.details') }}'class="sidebar">
                 @csrf
-                <input type="hidden" name="id_product" value='{{ $product->id }}'>
+                <input type="hidden" name="category_id" value='{{ $product->category_id }}'>
+                <input type="hidden" name="product_id" value='{{ $product->id }}'>
                 <div class="cats_news product_sidebar_block">
                     <div class="title_news">
                         {{ $product->price }} ₽ <span class="gray_mini_text"> (цена без скидки)</span>
@@ -70,11 +71,10 @@
                     <div style='display:none;' class="count_product_single"> <input name='count' type="hidden" min=1 value=1>  </div>
                     <div class="flex_main_price">
                         <div class="title_middle"><span price='{{ priceProduct($product) }}'>{{ priceProduct($product) }}</span> ₽</div>
-                        <button class="blue_btn">Купить</button>
                     </div>
                 </div>
                 <div class="cats_news product_sidebar_block">
-                    <div class="title_news">Выберите размер памятника</div>
+                    <div class="title_news">Выберите размер</div>
                     <select name="size" id="">
                         @if (count($size)>0)
                             @foreach ($size as $one_size)
@@ -84,6 +84,8 @@
                     </select>
                 </div>
                 {{view('product.components.single.additionals',compact('additionals'))}}
+
+                {{view('product.components.single.user-inputs')}}
 
                 @if(count($parameters)>0)
                 <div class="cats_news product_sidebar_block">
@@ -101,42 +103,16 @@
             </div>
         </div>
 
-        {{view('product.components.single.category-products',compact('category_products'))}}
-
+        <div class="">
+            <h2 class='title_our_works'>Похожие {{ $product->title }}</h2>
+            {{view('product.components.single.category-products',compact('category_products'))}}
+        </div>
     </div>
 </section>
 
 
 <script>
-    $( ".add_to_cart_product" ).on( "click", function() {
-    let this_btn=$(this)
-    let id_product= $(this).attr('id_product');
-    $.ajax({
-        type: 'GET',
-        url: '{{ route("product.add.cart") }}',
-        data: {
-            "_token": "{{ csrf_token() }}",
-            'id_product': id_product,
-        }, success: function (result) {
-            
-            if(result['error']){
-                alert(result['error'])
-            }else{
-                this_btn.html('Купить <img src="{{asset("storage/uploads/done-v-svgrepo-com.svg")}}">')
-                let price= Number($('.blue_block_all_price span').html())+Number(result['price'])
-                $('.blue_block_all_price span').html(price)
-                
-            }
-        },
-        error: function () {
-            alert('Ошибка');
-        }
-    });
 
-
-    
-
-});
 </script>
 
 

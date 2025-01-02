@@ -9,4 +9,14 @@ class OrderService extends Model
 {
     use HasFactory;
     protected $guarded =[];
+    
+    function burial(){
+        return $this->belongsTo(Burial::class);
+    }
+
+    function services(){
+        return Service::whereIn('id',json_decode($this->services_id));
+    }
+
+
 }

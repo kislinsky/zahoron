@@ -3,17 +3,15 @@
 namespace App\Services\Burial;
 
 
-use App\Models\News;
 use App\Models\Burial;
-use App\Models\Service;
-use App\Models\WordsMemory;
-use Illuminate\Http\Request;
 use App\Models\FavouriteBurial;
 use Illuminate\Support\Facades\Auth;
 
 
 
 class FavoriteBurial{  
+
+    
     public static function favoriteAdd($id){
         if(Auth::check()){
             $user=Auth::user();
@@ -35,7 +33,6 @@ class FavoriteBurial{
     public static function favoriteDelete($id){
         FavouriteBurial::findOrFail($id)->delete();
         return redirect()->back();
-
     }
 
 }

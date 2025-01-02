@@ -6,6 +6,7 @@
                 <img class='img_logo_organization'src="{{$organization->urlImg()}}" alt="">
                 <div class="info_li_search_add_organization">
                     <a href='{{$organization->route()}}' class="title_middle_black_bold">{{$organization->title}}</a>
+                    <div class="text_black">{{$organization->name_type}}</div>
                     <div class="text_black">{{$organization->adres}}</div>
                     {!!btnAddOrganization($organization->id)!!}
                 </div>

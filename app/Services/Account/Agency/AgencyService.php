@@ -49,7 +49,7 @@ class AgencyService {
 
     public static function organizationSettingsUpdate($data){
         //$organization_ddata=checkOrganizationInn($data['inn']);
-        // if($organization_ddata['state']['status']=='ACTIVE'){
+        // if($organization_ddata!=null && $organization_ddata['state']['status']=='ACTIVE'){
         if(true){
             $name_user_org='Иван';
             $surname_user_org='Иванович';

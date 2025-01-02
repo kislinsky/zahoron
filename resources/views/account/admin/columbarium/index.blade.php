@@ -3,6 +3,7 @@
 @section('title', 'Все колумбарии')
 
 @section('content')
+<div class="table_admin">
 <table class="table admin_table">
     <thead>
       <tr>
@@ -18,7 +19,7 @@
             <tr>
                 <th scope="row">{{$columbarium->id}}</th>
                 <td><a href="#" class='text_black'></a>{{$columbarium->title}}</td>
-                <td>{{$columbarium->city()->title}}</td>
+                <td>{{$columbarium->city->title}}</td>
                 <td><a href="#">Изменить</a></td>
                 <td><a href="{{route('account.admin.columbarium.delete',$columbarium->id)}}">Удалить</a></td>
             </tr>
@@ -26,7 +27,7 @@
     </tbody>
   </table>
   {{ $columbariums->withPath(route('account.admin.columbarium'))->appends($_GET)->links() }}
-
+</div>
 @endsection
 
 

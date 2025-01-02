@@ -11,9 +11,16 @@
 </section>
 
 
-<div class="container">
-    <div id="map" style="width: 100%; height: 600px"></div>
-</div>
+<div class="block_ritual_objects">
+
+    <div class="container">
+        <div class="title_middle mobile_title_ritual_object">Морги на карте в г. {{$city->title}}</div>
+        <div id="map" style="width: 100%; height: 600px"></div>
+        <div class="mobile_sidebar_ritual_object">
+            <div class="title_middle">Организация похорон в г. {{ $city->title }}</div>
+            {{view('mortuary.components.sidebar',compact('products'))}}
+        </div>
+    </div>
 
 <section class="cemetery">
     <div class="container">
@@ -34,7 +41,9 @@
                 {{ $mortuaries->withPath(route('mortuaries'))->appends($_GET)->links() }}
 
             </div>
-            {{view('mortuary.components.sidebar',compact('products'))}}
+            <div class="dekstop_sidebar_ritual_object">
+                {{view('mortuary.components.sidebar',compact('products'))}}
+            </div>
         </div>
 
 
@@ -46,7 +55,7 @@
         </div>
     </div>
 </section>
-
+</div>
 {{view('components.useful',compact('usefuls'))}}
 
 
@@ -83,5 +92,8 @@ function init() {
 @endif
 }
 </script>
+
+
+@include('components.ritual-objects') 
 
 @include('footer.footer') 

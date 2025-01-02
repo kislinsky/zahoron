@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Account\Agency;
 
 use App\Http\Controllers\Controller;
+use App\Models\OrderProduct;
 use App\Services\Account\Agency\AgencyOrganizationService;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class AgencyOrganizationController extends Controller
 
     public static function update(Request $request){
         $data=request()->validate([
-            'cemetery_ids'=>['nullable'],
+            'cemetery_ids.*'=>['nullable'],
             'id'=>['integer','required'],
             'title'=>['string','required'],
             'mini_content'=>['string','nullable'],
@@ -41,7 +42,6 @@ class AgencyOrganizationController extends Controller
             'state_compensation'=>['nullable'],
     
         ]);
-
         return AgencyOrganizationService::update($data);
     }
 
@@ -86,6 +86,15 @@ class AgencyOrganizationController extends Controller
             'applications_improvemen_graves'=>['required','integer'],
         ]);
         return AgencyOrganizationService::buyAplicationsImprovemenGraves($data['applications_improvemen_graves']);
+    }
+
+
+    public static function buyAplicationsMemorial(Request $request){  
+
+        $data=request()->validate([
+            'aplications_memorial'=>['required','integer'],
+        ]);
+        return AgencyOrganizationService::buyAplicationsMemorial($data['aplications_memorial']);
     }
 
 
@@ -224,7 +233,27 @@ class AgencyOrganizationController extends Controller
             'organization_response_review'=>['required','string'],
         ]);
         return AgencyOrganizationService::updateOrganizationResponseReviewProduct($data);
-
     }
   
+
+    public static function ordersNew(){
+        return AgencyOrganizationService::ordersNew();
+    }
+
+    public static function ordersInWork(){
+        return AgencyOrganizationService::ordersInWork();
+    }
+
+    public static function ordersCompleted(){
+        return AgencyOrganizationService::ordersCompleted();
+    }
+
+    public static function orderComplete(OrderProduct $order){
+        return AgencyOrganizationService::orderComplete($order);
+    }
+
+    public static function orderAccept(OrderProduct $order){
+        return AgencyOrganizationService::orderAccept($order);
+    }
+    
 }

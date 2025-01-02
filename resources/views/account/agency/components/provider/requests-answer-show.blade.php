@@ -19,10 +19,10 @@
                             <div class="green_btn text_center">Местное время: 23:40</div>
                             {!!btnOPenOrNot($request->organizationProvider()->openOrNot())!!}
                             <div class="text_black"><strong>Фирма:</strong>{{$request->organizationProvider()->title}}</div>
-                            <div class="text_black"><strong>Город:</strong>{{$request->organizationProvider()->city()->title}}</div>
+                            <div class="text_black"><strong>Город:</strong>{{$request->organizationProvider()->city->title}}</div>
                         </div>
 
-                        <div class="ul_btn_answer_from_provider">
+                        <div class="ul_btn_answer_from_provider ul_btn_answer_from_provider_mobile">
                             <a href='{{asset('storage/uploads_organization/'.$request->organizationProvider()->price_list)}}' download class="gray_btn">Прайс</a>
                             <a href='{{$request->organizationProvider()->route()}}' class="gray_btn">Страница</a>
                             <div class="gray_btn">Чат</div>
@@ -54,6 +54,18 @@
                         <td><span class='text_black'>{{$request->price_product}} ₽</span></td>
                     </tr>
                 </table>
+
+                <div class="mobile_block_answer_from_provider">
+                    <div class="gray_block_answer text_black_bold">Доставка:</div>
+                    <td><span class='text_black'>{{$request->name_delivery}}</span></td>
+                    <div class="gray_block_answer text_black_bold">Срок:</div>
+                    <td><span class='text_black'>{{$request->term}}</span></td>
+                    <div class="gray_block_answer text_black_bold">Стоимость доставки:</div>
+                    <td><span class='text_black'>{{$request->price_delivery}} ₽</span></td>
+                    <div class="gray_block_answer text_black_bold">Стоимость товара:</div>
+                    <td><span class='text_black'>{{$request->price_product}} ₽</span></td>
+
+                </div>
             </div> 
         </div>
     </div>

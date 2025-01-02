@@ -1,4 +1,5 @@
 <?php $user=user();?>
+<?php $city=selectCity();?>
 
 
 <!DOCTYPE html>
@@ -18,6 +19,8 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
         <link rel="stylesheet" href="{{asset('css/style.css')}}">
+        <link rel="stylesheet" href="{{asset('css/mobile.css')}}">
+
         <script src="https://api-maps.yandex.ru/1.1/index.xml" type="text/javascript"></script>
         <script src="https://api-maps.yandex.ru/2.1/?apikey=373ac95d-ec8d-4dfc-a70c-e48083741c72&lang=ru_RU"></script>
     </head>
@@ -25,9 +28,10 @@
 <body>
     
 @include('components.all-forms-message')
+@include('header.header-mobile-admin')
 
 
-<header class='header_decoder'>
+<header class='header_decoder header_admin'>
     <a class='logo' href='{{route('index')}}'>
         <img src='{{asset('storage/uploads/zahoron.svg')}}'>
     </a>
@@ -44,10 +48,28 @@
     </div>
     <div class='flex_icon_header'>
         <div class='icon_header'><img src='{{asset('storage/uploads/Group 23.svg')}}'></div>
-        <a href='/login' class='icon_header'><img src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
+        <a href='{{ route('index') }}' class='icon_header login_icon'><img src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
         <a class="no_bac_btn logout" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Выйти</a>
     </div>
 </header>
+
+<div class="header_user_mini_info header_user_mini_info_2">
+    <div class="item_decoder">
+        <div class="logo_decoder">
+            @if($user->icon!=null)
+                <img src='{{asset('storage/uploads_decoder/'.$user->icon)}}'>
+            @else
+                <img src='{{asset('storage/uploads/ImgAbout.png')}}'>
+            @endif
+        </div>
+        <div class="title_memorial_dinner">{{$user->surname}} {{$user->name}} {{$user->patronymic}}</div>
+    </div>    <div class="flex_icon_header">
+        <a href='{{ route('index') }}' class='icon_header'><img src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
+        <a class='gray_circle icon_header open_mobile_header' >
+            <img src="{{asset('storage/uploads/Group 29.svg')}}" alt="">
+        </a>
+    </div>
+</div>
 
 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
     @csrf

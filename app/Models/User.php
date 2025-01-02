@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -86,15 +87,58 @@ class User extends Authenticatable
             return $organization;
         }
         return null;
+
+        //return $this->belongsTo(Organization::class);
     }
 
     public function organizations(){
-        $organizations=Organization::where('user_id',$this->id)->get();
-        return $organizations;
-    }
-    public function organizationInAccount(){
-        $organization=Organization::find($this->organization_id);
-        return $organization;
+        return $this->hasMany(Organization::class);
+
     }
 
+
+    function newBurials(){
+        return $this->hasMany(OrderBurial::class)->where('status',0)->get();
+    }
+
+    function newServices(){
+        return $this->hasMany(OrderService::class)->where('status',0)->get();
+    }
+
+
+    function orderBurials($status=null){
+        if($status!=null){
+            return $this->hasMany(OrderBurial::class)->orderBy('id','desc')->where('status',$status);
+        }
+        return $this->hasMany(OrderBurial::class)->orderBy('id','desc');
+    }
+
+    function favoriteBurial(){
+        return $this->hasMany(FavouriteBurial::class);
+    }
+
+    function orderProducts($status=null){
+        if($status!=null){
+            return $this->hasMany(OrderProduct::class)->orderBy('id','desc')->where('status',$status);
+        }
+        return $this->hasMany(OrderProduct::class)->orderBy('id','desc');
+    }
+
+    function orderServices($status=null){
+        if($status!=null){
+            return $this->hasMany(OrderService::class)->where('status',$status);
+        }
+        return $this->hasMany(OrderService::class);
+    }
+
+    function searchBurials($status=null){
+        if($status!=null){
+            return $this->hasMany(SearchBurial::class)->where('status',$status);
+        }
+        return $this->hasMany(SearchBurial::class);
+    }
+
+
+
+     
 }

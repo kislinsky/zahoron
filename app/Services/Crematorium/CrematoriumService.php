@@ -18,7 +18,7 @@ class CrematoriumService {
     public static function index(){
         $city=selectCity();
         $usefuls=UsefulCrematorium::orderBy('id','desc')->get();
-        $products=randomProductsPlace();
+        $products=randomProductsPlace(33);
         $crematoriums_map=Crematorium::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $crematoriums=Crematorium::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
         return view('crematorium.index',compact('crematoriums','city','products','usefuls','crematoriums_map'));
@@ -31,10 +31,10 @@ class CrematoriumService {
         $city=selectCity();
         $organizations_our=$city->cityOrganizations();
         $crematorium_all=Crematorium::all();
-        $services=ServiceCrematorium::where('crematorium_id',$id)->get();
+        $services=$crematorium->services;
         $faqs=FaqCrematorium::orderBy('id','desc')->get();
         $characteristics=json_decode($crematorium->characteristics);
-        $images=ImageCrematorium::where('crematorium_id',$crematorium->id)->get();
+        $images=$crematorium->images;
         $similar_crematoriums=Crematorium::where('city_id',$crematorium->city_id)->where('id','!=',$crematorium->id)->get();
         return view('crematorium.single',compact('organizations_our','images','similar_crematoriums','crematorium','reviews','reviews_main','services','city','faqs','crematorium_all','characteristics'));
     }

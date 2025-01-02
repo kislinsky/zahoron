@@ -33,4 +33,11 @@ class CityController extends Controller
     }
 
 
+    public static function ajaxCitySearchInInput(Request $request){
+        $data=request()->validate([
+            's'=>['nullable','string'],
+        ]);
+        return CityService::ajaxCitySearchInInput($data);
+    }
+
 }

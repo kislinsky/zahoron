@@ -8,7 +8,7 @@
                     <div class="swiper-slide">
                         <div class="li_review_organization">
                             <div class='name_organization'>
-                                <a href={{route('product.single',$review->product_id)}} class="title_organization">"{{$review->product()->title}}"</a>
+                                <a href={{$review->product->route()}} class="title_organization">"{{$review->product->title}}"</a>
                             </div>
                             <div class="content_block">
                                 <div class="content_not_all">{!!custom_echo($review->content,200)!!}</div>

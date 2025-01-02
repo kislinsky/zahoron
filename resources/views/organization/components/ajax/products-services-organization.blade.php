@@ -3,7 +3,7 @@
 
         @foreach($ritual_products as $ritual_product)
                 <div class="li_our_product">
-                    <?php $images=$ritual_product->getImages();?>
+                    <?php $images=$ritual_product->getImages;?>
                     @if (isset($images))
                         @if (count($images)>0)
                             <img class='img_market_product' src="{{ asset('storage/uploads_product/'.$images[0]->title) }}" alt="">
@@ -11,7 +11,7 @@
                     @endif
                     
                     <a href='{{$ritual_product->route()}}'class="title_news">{{$ritual_product->title}} </a>
-                    <?php $organization_product=$ritual_product->organization();?>
+                    <?php $organization_product=$ritual_product->organization;?>
                     <div class="flex_raiting">
                         <div class="flex_stars">
                             <img src="{{asset('storage/uploads/Frame 334.svg')}}" alt="">

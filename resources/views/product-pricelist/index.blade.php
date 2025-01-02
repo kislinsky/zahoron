@@ -120,6 +120,6 @@
 
 @include('forms.search-form') 
 
-@include('components.cats-product') 
+@include('components.cats-product-price-list') 
 
 @include('footer.footer') 

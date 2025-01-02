@@ -23,6 +23,7 @@ class FuneralController extends Controller
                 'phone_funeral_service'=>['required','string'],
                 'call_time'=>['nullable'],
                 'call_tomorrow'=>['nullable'],
+                'time_now'=>['required',]
 
             ]);
             return FuneralServiceService::addFuneralService($data);
@@ -41,6 +42,7 @@ class FuneralController extends Controller
                 'phone_funeral_service'=>['required','string'],
                 'call_time'=>['nullable'],
                 'call_tomorrow'=>['nullable'],
+                'time_now'=>['required',]
 
             ]);
             return FuneralServiceService::addFuneralService($data);
@@ -60,6 +62,8 @@ class FuneralController extends Controller
                 'phone_funeral_service'=>['required','string'],
                 'call_time'=>['nullable'],
                 'call_tomorrow'=>['nullable'],
+                'time_now'=>['required',]
+
             ]);
             return FuneralServiceService::addFuneralService($data);
         }

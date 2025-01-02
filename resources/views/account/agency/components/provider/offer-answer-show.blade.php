@@ -15,7 +15,7 @@
             <div class="li_provider_flex li_bottom_gray_border">
                 <div class="flex_gap_5_column">
                     <div class="title_checkout_form text_decoration">Фирма {{$request->organizationProvider()->title}}</div>
-                    <div class="text_black"><strong>Город:</strong>{{$request->organizationProvider()->city()->title}}</div>
+                    <div class="text_black"><strong>Город:</strong>{{$request->organizationProvider()->city->title}}</div>
                     <div class="text_black"><strong>Итоговая цена:</strong>{{$request->price}} ₽</div>
                 </div>
                 <div class="content_li_provider">
@@ -34,7 +34,7 @@
 
             <div class="ul_answer_product_request">
                 @foreach(json_decode($request->products) as $product)
-                    <div class="text_black"><strong>{{$request->findProduct($product[0])->title}}: </strong> <span class='text_gray'></span>{{$product[2]}} ₽</div>
+                    <div class="text_black"><strong>{{$request->findCategory($product[0])->title}}: </strong> {{$product[2]}} ₽ за штуку</div>
                 @endforeach
             </div>
 
@@ -53,7 +53,6 @@
                 </div>
             </div>
 
-            <div class="li_provider_flex"></div>
         </div>
     </div>
         

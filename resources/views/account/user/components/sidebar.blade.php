@@ -4,7 +4,7 @@
         <a href='{{route('home')}}'class="title_page_sidebar"><img class='icon_page'src="{{asset('storage/uploads/Icon_sidebar_2.svg')}}" alt=""> Главная </a>
     </div>
 
-    @foreach(organizationPages() as $children_pages)
+    @foreach(userPages() as $children_pages)
         @if(isset($children_pages[2]))
             <div class="item_page_sidebar">
                 <div class="title_page_sidebar"><img class='icon_page'src="{{asset($children_pages[1])}}" alt=""> {{$children_pages[0]}} <img class='open_children_pages_sidebar'src="{{asset('storage/uploads/Arrow_sidebar.svg')}}" alt=""></div>

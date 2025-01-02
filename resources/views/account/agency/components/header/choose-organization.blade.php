@@ -17,8 +17,8 @@
     @endif
 
         <div class="ul_agency_organizations">
-        @if(user()->organizations()->count()>0)
-            @foreach (user()->organizations() as $organization)
+        @if(user()->organizations->count()>0)
+            @foreach (user()->organizations as $organization)
                 <a href='{{route('account.agency.choose.organization',$organization->id)}}' class="li_agency_organization text_block">{{$organization->title}} <div class="blue_btn">выбрать</div></a>   
             @endforeach
         @else
