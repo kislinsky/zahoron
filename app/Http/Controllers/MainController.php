@@ -22,7 +22,6 @@ use Illuminate\Support\Facades\Artisan;
 
 class MainController extends Controller
 {
-    
 
     public static function index(){
         return IndexService::index();

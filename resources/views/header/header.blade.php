@@ -1,6 +1,7 @@
 <?php 
 $user=user();
 $city=selectCity();
+use Artesaos\SEOTools\Facades\SEOTools;
 ?>
 
 
@@ -11,7 +12,7 @@ $city=selectCity();
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-        <title>Главная</title>
+        {!! SEOTools::generate() !!}
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
         <!-- Fonts -->

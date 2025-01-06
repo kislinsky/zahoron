@@ -83,7 +83,7 @@
                                 добраться.</div>
                             <img class='mini_index_img'src="{{asset('storage/uploads/menu 1.svg')}}" alt="" class="img_index_service">
                         </div>
-                        <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#dead_form">Позвонить</div>
+                        <a href='{{ route('cemeteries') }}' class="blue_btn border_radius_btn">Позвонить</a>
                     </div>
                 </div>
             </div>

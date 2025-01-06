@@ -18,16 +18,21 @@ use App\Models\StockProduct;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Artesaos\SEOTools\Facades\SEOTools;
 
 class OrganizationService 
 {
 
     public static function single($slug){
+       
         $organization=Organization::where('slug',$slug)->where('status',1)->first();
+        
         $user=user();
         if($organization==null){
             return redirect()->back();
         }
+        SEOTools::setTitle($organization->title);
+        SEOTools::setDescription('Заказывайте ритуальные услуги');
         $id=$organization->id;
 
         $categories_organization=CategoryProduct::whereIn('id',ActivityCategoryOrganization::where('organization_id',$id)->pluck('category_main_id'))->get();

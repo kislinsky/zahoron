@@ -13,12 +13,15 @@ use App\Models\Service;
 use Illuminate\Http\Request;
 use App\Services\OurWork\OurWorkService;
 use App\Services\Burial\SearchBurialService;
+use Artesaos\SEOTools\Facades\SEOTools;
 
 
 
 class IndexService
 {
     public static function index(){
+        SEOTools::setTitle('Главная');
+        SEOTools::setDescription('Заказывайте ритуальные услуги');
         $city=selectCity();
         $services=Service::orderBy('id', 'desc')->get();
         $faqs=Faq::orderBy('id', 'desc')->get();

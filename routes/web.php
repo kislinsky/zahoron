@@ -23,6 +23,7 @@ use App\Http\Controllers\Account\HomeController;
 
 
 
+use App\Http\Controllers\Account\Admin\AdminSEOController;
 use App\Http\Controllers\BurialController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
@@ -601,6 +602,12 @@ Route::prefix($city)->group(function () {
 
         Route::group(['prefix'=>'account'], function() {
             Route::group(['prefix'=>'admin'], function() {
+
+
+                Route::group(['prefix'=>'seo'], function() {
+                    Route::get('/object/{page}', [AdminSEOController::class, 'object'])->name('account.admin.seo.object');
+                });
+                
 
                 Route::group(['prefix'=>'organization'], function() {
                     Route::get('/parser', [AdminOrganizationController::class, 'parser'])->name('account.admin.parser.organization');

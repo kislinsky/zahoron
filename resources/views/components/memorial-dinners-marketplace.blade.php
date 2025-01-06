@@ -22,16 +22,14 @@ use App\Models\Product;
                                 <div class="content_memorial_dinner">
                                     <div class="title_organization">{{$product_memorial_dinner->title_institution}}</div>
                                     <div class="raiting_memorial_dinner">
-                                        <img src="{{asset('storage/uploads/Star 1 copy.svg')}}" alt="">5
+                                        <img src="{{asset('storage/uploads/Star 1 copy.svg')}}" alt="">{{ $organization->rating }}
                                     </div>
                                 </div>
                             </div>
-                            <div class="text_black">Подкатегория: Поминальные обеды</div>
                             <div class="title_memorial_dinner">{{$product_memorial_dinner->title}}</div>
                             <div class="title_memorial_dinner">{{$product_memorial_dinner->price}} ₽</div>
                             <div class="grid_btn">
-                                <div id_product={{$product_memorial_dinner->id}} class="blue_btn border_radius_btn add_to_cart_product" >Оформить</div>
-                                <a href='{{$product_memorial_dinner->route()}}'class="gray_btn">Подробнее</A>
+                                <a href='{{ $product_memorial_dinner->route() }}'  class="blue_btn border_radius_btn" >Оформить</a>
                             </div>
                         </div>
                     </div>
@@ -45,34 +43,3 @@ use App\Models\Product;
 </section>
 @endif
 
-<script>
-    $( ".add_to_cart_product" ).on( "click", function() {
-    let this_btn=$(this)
-    let id_product= $(this).attr('id_product');
-    $.ajax({
-        type: 'GET',
-        url: '{{ route("product.add.cart") }}',
-        data: {
-            "_token": "{{ csrf_token() }}",
-            'id_product': id_product,
-        }, success: function (result) {
-            
-            if(result['error']){
-                alert(result['error'])
-            }else{
-                this_btn.html('Купить еще <img src="{{asset("storage/uploads/done-v-svgrepo-com.svg")}}">')
-                let price= Number($('.blue_block_all_price span').html())+Number(result['price'])
-                $('.blue_block_all_price span').html(price)
-                
-            }
-        },
-        error: function () {
-            alert('Ошибка');
-        }
-    });
-
-
-    
-
-});
-</script>

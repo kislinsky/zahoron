@@ -13,7 +13,7 @@ class OrderProductController extends Controller
             'name'=>['required','string'],
             'surname'=>['required','string'],
             'phone'=>['required','string'],
-            'email'=>['required','email'],
+            
             'message'=>['string','nullable'],
         ]);
         return OrderProductService::orderAdd($data);
@@ -25,8 +25,7 @@ class OrderProductController extends Controller
         if($category->slug=='organizacia-pohoron'){
             $data=request()->validate([
                 'name'=>['required','string'],
-                'phone'=>['required','string'],
-                'email'=>['required','email'],
+                'phone'=>['required','string'], 
                 'message'=>['string','nullable'],
                 'additionals'=>['nullable'],
                 'cemetery_id'=>['required','integer'],
@@ -40,8 +39,7 @@ class OrderProductController extends Controller
         if($category->slug=='organizacia-kremacii'){
             $data=request()->validate([
                 'name'=>['required','string'],
-                'phone'=>['required','string'],
-                'email'=>['required','email'],
+                'phone'=>['required','string'], 
                 'message'=>['string','nullable'],
                 'additionals'=>['nullable'],
                 'no_have_mortuary'=>['nullable'],
@@ -56,8 +54,7 @@ class OrderProductController extends Controller
                 'city_from'=>['required','string'],
                 'city_to'=>['required','string'],
                 'name'=>['required','string'],
-                'phone'=>['required','string'],
-                'email'=>['required','email'],
+                'phone'=>['required','string'],    
                 'message'=>['string','nullable'],
                 'additionals'=>['nullable'],
                 'no_have_mortuary'=>['nullable'],
@@ -71,7 +68,6 @@ class OrderProductController extends Controller
             $data=request()->validate([
                 'name'=>['required','string'],
                 'phone'=>['required','string'],
-                'email'=>['required','email'],
                 'message'=>['string','nullable'],
                 'additionals'=>['nullable'],
                 'cemetery_id'=>['integer','required'],
@@ -83,7 +79,6 @@ class OrderProductController extends Controller
         $data=request()->validate([
             'name'=>['required','string'],
             'phone'=>['required','string'],
-            'email'=>['required','email'],
             'message'=>['string','nullable'],
             'additionals'=>['nullable'],
             'size'=>['required','string'],

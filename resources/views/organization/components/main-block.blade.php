@@ -8,6 +8,9 @@
             <div class="flex_single_organization">
                 <div class="title_li">{{$organization->title}}</div>
             </div>
+            <h1 class="mobile_title_organization title_li">
+                 {{$organization->title}} в г. {{$organization->city->title}} 
+            </h1>
             <div class="text_black name_type_organization">{{$organization->name_type}}</div>
 
             <div class="flex_single_organization">

@@ -590,9 +590,10 @@
     .reviews_funeral_agencies_swiper {
         padding-bottom: 0px;
     }
-    #map_mortuary,#map,#map_organization_single,.karta_contacts iframe,#map_cemetery_single{
+    #map_mortuary,#map,#map_organization_single,.karta_contacts iframe,#map_cemetery_single,#map-cats{
         height: 400px !important;
     }
+    
     .text_black{
         line-height: normal;
         font-size: 15px;
@@ -1059,6 +1060,27 @@
     }
     .content_product {
         padding:10px;
+    }
+    .dekstop_index_block_gray,.main_block_organization_single .logo_organization_single,.content_main_block_organization_single .flex_single_organization .title_li{
+        display: none;
+    }
+    .mobile_title_organization{
+        display: block;
+        line-height: 1.4;
+        margin-bottom: 10px;
+    }
+    .mobile_logo_organization{
+        display: block;
+        margin-bottom: 20px;
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+    .mobile_padding_top_0{
+        padding-top: 0px;
+    }
+    .main_block_organization_single .logo_organization_single.logo_organization_single_ritual_object{
+        display: block;
     }
 }
 

@@ -29,37 +29,3 @@
 
 
 
-
-<script>
-    $( ".add_to_cart_product" ).on( "click", function() {
-    let this_btn=$(this)
-    let id_product= $(this).attr('id_product');
-    $.ajax({
-        type: 'GET',
-        url: '{{ route("product.add.cart") }}',
-        data: {
-            "_token": "{{ csrf_token() }}",
-            'id_product': id_product,
-        }, success: function (result) {
-            
-            if(result['error']){
-                alert(result['error'])
-            }else{
-                this_btn.html('Купить еще <img src="{{asset("storage/uploads/done-v-svgrepo-com.svg")}}">')
-                let price= Number($('.blue_block_all_price span').html())+Number(result['price'])
-                $('.blue_block_all_price span').html(price)
-                
-            }
-        },
-        error: function () {
-            alert('Ошибка');
-        }
-    });
-
-
-    
-
-});
-</script>
-
-

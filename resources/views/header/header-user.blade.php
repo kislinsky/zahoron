@@ -49,11 +49,7 @@
     @csrf
 </form>
 
-<<<<<<< HEAD
 <div class="header_user_mini_info header_user_mini_info_2">
-=======
-<div class="header_user_mini_info">
->>>>>>> a4ce401d9d99033d11b9fbf01de70437c5cc9009
     <div data-bs-toggle="modal" data-bs-target="#beautification_form" class="btn_border_blue">
         <img src="{{asset('storage/uploads/Frame (3).svg')}}" alt="">
         Облагородить 

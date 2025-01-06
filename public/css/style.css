@@ -7119,7 +7119,9 @@ text-decoration-skip-ink: none;
 }
 
 
-
+.mobile_logo_organization{
+    display: none;
+}
 
 .gray_circle{
     width: 48px;

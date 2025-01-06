@@ -1,6 +1,12 @@
 <?php
+use App\Models\SEO;
 
 function adminPages(){
+    $seo_pages=DB::table('s_e_o_s')->select('page', 'title')->distinct('page')->get();
+    $seo=[];
+    foreach($seo_pages as $seo_page){
+        $seo[]=[$seo_page->title,'account.admin.seo.object', $seo_page->page];
+    }
     $pages=[
         ['Кладбища','storage/uploads/mdi_grave-stone (1).svg',
             [
@@ -36,8 +42,12 @@ function adminPages(){
                 ['Импортировать','account.admin.parser.organization'],
                 // ['Добавить кладбища','account.admin.create.cemetery']
             ],
-        ]
+        ],
 
+
+        ['SEO','storage/uploads/mdi_grave-stone (2).svg',
+            $seo
+        ],
         
        
     ];
@@ -385,7 +395,7 @@ function mobilePagesAccountAgecny() {
     $ul_organizations=[];
 
     foreach($organizations as $organization){
-        $ul_organizations[]=[$organization->title,'account.agency.organization.settings',$organization->id];
+        $ul_organizations[]=[$organization->title,route('account.agency.organization.settings',$organization->id)];
     }
     $ul_organizations[]=['Добваить организацию',route('account.agency.add.organization')];
 

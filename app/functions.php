@@ -31,6 +31,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\SEO;
 
 
 
@@ -1286,3 +1287,6 @@ function mainCategoryPriceList(){
     return CategoryProductPriceList::orderBy('id','desc')->where('parent_id',null)->get();
 }
 
+function getSeo($page,$column){
+    return $content = SEO::where('page',$page)->where('name',$column)->first()->content;
+}

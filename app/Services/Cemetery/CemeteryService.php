@@ -14,6 +14,7 @@ use App\Models\ReviewCemetery;
 use App\Models\ServiceCemetery;
 use App\Models\UsefulCemetery;
 use Illuminate\Http\Request;
+use Artesaos\SEOTools\Facades\SEOTools;
 
 
 
@@ -29,6 +30,11 @@ class CemeteryService {
     }
 
     public static function singleCemetery($cemetery){
+
+        SEOTools::setTitle(getSeo('ritual-object','title'));
+        SEOTools::setDescription(getSeo('ritual-object','description'));
+
+
         $id=$cemetery->id;
         $reviews=ReviewCemetery::orderBy('id','desc')->where('status',1)->where('cemetery_id',$id)->get();
         $reviews_main=$reviews->take(3);

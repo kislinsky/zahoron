@@ -1,6 +1,6 @@
 @include('header.header')
 
-<section class="order_page bac_gray">
+<section class="order_page bac_gray dekstop_index_block_gray">
     <div class="container">
         <div class="content_order_page">
             <div class="index_title">Организация: {{$organization->title}} в г. {{$organization->city->title}}</div>    
@@ -10,8 +10,10 @@
     </div>
 </section>
 
+<img src="{{$organization->urlImg()}}" alt="" class="mobile_logo_organization">
 
-<section class="organization_single">
+
+<section class="organization_single mobile_padding_top_0">
     <div class="container">
         <div class="grid_organization_single">
             <div class="main_content_organization_single">
