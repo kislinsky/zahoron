@@ -7,6 +7,7 @@ use App\Models\Burial;
 use App\Models\Product;
 use App\Models\Service;
 use App\Functions\Functions;
+use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -55,6 +56,10 @@ class BasketProductService {
 
 
     public static function cartItems(){
+
+        SEOTools::setTitle("Оформление заказа товаров");
+        SEOTools::setDescription("Оформление заказа товаров");
+
         if(isset($_COOKIE['add_to_cart_product'])){
             $cart_items = json_decode($_COOKIE['add_to_cart_product']);
             if(Auth::check()){

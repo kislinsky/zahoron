@@ -1,5 +1,5 @@
 
-<div class="title">Стоимость {{$category_main->title}} : {{$category->title}} 
+{{-- <div class="title">Стоимость {{$category_main->title}} : {{$category->title}} 
     @if($district_choose!=null)
         в {{$district_choose->title}} 
     @endif
@@ -7,5 +7,6 @@
         в {{$cemetery_choose->title}} 
     @endif
     
-г. {{$city->title}}</div>
+г. {{$city->title}}</div> --}}
 
+<h1 class="title">{{$title_h1}}</h1>

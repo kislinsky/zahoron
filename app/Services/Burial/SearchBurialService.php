@@ -5,21 +5,32 @@ namespace App\Services\Burial;
 use App\Models\User;
 use App\Models\News;
 use App\Models\Burial;
-use App\Models\Service;
 use App\Models\SearchBurial;
-use Illuminate\Http\Request;
+use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class SearchBurialService
 {
     public static function searchProductFilter($data){
+
+        $seo="Поиск ".$data['name'] . $data['surname'] . $data['patronymic'] . $data['who'];
+
+        SEOTools::setTitle($seo);
+        SEOTools::setDescription($seo);
+
         $news=News::orderBy('id', 'desc')->take(2)->get();
         $products=Burial::where('name',$data['name'])->where('surname',$data['surname'])->where('patronymic',$data['patronymic'])->where('who',$data['who'])->where('status',1)->get();
         return view('burial.search-product',compact('products','news'));
     }
 
     public static function searchProduct($data){
+
+        $seo="Поиск ".$data['name'] . $data['surname'] . $data['patronymic'];
+
+        SEOTools::setTitle($seo);
+        SEOTools::setDescription($seo);
+
         $news=News::orderBy('id', 'desc')->take(2)->get();
         $products=Burial::where('name',$data['name'])->where('surname',$data['surname'])->where('patronymic',$data['patronymic'])->where('location_death','like','%'.$data['city'].'%')->where('status',1)->get();
         return view('burial.search-product',compact('products','news'));
@@ -68,6 +79,10 @@ class SearchBurialService
 
     public static function searchProductFilterPage(){
         $page=1;
+        $seo="Установить судьбу";
+
+        SEOTools::setTitle($seo);
+        SEOTools::setDescription($seo);
         return view('burial.search-product-filter',compact('page'));
     }
     

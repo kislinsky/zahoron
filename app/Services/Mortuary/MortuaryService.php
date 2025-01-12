@@ -2,20 +2,11 @@
 
 namespace App\Services\Mortuary;
 
-
-
-use App\Models\City;
 use App\Models\FaqMortuary;
-use App\Models\FaqOrganization;
-use App\Models\ImageMortuary;
 use App\Models\Mortuary;
-use App\Models\Organization;
 use App\Models\ReviewMortuary;
-use App\Models\ServiceMortuary;
 use App\Models\UsefulMortuary;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
+use Artesaos\SEOTools\Facades\SEOTools;
 
 
 class MortuaryService {
@@ -27,6 +18,12 @@ class MortuaryService {
 
     public static function index(){
         $city=selectCity();
+
+        $seo="Морги г.".$city->title;
+
+        SEOTools::setTitle($seo);
+        SEOTools::setDescription($seo);
+
         $usefuls=UsefulMortuary::orderBy('id','desc')->get();
         $products=randomProductsPlace(32);
         $mortuaries_map=Mortuary::orderBy('id', 'asc')->where('city_id',$city->id)->get();
@@ -36,6 +33,11 @@ class MortuaryService {
 
     public static function single($id){
         $mortuary=Mortuary::find($id);
+
+        SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$mortuary));
+        SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$mortuary));
+        $title_h1=formatContent(getSeo('ritual-object','h1'),$mortuary);
+
         $reviews=ReviewMortuary::orderBy('id','desc')->where('status',1)->where('mortuary_id',$id)->get();
         $reviews_main=$reviews->take(3);
         $city=selectCity();
@@ -46,7 +48,7 @@ class MortuaryService {
         $characteristics=json_decode($mortuary->characteristics);
         $images=$mortuary->images;
         $similar_mortuaries=Mortuary::where('city_id',$mortuary->city_id)->where('id','!=',$mortuary->id)->get();
-        return view('mortuary.single',compact('organizations_our','images','similar_mortuaries','mortuary','reviews','reviews_main','services','city','faqs','mortuary_all','characteristics'));
+        return view('mortuary.single',compact('title_h1','organizations_our','images','similar_mortuaries','mortuary','reviews','reviews_main','services','city','faqs','mortuary_all','characteristics'));
     }
 
     public static function addReview($data){

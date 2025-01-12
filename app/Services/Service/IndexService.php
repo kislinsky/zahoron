@@ -7,14 +7,16 @@ use App\Models\News;
 use App\Models\Product;
 use App\Models\Service;
 use App\Services\Service\CategoryServiceService;
-
-
-
+use Artesaos\SEOTools\Facades\SEOTools;
 
 class IndexService {  
     public static function single($id){
-
+        $city=selectCity();
         $service=Service::findOrFail($id);
+
+        $seo="$service->title в г. $city->title";
+        SEOTools::setTitle($seo);
+        SEOTools::setDescription($seo);
 
         if($service->category_id==11){
             return CategoryServiceService::serviceOneTimeCleaning($service);

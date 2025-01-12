@@ -3,7 +3,7 @@
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-            <div class="index_title">Цены на товары и услуги по уходу за могилой в городе <a href="{{route('city.select',$city->id)}}">{{$city->title}}</a></div>    
+            <h1 class="index_title">Цены на товары и услуги по уходу за могилой в городе <a href="{{route('city.select',$city->id)}}">{{$city->title}}</a></div>    
         </div>
         <img class='rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
         

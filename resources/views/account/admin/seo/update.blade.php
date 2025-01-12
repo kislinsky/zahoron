@@ -7,7 +7,7 @@
 
     <div class="">
         <div class="title_middle">{{ $object_columns->first()->title }}</div>  
-        <form class='default_admin_form' method="post" enctype="multipart/form-data" action="{{route('account.admin.parsing.cemetery.reviews')}}">
+        <form class='default_admin_form' method="post" enctype="multipart/form-data" action="{{route('account.admin.seo.object.update',$object_columns->first()->page)}}">
             @csrf
             @foreach ($object_columns as $object_column)
                 <div class="mb-3">

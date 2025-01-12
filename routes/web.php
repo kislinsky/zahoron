@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Account\Admin\AdminBurialController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CityController;
@@ -605,7 +606,9 @@ Route::prefix($city)->group(function () {
 
 
                 Route::group(['prefix'=>'seo'], function() {
+                    Route::get('/settings', [AdminSEOController::class, 'settings'])->name('account.admin.seo.settings');
                     Route::get('/object/{page}', [AdminSEOController::class, 'object'])->name('account.admin.seo.object');
+                    Route::post('/object/{page}/update', [AdminSEOController::class, 'updateSeo'])->name('account.admin.seo.object.update');
                 });
                 
 
@@ -618,6 +621,14 @@ Route::prefix($city)->group(function () {
                 });
                 
 
+
+                Route::group(['prefix'=>'burial'], function() {
+                    Route::get('/', [AdminBurialController::class, 'index'])->name('account.admin.burial');
+                    Route::delete('/delete/{burial}', [AdminBurialController::class, 'delete'])->name('account.admin.burial.delete');
+                    Route::get('/parser', [AdminBurialController::class, 'parser'])->name('account.admin.burial.parser');
+                    Route::post('/import', [AdminBurialController::class, 'import'])->name('account.admin.burial.import');
+                    
+                });
 
                 Route::group(['prefix'=>'cemetery'], function() {
                     Route::get('/', [AdminRitualObjectsController::class, 'cemetery'])->name('account.admin.cemetery');

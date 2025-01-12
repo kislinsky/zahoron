@@ -24,7 +24,7 @@
                     </thead>
                     <?php $total=0; ?>
                     @foreach ($cart_items as $cart_item)
-                        <?php $product=getBurial($cart_item[0]);
+                        <?php $product=getBurial($cart_item);
                             $total+=$product->price; ?>
                             <tr>
                                 <td class='title_cart title_burial_basket'>Предоставление геолокации</td>

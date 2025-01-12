@@ -4,19 +4,23 @@ namespace App\Services\Crematorium;
 
 
 
-use App\Models\City;
 use App\Models\FaqCrematorium;
-use App\Models\ImageCrematorium;
 use App\Models\Crematorium;
-use App\Models\Organization;
 use App\Models\ReviewCrematorium;
-use App\Models\ServiceCrematorium;
 use App\Models\UsefulCrematorium;
+use Artesaos\SEOTools\Facades\SEOTools;
 
 class CrematoriumService {
 
     public static function index(){
         $city=selectCity();
+
+
+        $seo="Крематории г.".$city->title;
+
+        SEOTools::setTitle($seo);
+        SEOTools::setDescription($seo);
+
         $usefuls=UsefulCrematorium::orderBy('id','desc')->get();
         $products=randomProductsPlace(33);
         $crematoriums_map=Crematorium::orderBy('id', 'asc')->where('city_id',$city->id)->get();
@@ -26,6 +30,11 @@ class CrematoriumService {
 
     public static function single($id){
         $crematorium=Crematorium::find($id);
+
+        SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$crematorium));
+        SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$crematorium));
+        $title_h1=formatContent(getSeo('ritual-object','h1'),$crematorium);
+
         $reviews=ReviewCrematorium::orderBy('id','desc')->where('status',1)->where('crematorium_id',$id)->get();
         $reviews_main=$reviews->take(3);
         $city=selectCity();
@@ -36,7 +45,7 @@ class CrematoriumService {
         $characteristics=json_decode($crematorium->characteristics);
         $images=$crematorium->images;
         $similar_crematoriums=Crematorium::where('city_id',$crematorium->city_id)->where('id','!=',$crematorium->id)->get();
-        return view('crematorium.single',compact('organizations_our','images','similar_crematoriums','crematorium','reviews','reviews_main','services','city','faqs','crematorium_all','characteristics'));
+        return view('crematorium.single',compact('title_h1','organizations_our','images','similar_crematoriums','crematorium','reviews','reviews_main','services','city','faqs','crematorium_all','characteristics'));
     }
 
     public static function addReview($data){

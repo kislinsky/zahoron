@@ -17,6 +17,8 @@ use App\Models\Mortuary;
 use App\Models\Organization;
 use App\Models\ProductParameters;
 use App\Models\User;
+use Artesaos\SEOTools\Facades\SEOMeta;
+use Artesaos\SEOTools\Facades\SEOTools;
 
 class ProductService
 {
@@ -44,33 +46,46 @@ class ProductService
         $mortuaries=$city->mortuaries;
         $category_products=Product::orderBy('id','desc')->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('city_id',$product->city_id)->get();
 
+        
+        if($category->type=='funeral-service'){
+            SEOTools::setTitle(formatContent(getSeo('product-service-single','title'),$product));
+            SEOTools::setDescription(formatContent(getSeo('product-service-single','description'),$product));
+            $title_h1=formatContent(getSeo('product-service-single','h1'),$product);
+        }
+        else{
+            SEOTools::setTitle(formatContent(getSeo('product-single','title'),$product));
+            SEOTools::setDescription(formatContent(getSeo('product-single','description'),$product));
+            $title_h1=formatContent(getSeo('product-single','h1'),$product);
+        }
+
+
         if($category->slug=='pominal-nyh-obedy'){
             $district=$product->district;
             $memorial_menu=$product->memorialMenu;
-            return view('product.single.single-menu',compact('product','sales','agent','city','district','images','organization','memorial_menu','category','additionals','comments','category_products'));
+            return view('product.single.single-menu',compact('title_h1','product','sales','agent','city','district','images','organization','memorial_menu','category','additionals','comments','category_products'));
         }
 
         if($category->slug=='organizacia-pohoron'){
-            return view('product.single.single-organization-funeral',compact('mortuaries','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+            return view('product.single.single-organization-funeral',compact('title_h1','mortuaries','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
 
         if($category->slug=='organizacia-kremacii'){
-            return view('product.single.single-cremation',compact('product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+            return view('product.single.single-cremation',compact('title_h1','product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
 
         if($category->slug=='otpravka-gruz-200'){
-            return view('product.single.single-shipment-200-cargo',compact('product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+            return view('product.single.single-shipment-200-cargo',compact('title_h1','product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
         
         if($category->slug=='kopka-mogil'){
-            return view('product.single.single-button-grave',compact('product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+            return view('product.single.single-button-grave',compact('title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
 
       
 
         $category_products=Product::orderBy('id','desc')->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('cemetery_id',$product->cemetery_id)->get();
 
-        return view('product.single.single',compact('agent','product','organization','sales','images','parameters','category','size','additionals','comments','category_products'));
+        return view('product.single.single',compact('title_h1','agent','product','organization','sales','images','parameters','category','size','additionals','comments','category_products'));
     }
 
 
@@ -86,7 +101,6 @@ class ProductService
         $page=2;
         $materials_filter=Product::pluck('material')->unique()->filter(function ($value) { return !is_null($value); });
         $layerings=Product::pluck('layering')->unique()->filter(function ($value) { return !is_null($value); });
-        $price_all=cartPrice();
         $sort='Сортировка';
         if(isset($data['sort']) && $data['sort']!=null){
            $sort=$data['sort'];
@@ -103,7 +117,17 @@ class ProductService
         }
         $category=ajaxCatContent($data);
         $districts_all=$city->districts;
-        return view('product.marketplace',compact('district','layerings','sort','districts_all','cemeteries_all','reviews','products','city','cats','price_all','materials_filter','faqs','cemetery','category','page'));
+
+
+        if($products->count()<3){
+            SEOMeta::setRobots('noindex, nofollow');
+        }
+
+        SEOTools::setTitle(formatContentCategory(getSeo('marketplace','title'),$category,$products));
+        SEOTools::setDescription(formatContentCategory(getSeo('marketplace','description'),$category,$products));
+        $title_h1=formatContentCategory(getSeo('marketplace','h1'),$category,$products);
+
+        return view('product.marketplace',compact('title_h1','district','layerings','sort','districts_all','cemeteries_all','reviews','products','city','cats','materials_filter','faqs','cemetery','category','page'));
 
     }
 
@@ -184,20 +208,23 @@ class ProductService
     }
 
     public static function ajaxTitle($data){
-        $cemetery=null;
-        $district=null;
+        // $cemetery=null;
+        // $district=null;
         $category=null;
         if(isset($data['category'])){
             $category=CategoryProduct::find($data['category']);
         }
-        if(isset($data['district_id'])){
-            $district=District::find($data['district_id']);
-        }
-        if(isset($data['cemetery_id'])){
-            $cemetery=Cemetery::find($data['cemetery_id']);
-        }
+        // if(isset($data['district_id'])){
+        //     $district=District::find($data['district_id']);
+        // }
+        // if(isset($data['cemetery_id'])){
+        //     $cemetery=Cemetery::find($data['cemetery_id']);
+        // }
         $city=selectCity();
-        return view("product.components.catalog.title", compact("category",'cemetery','district','city'));
+        $products=filterProducts($data);
+        $title_h1=formatContentCategory(getSeo('marketplace','h1'),$category,$products);
+
+        return view("product.components.catalog.title", compact('title_h1'));
     }
 
     public static function addReview($data){

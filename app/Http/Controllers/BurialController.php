@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Services\Burial\IndexBurial;
 use App\Services\Burial\SearchBurialService;
 use App\Services\Burial\FavoriteBurial;
+use Artesaos\SEOTools\Facades\SEOTools;
 
 class BurialController extends Controller
 {
@@ -38,6 +39,12 @@ class BurialController extends Controller
 
     public static function searchProductRequest(){
         $page=3;
+
+        $seo="Поиск захоронения";
+
+        SEOTools::setTitle($seo);
+        SEOTools::setDescription($seo);
+
         return view('burial.search-big-product',compact('page'));
     }
 

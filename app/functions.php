@@ -11,6 +11,7 @@ use App\Models\ImageService;
 use App\Models\OrderProduct;
 use App\Models\StageService;
 use App\Models\AdditionProduct;
+use App\Models\Area;
 use App\Models\Burial;
 use App\Models\CategoryProduct;
 use App\Models\CategoryProductPriceList;
@@ -32,12 +33,7 @@ use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\SEO;
-
-
-
-
-
-
+use App\Models\WorkingHoursCemetery;
 
 function mainCities(){
     $cities=City::orderBy('title','asc')->take(8)->get();
@@ -821,7 +817,7 @@ function slugOrganization($item){
 }
 
 function getBurial($id){
-    return $product=Burial::findOrFail($id);
+    return $product=Burial::findOrFail($id);   
 }
 
 function servicesBurial($ids){
@@ -1007,6 +1003,65 @@ function createCity($city_name,$edge_name){
 
 }
 
+
+function createArea($area_name,$edge_name){
+    
+    $edge=Edge::where('title',$edge_name)->first();
+    if($edge==null){
+        $edge=Edge::create([
+            'title'=>$edge_name,
+        ]);
+    }
+    $area=Area::where('title',$area_name)->where('edge_id',$edge->id)->first();
+    if($area==null){
+        $area=Area::create([
+            'title'=>$area_name,
+            'edge_id'=> $edge->id,
+            
+        ]);
+    }
+
+    return $area;
+
+}
+
+
+function createCemetery($cemetery_name,$city_name,$width,$longitude){
+    
+    $city=City::where('title',$city_name)->first();
+    if($city==null){
+        $city=City::create([
+            'title'=>$city_name,
+            'slug'=>slug($city_name),
+        ]);
+    }
+    $cemetery=Cemetery::where('title',$cemetery_name)->where('city_id',$city->id)->first();
+    if($cemetery==null){
+        $cemetery=Cemetery::create([
+            'adres'=>$city->title,
+            'width'=>$width,
+            'longitude'=>$longitude,
+            'img'=>'https://api.selcdn.ru/v1/SEL_266534/Images/main/Petropavlovsk-Kamchatsky/Cemeteries/70000001057067323!/Funeral-Services.jpg',
+            'href_img'=>1,
+            'title'=>$cemetery_name,
+            'city_id'=> $city->id,
+
+        ]);
+        $days=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            foreach($days as $day){
+                WorkingHoursCemetery::create([
+                    'day'=>$day,
+                    'time_start_work'=>'00:00',
+                    'time_end_work'=>'24:00',
+                    'holiday'=>0,
+                    'cemetery_id'=>$cemetery->id,
+                ]);
+            }
+    }
+
+    return $cemetery;
+
+}
 
 function createDistrict($district_name,$city_name){
 
@@ -1271,9 +1326,9 @@ function convertToCarbon($dateString)
 
 function minPriceCategoryProductOrganization($slug){
     $cat=CategoryProduct::where('slug',$slug)->first();
-    $price=ActivityCategoryOrganization::where('city_id',selectCity()->id)->where('category_children_id',$cat->id)->orderBy('price','asc')->first();
+    $price=ActivityCategoryOrganization::where('city_id',selectCity()->id)->where('category_children_id',$cat->id)->min('price');
     if($price!=null){
-        return $price->price;
+        return $price;
     }
     return 10000;
 }
@@ -1289,4 +1344,80 @@ function mainCategoryPriceList(){
 
 function getSeo($page,$column){
     return $content = SEO::where('page',$page)->where('name',$column)->first()->content;
+}
+
+function formatContent($content,$model){
+    $city=selectCity()->title;
+    $title='';
+    $adres='';
+    $organization='';
+    if($model!=null){
+        $title=$model->title;
+        $adres=$model->adres;
+        if($model->organization!=null){
+            $organization=$model->organization->title;
+        }
+    }
+    
+    $time=date('H:i');
+    $date=date('Y-m-d');
+    $year= date('Y');
+ 
+    $result=str_replace(["{title}","{city}","{adres}","{time}","{date}","{Year}","{organization}"],[$title,$city,$adres,$time,$date,$year,$organization],$content);
+    
+    return $result;
+
+}
+
+
+function formatContentBurial($content,$model){
+    $city=selectCity()->title;
+    $name='';
+    $surname='';
+    $patronymic='';
+    $adres='';
+    $cemetery='';
+    if($model!=null){
+        $name=$model->name;
+        $surname=$model->surname;
+        $patronymic=$model->patronymic;
+        $adres=$model->location_death;
+        $cemetery=$model->cemetery->title;
+    }
+    
+    $result=str_replace(["{name}","{surname}","{patronymic}","{city}","{adres}","{cemetery}"],[$name,$surname,$patronymic,$city,$adres,$cemetery],$content);
+    
+    
+    return $result;
+}
+
+function formatContentCategory($content,$category,$models){
+    $city=selectCity()->title;
+    $category=$category->title;
+    $count=$models->count();
+    $time=date('H:i');
+    $date=date('Y-m-d');
+    $year= date('Y');
+
+    $price_min=$models->min('price');
+    $price_middle=round($models->avg('price'));
+    $price_max=$models->max('price');
+
+    $result=str_replace(["{category}","{city}","{count}","{time}","{date}","{Year}","{price_min}","{price_avg}","{price_max}",],[$category,$city,$count,$time,$date,$year,$price_min,$price_middle,$price_max],$content);
+    
+    
+    return $result;
+
+} 
+
+function statusBurial($status){
+    if($status==0){
+        return 'В обработке';
+    }
+    if($status==1){
+        return 'Готов';
+    }
+    if($status==3){
+        return 'Не распознан';
+    }
 }

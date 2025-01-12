@@ -3,9 +3,7 @@
 namespace App\Services\Burial;
 
 use App\Models\Burial;
-
-
-
+use Artesaos\SEOTools\Facades\SEOTools;
 
 class IndexBurial {
 
@@ -14,6 +12,11 @@ class IndexBurial {
         if($product==null){
             return redirect()->back();
         }
+        
+        SEOTools::setTitle(formatContentBurial(getSeo('burial-single','title'),$product));
+        SEOTools::setDescription(formatContentBurial(getSeo('burial-single','description'),$product));
+        $title_h1=formatContentBurial(getSeo('burial-single','h1'),$product);
+
         $image_monument=$product->imagesMonument;
         $image_personal=$product->imagesPersonal;
         $services=$product->services();
@@ -21,7 +24,7 @@ class IndexBurial {
         $products_names=$product->productsNames();
         $products_dates=$product->productsDates();
         $memory_words=$product->memoryWords();
-        return view('burial.single',compact('product','memory_words','services','products_names','products_dates','life_story','image_monument','image_personal'));
+        return view('burial.single',compact('title_h1','product','memory_words','services','products_names','products_dates','life_story','image_monument','image_personal'));
         
     }
 

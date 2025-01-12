@@ -3,7 +3,7 @@
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-           {{view('organization.components.catalog.title-page',compact('city','category','category_main','district_choose','cemetery_choose'));}}
+            {{view('organization.components.catalog.title-page',compact('title_h1','city','category','category_main'));}}
         </div>
         <img class='rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
     </div>

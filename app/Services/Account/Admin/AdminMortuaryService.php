@@ -3,11 +3,8 @@
 namespace App\Services\Account\Admin;
 
 use App\Models\Mortuary;
-use App\Models\User;
 use App\Services\Parser\ParserMortuaryService;
-use App\Services\Parser\ParserService;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+
 
 class AdminMortuaryService {
 

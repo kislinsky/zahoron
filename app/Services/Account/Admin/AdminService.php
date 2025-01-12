@@ -2,10 +2,6 @@
 
 namespace App\Services\Account\Admin;
 
-use App\Models\User;
-use App\Services\Parser\ParserService;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AdminService {
     

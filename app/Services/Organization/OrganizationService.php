@@ -16,7 +16,7 @@ use App\Models\Product;
 use App\Models\ReviewsOrganization;
 use App\Models\StockProduct;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Support\Facades\Auth;
 use Artesaos\SEOTools\Facades\SEOTools;
 
@@ -24,15 +24,19 @@ class OrganizationService
 {
 
     public static function single($slug){
-       
+        
         $organization=Organization::where('slug',$slug)->where('status',1)->first();
         
         $user=user();
         if($organization==null){
             return redirect()->back();
         }
-        SEOTools::setTitle($organization->title);
-        SEOTools::setDescription('Заказывайте ритуальные услуги');
+
+        SEOTools::setTitle(formatContent(getSeo('organization-single','title'),$organization));
+        SEOTools::setDescription(formatContent(getSeo('organization-single','description'),$organization));
+        $title_h1=formatContent(getSeo('organization-single','h1'),$organization);
+        
+
         $id=$organization->id;
 
         $categories_organization=CategoryProduct::whereIn('id',ActivityCategoryOrganization::where('organization_id',$id)->pluck('category_main_id'))->get();
@@ -56,17 +60,17 @@ class OrganizationService
         $reviews_main=$reviews->take(3);
         $products_our=Product::orderBy('id','desc')->where('organization_id',$organization->id)->where('type','product')->get()->take(8);
 
-        if($organization->role=='organization'){
-            return view('organization.single.single-agency',compact('categories_organization','city','similar_organizations','main_categories','children_categories','rating_reviews','organization','images','reviews','products_our','reviews','reviews_main','ritual_products'));
+        if($organization->role=='organization' ){
+            return view('organization.single.single-agency',compact('title_h1','categories_organization','city','similar_organizations','main_categories','children_categories','rating_reviews','organization','images','reviews','products_our','reviews','reviews_main','ritual_products'));
         }
         
-        if($organization->role=='organization-provider' && Auth::check() && user()->role=='organization'){
+        if($organization->role=='organization-provider' && (Auth::check() && (user()->role=='organization' || user()->role=='organization-provider' || user()->role=='admin'))){
             $categories_organization=CategoryProductProvider::whereIn('id',ActivityCategoryOrganization::where('organization_id',$id)->pluck('category_main_id'))->get();
             $remnants_ritual_goods=PriceListOrganization::orderBy('id','desc')->where('organization_id',$id)->where('type','remnant-ritual-good')->get();
             $price_lists=PriceListOrganization::orderBy('id','desc')->where('organization_id',$id)->where('type','price-list')->get();
             $product_stocks=StockProduct::orderBy('id','desc')->where('organization_id',$id)->get();
 
-            return view('organization.single.single-provider',compact('categories_organization','city','similar_organizations','children_categories','main_categories','price_lists','remnants_ritual_goods','rating_reviews','organization','product_stocks','images','reviews','reviews','reviews_main','ritual_products'));
+            return view('organization.single.single-provider',compact('title_h1','categories_organization','city','similar_organizations','children_categories','main_categories','price_lists','remnants_ritual_goods','rating_reviews','organization','product_stocks','images','reviews','reviews','reviews_main','ritual_products'));
 
         }
         return redirect()->back();
@@ -150,6 +154,7 @@ class OrganizationService
         $cats=CategoryProduct::orderBy('id','desc')->where('parent_id',null)->get();
         $organizations_category=orgniaztionsFilters($data);
 
+       
         $cemeteries=Cemetery::where('city_id',$city->id)->get();
 
         $category=categoryProductChoose();
@@ -185,7 +190,14 @@ class OrganizationService
         if(isset($data['filter_work']) && $data['filter_work']=='on'){
             $filter_work='on';
         }
-        return view('organization.catalog.catalog-organization',compact('filter_work','category_main','news_video','district_choose','districts','cemetery_choose','cemeteries','city','cats','news','organizations_category','price_min','price_middle','price_max','category','sort'));
+        if($organizations_category->count()<3){
+            SEOMeta::setRobots('noindex, nofollow');
+        }
+        SEOTools::setTitle(formatContentCategory(getSeo('organizations-catalog','title'),$category,$organizations_category));
+        SEOTools::setDescription(formatContentCategory(getSeo('organizations-catalog','description'),$category,$organizations_category));
+        $title_h1=formatContentCategory(getSeo('organizations-catalog','h1'),$category,$organizations_category);
+
+        return view('organization.catalog.catalog-organization',compact('title_h1','filter_work','category_main','news_video','district_choose','districts','cemetery_choose','cemeteries','city','cats','news','organizations_category','price_min','price_middle','price_max','category','sort'));
     }
     
 
@@ -213,17 +225,24 @@ class OrganizationService
 
     public static function ajaxTitlePage($data){
         $category=CategoryProduct::find($data['category_id']);
-        $category_main=CategoryProduct::find($category->parent_id);
-        $cemetery_choose=null;
-        $district_choose=null;
-        if(isset($data['cemetery_id']) && $data['cemetery_id']!='null' && $category_main->id!=45){
-            $cemetery_choose=Cemetery::find($data['cemetery_id']);
-        }
-        if(isset($data['district_id']) && $data['district_id']!='null' && $category_main->id==45){
-            $district_choose=District::find($data['district_id']);
-        }
+
+        // $category_main=CategoryProduct::find($category->parent_id);
+
+        // $cemetery_choose=null;
+        // $district_choose=null;
+        // if(isset($data['cemetery_id']) && $data['cemetery_id']!='null' && $category_main->id!=45){
+        //     $cemetery_choose=Cemetery::find($data['cemetery_id']);
+        // }
+        // if(isset($data['district_id']) && $data['district_id']!='null' && $category_main->id==45){
+        //     $district_choose=District::find($data['district_id']);
+        // }
+
         $city=selectCity();
-        return  view('organization.components.catalog.title-page',compact('city','category','category_main','district_choose','cemetery_choose'));
+
+        $organizations_category=orgniaztionsFilters($data);
+        $title_h1=formatContentCategory(getSeo('organizations-catalog','h1'),$category,$organizations_category);
+
+        return  view('organization.components.catalog.title-page',compact('title_h1'));
     }
 
     public static function ajaxMapOrganizations($data){

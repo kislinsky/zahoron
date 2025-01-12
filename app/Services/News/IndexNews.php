@@ -4,16 +4,18 @@ namespace App\Services\News;
 
 
 use App\Models\News;
-use App\Models\Product;
-use App\Models\Service;
 use App\Models\CategoryNews;
-use Illuminate\Http\Request;
+use Artesaos\SEOTools\Facades\SEOTools;
 
 
 
 class IndexNews 
 {
     public static function index(){
+
+        SEOTools::setTitle("Новости");
+        SEOTools::setDescription("Новости");
+
         $page=6;
         $news=News::orderBy('id', 'desc')->where('type',1)->get();
         $cats=CategoryNews::orderBy('id', 'desc')->get();
@@ -25,8 +27,13 @@ class IndexNews
         if($news==null){
             return redirect()->back();
         }
+
+        SEOTools::setTitle(formatContent(getSeo('news-single','title'),$news));
+        SEOTools::setDescription(formatContent(getSeo('news-single','description'),$news));
+        $title_h1=formatContent(getSeo('news-single','h1'),$news);
+
         $cats=CategoryNews::orderBy('id', 'desc')->get();
-        return view('news.single',compact('news','cats'));
+        return view('news.single',compact('title_h1','news','cats'));
     }
 
     public static function newsCat($id){

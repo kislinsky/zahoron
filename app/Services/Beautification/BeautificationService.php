@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 
 
 class BeautificationService {
+
     public static function sendBeautification($data){
         if(Auth::check()){
             $user=Auth::user();
@@ -29,8 +30,6 @@ class BeautificationService {
                 return redirect()->back()->with("error", 'Такой телефон уже зарегестрированы.');
             }
         }
-
-
         
 
         $time=60*30;

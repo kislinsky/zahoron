@@ -5,7 +5,8 @@ namespace App\Services\Organization;
 use App\Models\ActivityCategoryOrganization;
 use App\Models\CategoryProductProvider;
 use App\Models\City;
-
+use Artesaos\SEOTools\Facades\SEOMeta;
+use Artesaos\SEOTools\Facades\SEOTools;
 
 class OrganizationProviderService 
 {
@@ -21,6 +22,7 @@ class OrganizationProviderService
         $cats=CategoryProductProvider::orderBy('id','desc')->where('parent_id',null)->get();
         $organizations_category=orgniaztionsProviderFilters($data);
         
+    
         $category=categoryProductProviderChoose();
         $category_main=CategoryProductProvider::find($category->parent_id);
         
@@ -50,8 +52,15 @@ class OrganizationProviderService
             $filter_work='on';
         }
 
+        SEOTools::setTitle(formatContentCategory(getSeo('organizations-catalog','title'),$category,$organizations_category));
+        SEOTools::setDescription(formatContentCategory(getSeo('organizations-catalog','description'),$category,$organizations_category));
+        $title_h1=formatContentCategory(getSeo('organizations-catalog','h1'),$category,$organizations_category);
 
-        return view('organization.catalog.catalog-organization-provider',compact('filter_work','oragnizations_rating','city_all','category_main','city','cats','organizations_category','price_min','price_middle','price_max','category','sort'));
+
+        if($organizations_category->count()<3){
+            SEOMeta::setRobots('noindex, nofollow');
+        }
+        return view('organization.catalog.catalog-organization-provider',compact('title_h1','filter_work','oragnizations_rating','city_all','category_main','city','cats','organizations_category','price_min','price_middle','price_max','category','sort'));
    
     }
 
@@ -84,12 +93,14 @@ class OrganizationProviderService
 
     public static function ajaxTitlePage($data){
         $category=CategoryProductProvider::find($data['category_id']);
-        $category_main=CategoryProductProvider::find($category->parent_id);
 
         $city=selectCity();
         if(isset($data['city_id']) && $data['city_id']!=null){
             $city=City::find($data['city_id']);
         }
+        
+        $organizations_category=orgniaztionsFilters($data);
+        $title_h1=formatContentCategory(getSeo('organizations-catalog','h1'),$category,$organizations_category);
 
         return  view('organization.components.catalog-provider.title-page',compact('city','category','category_main'));
     }

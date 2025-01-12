@@ -25,6 +25,12 @@ class Burial extends Model
         return $this->belongsTo(Cemetery::class);
     }
 
+    public function urlImg(){
+        if($this->href_img==0){
+            return asset('storage/uploads_burials/'.$this->img);
+        }
+        return $this->img;
+    }
 
     function imagesMonument(){
         return $this->hasMany(ImageMonument::class)->where('status',1);

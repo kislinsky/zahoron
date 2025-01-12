@@ -25,7 +25,7 @@
                                 </form>
                             </div>
                         </div>
-                        <div id="zoomC" style=' background: url("{{asset('storage/uploads_burials/'. $burial->img )}}");background-position: center;background-size: cover;    background-repeat: no-repeat !important;'class=""><img src="" alt=""></div>
+                        <div id="zoomC" style=' background: url("{{$burial->urlImg()}}");background-position: center;background-size: cover;    background-repeat: no-repeat !important;'class=""><img src="" alt=""></div>
 
                     </div>
 

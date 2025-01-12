@@ -6,6 +6,7 @@ namespace App\Services\Basket;
 use App\Models\Burial;
 use App\Models\Service;
 use App\Functions\Functions;
+use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -41,6 +42,10 @@ class BasketBurialService {
 
     public static function checkout(){
         $user=user();
+        
+        SEOTools::setTitle("Оформление заказа геолокаций");
+        SEOTools::setDescription("Оформление заказа геолокаций");
+
         if(isset($_COOKIE['add_to_cart_burial'])){
             $cart_items = json_decode($_COOKIE['add_to_cart_burial']);
             return view('burial.checkout',compact('cart_items','user'));

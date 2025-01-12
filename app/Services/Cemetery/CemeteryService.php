@@ -21,18 +21,28 @@ use Artesaos\SEOTools\Facades\SEOTools;
 class CemeteryService {
     
     public static function index(){
+        
         $city=selectCity();
+        
+        $seo="Кладбища г.".$city->title;
+
+        SEOTools::setTitle($seo);
+        SEOTools::setDescription($seo);
+
         $products=randomProductsPlace(29);
         $usefuls=UsefulCemetery::orderBy('id','desc')->get();
         $cemeteries_map=Cemetery::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $cemeteries=Cemetery::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
+
+        
         return view('cemetery.index',compact('cemeteries','city','products','usefuls','cemeteries_map'));
     }
 
     public static function singleCemetery($cemetery){
 
-        SEOTools::setTitle(getSeo('ritual-object','title'));
-        SEOTools::setDescription(getSeo('ritual-object','description'));
+        SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$cemetery));
+        SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$cemetery));
+        $title_h1=formatContent(getSeo('ritual-object','h1'),$cemetery);
 
 
         $id=$cemetery->id;
@@ -46,7 +56,7 @@ class CemeteryService {
         $characteristics=json_decode($cemetery->characteristics);
         $images=ImageCemetery::where('cemetery_id',$cemetery->id)->get();
         $similar_cemeteries=Cemetery::where('city_id',$cemetery->city_id)->where('id','!=',$cemetery->id)->get();
-        return view('cemetery.single',compact('images','similar_cemeteries','cemetery','reviews','reviews_main','organizations_our','services','city','faqs','cemetery_all','characteristics'));
+        return view('cemetery.single',compact('title_h1','images','similar_cemeteries','cemetery','reviews','reviews_main','organizations_our','services','city','faqs','cemetery_all','characteristics'));
     }
 
     public static function ajaxCemetery($city){

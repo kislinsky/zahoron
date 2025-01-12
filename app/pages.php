@@ -1,13 +1,26 @@
 <?php
-use App\Models\SEO;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 function adminPages(){
     $seo_pages=DB::table('s_e_o_s')->select('page', 'title')->distinct('page')->get();
-    $seo=[];
+    $seo=[
+        ['Настройки','account.admin.seo.settings']
+    ];
+
     foreach($seo_pages as $seo_page){
         $seo[]=[$seo_page->title,'account.admin.seo.object', $seo_page->page];
     }
+
     $pages=[
+
+        ['Захоронения','storage/uploads/mdi_grave-stone (1).svg',
+            [
+                ['Список','account.admin.burial'],
+                ['Импортировать','account.admin.burial.parser'],
+            ],
+        ],
+
         ['Кладбища','storage/uploads/mdi_grave-stone (1).svg',
             [
                 ['Список','account.admin.cemetery'],
@@ -332,13 +345,28 @@ function mobilePagesAccountUser(){
 
 
 function mobilePagesAccountAdmin(){
-
+    $seo_pages=DB::table('s_e_o_s')->select('page', 'title')->distinct('page')->get();
+    $seo=[['Настройки',route('account.admin.seo.settings')]];
+    foreach($seo_pages as $seo_page){
+        $seo[]=[$seo_page->title,route('account.admin.seo.object', $seo_page->page)];
+    }
     return [
         
         [
             ['Главная',route('home')],
             
         ],
+        
+        [
+            ['Захоронения',''],
+
+            [
+                ['Список',route('account.admin.burial')],
+                ['Импортировать',route('account.admin.burial.parser')],
+            ]
+        ],
+
+    
 
         [
             ['Кладбища',''],
@@ -384,6 +412,11 @@ function mobilePagesAccountAdmin(){
             ],
             
         ], 
+
+        [
+            ['SEO',''],
+            $seo
+        ],
     
     ];
 }

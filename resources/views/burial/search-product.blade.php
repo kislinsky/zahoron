@@ -30,7 +30,7 @@
                         @foreach ($products as $product)
                             <div class="li_product">
                                 <div class="one_block_li_product">
-                                    <img src="{{asset('storage/uploads_burials/'. $product->img )}}" alt="">
+                                    <img src="{{$product->urlImg() }}" alt="">
                                     <div class="btn_gray">{{ $product->who }}</div>
                                 </div>
                                 <div class="two_block_li_product">

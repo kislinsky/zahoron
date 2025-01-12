@@ -1,5 +1,4 @@
 
-<div class="blue_block_all_price">Корзина: <span>{{ $price_all }}</span> руб</div>
 <div class="block_product_cats">
     <div class="title_cat_marketplace">Категории</div>
     <div class="ul_cats_marketplace">

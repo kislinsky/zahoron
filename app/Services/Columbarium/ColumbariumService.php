@@ -12,21 +12,36 @@ use App\Models\Organization;
 use App\Models\ReviewColumbarium;
 use App\Models\ServiceColumbarium;
 use App\Models\UsefulColumbarium;
+use Artesaos\SEOTools\Facades\SEOTools;
 
 class ColumbariumService {
 
     public static function index(){
+    
         $city=selectCity();
+    
+        $seo="Колумбарии г.".$city->title;
+
+        SEOTools::setTitle($seo);
+        SEOTools::setDescription($seo);
+
         $products=randomProductsPlace(35);
         $usefuls=UsefulColumbarium::orderBy('id','desc')->get();
         $columbariums_map=Columbarium::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $columbariums=Columbarium::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
+
+        
         return view('columbarium.index',compact('columbariums','city','products','usefuls','columbariums_map'));
     }
 
 
     public static function single($id){
         $columbarium=Columbarium::find($id);
+
+        SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$columbarium));
+        SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$columbarium));
+        $title_h1=formatContent(getSeo('ritual-object','h1'),$columbarium);
+
         $reviews=ReviewColumbarium::orderBy('id','desc')->where('status',1)->where('columbarium_id',$id)->get();
         $reviews_main=$reviews->take(3);
         $city=selectCity();
@@ -42,7 +57,7 @@ class ColumbariumService {
         $characteristics=json_decode($columbarium->characteristics);
         $images=$columbarium->images;
         $similar_columbariums=Columbarium::where('city_id',$columbarium->city_id)->where('id','!=',$columbarium->id)->get();
-        return view('columbarium.single',compact('organizations_our','images','similar_columbariums','columbarium','reviews','reviews_main','services','city','faqs','columbarium_all','characteristics'));
+        return view('columbarium.single',compact('title_h1','organizations_our','images','similar_columbariums','columbarium','reviews','reviews_main','services','city','faqs','columbarium_all','characteristics'));
     }
 
     public static function addReview($data){

@@ -342,6 +342,9 @@
 }
 
 @media(max-width:760px){
+    .ul_products_organizations{
+        grid-template-columns: 1fr;
+    }
     .mobile_sidebar_ritual_object{
         display: block;
         margin-top: 20px;
@@ -354,6 +357,16 @@
     .mobile_title_ritual_object .title_middle,.mobile_sidebar_ritual_object .title_middle{
         margin-bottom: 20px ;
 
+    }
+    .flex_inputs_filters_organiaztions{
+        flex-direction: column;
+        align-items: start;
+    }
+    .input_search_products_organizations ,.input_search_products_organizations  input{
+        width: 100%;
+    }
+    .text_black_bold{
+        font-size: 14px;
     }
     .dekstop_sidebar_ritual_object{
         display: none;
@@ -984,6 +997,9 @@
     }
     .logo_organization_single .blue_btn{
         display: none;
+    }
+    .mobile_title_organization {
+        display: block;
     }
     .ul_news{
         grid-template-columns:  1fr;

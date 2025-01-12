@@ -1499,7 +1499,7 @@ text-align: left;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 100;
+    z-index: 111;
     width: 100%;
     overflow-y: scroll;
     height: 100%;
@@ -3154,6 +3154,7 @@ text-align: left;
 
 }
 .city_selected{
+    min-width: 135px;
     cursor: pointer;
 }
 .open_children_pages{
@@ -7036,9 +7037,14 @@ text-decoration-skip-ink: none;
     overflow-y: scroll;
 }
 
-
+.form_admin_delete button{
+    padding: 5px 10px;
+}
 .mobile_header li{
     list-style: none;
+}
+.mobile_title_organization {
+    display: none;
 }
 .mobile_header  a{
     font-family: Golos Text;

@@ -3,7 +3,7 @@
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-            <div class="index_title">{{ $news->title }}</div>   
+            <h1 class="index_title"> {{ $title_h1 }}</h1>    
             <div class="text_li">{{ $news->created_at }}</div>
  
         </div>

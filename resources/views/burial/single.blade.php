@@ -77,7 +77,7 @@
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
                             <div class="img_single_product"> 
-                                <img src="{{asset('storage/uploads_burials/'. $product->img )}}" alt="">
+                                <img src="{{$product->urlImg() }}" alt="">
                                 <div class="white_btn">{{ $product->who }}</div>
                             </div>
                         </div>

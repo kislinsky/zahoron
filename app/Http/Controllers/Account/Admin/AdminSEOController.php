@@ -13,4 +13,17 @@ class AdminSEOController extends Controller{
         return AdminSEOService::object($page);
     }
 
+    public static function settings(){
+        return  AdminSEOService::settings();
+    }
+
+    public static function updateSeo(Request $request,$page){
+        $data=$request->validate([
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'h1' => 'required|string',
+        ]);
+        return AdminSEOService::updateSeo($data,$page);
+    }
+
 }

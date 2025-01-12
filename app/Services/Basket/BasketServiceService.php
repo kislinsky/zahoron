@@ -7,6 +7,7 @@ use App\Models\Burial;
 use App\Models\Service;
 use App\Models\Cemetery;
 use App\Functions\Functions;
+use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -61,6 +62,10 @@ class BasketServiceService {
     }
 
     public static function checkout(){
+        
+        SEOTools::setTitle("Оформление заказа услуг");
+        SEOTools::setDescription("Оформление заказа услуг");
+
         $user=user();
         if(isset($_COOKIE['add_to_cart_service'])){
             $cart_items = json_decode($_COOKIE['add_to_cart_service']);

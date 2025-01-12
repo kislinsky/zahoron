@@ -6,9 +6,7 @@
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-            <h1 class="index_title title_page">
-                {{ view("product.components.catalog.title", compact("category",'cemetery','city','district')) }}
-            </h1>
+        {{ view("product.components.catalog.title", compact('title_h1',"category",'cemetery','city','district')) }}
         </div>
         <img class='rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
         
@@ -37,7 +35,7 @@
                 </div>
             </div>
             <div class="sidebar">
-                {{ view("product.components.catalog.sidebar", compact("cats",'price_all','category')) }}
+                {{ view("product.components.catalog.sidebar", compact("cats",'category')) }}
             </div>
             
         </div>

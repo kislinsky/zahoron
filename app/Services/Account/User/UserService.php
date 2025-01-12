@@ -4,9 +4,7 @@ namespace App\Services\Account\User;
 
 
 use App\Models\User;
-use App\Models\OrderProduct;
-use App\Models\OrderService;
-use App\Models\SearchBurial;
+
 use Illuminate\Support\Facades\Hash;
 
 class UserService {
