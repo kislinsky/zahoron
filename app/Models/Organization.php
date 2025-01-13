@@ -10,6 +10,9 @@ class Organization extends Model
     use HasFactory;
     protected $guarded =[];
 
+    function reviews(){
+        return $this->hasMany(ReviewsOrganization::class)->orderBy('id','desc')->where('status',1);
+    }
 
     function user(){
         return $this->belongsTo(User::class);

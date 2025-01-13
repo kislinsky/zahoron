@@ -77,6 +77,10 @@ class Columbarium extends Model
         }
     }
 
+    public function ulWorkingDaysForShema(){    
+        return $days=WorkingHoursColumbarium::where('columbarium_id',$this->id)->orderByRaw("FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')")->get();
+    }
+
     public function timeNow(){
         //$day=strtotime(getTimeByCoordinates($this->width,$this->longitude)['dayOfTheWeek']);
         $day='Tuesday';

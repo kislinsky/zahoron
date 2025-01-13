@@ -1,5 +1,6 @@
 
 @include('header.header')
+{{view('components.shema-org.burial',compact('product'))}}
 
 @include('forms.life-story')
 

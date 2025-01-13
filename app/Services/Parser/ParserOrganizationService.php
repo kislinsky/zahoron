@@ -33,9 +33,9 @@ class ParserOrganizationService
                     $ids_cemeteries=$ids_cemeteries->pluck('id');
                 }
                 $cemeteries='';
-               
                 $organization_find=Organization::find(rtrim($organization[1], '!'));
                 if($organization_find==null){
+                    $timezone=getTimeByCoordinates($organization[2],$organization[3])['timezone'];
                     $organization_create=Organization::create([
                         'id'=>rtrim($organization[1], '!'),
                         'title'=>$organization[9],
@@ -52,6 +52,7 @@ class ParserOrganizationService
                         'cemetery_ids'=>$cemeteries,
                         'name_type'=>$organization[10],
                         'district_id'=>$distrcit,
+                        'time_difference'=>differencetHoursTimezone($timezone),
                     ]);
                     if($organization[21]!=null){
                         $imgs=preg_match_all('/\((.*?)\)/', $organization[21],$matches);

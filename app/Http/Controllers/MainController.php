@@ -2,23 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cemetery;
 use App\Models\Faq;
-use App\Models\City;
-use App\Models\News;
-use App\Models\Organization;
-use App\Models\Page;
-use App\Models\Product;
-use App\Models\Review;
-use App\Models\Service;
-use Illuminate\Http\Request;
+use App\Models\WorkingHoursOrganization;
 use App\Services\OurWork\OurWorkService;
 use App\Services\Burial\SearchBurialService;
 use App\Services\Page\IndexService;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Illuminate\Support\Facades\Artisan;
+use Carbon\Carbon;
+
 
 class MainController extends Controller
 {

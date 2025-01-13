@@ -18,6 +18,9 @@ class Crematorium extends Model
         return $this->belongsTo(District::class);
     }
 
+    public function ulWorkingDaysForShema(){    
+        return $days=WorkingHoursCrematorium::where('crematorium_id',$this->id)->orderByRaw("FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')")->get();
+    }
 
     public function images(){
         return $this->hasMany(ImageCrematorium::class);

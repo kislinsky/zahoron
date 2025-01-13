@@ -45,7 +45,7 @@ class OrganizationService
         $user_organization=User::find($organization->user_id);
         $images=ImageOrganization::orderBy('id','desc')->where('organization_id', $organization->id)->get();
         $ritual_products=Product::orderBy('id','desc')->where('organization_id',$organization->id)->where('type','ritual-product')->get();
-        $reviews=ReviewsOrganization::orderBy('id','desc')->where('organization_id',$organization->id)->where('status',1)->get();
+        $reviews=$organization->reviews;
         $main_categories=CategoryProduct::where('parent_id',null)->get();
         $children_categories=CategoryProduct::where('parent_id',$main_categories->first()->id)->get();
 

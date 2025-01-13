@@ -1,4 +1,5 @@
 @include('header.header')
+{{view('components.shema-org.ritual-object',compact('columbarium'))}}
 
 <section class="order_page bac_gray">
     <div class="container">

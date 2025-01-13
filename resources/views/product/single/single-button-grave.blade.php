@@ -1,5 +1,5 @@
 @include('header.header')
-
+{{view('components.shema-org.product',compact('product'))}}
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">

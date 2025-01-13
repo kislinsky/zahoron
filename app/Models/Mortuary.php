@@ -20,6 +20,9 @@ class Mortuary extends Model
         return $this->belongsTo(District::class);
     }
 
+    public function ulWorkingDaysForShema(){    
+        return $days=WorkingHoursMortuary::where('mortuary_id',$this->id)->orderByRaw("FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')")->get();
+    }
 
     public function images(){
         return $this->hasMany(ImageMortuary::class);

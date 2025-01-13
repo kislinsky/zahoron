@@ -1,4 +1,6 @@
 @include('header.header')
+{{view('components.shema-org.service',compact('service'))}}
+
 <?php 
 
 use App\Models\Burial;

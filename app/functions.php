@@ -8,6 +8,7 @@ use App\Models\Page;
 use App\Models\Product;
 use App\Models\Cemetery;
 use App\Models\ImageService;
+use Illuminate\Support\Collection;
 use App\Models\OrderProduct;
 use App\Models\StageService;
 use App\Models\AdditionProduct;
@@ -27,13 +28,13 @@ use App\Models\Service;
 use App\Models\ServiceReviews;
 use App\Models\User;
 use Ausi\SlugGenerator\SlugGenerator;
-use Carbon\Carbon;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\SEO;
 use App\Models\WorkingHoursCemetery;
+use Carbon\Carbon;
+use DateTimeZone;
 
 function mainCities(){
     $cities=City::orderBy('title','asc')->take(8)->get();
@@ -1420,4 +1421,108 @@ function statusBurial($status){
     if($status==3){
         return 'Не распознан';
     }
+}
+
+function dateNewFormat($date){
+    $formattedDate = Carbon::createFromFormat('d.m.Y', $date)->format('Y-m-d');
+    // Сохранение в базу данных или выполнение другой логики
+    return  $formattedDate;
+}
+
+
+function differencetHoursTimezone($timezone){
+    $timezone1 = $timezone;
+    $timezone2 = date_default_timezone_get();
+ 
+    $time1 = Carbon::createFromFormat('Y-m-d H:i:s', '2023-01-01 00:00:00', $timezone1);
+    $time2 = Carbon::createFromFormat('Y-m-d H:i:s', '2023-01-01 00:00:00', $timezone2);
+ 
+    $difference = $time1->diffInHours($time2,false);
+
+    return dd($difference);
+}
+
+function getShortDay($day)
+{
+    $shortDays = [
+        'Monday' => 'Mo',
+        'Tuesday' => 'Tu',
+        'Wednesday' => 'We',
+        'Thursday' => 'Th',
+        'Friday' => 'Fr',
+        'Saturday' => 'Sa',
+        'Sunday' => 'Su',
+    ];
+    return $shortDays[$day] ?? '';
+}
+
+function workingDaysForShema($days)
+{
+    if ($days->isEmpty()) {
+        return "No working hours available.";
+    }
+
+    // Преобразуем коллекцию в массив с ключами-днями
+    $workingHours = [];
+    foreach ($days as $day) {
+        // Проверяем, что start_time и end_time не пусты, и holiday != 1
+        if (!empty($day->time_start_work) && !empty($day->time_end_work) && $day->holiday != 1) {
+            $workingHours[$day->day] = [
+                'start' => $day->time_start_work, // Например, '09:00:00'
+                'end' => $day->time_end_work,     // Например, '18:00:00'
+            ];
+        }
+    }
+
+    // Если массив $workingHours пуст, возвращаем пустую строку
+    if (empty($workingHours)) {
+        return "No valid working hours found.";
+    }
+
+    // Группируем дни с одинаковыми часами работы
+    $groupedDays = [];
+    $previousDay = null;
+    $previousHours = null;
+
+    // Порядок дней недели для корректной группировки
+    $orderedDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    foreach ($orderedDays as $day) {
+        if (isset($workingHours[$day])) {
+            $shortDay = getShortDay($day);
+            $hours = $workingHours[$day];
+
+            if ($previousHours === $hours) {
+                // Продолжаем диапазон
+                $groupedDays[count($groupedDays) - 1]['end'] = $shortDay;
+            } else {
+                // Начинаем новый диапазон
+                $groupedDays[] = [
+                    'start' => $shortDay,
+                    'end' => $shortDay,
+                    'hours' => $hours,
+                ];
+            }
+
+            $previousDay = $day;
+            $previousHours = $hours;
+        } else {
+            // Сбрасываем предыдущие значения, если день не рабочий
+            $previousDay = null;
+            $previousHours = null;
+        }
+    }
+
+    // Формируем итоговую строку
+    $result = [];
+    foreach ($groupedDays as $group) {
+        $range = $group['start'];
+        if ($group['start'] !== $group['end']) {
+            $range .= '-' . $group['end'];
+        }
+        $result[] = $range . ' ' . substr($group['hours']['start'], 0, 5) . '-' . substr($group['hours']['end'], 0, 5);
+    }
+
+    // Объединяем результат в одну строку
+    return implode(', ', $result);
 }

@@ -20,6 +20,11 @@ class Cemetery extends Model
         return $this->belongsTo(District::class);
     }
 
+
+    public function ulWorkingDaysForShema(){    
+        return $days=WorkingHoursCemetery::where('cemetery_id',$this->id)->orderByRaw("FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')")->get();
+    }
+
     public function cemeteryOrganiaztions(){
         $organiazations=Organization::where('role','organization')->where(function($item) {
             $item->orWhere('cemetery_ids',"LIKE", "%,".$this->id.",%")->orWhere('cemetery_ids',"LIKE", $this->id.",%")->orWhere('cemetery_ids',"LIKE", "%,".$this->id);

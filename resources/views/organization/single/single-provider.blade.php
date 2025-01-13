@@ -1,4 +1,5 @@
 @include('header.header')
+{{view('components.shema-org.organization',compact('organization'))}}
 
 <section class="order_page bac_gray dekstop_index_block_gray">
     <div class="container">
