@@ -36,6 +36,25 @@ class MainController extends Controller
         return view('speczialist');
     }
 
+    public static function changeTheme(){
+
+        if (isset($_COOKIE['theme'])) {
+            // Если существует, получить текущее значение
+            $currentTheme = $_COOKIE['theme'];
+        
+            // Меняем значение куки — переключаем с 'black' на 'white' или наоборот
+            $newTheme = ($currentTheme === 'black') ? 'white' : 'black';
+        } else {
+            // Если куки нет, задаем начальное значение 'black'
+            $newTheme = 'black';
+        }
+        
+        // Устанавливаем или обновляем куку с новым значением
+        setcookie('theme', $newTheme, time() + 7 * 24 * 60 * 60, "/");
+        
+         return true;
+    }
+
     
 
 }

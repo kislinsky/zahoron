@@ -22,6 +22,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
         <link rel="stylesheet" href="{{asset('css/style.css')}}">
+        <link rel="stylesheet" href="{{asset('css/style-black-theme.css')}}">
         <link rel="stylesheet" href="{{asset('css/mobile.css')}}">
 
         <script src="https://api-maps.yandex.ru/1.1/index.xml" type="text/javascript"></script>
@@ -29,7 +30,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
 
     </head>
 
-<body >
+<body class='{{getTheme()}}'>
 <div class="margin_top_for_header"></div>
 @include('components.all-forms-message')
 @include('header.header-mobile')
@@ -56,7 +57,8 @@ use Artesaos\SEOTools\Facades\SEOTools;
    
     <div class="container">  
         <a class='logo' href='{{route('index')}}'>
-            <img src='{{asset('storage/uploads/zahoron.svg')}}'>
+            <img class='img_light_theme' src='{{asset('storage/uploads/zahoron.svg')}}'>
+            <img class='img_black_theme' src="{{asset('storage/uploads/РИТУАЛреестр.svg')}}" alt="">
         </a>
         @if (isset($page))
             <?php $page=$page;?>
@@ -66,7 +68,9 @@ use Artesaos\SEOTools\Facades\SEOTools;
         <div class='pages'>
             <a href='{{route('index')}}'class="btn_bac_gray">Главная</a>
             <div id_city_selected='{{ $city->id }}' class="btn_bac_gray city_selected">
-                <img src='{{ asset('storage/uploads/Group (22).svg') }}'>{{ $city->title }}
+                <img class='img_light_theme'src='{{ asset('storage/uploads/Group (22).svg') }}'>
+                <img class='img_black_theme'src='{{ asset('storage/uploads/Group_black_theme.svg') }}'>
+                {{ $city->title }}
             </div>
             <div class="btn_bac_gray open_children_pages">
                 Поиск могил
@@ -74,7 +78,9 @@ use Artesaos\SEOTools\Facades\SEOTools;
                     <a href='{{ route('page.search.burial.filter') }}'class="btn_bac_gray <?php if($page==1){echo ' active_label_product';}?>">Герои </a>
                     <a href='{{ route('page.search.burial.request') }}'class="btn_bac_gray <?php if($page==3){echo ' active_label_product';}?>">Заявка на поиск</a>
                 </div>
-                <img src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>
+                <img class='img_light_theme' src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>
+                <img class='img_black_theme' src='{{asset('storage/uploads/Vector 9_black.svg')}}'>
+ 
             </div>
             <div class="btn_bac_gray open_children_pages">
                 Облагораживание
@@ -82,16 +88,17 @@ use Artesaos\SEOTools\Facades\SEOTools;
                     <a href='{{ route('pricelist') }}'class="btn_bac_gray <?php if($page==8){echo ' active_label_product';}?>">Товары и услуги </a>
                     <a href='{{ route('marketplace') }}'class="btn_bac_gray <?php if($page==2){echo ' active_label_product';}?>">Маркетплейс</a>
                 </div>
-                <img src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>
-            </div>
+                <img class='img_light_theme' src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>
+                <img class='img_black_theme' src='{{asset('storage/uploads/Vector 9_black.svg')}}'>            </div>
            
         </div> 
        
         
         <div class='flex_icon_header'>
-            <img class='open_big_header' src="{{asset('storage/uploads/menu-svgrepo-com.svg')}}" alt="">
-            <div class='icon_header'><img src='{{asset('storage/uploads/Group 23.svg')}}'></div>
-            <a href='{{ route('login') }}' class='icon_header icon_login'><img src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
+            <img class='open_big_header img_light_theme' src="{{asset('storage/uploads/menu-svgrepo-com.svg')}}" alt="">
+            <img class='open_big_header img_black_theme'src="{{asset('storage/uploads/Group 29 (1)_black.svg')}}" alt="">
+            <div class='change_theme icon_header'><img class='img_light_theme' src='{{asset('storage/uploads/Group 23.svg')}}'><img class='img_black_theme' src='{{asset('storage/uploads/Group 23_black_theme.svg')}}'></div>
+            <a href='{{ route('login') }}' class='icon_header icon_login'><img class='img_black_theme' src='{{asset('storage/uploads/Group 1_black_theme.svg')}}'><img class='img_light_theme' src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
         </div>
     </div>
 </header>
@@ -165,9 +172,20 @@ use Artesaos\SEOTools\Facades\SEOTools;
         Облагородить 
     </div>
     <div class="flex_icon_header">
-        <a href='{{ route('login') }}' class='icon_header'><img src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
+        <a href='{{ route('login') }}' class='icon_header icon_login'><img class='img_black_theme' src='{{asset('storage/uploads/Group 1_black_theme.svg')}}'><img class='img_light_theme' src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
         <a class='gray_circle icon_header open_mobile_header' >
-            <img src="{{asset('storage/uploads/Group 29.svg')}}" alt="">
+            <img class='img_light_theme'src="{{asset('storage/uploads/Group 29.svg')}}" alt="">
+            <img class='img_black_theme'src="{{asset('storage/uploads/Group 29 (1)_black.svg')}}" alt="">
         </a>
     </div>
 </div>
+
+
+<script>
+
+$( ".change_theme" ).on( "click", function() {
+    $.get("{{route('change-theme')}}", function (response) {
+        $('body').toggleClass('black_theme')
+    });
+})
+</script>

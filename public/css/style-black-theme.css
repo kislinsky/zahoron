@@ -1,0 +1,461 @@
+.black_theme{
+    color: white;
+    background: #050505;
+}
+
+.black_theme .order_page.bac_gray{
+    background: #0F0F0F;
+}
+
+
+.black_theme header{
+    background: #050505;
+}
+
+.black_theme .btn_bac_gray {
+    background: #0F0F0F;
+    color: white;
+}
+
+.black_theme .header_big, .black_theme footer, .black_theme .modal-body.message,.black_theme .li_product_monuments_grave,.black_theme .li_memorial_dinner,.black_theme .li_memorial_hall,.black_theme .li_faq,.black_theme .bac_gray,.black_theme .li_cat_product{
+    background-color: #0F0F0F;
+}
+
+.black_theme a.li_cat_news:hover, .black_theme a.title_label:hover, .black_theme a.text_li:hover, .black_theme a.title_rewies:hover, .black_theme a.content_block:hover, .black_theme a.title_memorial_hall:hover, .black_theme a.title_text_block:hover, .black_theme a.title_memorial_dinner:hover, .black_theme a.title_organization:hover, .black_theme a.mini_text_product:hover, .black_theme .price_product_monuments_grave:hover, .black_theme a.title_li:hover, .black_theme a.text_middle_index:hover, .black_theme a.title:hover, .black_theme a.mini_text:hover, .black_theme a.text_black:hover, .black_theme .li_location:hover, .black_theme a.title_news:hover, .black_theme a.text_block:hover, .black_theme .raiting_table th{
+    color: #0080D7;
+}
+
+.black_theme .gray_index_block_service{
+    background: #4E4E4E;
+}
+.black_theme .title_middle, .black_theme .title a, .black_theme .li_cat_main_marketplace,.black_theme .li_cat_children_marketplace,.black_theme .li_cat_children_marketplace a, .black_theme .content_news_single li, .black_theme .li_cat_news, .black_theme .text_search_application,.black_theme .block_inpit_form_search input, .black_theme .text_block_mini, .black_theme .title_cart, .black_theme .title_product_market, .black_theme .content_product, .black_theme .input_additional, .black_theme .index_title, .black_theme .title_label ,.black_theme .text_li, .black_theme .title_rewies,.black_theme .content_block, .black_theme .title_memorial_hall,.black_theme .title_text_block,.black_theme .title_memorial_dinner,.black_theme .title_organization,.black_theme .mini_text_product,.black_theme .price_product_monuments_grave,.black_theme .title_li,.black_theme .text_middle_index, .black_theme .title,.black_theme .mini_text,.black_theme .text_black,.black_theme .li_location,.black_theme .title_news,.black_theme .text_block,.black_theme .raiting_table th{
+    color: white;
+}
+.black_theme a.title_label:hover,.black_theme .li_cat_children_marketplace a:hover{
+    color: #0080D7;
+}
+.black_theme .li_news .text_li{
+    color: #808080;
+}
+
+.black_theme .title_before_our_works,.black_theme .title_after_our_works{
+    color: #1A1A1A;
+}
+
+.black_theme .li_memorial_dinner,.black_theme .li_memorial_hall,.black_theme .li_faq,.black_theme .li_news,.black_theme .cats_news{
+    border:1px solid #4E4E4E;
+}
+.black_theme .btn_border_blue{
+    background: #050505;
+    color: #0080D7;
+}
+
+.black_theme footer .pages .no_bac_btn{
+    background: #050505;
+    color: white;
+}
+
+.black_theme .flex_footer_2,.black_theme .aplication p,.black_theme .btn_gray{
+    color: white;
+}
+
+.black_theme footer .pages .no_bac_btn:hover{
+    background: #0080D7;
+}
+
+.black_theme .block_form_form_words_memory textarea,  .black_theme .form_services_add select, .black_theme .checkout_form input,.black_theme .checkout_form textarea,  .black_theme .select, .black_theme .form_city_select input, .black_theme .block_input input,.black_theme .block_input select,.black_theme .block_input textarea{
+    border:1px solid #4E4E4E;
+    background: none;
+    color: white;
+}
+.black_theme .checkout_form label,.black_theme .checkout_form label a{
+    color: white;
+}
+.black_theme .abs_cities_input,.black_theme .abs_cities_input_search,.black_theme .call_time,.black_theme .call_time input[type="time"]{
+    background: #0F0F0F;
+}
+.black_theme .city_li_input,.black_theme .city_li_input_seacrh{
+    color: white;
+    border:1px solid #4E4E4E;
+}
+.black_theme .text_middle{
+    color: white;
+}
+.black_theme .city_li_input:hover,.black_theme .city_li_input_seacrh:hover{
+    color: #0080D7;
+}
+.black_theme option,.black_theme .input__wrapper{
+    background: #0F0F0F;
+}
+
+.black_theme .form_login{
+    background: #0F0F0F;
+}
+
+.black_theme .input_print_form .message{
+    background: #0F0F0F;
+}
+
+.black_theme .li_organization{
+    background: #0F0F0F;
+}
+
+.black_theme .info_li_organization .title_li_organiaztion{
+    color: white;
+}
+
+.black_theme .info_li_organization a.title_li_organiaztion:hover{
+    color: #0080D7;
+}
+
+.black_theme .filter_block_organization .checkbox,.black_theme .filter_sort,.black_theme .filter_block_organization select.active_select_filter_organiaztion_2{
+    background: #0F0F0F;
+    border: none;
+    color: white;
+}
+
+.black_theme .filter_block select,.black_theme .filter_block input{
+    background: #0F0F0F;
+    border: none;
+    color: white;
+}
+.black_theme .ul_sort {
+    border: 1px solid #4E4E4E;
+    background: #0F0F0F;
+}
+.black_theme .abs_cities a,.black_theme .abs_cities,.black_theme .gos_block{
+    background: #0F0F0F;
+    color: white;
+}
+.black_theme .li_cat_children_marketplace:hover{
+    color: #0080D7;
+}
+.black_theme .border_gray,.black_theme .block_table_price_orgniaztions td,.black_theme .block_table_price_orgniaztions th,.black_theme .block_product_cats{
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .abs_cities a:hover{
+    color: #0080D7;
+}
+.black_theme .li_place .btn_border_gray{
+    color: white;
+    border: 1px solid #4E4E4E;
+}
+.black_theme .sidebar_place,.black_theme .li_city_place{
+    border: 1px solid #4E4E4E;
+    color: white;
+
+}
+.black_theme .li_review_organization, .black_theme .btn_border_gray, .black_theme .content_product,.black_theme .icon_btn_single_organization,.black_theme .block_content_organization_single,.black_theme .block_menu_single_organization{
+    border: 1px solid #4E4E4E;
+    color: white;
+}
+
+.black_theme .text_black_mini,.black_theme .text_gray_mini{
+    color: white;
+}
+.black_theme .block_content_organization_single .item_memorial_menu{
+    background: #050505;
+}
+.black_theme .block_border_gray_map_organization_single{
+    border-top: 1px solid #4E4E4E;
+    border-right: 1px solid #4E4E4E;
+    border-left: 1px solid #4E4E4E;
+
+}
+.black_theme .li_place{
+    border: 1px solid #4E4E4E;
+}
+
+
+.black_theme .mobile_header ul::-webkit-scrollbar,.black_theme .block_menu_single_organization::-webkit-scrollbar{
+    width: 7px; /* Ширина вертикальной полосы прокрутки */
+    height: 7px; /* Высота горизонтальной полосы прокрутки */
+}
+
+.black_theme .mobile_header ul::-webkit-scrollbar-track,.black_theme .block_menu_single_organization::-webkit-scrollbar-track{
+    background: #4E4E4E; /* Фон трека (полоса под ползунком) */
+    border-radius: 6px; /* Скругление углов */
+}
+
+.black_theme .mobile_header ul::-webkit-scrollbar-thumb,.black_theme .block_menu_single_organization::-webkit-scrollbar-thumb{
+    background: #808080; /* Цвет ползунка */
+    border-radius: 6px; /* Скругление углов */
+}
+
+.black_theme .mobile_header ul::-webkit-scrollbar-thumb:hover,.black_theme .block_menu_single_organization::-webkit-scrollbar-thumb:hover{
+    background: #808080; /* Цвет ползунка при наведении */
+
+}
+
+.black_theme .header_decoder .flex_icon_header .icon_header{
+    background: #050505;
+}
+
+.black_theme .menu_single_organization {
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .header_user_mini_info {
+    background: #050505;
+    border-top: 1px solid #4E4E4E;
+}
+.black_theme .mobile_choose_organiztion{
+    background: #050505;
+}
+
+.black_theme .header_decoder .flex_icon_header .logout{
+    background: #050505;
+    color: white;
+}
+.black_theme .mobile_info_about_decoder{
+    background: #050505;
+}
+
+.black_theme .block_menu_single_organization{
+    border: none;
+}
+  /* Весь scrollbar */
+.black_theme  .table_rating_block::-webkit-scrollbar ,.black_theme .flex_label_block::-webkit-scrollbar,.black_theme .abs_cities::-webkit-scrollbar{
+    width: 8px; /* Ширина вертикальной полосы прокрутки */
+    height: 8px; /* Высота горизонтальной полосы прокрутки */
+  }
+  
+  /* Полоса прокрутки (фон scrollbar) */
+.black_theme  .table_rating_block::-webkit-scrollbar-track,.black_theme .flex_label_block::-webkit-scrollbar-track,.black_theme .abs_cities::-webkit-scrollbar-track {
+    background: #4E4E4E; /* Фон трека (полоса под ползунком) */
+    border-radius: 6px; /* Скругление углов */
+  }
+  
+  /* Ползунок (scrollbar thumb) */
+.black_theme  .table_rating_block::-webkit-scrollbar-thumb,.black_theme .flex_label_block:-webkit-scrollbar-thumb,.black_theme .abs_cities::-webkit-scrollbar-thumb {
+    background: #808080; /* Цвет ползунка */
+    border-radius: 6px; /* Скругление углов */
+  }
+  
+  /* Ползунок при наведении */
+.black_theme .table_rating_block::-webkit-scrollbar-thumb:hover,.black_theme .flex_label_block::-webkit-scrollbar-thumb:hover,.black_theme .abs_cities::-webkit-scrollbar-thumb:hover {
+    background: #808080; /* Цвет ползунка при наведении */
+}
+
+.black_theme .gray_btn{
+    color: #E9E8EA;
+    transition: all ease-in-out 0.2s;
+    background: #808080;
+}
+
+.black_theme .ul_childern_cats_marketplace{
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .blue_input::placeholder{
+    color: #E9E8EA;
+}
+.black_theme .blue_input{
+    background: #808080;
+color: white;
+}
+.black_theme a.gray_btn:hover{
+    color: #0080D7;
+}
+
+
+.black_theme .navigation span,.black_theme .text_single_product{
+    color: white;
+}
+
+.black_theme .li_product_market {
+    background: #0F0F0F;
+    border:1px solid #4E4E4E;
+}
+.black_theme a.text_block_mini:hover{
+    color: #0080D7;
+}
+.black_theme .form_search input,.black_theme .content_order_page form input,.black_theme .content_order_page select{
+    background: #050505;
+    border: none;
+}
+
+.black_theme .li_product{
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .li_cat_news.active_cat{
+    color: #0080D7;
+}
+
+.black_theme .li_service{
+    background: #0F0F0F;
+}
+
+.black_theme .index_title a,.black_theme .form_services_add .title_middle{
+    color: white;
+}
+.black_theme .cats_news{
+    background: #050505;
+}
+
+.black_theme .li_label_block{
+    background: #0F0F0F;
+    color: white;
+}
+.black_theme .li_label_block:hover,.black_theme .active_label_product{
+    background: #0080D7;
+}
+
+.black_theme .sidebar_account{
+    background: #0F0F0F;
+}
+.black_theme .header_decoder{
+    background: #0F0F0F;
+}
+.black_theme .title_page_sidebar{
+    color: white;
+}
+
+.black_theme .form_settings input,.black_theme .form_settings select{
+    background: #0F0F0F;
+    border: 1px solid #4E4E4E;
+    color: white;
+}
+.black_theme .label_input{
+    color: white;
+}
+.black_theme .ul_agency_organizations{
+    background: #0F0F0F;
+}
+.black_theme .comments_burial{
+    background: #1A1A1A;
+}
+.black_theme .comment_burial{
+    color: white;
+    border-bottom: 1px solid #4E4E4E;
+}
+.black_theme .comment_burial:hover{
+    color: #0080D7;
+}
+
+.black_theme .item_3_decoder{
+    background: #0F0F0F;
+}
+.black_theme .all_money_decoder,.black_theme .li_payment_decoder,.black_theme .title_training_materials,.black_theme .li_training_materials{
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .li_children_page_sidebar{
+    color: white;
+}
+.black_theme .li_children_page_sidebar_active,.black_theme .li_children_page_sidebar:hover{
+    background: #050505;
+    border-left:5px solid #0080D7;
+
+}
+
+.black_theme .li_children_page_sidebar{
+    border-left:5px solid #0F0F0F;
+}
+.black_theme .li_children_page_sidebar_active{
+    border-left:5px solid #0080D7;
+}
+
+.black_theme .input_location_settings{
+    background: #0F0F0F;
+}
+
+.black_theme .li_aplication,.black_theme .li_product_organization,.black_theme .li_order,.black_theme .box_width_border_gray{
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .text_black_bold{
+    color: white;
+}
+
+.black_theme .input_price_update_product_organization{
+    background: #0F0F0F;
+    color: white;
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .table_answer_from_provider th{
+    background: #050505;
+}
+
+.black_theme .ul_working_days,.default_admin_form{
+    background: #0F0F0F;
+    color: white;
+    border: 1px solid #4E4E4E;
+}
+.black_theme .li_working_day{
+    border-left: 5px solid #4E4E4E;
+}
+.black_theme .li_service{
+    border: 1px solid #4E4E4E;
+
+}
+.black_theme .li_working_day_active,.black_theme .li_working_day:hover{
+    background: #4E4E4E;
+    border-left: 5px solid #0080D7;
+}
+
+.black_theme .admin_table th,.black_theme .admin_table td{
+    color: white;
+}
+.black_theme .page-link{
+    border: 1px solid #4E4E4E;
+    color: white;
+    background: #0F0F0F;
+}
+.black_theme .page-link:hover{
+    background: #0080D7;
+}
+
+.black_theme .active>.page-link,.black_theme .page-link.active{
+    background: #0080D7;
+}
+
+.black_theme .default_admin_form input{
+    background: #0F0F0F;
+    color: white;
+}
+
+.black_theme .list-group-item{
+    background: #0F0F0F;
+} 
+
+.black_theme .reason_failure_btn .text_black{
+    color: #050505;
+}
+
+.black_theme .img_light_theme{
+    display: none;
+}
+.black_theme .img_black_theme{
+    display: block;
+}
+
+.black_theme .icon_header{
+    background-color: #0F0F0F;
+}
+.gray_index_block_service .gray_btn{
+    border-radius: 5px;
+}
+
+.black_theme .mobile_header_mini_info{
+    background: #050505;
+    border-top: 1px solid #4E4E4E;
+}
+
+.open_big_header.img_black_theme{
+    width: 25px;
+}
+
+.black_theme .mobile_header{
+    background: #0F0F0F;
+}
+.black_theme .mobile_header a{
+    color: white;
+}
+
+.black_theme .mobile_header a:hover{
+    color: #0080D7;
+}

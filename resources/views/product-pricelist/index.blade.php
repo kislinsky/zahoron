@@ -5,8 +5,8 @@
         <div class="content_order_page">
             <h1 class="index_title">Цены на товары и услуги по уходу за могилой в городе <a href="{{route('city.select',$city->id)}}">{{$city->title}}</a></div>    
         </div>
-        <img class='rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
-        
+        <img class='img_light_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
+        <img class='img_black_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">        
     </div>
 </section>
 

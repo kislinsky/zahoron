@@ -4,7 +4,7 @@
     <form class='form_login'method="POST" action="{{ route('login') }}">
         @csrf
         <div class="title_li">Вход</div>
-        <div class="text_li">Нет аккаунта? <a  href="/register">  Регистрация</a></div>
+        <div class="text_li">Нет аккаунта? <a  href="{{route('register')}}">  Регистрация</a></div>
         {{-- <div class="block_input">
             <select name="role" id="">
                 <option value="user">Пользователь</option>

@@ -6,7 +6,8 @@
     </div>
     @if(user()->organization()!=null)
         <div class="info_selected_organization">
-            <div class="text_block open_ul_agency_organizations">{{user()->organization()->title}} <img src="{{asset('storage/uploads/Vector_arrow (2).svg')}}" alt=""></div>
+            <div class="text_block open_ul_agency_organizations">{{user()->organization()->title}}  <img class='img_light_theme' src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>
+                <img class='img_black_theme' src='{{asset('storage/uploads/Vector 9_black.svg')}}'></div>
             <a href='{{user()->organization()->route()}}'class="text_middle_blue">Страница на {{user()->organization()->title}} <img src="{{asset('storage/uploads/Vector_arrow (1).svg')}}" alt=""></a>
         </div>
     @else

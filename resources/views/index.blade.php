@@ -4,7 +4,8 @@
         <div class="content_order_page">
             <div class="title">Актуальные цены на ритуальные услуги г. {{$city->title}}</div>
         </div>
-        <img class='rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
+        <img class='img_light_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
+        <img class='img_black_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">
         
     </div>
 </section>
@@ -31,7 +32,8 @@
                 <div class="flex_text_service_index">
                     <div class="text_middle_index">Сравните стоимость услуг по отправке груза 200 в другой город выбрав агентство подходящее под Ваши запросы
                     </div>
-                    <img src="{{asset('storage/uploads/airplane 1.svg')}}" alt="" class="img_index_service">
+                    <img class='img_light_theme'src="{{asset('storage/uploads/airplane 1.svg')}}" alt="" class="img_index_service">
+                    <img class='img_black_theme'src="{{asset('storage/uploads/airplane 1_black.svg')}}" alt="" class="img_index_service">
                 </div>
                 <div class="grid_btn">
                     <div class="blue_btn open_shipping_200 border_radius_btn" >Стоимость от {{minPriceCategoryProductOrganization('otpravka-gruz-200')}} руб.</div>
@@ -68,7 +70,9 @@
 
                             <div class="mini_text">Узнайте информацию по
                                 умершему</div>
-                            <img class='mini_index_img'src="{{asset('storage/uploads/mortuary.svg')}}" alt="" class="img_index_service">
+                            <img class='img_light_theme mini_index_img'src="{{asset('storage/uploads/mortuary.svg')}}" alt="" class="img_index_service">
+                            <img class='img_black_theme mini_index_img'src="{{asset('storage/uploads/menu 1 (1)_black.svg')}}" alt="" class="img_index_service">
+                            
                         </div>
                         <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#dead_form">узнать</div>
                     </div>
@@ -81,8 +85,9 @@
                             <div class="mini_text">Узнайте рабочий режим кладбища, позвоните или
                                 узнайте как
                                 добраться.</div>
-                            <img class='mini_index_img'src="{{asset('storage/uploads/menu 1.svg')}}" alt="" class="img_index_service">
-                        </div>
+                                <img class='img_light_theme mini_index_img'src="{{asset('storage/uploads/menu 1.svg')}}" alt="" >
+                                <img class='img_black_theme mini_index_img'src="{{asset('storage/uploads/menu 1 (2)_black.svg')}}" alt="" >
+                            </div>
                         <a href='{{ route('cemeteries') }}' class="blue_btn border_radius_btn">Позвонить</a>
                     </div>
                 </div>
@@ -99,8 +104,9 @@
                             с разных кафе
                             вашего района 
                             в г. Иваново</div>
-                        <img class='mini_index_img' src="{{asset('storage/uploads/Group_index.svg')}}" alt="" class="img_index_service">
-                    </div>
+                            <img class='img_light_theme mini_index_img' src="{{asset('storage/uploads/Group_index.svg')}}" alt="" >
+                            <img class='img_black_theme mini_index_img' src="{{asset('storage/uploads/menu 1 (3)_black.svg')}}" alt="" >
+                        </div>
                     <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#memorial_form">Оформить заказ</div>
                 </div>
                 <div class="gray_index_block_service">
@@ -108,7 +114,8 @@
                         кремации г. {{$city->title}}</a>
                     <div class="flex_text_service_index">
                         <div class="mini_text">Вам предоставят цены на кремацию от более 10 ритуальных агентств Иваново для выбора лучшего варианта.</div>
-                        <img src="{{asset('storage/uploads/Group_cemetery.svg')}}" alt="" class="img_index_service">
+                        <img src="{{asset('storage/uploads/Group_cemetery.svg')}}" alt="" class="img_light_theme img_index_service">
+                        <img src="{{asset('storage/uploads/_index_block_vblack.svg')}}" alt="" class="img_black_theme img_index_service">
                     </div>
                     <div class="blue_btn border_radius_btn open_organization_cremation">Узнать цены</div>
                 </div>

@@ -30,8 +30,8 @@ use App\Models\Product;
    
     <div class="container">  
         <a class='logo' href='/'>
-            <img src='{{asset('storage/uploads/zahoron.svg')}}'>
-        </a>
+            <img class='img_light_theme' src='{{asset('storage/uploads/zahoron.svg')}}'>
+            <img class='img_black_theme' src="{{asset('storage/uploads/РИТУАЛреестр.svg')}}" alt="">        </a>
         @if (isset($page))
             <div class='pages'>
                 <a href='{{ route('home') }}'class="btn_bac_gray <?php if($page==1){echo ' active_label_product';}?>">Главная </a>

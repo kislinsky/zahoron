@@ -12,8 +12,8 @@
                 <button class='blue_btn' type='submit'>Найти</button>
             </form>
         </div>
-        <img class='rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
-        
+        <img class='img_light_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
+        <img class='img_black_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">        
     </div>
 </section>
 
@@ -34,7 +34,7 @@
                                     <div class="btn_gray">{{ $product->who }}</div>
                                 </div>
                                 <div class="two_block_li_product">
-                                    <div class="title_li decoration_on">{{ $product->surname }} {{ $product->name }} {{ $product->patronymic }}</div>
+                                    <div class="text_middle_index decoration_on">{{ $product->surname }} {{ $product->name }} {{ $product->patronymic }}</div>
                                     <div class="mini_flex_li_product">
                                         <div class="title_label">Даты захоронения:</div>
                                         <div class="text_li">{{ $product->date_birth }}-{{ $product->date_death }}</div>
@@ -77,7 +77,7 @@
                             <div class="li_news">
                                 <img src="{{asset('storage/uploads_news/'. $news_one->img )}}" alt="">
                                 <a href='{{ route('news.single',$news_one->id) }}' class="title_news">{{ $news_one->title }}</a>
-                                <div class="text_li">{{ $news_one->created_at }}</div>
+                                <div class="text_li">{{ $news_one->created_at->format('d.m.Y') }}</div>
                             </div>
                         @endforeach                    
                     @endif

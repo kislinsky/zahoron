@@ -1526,3 +1526,20 @@ function workingDaysForShema($days)
     // Объединяем результат в одну строку
     return implode(', ', $result);
 }
+
+function getTheme(){
+    if(isset($_COOKIE['theme'])){
+        if($_COOKIE['theme']=='black'){
+            echo 'black_theme';
+        }
+    }else{
+        if(Auth::user()){
+            if(user()->theme=='dark'){
+                echo 'black_theme';
+            }
+        }
+    }
+    echo '';
+    
+
+}

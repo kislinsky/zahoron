@@ -40,10 +40,35 @@
     .mobile_header_mini_info{
         display: flex;
     }
+
+    .black_theme .open_big_header.img_black_theme{
+        display: none;
+    }
+    .black_theme .header_decoder .flex_icon_header .icon_header{
+        background: #050505 ;
+    }
+    .black_theme .header_decoder,.black_theme .header_decoder {
+        background: #050505 !important;
+    }
+
+    .black_theme .header_decoder.header_decoder_account .flex_icon_header .icon_header{
+        background: #0F0F0F;
+    }
+    .black_theme .header_decoder.header_admin .flex_icon_header .logout,.black_theme .header_decoder.header_admin .icon_header{
+        background: #0F0F0F !important;
+    }
+
+    .black_theme .header_decoder.header_agency .flex_icon_header .icon_header{
+        background: #0F0F0F !important;
+
+    }
+
 }
 
 
 @media(max-width:960px){
+
+
     .blue_block_all_price{
         display: none;
     }

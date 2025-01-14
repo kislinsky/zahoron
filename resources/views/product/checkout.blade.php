@@ -9,8 +9,8 @@ use App\Models\AdditionProduct;
         <div class="content_order_page">
             <div class="index_title">Оформление заказа</div>    
         </div>
-        <img class='rose_checkout'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
-        
+        <img class='img_light_theme rose_checkout'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
+        <img class='img_black_theme rose_checkout'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">
     </div>
 </section>
 

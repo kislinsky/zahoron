@@ -3,11 +3,13 @@
 
 <footer class='bac_gray'>
     <div class="container">
-    <img src="{{asset('storage/uploads/Frame (19).svg')}}" alt="" class="rose_footer">
+      <img src="{{asset('storage/uploads/Frame (19).svg')}}" alt="" class="rose_footer img_light_theme">
+      <img src="{{asset('storage/uploads/Frame (4)_black.svg')}}" alt="" class="rose_footer img_black_theme">
+      
        <div class="flex_footer">
           <a class='logo' href='/'>
-             <img src='{{asset('storage/uploads/zahoron.svg')}}'>
-         </a>
+            <img class='img_light_theme' src='{{asset('storage/uploads/zahoron.svg')}}'>
+            <img class='img_black_theme' src="{{asset('storage/uploads/РИТУАЛреестр.svg')}}" alt="">         </a>
          <div class='pages'>
             <a href='{{ route('page.search.burial.filter') }}'class="no_bac_btn">Герои </a>
             <a href='{{ route('marketplace') }}'class="no_bac_btn">Маркетплейс</a>

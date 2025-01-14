@@ -8,8 +8,8 @@
         <div class="content_order_page">
         {{ view("product.components.catalog.title", compact('title_h1',"category",'cemetery','city','district')) }}
         </div>
-        <img class='rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
-        
+        <img class='img_light_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
+        <img class='img_black_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">
     </div>
 </section>
 <section class="product_market">
