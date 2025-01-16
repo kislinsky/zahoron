@@ -73,16 +73,19 @@ if(city_by_slug($city) == null){
     setcookie('city', '', -1, '/');
     setcookie("city", first_city_id(), time()+20*24*60*60,'/');
     header("location: /".first_city_slug());
+    die;
 } else{
     $c_b_s__ = city_by_slug($city);
     if(!isset($_COOKIE['city'])){
         setcookie("city", first_city_id(), time()+20*24*60*60,'/');
         header("Refresh:0");
+        die;
     }
     if($_COOKIE['city'] != $c_b_s__->id){
         setcookie('city', '', -1, '/');
         setcookie("city", $c_b_s__->id, time()+20*24*60*60,'/');
         header("Refresh:0");
+        die;
     }
 }
 }

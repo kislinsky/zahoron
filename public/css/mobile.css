@@ -62,12 +62,18 @@
         background: #0F0F0F !important;
 
     }
+   
 
 }
 
 
 @media(max-width:960px){
-
+    .header_user_mini_info.header_user_mini_info_2{
+        display:flex;
+    }
+    .header_decoder.header_user .icon_header.icon_login,.header_decoder.header_user .no_bac_btn{
+        display: none;
+    }
 
     .blue_block_all_price{
         display: none;
@@ -367,6 +373,9 @@
 }
 
 @media(max-width:760px){
+    .orders{
+        padding: 20px 0px;
+    }
     .ul_products_organizations{
         grid-template-columns: 1fr;
     }
@@ -1037,6 +1046,9 @@
     }
     .title{
         font-size: 30px;
+    }
+    .black_theme .menu_single_organization {
+        border: 1px solid #4E4E4E;
     }
     .order_page .container{
         padding: 40px 20px;

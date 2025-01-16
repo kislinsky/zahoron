@@ -192,9 +192,7 @@
     background: #050505;
 }
 
-.black_theme .menu_single_organization {
-    border: 1px solid #4E4E4E;
-}
+
 
 .black_theme .header_user_mini_info {
     background: #050505;
@@ -380,7 +378,12 @@ color: white;
     background: #050505;
 }
 
-.black_theme .ul_working_days,.default_admin_form{
+.black_theme .block_table_price_organization_ritual_services th,.black_theme  .block_table_price_organization_ritual_services td{
+    background: #0F0F0F;
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .ul_working_days,.black_theme .default_admin_form{
     background: #0F0F0F;
     color: white;
     border: 1px solid #4E4E4E;

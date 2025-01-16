@@ -34,7 +34,6 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\SEO;
 use App\Models\WorkingHoursCemetery;
 use Carbon\Carbon;
-use DateTimeZone;
 
 function mainCities(){
     $cities=City::orderBy('title','asc')->take(8)->get();
