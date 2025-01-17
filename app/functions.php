@@ -23,6 +23,7 @@ use App\Models\FaqCategoryProduct;
 use App\Models\FaqService;
 use App\Models\Mortuary;
 use App\Models\Organization;
+use App\Models\OtpCodes;
 use App\Models\ReviewsOrganization;
 use App\Models\Service;
 use App\Models\ServiceReviews;
@@ -33,7 +34,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\SEO;
 use App\Models\WorkingHoursCemetery;
+use App\Services\Auth\SmsService;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 function mainCities(){
     $cities=City::orderBy('title','asc')->take(8)->get();
@@ -348,10 +351,10 @@ function ddata(){
 }
 
 
-function sendSms($phone,$message){
-    $body = file_get_contents("https://sms.ru/sms/send?api_id=ABEA29AD-63BB-1657-6B5D-8F7501A7825C&to=".$phone."&msg=".urlencode($message)."&json=1"); 
-    return $json = json_decode($body);
-}
+// function sendSms($phone,$message){
+//     $body = file_get_contents("https://sms.ru/sms/send?api_id=ABEA29AD-63BB-1657-6B5D-8F7501A7825C&to=".$phone."&msg=".urlencode($message)."&json=1"); 
+//     return $json = json_decode($body);
+// }
 
 
 function organizationRatingFuneralAgenciesPrices($city){
@@ -1438,7 +1441,30 @@ function differencetHoursTimezone($timezone){
  
     $difference = $time1->diffInHours($time2,false);
 
-    return dd($difference);
+    return $difference;
+}
+
+
+function addHoursAndGetTime($hoursDifference) {
+    // Получаем текущее серверное время
+    $serverTime = Carbon::now();
+
+    // Прибавляем разницу в часах
+    $newTime = $serverTime->addHours($hoursDifference);
+
+    // Форматируем результат в нужном формате (ЧЧ:ММ)
+    return $newTime->format('H:i');
+}
+
+function addHoursAndGetDay($hoursDifference) {
+    // Получаем текущее серверное время
+    $serverTime = Carbon::now();
+
+    // Прибавляем разницу в часах
+    $newTime = $serverTime->addHours($hoursDifference);
+
+    // Форматируем результат в нужном формате (день недели, например Monday)
+    return $newTime->format('l'); // Возвращает полный день недели
 }
 
 function getShortDay($day)
@@ -1540,5 +1566,42 @@ function getTheme(){
     }
     echo '';
     
+
+}
+
+function sendSms($phone,$meassage){
+    $smsService = new SmsService();
+    
+    $response = $smsService->sendSms($phone, $meassage);
+    
+    if ($response['status'] == 'OK') {
+        return true;
+    } else {
+        return null;
+    }
+}
+
+function generateSixDigitCode() {
+    return str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+}
+
+function createUserWithPhone($phone,$name='',$role='user'){
+
+    $user=User::where('phone',$phone)->get();
+    if(isset($user[0])){
+        return null;
+    }
+    $password=generateRandomString();
+    // $send_sms=sendSms($phone,"Ваш пароль для входа в личный кабине: $password");
+    // if($send_sms!=true){
+    //     redirect()->back()->with('error','Ошибка отправки сообщения');
+    // }
+    
+    $userCreate=User::create([
+        'name'=>$name,
+        'phone'=>$phone,
+        'password'=>Hash::make($password),
+    ]);
+    return $userCreate;
 
 }

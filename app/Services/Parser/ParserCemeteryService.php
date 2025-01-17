@@ -104,6 +104,7 @@ class ParserCemeteryService
             $city=createCity($cemetery[7],$cemetery[5]);
             $area=createArea($cemetery[6],$cemetery[5]);
             if($city!=null && $area!=null){
+                $timezone=getTimeByCoordinates($cemetery[10],$cemetery[11])['timezone'];                
                 $cemetery_create=Cemetery::create([
                     'title'=>$cemetery[3],
                     'adres'=>$cemetery[8],
@@ -113,8 +114,8 @@ class ParserCemeteryService
                     'city_id'=>$city->id,
                     'href_img'=>1,
                     'phone'=>phoneImport($cemetery[12]),
-                    'area_id'=>$area->id
-
+                    'area_id'=>$area->id,
+                    'time_difference'=>differencetHoursTimezone($timezone),
                 ]);
                 
 

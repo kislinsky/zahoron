@@ -66,6 +66,92 @@
 
 </div>
 
+
+
+<section>
+    <div class="container">
+        <div class="gos_block gos_block_1">
+            <img src="{{asset('storage/uploads/image 29.png')}}" alt="">  
+            <div class="content_gos_block">
+                <div class="title_blue_big">Государственные выплаты <span class='title_green_big'>+ 13500 рублей</span></div>    
+                <div class="text_gray">Выплаты производятся умершиим не работающим пенсионерам</div>
+            </div>      
+        </div>
+    </div>
+</section>
+
+
+
+@include('components.rating-funeral-agencies-prices')
+
+<section class="block">
+    <div class="container">
+        <div class="grid_two mobile_block_info_1_grid">
+            <img src="{{asset('storage/uploads/002-spisok-uslug-2 1.png')}}" alt="" class="img_text_block">
+            <div class="text_block_index">
+                <div class="title_text_block">Получите расчет стоимости ритуальных
+                    услуг от 10 проверенных организаций 
+                    без дополнительных услуг
+                </div>
+                <div class="blue_btn open_shipping_200">Сэкономить до 20 000 руб.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+@include('components.funeral-service-marketplace')
+
+@include('components.rating-uneral-bureaus-raves-prices')
+
+@include('components.monuments-grave')
+
+
+<section class="block">
+    <div class="container">
+        <div class="grid_two mobile_block_info_1_grid">
+            <img src="{{asset('storage/uploads/002-spisok-uslug-2 2.png')}}" alt="" class="img_text_block">
+            <div class="text_block_index">
+                <div class="title_text_block">Получите прямой расчёт
+                    от 10 проверенных ритуальных агентств по низким ценам
+                </div>
+                <div class="blue_btn" data-bs-toggle="modal" data-bs-target="#beautification_form">Получить расчет</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@include('components.rating-establishments-providing-halls-holding-commemorations')
+
+@include('components.memorial-dinners-marketplace')
+
+@include('components.memorial-hall-marketplace')
+
+@include('components.rewies') 
+
+@include('components.reviews-funeral-organization') 
+
+@include('components.map-morgues') 
+
+@include('components.map-cemeteries') 
+
+
+@include('components.faq') 
+
+
+
+@if($city->text_about_project!=null)
+    <section class="about_company bac_gray">
+        <div class="container">
+            <div class="title">О проекте "Цены на ритуальные услуги в г. {{$city->title}}</div>
+            <div class="content_block">{!! $city->text_about_project !!}</div>
+
+        </div>
+    </section>
+@endif
+
+
 @include('components.cats-product') 
  
 @include('footer.footer') 

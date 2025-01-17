@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\OtpCodes;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
@@ -70,4 +72,48 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
         ]);
     }
+
+    public static function registerWithPhone(Request $request){
+        $data=request()->validate([
+            'role_phone'=>['required','string'],
+            'phone'=>['required','string'],
+        ]);
+
+        $user=User::where('phone',$data['phone'])->get();
+        if(isset($user[0])){
+            redirect()->back()->with('error','Пользователь с таким номером телефона уже существует, войдите в аккаунт.');
+        }
+        $code=generateSixDigitCode();
+        $token=generateRandomString(10);
+        $codeModel=OtpCodes::create([
+            'code'=>$code,
+            'phone'=>$data['phone'],
+            'token'=>$token,
+            'role'=>$data['role_phone'],
+        ]);
+        // $send_sms=sendSms($data['phone'],$code);
+        // if($send_sms!=true){
+        //     redirect()->back()->with('error','Ошибка отправки сообщения');
+        // }
+        return redirect()->route('register.verify.code')->with('token', $token);
+    }
+    
+    public static function verifyCode(){
+        $token=session('token');
+        return view('auth.verify-code',compact('token'));
+    }
+
+    public static function  verifyCodeSend(Request $request){
+        $data=request()->validate([
+            'code'=>['required','string'],
+            'token'=>['required','string'],
+        ]);
+        $codeModel=OtpCodes::orderBy('id', 'desc')->where('token',$data['token'])->first();
+        if($codeModel!=null && $codeModel->code!=$data['code']){
+            return redirect()->back()->with('error','Код веден неверно')->with('token',$data['token']);
+        }
+        $user=createUserWithPhone($codeModel->phone,'user',$codeModel->role); 
+        Auth::login($user);
+        return redirect()->route('index');       
+}
 }

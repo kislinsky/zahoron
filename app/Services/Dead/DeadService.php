@@ -9,9 +9,12 @@ use Illuminate\Support\Facades\Auth;
 class DeadService {
     
     public static function deadAdd($data){
-       if(Auth::check()){
+        if(Auth::check()){
             $user=Auth::user();
+        }else{
+            $user=createUserWithPhone($data['phone_dead'],$data['name_dead']);
         }
+
         $dead=DeadApplication::create([
             'city_id'=>$data['city_dead'] ,
             'fio'=>$data['fio_dead'] ,

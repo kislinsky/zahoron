@@ -25,6 +25,7 @@ class ParserCrematoriumService
             $city=createCity($crematorium[7],$crematorium[6]);
             if($city!=null && $crematorium[12]!=null && $crematorium[13]!=null){
                 $content=$crematorium[31];
+                $timezone=getTimeByCoordinates($crematorium[12],$crematorium[13])['timezone'];
                 $crematorium_create=Crematorium::create([
                     'title'=>$crematorium[3],
                     'village'=>$crematorium[8],
@@ -38,7 +39,8 @@ class ParserCrematoriumService
                     'rating'=>$crematorium[26],
                     'mini_content'=>$crematorium[31],
                     'href_img'=>1,
-                    'content'=>$content
+                    'content'=>$content,
+                    'time_difference'=>differencetHoursTimezone($timezone),
                 ]);
                 if($crematorium[35]!=null){
                     $imgs=explode(',',$crematorium[35]);

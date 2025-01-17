@@ -7129,6 +7129,16 @@ text-decoration-skip-ink: none;
     padding-top: 10px;
 }
 
+.open_form_with_email,.open_form_with_phone{
+    cursor: pointer;
+}
+.form_with_phone{
+    display: none;
+}
+.flex_btn_center{
+    justify-content: center;
+}
+
 .mobile_header .children_pages_mobile_header.children_pages_mobile_header_active{
     display: flex;
 }

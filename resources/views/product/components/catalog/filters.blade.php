@@ -1,6 +1,8 @@
 <div id='filter_1' class="flex_filters_products marketplace_filters <?php if($category->parent_id==36){echo 'active_filters';}?>">
     <label class="filter_block_organization filter_sort">
-        <img src="{{asset('/storage/uploads/iconoir_sort.svg')}}" alt=""><span val='{{@nameSort($sort)}}' class='name_sort'>{{nameSort($sort)}}</span>
+        <img class='img_light_theme'src="{{asset('/storage/uploads/iconoir_sort.svg')}}" alt="">
+        <img class='img_black_theme'src="{{asset('/storage/uploads/Vector (54)_black.svg')}}" alt="">
+        <span val='{{@nameSort($sort)}}' class='name_sort'>{{nameSort($sort)}}</span>
         <div class="ul_sort">
             <div val='price_down'class="li_sort">По убыванию цены</div>
             <div val='price_up' class="li_sort">По возрастанию цены</div>

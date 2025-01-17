@@ -29,6 +29,9 @@ class ParserMortuaryService
                 if($content==null){
                     $content=$mortuary[31];
                 }
+                
+                $timezone=getTimeByCoordinates($mortuary[12],$mortuary[13])['timezone'];
+
                 $mortuary_create=Mortuary::create([
                     'title'=>$mortuary[3],
                     'village'=>$mortuary[8],
@@ -42,7 +45,9 @@ class ParserMortuaryService
                     'rating'=>$mortuary[26],
                     'mini_content'=>$mortuary[31],
                     'href_img'=>1,
-                    'content'=>$content
+                    'content'=>$content,
+                    'time_difference'=>differencetHoursTimezone($timezone),
+
                 ]);
                 if($mortuary[35]!=null){
                     $imgs=explode(',',$mortuary[35]);

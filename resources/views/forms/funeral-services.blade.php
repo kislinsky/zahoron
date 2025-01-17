@@ -69,7 +69,7 @@ if(Auth::check()){
                             <div class="flex_input"><label for="">Город получения</label> <label class='flex_input_checkbox checkbox'><input type="checkbox" name='none_mortuary'>Заграница</label></div>
                             <div class="block_ajax_input_search_cities">
                                 <input search='false' class='input_search_cities' type="text" name="city_search" id="" value='{{ selectCity()->title }}'>
-                                <input  type="hidden" name="city_funeral_service" class='city_funeral_service_to city_id_input' value='{{ selectCity()->id }}'>
+                                <input  type="hidden" name="city_funeral_service_to" class='city_funeral_service_to city_id_input' value='{{ selectCity()->id }}'>
                             </div>
                             @error('city_funeral_service_to')
                                 <div class='error-text'>{{ $message }}</div>

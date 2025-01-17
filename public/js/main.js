@@ -889,3 +889,17 @@ $(".open_children_pages").click(function() {
  $(this).siblings('.children_pages_mobile_header').toggleClass('children_pages_mobile_header_active')
 });
 
+$(".open_form_with_email").click(function() {
+  $(this).addClass('active_label_product')
+  $('.open_form_with_phone').removeClass('active_label_product')
+  $('.form_with_email').css('display','flex')
+  $('.form_with_phone').hide()
+});
+
+
+$(".open_form_with_phone").click(function() {
+  $(this).addClass('active_label_product')
+  $('.open_form_with_email').removeClass('active_label_product')
+  $('.form_with_phone').css('display','flex')
+  $('.form_with_email').hide()
+});

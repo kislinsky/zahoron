@@ -17,8 +17,22 @@
     color: white;
 }
 
+.black_theme .comment{
+    border: 1px solid #4E4E4E;
+    color: white;
+}
+
+.black_theme .title_parametr,.black_theme .black_text{
+    color: white;
+}
+
+
 .black_theme .header_big, .black_theme footer, .black_theme .modal-body.message,.black_theme .li_product_monuments_grave,.black_theme .li_memorial_dinner,.black_theme .li_memorial_hall,.black_theme .li_faq,.black_theme .bac_gray,.black_theme .li_cat_product{
     background-color: #0F0F0F;
+}
+
+.black_theme .message{
+    background: #0F0F0F;
 }
 
 .black_theme a.li_cat_news:hover, .black_theme a.title_label:hover, .black_theme a.text_li:hover, .black_theme a.title_rewies:hover, .black_theme a.content_block:hover, .black_theme a.title_memorial_hall:hover, .black_theme a.title_text_block:hover, .black_theme a.title_memorial_dinner:hover, .black_theme a.title_organization:hover, .black_theme a.mini_text_product:hover, .black_theme .price_product_monuments_grave:hover, .black_theme a.title_li:hover, .black_theme a.text_middle_index:hover, .black_theme a.title:hover, .black_theme a.mini_text:hover, .black_theme a.text_black:hover, .black_theme .li_location:hover, .black_theme a.title_news:hover, .black_theme a.text_block:hover, .black_theme .raiting_table th{

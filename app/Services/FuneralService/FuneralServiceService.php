@@ -18,6 +18,11 @@ class FuneralServiceService {
     public static function addFuneralService($data){
         if(Auth::check()){
             $user=Auth::user();
+        }else{
+            $user=createUserWithPhone($data['phone_funeral_service'],$data['name_funeral_service']);
+            if($user==null){
+                return redirect()->back()->with('error','Пользователь с таким номером телефона уже существует, войдите в аккаунт.');
+            }
         }
 
         $time=60*30;

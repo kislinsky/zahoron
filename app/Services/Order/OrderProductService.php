@@ -77,7 +77,12 @@ class OrderProductService
     }
 
     public static function addOrderOne($data){
-        $user=user();
+        if(Auth::check()){
+            $user=Auth::user();
+        }else{
+            $user=createUserWithPhone($data['phone'],$data['name']);
+        }
+        
         $product=Product::find($data['product_id']);
         $price_product=priceProduct($product);
         $mortuary=null;
@@ -103,6 +108,8 @@ class OrderProductService
             'organization_id'=>$product->organization->id
 
            ]);
+           $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
+            return redirect()->back()->with('message_order_burial',$message); 
         }
         if($product->category->slug=='organizacia-kremacii'){
             $order=OrderProduct::create([
@@ -116,6 +123,8 @@ class OrderProductService
             'organization_id'=>$product->organization->id
 
             ]);
+            $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
+            return redirect()->back()->with('message_order_burial',$message); 
         }
         if($product->category->slug=='otpravka-gruz-200'){
             $order=OrderProduct::create([
@@ -131,8 +140,10 @@ class OrderProductService
             'organization_id'=>$product->organization->id
 
             ]);
+            $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
+            return redirect()->back()->with('message_order_burial',$message); 
         }
-        if($product->category->slug=='kopka-mogil'){
+        if($product->category->slug=='knopka-mogil' || $product->category->slug=='pominal-nye-zaly'){
             $order=OrderProduct::create([
              'product_id'=>$product->id,
              'user_id'=>$user->id,
@@ -144,6 +155,8 @@ class OrderProductService
             'organization_id'=>$product->organization->id
 
             ]);
+            $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
+            return redirect()->back()->with('message_order_burial',$message); 
         }
         else{
             $order=OrderProduct::create([
@@ -156,9 +169,10 @@ class OrderProductService
                 'additional'=>$additionals,
                 'organization_id'=>$product->organization->id
             ]);
+            $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
+            return redirect()->back()->with('message_order_burial',$message); 
         }
-        $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
-        return redirect()->back()->with('message_order_burial',$message); 
+        
     }
 
 }

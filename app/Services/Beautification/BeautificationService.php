@@ -17,20 +17,8 @@ class BeautificationService {
         if(Auth::check()){
             $user=Auth::user();
         }else{
-            $user_phone=User::where('phone',$data['phone_beautification'])->get();
-            if( !isset($user_phone[0])){
-                $password=generateRandomString(8);
-                $user=User::create([
-                'name'=>$data['name_beautification'],
-                'phone'=>$data['phone_beautification'],
-                'password'=>Hash::make($password),
-                ]);
-            }
-            else{
-                return redirect()->back()->with("error", 'Такой телефон уже зарегестрированы.');
-            }
+            $user=createUserWithPhone($data['phone_beautification'],$data['name_beautification']);
         }
-        
 
         $time=60*30;
         $time_now=convertToCarbon($data['time_now']);

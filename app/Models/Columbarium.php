@@ -31,10 +31,8 @@ class Columbarium extends Model
     }
 
     public function openOrNot(){
-        //$day=strtotime(getTimeByCoordinates($this->width,$this->longitude)['dayOfTheWeek']);
-        // $time=strtotime(getTimeByCoordinates($this->width,$this->longitude)['current_time']);
-        $time=strtotime('23:00');
-        $day='Saturday';
+        $day=addHoursAndGetDay($this->time_difference);
+        $time=strtotime(addHoursAndGetTime($this->time_difference));
         $get_hours=WorkingHoursColumbarium::where('columbarium_id',$this->id)->where('day',$day)->first();
         if($get_hours!=null){
            if($get_hours->holiday!=1 && $time<strtotime($get_hours->time_end_work) && $time>strtotime($get_hours->time_start_work)){
@@ -59,8 +57,7 @@ class Columbarium extends Model
         $days=WorkingHoursColumbarium::where('columbarium_id',$this->id)->orderByRaw("FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')")->get();
         if($days->count()>0){
             foreach($days as $day){
-                //$day_now=strtotime(getTimeByCoordinates($this->width,$this->longitude)['dayOfTheWeek']);
-                $day_now='Tuesday';
+                $day_now=addHoursAndGetDay($this->time_difference);
                 if($day->holiday!=1){
                     $text_day=translateDayOfWeek($day->day).': '."{$day->time_start_work}-{$day->time_end_work}";
                 }else{
@@ -82,8 +79,7 @@ class Columbarium extends Model
     }
 
     public function timeNow(){
-        //$day=strtotime(getTimeByCoordinates($this->width,$this->longitude)['dayOfTheWeek']);
-        $day='Tuesday';
+        $day=addHoursAndGetDay($this->time_difference);
         $get_hours=WorkingHoursColumbarium::where('columbarium_id',$this->id)->where('day',$day)->first();
         if( $get_hours==null){
             return 'Не указано';

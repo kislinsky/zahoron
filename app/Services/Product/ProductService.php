@@ -65,6 +65,11 @@ class ProductService
             return view('product.single.single-menu',compact('title_h1','product','sales','agent','city','district','images','organization','memorial_menu','category','additionals','comments','category_products'));
         }
 
+        if($category->slug=='pominal-nye-zaly'){
+            $district=$product->district;
+            return view('product.single.single-hall',compact('title_h1','product','sales','agent','city','district','images','organization','category','additionals','comments','category_products'));
+        }
+
         if($category->slug=='organizacia-pohoron'){
             return view('product.single.single-organization-funeral',compact('title_h1','mortuaries','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
@@ -77,12 +82,14 @@ class ProductService
             return view('product.single.single-shipment-200-cargo',compact('title_h1','product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
         
-        if($category->slug=='kopka-mogil'){
+        if($category->slug=='knopka-mogil'){
             return view('product.single.single-button-grave',compact('title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
 
-      
-
+        if($category->slug=='knopka-mogil'){
+            return view('product.single.single-button-grave',compact('title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+        }
+        
         $category_products=Product::orderBy('id','desc')->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('cemetery_id',$product->cemetery_id)->get();
 
         return view('product.single.single',compact('title_h1','agent','product','organization','sales','images','parameters','category','size','additionals','comments','category_products'));

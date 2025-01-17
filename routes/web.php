@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Account\Admin\AdminBurialController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CityController;
@@ -25,6 +24,7 @@ use App\Http\Controllers\Account\HomeController;
 
 
 use App\Http\Controllers\Account\Admin\AdminSEOController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BurialController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
@@ -49,6 +49,7 @@ use App\Http\Controllers\LifeStoryBurialController;
 use App\Http\Controllers\MemorialController;
 use App\Http\Controllers\MortuaryController;
 use App\Http\Controllers\ProductPriceListController;
+use App\Http\Controllers\Auth\RegisterController;
 
 
 /*
@@ -86,6 +87,7 @@ if(city_by_slug($city) == null){
         setcookie("city", $c_b_s__->id, time()+20*24*60*60,'/');
         header("Refresh:0");
         die;
+        
     }
 }
 }
@@ -103,20 +105,20 @@ Route::prefix($city)->group(function () {
 
     Route::get('/change-theme', [MainController::class, 'changeTheme'])->name('change-theme');
 
-    
-
-    Route::get('/', [MainController::class, 'index'])->name('index');
-    Route::get('/speczialist', [MainController::class, 'speczialist'])->name('speczialist');
-    Route::get('/speczialist', [MainController::class, 'speczialist'])->name('speczialist');
-
     Route::get('/city/{id}', [CityController::class, 'selectCity'])->name('city.select');
 
 
     Route::get('/organization/{slug}', [OrganizationController::class, 'single'])->name('organization.single');
-
     Route::get('/organizations', [OrganizationController::class, 'catalogOrganization'])->name('organizations');
 
 
+    Route::post('/register-with-phone', [RegisterController::class, 'registerWithPhone'])->name('register.phone');
+    Route::get('/verify-code', [RegisterController::class, 'verifyCode'])->name('register.verify.code');
+    Route::post('/verify-code-send', [RegisterController::class, 'verifyCodeSend'])->name('register.verify.code.send');
+    Route::post('/login-with-phone', [LoginController::class, 'loginWithPhone'])->name('login.phone');
+
+    
+    
 
 
     Route::prefix('ajax')->group(function () {
@@ -606,9 +608,7 @@ Route::prefix($city)->group(function () {
 
 
                 Route::group(['prefix'=>'seo'], function() {
-                    Route::get('/settings', [AdminSEOController::class, 'settings'])->name('account.admin.seo.settings');
                     Route::get('/object/{page}', [AdminSEOController::class, 'object'])->name('account.admin.seo.object');
-                    Route::post('/object/{page}/update', [AdminSEOController::class, 'updateSeo'])->name('account.admin.seo.object.update');
                 });
                 
 
@@ -621,14 +621,6 @@ Route::prefix($city)->group(function () {
                 });
                 
 
-
-                Route::group(['prefix'=>'burial'], function() {
-                    Route::get('/', [AdminBurialController::class, 'index'])->name('account.admin.burial');
-                    Route::delete('/delete/{burial}', [AdminBurialController::class, 'delete'])->name('account.admin.burial.delete');
-                    Route::get('/parser', [AdminBurialController::class, 'parser'])->name('account.admin.burial.parser');
-                    Route::post('/import', [AdminBurialController::class, 'import'])->name('account.admin.burial.import');
-                    
-                });
 
                 Route::group(['prefix'=>'cemetery'], function() {
                     Route::get('/', [AdminRitualObjectsController::class, 'cemetery'])->name('account.admin.cemetery');

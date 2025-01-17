@@ -23,10 +23,8 @@ class Organization extends Model
     }
 
     public function openOrNot(){
-        //$day=getTimeByCoordinates($this->width,$this->longitude)['dayOfTheWeek'];
-        // $time=strtotime(getTimeByCoordinates($this->width,$this->longitude)['current_time']);
-        $time=strtotime('12:00');
-        $day='Sunday';
+        $day=addHoursAndGetDay($this->time_difference);
+        $time=strtotime(addHoursAndGetTime($this->time_difference));
         $get_hours=WorkingHoursOrganization::where('organization_id',$this->id)->where('day',$day)->first();
         if($get_hours!=null){
            if($get_hours->holiday!=1 && $time<strtotime($get_hours->time_end_work) && $time>strtotime($get_hours->time_start_work)){
@@ -53,8 +51,7 @@ class Organization extends Model
     }
 
     public function timeEndWorkingNow(){
-        //$day=getTimeByCoordinates($this->width,$this->longitude)['dayOfTheWeek'];
-        $day='Sunday';
+        $day=addHoursAndGetDay($this->time_difference);
         $get_hours=WorkingHoursOrganization::where('organization_id',$this->id)->where('day',$day)->first();
         if($get_hours!=null){
             if($get_hours->holiday!=1){
@@ -70,8 +67,7 @@ class Organization extends Model
         $days=WorkingHoursOrganization::where('organization_id',$this->id)->orderByRaw("FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')")->get();
         if($days->count()>0){
             foreach($days as $day){
-                //$day_now=getTimeByCoordinates($this->width,$this->longitude)['dayOfTheWeek'];
-                $day_now='Tuesday';
+                $day_now=addHoursAndGetDay($this->time_difference);
                 if($day->holiday!=1){
                     $text_day=translateDayOfWeek($day->day).': '."{$day->time_start_work}-{$day->time_end_work}";
                 }else{
@@ -87,10 +83,9 @@ class Organization extends Model
             echo 'Не указано';
         }
     }
-
+  
     public function timeNow(){
-        //$day=getTimeByCoordinates($this->width,$this->longitude)['dayOfTheWeek'];
-        $day='Tuesday';
+        $day=addHoursAndGetDay($this->time_difference);
         $get_hours=WorkingHoursOrganization::where('organization_id',$this->id)->where('day',$day)->first();
         
         if( $get_hours==null){
@@ -103,8 +98,7 @@ class Organization extends Model
     }
 
     public function timeCity(){
-        //$time=getTimeByCoordinates($this->width,$this->longitude)['current_time'];
-        $time='23:40';
+        $time=addHoursAndGetTime($this->time_difference);
         return $time;
     }
 

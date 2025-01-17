@@ -25,6 +25,7 @@ class ParserColumbariumService
             $city=createCity($columbarium[7],$columbarium[6]);
             if($city!=null && $columbarium[12]!=null && $columbarium[13]!=null){
                 $content=$columbarium[31];
+                $timezone=getTimeByCoordinates($columbarium[12],$columbarium[13])['timezone'];                
                 $columbarium_create=Columbarium::create([
                     'title'=>$columbarium[3],
                     'village'=>$columbarium[8],
@@ -38,7 +39,8 @@ class ParserColumbariumService
                     'rating'=>$columbarium[26],
                     'mini_content'=>$columbarium[31],
                     'href_img'=>1,
-                    'content'=>$content
+                    'content'=>$content,
+                    'time_difference'=>differencetHoursTimezone($timezone),
                 ]);
                 if($columbarium[35]!=null){
                     $imgs=explode(',',$columbarium[35]);
