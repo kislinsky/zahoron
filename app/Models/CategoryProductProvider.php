@@ -13,4 +13,13 @@ class CategoryProductProvider extends Model
         $price_category=ActivityCategoryOrganization::where('organization_id',$organization->id)->where('category_children_id',$this->id)->get()->first()->price;
         return $price_category;
     }
+
+    public function parent(){
+        return $this->belongsTo(CategoryProductProvider::class, 'parent_id');
+    }
+
+    // Отношение к дочерним категориям
+    public function children(){
+        return $this->hasMany(CategoryProductProvider::class, 'parent_id');
+    }
 }

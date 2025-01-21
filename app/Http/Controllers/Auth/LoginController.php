@@ -41,6 +41,8 @@ class LoginController extends Controller
         
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
+        $this->redirectTo = '/' . selectCity()->slug . '/home';
+
     }
 
 
@@ -55,7 +57,7 @@ class LoginController extends Controller
         if(isset($users[0])){
             if (Hash::check($data['password_phone'], $users->first()->password)){
                 Auth::login($users->first());
-                return redirect()->route('index');
+                return redirect()->route('home');
             }
         }
         return redirect()->back()->with('error','Неверный пароль или логин');

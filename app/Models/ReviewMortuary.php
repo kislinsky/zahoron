@@ -10,4 +10,8 @@ class ReviewMortuary extends Model
     use HasFactory;
     protected $guarded =[];
 
+
+    function mortuary(){
+        return $this->belongsTo(Mortuary::class);
+    }
 }

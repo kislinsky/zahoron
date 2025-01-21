@@ -20,14 +20,14 @@ class WordsMemoryService {
             $data['file']->storeAs("uploads_memory_words", $filename, "public");
             WordsMemory::create([
                 'img'=>$filename,
-                'product_id'=>$data['product_id'],
+                'burial_id'=>$data['product_id'],
                 'content'=>$data['content'],
             ]);
             $message='сообщение отправлено модератору';
             return redirect()->back()->with("message_words_memory", $message);
         }
         WordsMemory::create([
-            'product_id'=>$data['product_id'],
+            'burial_id'=>$data['product_id'],
             'content'=>$data['content'],
         ]);
         $message='сообщение отправлено модератору';

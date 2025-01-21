@@ -186,8 +186,9 @@ use Artesaos\SEOTools\Facades\SEOTools;
 <script>
 
 $( ".change_theme" ).on( "click", function() {
+    $('body').toggleClass('black_theme')
+
     $.get("{{route('change-theme')}}", function (response) {
-        $('body').toggleClass('black_theme')
     });
 })
 </script>

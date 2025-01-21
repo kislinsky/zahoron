@@ -87,7 +87,7 @@
                                 @foreach ($image_monument as $image_monument_one )
                                     <div class="swiper-slide">
                                         <div class="img_single_product"> 
-                                            <img src="{{asset('storage/uploads_burial_monument/'. $image_monument_one->title )}}" alt="">
+                                            <img src="{{ $image_monument_one->urlImg()}}" alt="">
                                             <div class="white_btn">{{ $product->who }}</div>
                                         </div>
                                     </div>
@@ -99,7 +99,7 @@
                                 @foreach ($image_personal as $image_personal_one )
                                     <div class="swiper-slide">
                                         <div class="img_single_product"> 
-                                            <img src="{{asset('storage/uploads_burial_personal/'. $image_personal_one->title )}}" alt="">
+                                            <img src="{{ $image_personal_one->urlImg()}}" alt="">
                                             <div class="white_btn">{{ $product->who }}</div>
                                         </div>
                                     </div>
@@ -199,7 +199,7 @@
                         @if (count($memory_words)>0)
                             @foreach ($memory_words as $memory_word )
                                 <div class="li_memory_words">
-                                    <img src="{{ asset('storage/uploads_memory_words/'.$memory_word->img)}}" alt="">
+                                    <img src="{{$memory_word->urlImg()}}" alt="">
                                     <div class="block_li_memory_words">
                                         <div class="title_label">14.07.2024</div>
                                         <div class="text_middle">{{ $memory_word->content }}</div>

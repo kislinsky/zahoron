@@ -29,4 +29,13 @@ class CategoryProductPriceList extends Model
     function route(){
         return route('service.category',$this->slug);
     }
+
+    public function parent(){
+        return $this->belongsTo(CategoryProductPriceList::class, 'parent_id');
+    }
+
+    // Отношение к дочерним категориям
+    public function children(){
+        return $this->hasMany(CategoryProductPriceList::class, 'parent_id');
+    }
 }

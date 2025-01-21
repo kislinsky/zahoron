@@ -103,20 +103,25 @@ class ParserCemeteryService
         foreach($cemeteries as $cemetery){
             $city=createCity($cemetery[7],$cemetery[5]);
             $area=createArea($cemetery[6],$cemetery[5]);
-            if($city!=null && $area!=null){
-                $timezone=getTimeByCoordinates($cemetery[10],$cemetery[11])['timezone'];                
+            if($city!=null && $area!=null && $cemetery[10]!=null && $cemetery[11]!=null){
+                // $timezone=getTimeByCoordinates($cemetery[10],$cemetery[11])['timezone'];                
                 $cemetery_create=Cemetery::create([
                     'title'=>$cemetery[3],
                     'adres'=>$cemetery[8],
-                    'width'=>$cemetery[10],
-                    'longitude'=>$cemetery[11],
+                    'width'=>$cemetery[9],
+                    'longitude'=>$cemetery[10],
                     'img'=>'https://api.selcdn.ru/v1/SEL_266534/Images/main/Petropavlovsk-Kamchatsky/Cemeteries/70000001057067323!/Funeral-Services.jpg',
                     'city_id'=>$city->id,
                     'href_img'=>1,
-                    'phone'=>phoneImport($cemetery[12]),
+                    'phone'=>phoneImport($cemetery[11]),
                     'area_id'=>$area->id,
-                    'time_difference'=>differencetHoursTimezone($timezone),
+                    // 'time_difference'=>differencetHoursTimezone($timezone),
+                    'time_difference'=>10,
+                    'square'=>$cemetery[19],
+                    'responsible'=>$cemetery[20],
+                    'cadastral_number'=>$cemetery[21],
                 ]);
+
                 
 
                 $days=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];

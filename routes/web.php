@@ -1,55 +1,60 @@
 <?php
 
+use Illuminate\Http\Request;
+use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\Authenticate;
 use Illuminate\Support\Facades\Route;
+
+
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\DeadController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\NewsController;
-
-
-use App\Http\Controllers\Account\AgentController;
-use App\Http\Controllers\Account\Agency\AgencyController;
-use App\Http\Controllers\Account\DecoderController;
-use App\Http\Controllers\Account\User\AccountController;
-use App\Http\Controllers\Account\Admin\AdminOrganizationController;
-use App\Http\Controllers\Account\Admin\AdminRitualObjectsController;
-use App\Http\Controllers\Account\Agency\AgencyOrganizationController;
-use App\Http\Controllers\Account\Agency\AgencyOrganizationProviderController;
-use App\Http\Controllers\Account\Agency\Aplication\AgencyOrganizationAplicationBeautificationController;
-use App\Http\Controllers\Account\Agency\Aplication\AgencyOrganizationAplicationDeadController;
-use App\Http\Controllers\Account\Agency\Aplication\AgencyOrganizationAplicationFuneralServiceController;
-use App\Http\Controllers\Account\Agency\Aplication\AgencyOrganizationAplicationMemorialController;
-use App\Http\Controllers\Account\HomeController;
-
-
-
-use App\Http\Controllers\Account\Admin\AdminSEOController;
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BurialController;
+use App\Http\Controllers\FuneralController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\MemorialController;
+use App\Http\Controllers\MortuaryController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CemeteriesController;
+
+
 use App\Http\Controllers\BasketBurialContoller;
+use App\Http\Controllers\ColumbariumController;
+use App\Http\Controllers\CrematoriumController;
 use App\Http\Controllers\OrderBurialController;
 use App\Http\Controllers\WordsMemoryController;
+use App\Http\Controllers\Account\HomeController;
 use App\Http\Controllers\BasketServiceContoller;
 use App\Http\Controllers\OrderProductController;
 use App\Http\Controllers\OrderServiceController;
 use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\Account\AgentController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BasketProductController;
 use App\Http\Controllers\BeautificationController;
-use App\Http\Controllers\CategoryProductController;
-use App\Http\Controllers\ColumbariumController;
-use App\Http\Controllers\CrematoriumController;
-use App\Http\Controllers\DeadController;
-use App\Http\Controllers\DistrictController;
-use App\Http\Controllers\FuneralController;
 use App\Http\Controllers\InfoEditBurialController;
+use App\Http\Controllers\Account\DecoderController;
+use App\Http\Controllers\CategoryProductController;
 use App\Http\Controllers\LifeStoryBurialController;
-use App\Http\Controllers\MemorialController;
-use App\Http\Controllers\MortuaryController;
 use App\Http\Controllers\ProductPriceListController;
-use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Account\User\AccountController;
+use App\Http\Controllers\Account\Agency\AgencyController;
+use App\Http\Controllers\Account\Admin\AdminSEOController;
+use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use App\Http\Controllers\Account\Admin\AdminBurialController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Account\Admin\AdminOrganizationController;
+use App\Http\Controllers\Account\Admin\AdminRitualObjectsController;
+use App\Http\Controllers\Account\Agency\AgencyOrganizationController;
+use App\Http\Controllers\Account\Agency\AgencyOrganizationProviderController;
+use App\Http\Controllers\Account\Agency\Aplication\AgencyOrganizationAplicationDeadController;
+use App\Http\Controllers\Account\Agency\Aplication\AgencyOrganizationAplicationMemorialController;
+use App\Http\Controllers\Account\Agency\Aplication\AgencyOrganizationAplicationBeautificationController;
+use App\Http\Controllers\Account\Agency\Aplication\AgencyOrganizationAplicationFuneralServiceController;
 
 
 /*
@@ -65,38 +70,35 @@ use App\Http\Controllers\Auth\RegisterController;
 
 
 #убирать die когда нужно использовать artisan 
-$city = @explode("/", explode("//", request()->fullUrl())[1])[1];
+$city = request()->segment(1); // Более безопасный и понятный способ получить первый сегмент URL
 
 
-if (!request()->is('storage/*') && !request()->is('css/*') && !request()->is('js/*')) {
-    
-if(city_by_slug($city) == null){
-    setcookie('city', '', -1, '/');
-    setcookie("city", first_city_id(), time()+20*24*60*60,'/');
-    header("location: /".first_city_slug());
-    die;
-} else{
-    $c_b_s__ = city_by_slug($city);
-    if(!isset($_COOKIE['city'])){
-        setcookie("city", first_city_id(), time()+20*24*60*60,'/');
-        header("Refresh:0");
-        die;
-    }
-    if($_COOKIE['city'] != $c_b_s__->id){
+if (!request()->is('storage/*') && !request()->is('css/*') && !request()->is('js/*') && !request()->is('admin/*') && !request()->is('filament*') && $city!='admin' ) {    
+    if(city_by_slug($city) == null){
         setcookie('city', '', -1, '/');
-        setcookie("city", $c_b_s__->id, time()+20*24*60*60,'/');
-        header("Refresh:0");
-        die;
+        setcookie("city", first_city_id(), time()+20*24*60*60,'/');
+        header("location: /".first_city_slug());
         
+
+    } else{
+        $c_b_s__ = city_by_slug($city);
+        if(!isset($_COOKIE['city'])){
+            setcookie("city", first_city_id(), time()+20*24*60*60,'/');
+            header("Refresh:0");
+            
+        }
+        if($_COOKIE['city'] != $c_b_s__->id){
+            setcookie('city', '', -1, '/');
+            setcookie("city", $c_b_s__->id, time()+20*24*60*60,'/');
+            header("Refresh:0");
+            
+        }
     }
 }
-}
-
 
 
 Route::prefix($city)->group(function () {
-
-
+    
     Auth::routes();
 
 
@@ -118,7 +120,7 @@ Route::prefix($city)->group(function () {
     Route::post('/login-with-phone', [LoginController::class, 'loginWithPhone'])->name('login.phone');
 
     
-    
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 
     Route::prefix('ajax')->group(function () {
@@ -350,7 +352,6 @@ Route::prefix($city)->group(function () {
 
                     Route::get('/burial/{id}/delete', [AccountController::class, 'burialDelete'])->name('account.burial.delete');
                     Route::get('/burials/favorite', [AccountController::class, 'favoriteProduct'])->name('account.user.burial.favorite');
-                    Route::get('/favorite', [AccountController::class, 'favoriteProduct'])->name('account.user.burial.favorite');
 
                 });
             
@@ -604,11 +605,13 @@ Route::prefix($city)->group(function () {
     Route::group(['middleware'=>['auth','admin']],function(){
 
         Route::group(['prefix'=>'account'], function() {
-            Route::group(['prefix'=>'admin'], function() {
+            Route::group(['prefix'=>'admin-old'], function() {
 
 
                 Route::group(['prefix'=>'seo'], function() {
+                    Route::get('/settings', [AdminSEOController::class, 'settings'])->name('account.admin.seo.settings');
                     Route::get('/object/{page}', [AdminSEOController::class, 'object'])->name('account.admin.seo.object');
+                    Route::post('/object/{page}/update', [AdminSEOController::class, 'updateSeo'])->name('account.admin.seo.object.update');
                 });
                 
 
@@ -622,10 +625,18 @@ Route::prefix($city)->group(function () {
                 
 
 
+                Route::group(['prefix'=>'burial'], function() {
+                    Route::get('/', [AdminBurialController::class, 'index'])->name('account.admin.burial');
+                    Route::delete('/delete/{burial}', [AdminBurialController::class, 'delete'])->name('account.admin.burial.delete');
+                    Route::get('/parser', [AdminBurialController::class, 'parser'])->name('account.admin.burial.parser');
+                    Route::post('/import', [AdminBurialController::class, 'import'])->name('account.admin.burial.import');
+                    
+                });
+
                 Route::group(['prefix'=>'cemetery'], function() {
                     Route::get('/', [AdminRitualObjectsController::class, 'cemetery'])->name('account.admin.cemetery');
                     Route::get('/delete/{id}', [AdminRitualObjectsController::class, 'cemeteryDelete'])->name('account.admin.cemetery.delete');
-                    
+                   
                     Route::get('/parser', [AdminRitualObjectsController::class, 'cemeteryParser'])->name('account.admin.parser.cemetery');
                     Route::post('/import', [AdminRitualObjectsController::class, 'cemeteryImport'])->name('account.admin.parsing.cemetery');
                     Route::post('/import/reviews', [AdminRitualObjectsController::class, 'cemeteryReviewsImport'])->name('account.admin.parsing.cemetery.reviews');

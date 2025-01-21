@@ -22,11 +22,11 @@ $reviews = Review::orderBy('id', 'desc')->get();
                             <div class="li_rewies">
                                 <div class="grid_img_rewies">
                                     <div class="item_grid_rewies">
-                                        <img src="{{asset('storage/uploads_reviews/'. $review->img_before )}}" alt="">
+                                        <img src="{{ $review->urlImgBefore()}}" alt="">
                                         <div class="title_rewies">До уборки</div>
                                     </div>
                                     <div class="item_grid_rewies">
-                                        <img src="{{asset('storage/uploads_reviews/' .$review->img_after )}}" alt="">
+                                        <img src="{{$review->urlImgAfter()}}" alt="">
                                         <div class="title_rewies">После уборки</div>
                                     </div>
                                 </div>

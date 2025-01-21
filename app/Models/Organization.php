@@ -121,4 +121,7 @@ class Organization extends Model
         return $this->hasMany(OrderProduct::class)->orderBy('id','desc')->where('status',1);
     }
     
+    function products(){
+        return $this->hasMany(Product::class);
+    }
 }

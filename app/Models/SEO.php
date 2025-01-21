@@ -10,4 +10,8 @@ class SEO extends Model
     use HasFactory;
     protected $guarded =[];
 
+
+    function seoObject(){
+        return $this->belongsTo(SeoObject::class);
+    }
 }

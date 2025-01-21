@@ -32,11 +32,20 @@ class Burial extends Model
         return $this->img;
     }
 
-    function imagesMonument(){
+    function imageMonument(){
+        return $this->hasMany(ImageMonument::class);
+    }
+
+    function imagePersonal(){
+        return $this->hasMany(ImagePersonal::class);
+    }
+
+
+    function imageMonumentAccept(){
         return $this->hasMany(ImageMonument::class)->where('status',1);
     }
 
-    function imagesPersonal(){
+    function imagePersonalAccept(){
         return $this->hasMany(ImagePersonal::class)->where('status',1);
     }
 
@@ -56,8 +65,13 @@ class Burial extends Model
         return Burial::orderBy('id', 'desc')->where('id','!=',$this->id)->where('date_death',$this->date_death)->where('status',1)->take(5)->get();
     }
 
-    function memoryWords(){
-        return WordsMemory::orderBy('id', 'desc')->where('product_id',$this->id)->where('status',1)->get();
+    function wordsMemory(){
+        return $this->hasMany(WordsMemory::class);
+    }
+
+
+    function wordsMemoryAccept(){
+        return $this->hasMany(WordsMemory::class)->orderBy('id', 'desc')->where('status',1);
     }
 
     function userHave(){

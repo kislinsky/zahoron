@@ -140,5 +140,16 @@ class User extends Authenticatable
 
 
 
+    function edge(){
+        return $this->belongsTo(Edge::class);
+    }
+
+    function city(){
+        return $this->belongsTo(City::class);
+    }
+
+
+
+
      
 }

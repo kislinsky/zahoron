@@ -10,4 +10,8 @@ class ReviewColumbarium extends Model
     use HasFactory;
     protected $guarded =[];
 
+
+    function columbarium(){
+        return $this->belongsTo(Columbarium::class);
+    }
 }

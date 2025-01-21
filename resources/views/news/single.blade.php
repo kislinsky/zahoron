@@ -17,7 +17,7 @@
 <section class="price_service">
     <div class="container grid_two_page">
         <div class="content_news_single">
-            <img class='img_main_single_news'src="{{asset('storage/uploads_news/'. $news->img )}}" alt="">
+            <img class='img_main_single_news'src="{{asset('storage/'. $news->img )}}" alt="">
             {!!$news->content!!}
         </div>
         <div class="sidebar">

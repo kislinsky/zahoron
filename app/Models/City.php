@@ -26,6 +26,10 @@ class City extends Model
         // return Mortuary::where('city_id',$this->id)->get();
     }
 
+    function edge(){
+        return $this->belongsTo(Edge::class);
+    }
+
     public function districts(){
         return $this->hasMany(District::class);
         // return District::where('city_id',$this->id)->get();

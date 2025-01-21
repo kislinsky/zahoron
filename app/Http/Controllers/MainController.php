@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Faq;
 use App\Models\Organization;
+use App\Models\SeoObject;
 use App\Models\WorkingHoursOrganization;
 use App\Services\OurWork\OurWorkService;
 use App\Services\Burial\SearchBurialService;

@@ -41,6 +41,8 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+        $this->redirectTo = '/' . selectCity()->slug . '/home';
+
     }
 
     /**
@@ -114,6 +116,6 @@ class RegisterController extends Controller
         }
         $user=createUserWithPhone($codeModel->phone,'user',$codeModel->role); 
         Auth::login($user);
-        return redirect()->route('index');       
+        return redirect()->route('home');       
 }
 }

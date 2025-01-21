@@ -18,7 +18,7 @@
 
 
     <div class="item_page_sidebar">
-        <div class="title_page_sidebar"><img class='icon_page'src="{{asset('storage/uploads/icon_sidebar_4.svg')}}" alt=""> Оплата <img class='open_children_pages_sidebar'src="{{asset('storage/uploads/Arrow_sidebar.svg')}}" alt=""></div>
+        <div class="title_page_sidebar"><img class='icon_page'src="{{asset('storage/uploads/icon_sidebar_4.svg')}}" alt=""> Оплата <img class='open_children_pages_sidebar img_light_theme'src="{{asset('storage/uploads/Arrow_sidebar.svg')}}" alt=""><img class='open_children_pages_sidebar img_black_theme'src="{{asset('storage/uploads/Arrow_right_black.svg')}}" alt=""></div>
         <div class="pages_children_sidebar">
             
             @php $links = [
@@ -37,7 +37,7 @@
 
     <div class="item_page_sidebar">
         <div class="title_page_sidebar"><img class='icon_page'src="{{asset('storage/uploads/icon_sidebar_3.svg')}}" alt=""> Обучающий
-            материал <img class='open_children_pages_sidebar'src="{{asset('storage/uploads/Arrow_sidebar.svg')}}" alt=""></div>
+            материал <img class='open_children_pages_sidebar img_light_theme'src="{{asset('storage/uploads/Arrow_sidebar.svg')}}" alt=""><img class='open_children_pages_sidebar img_black_theme'src="{{asset('storage/uploads/Arrow_right_black.svg')}}" alt=""></div>
         <div class="pages_children_sidebar">
             @php $links = [
                 ["Видео", 'account.decoder.training-material.video'],

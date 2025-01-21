@@ -1,8 +1,8 @@
 {
     "classmap": [
-   "vendor/google/apiclient/src",
-   "vendor/dadata/apiclient/src"]  ,
-   
+        "vendor/google/apiclient/src",
+        "vendor/dadata/apiclient/src"
+    ],
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
@@ -13,6 +13,13 @@
         "artesaos/seotools": "^1.3",
         "ausi/slug-generator": "^1.1",
         "dadata/apiclient": "^2.0",
+        "filament/actions": "^3.2",
+        "filament/filament": "^3.2",
+        "filament/forms": "^3.2",
+        "filament/infolists": "^3.2",
+        "filament/notifications": "^3.2",
+        "filament/tables": "^3.2",
+        "filament/widgets": "^3.2",
         "guzzlehttp/guzzle": "^7.9",
         "harvesthq/chosen": "^1.8",
         "hflabs/dadata": "^24.4",
@@ -38,7 +45,10 @@
         "spatie/laravel-ignition": "^2.0"
     },
     "autoload": {
-        "files": ["app/functions.php","app/pages.php"],
+        "files": [
+            "app/functions.php",
+            "app/pages.php"
+        ],
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
@@ -53,7 +63,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
@@ -81,5 +92,4 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true
-    
 }

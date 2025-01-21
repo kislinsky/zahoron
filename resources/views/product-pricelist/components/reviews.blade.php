@@ -1,5 +1,3 @@
-<?php use App\Models\User;?>
-
 @if (isset($reviews))
     @if (count($reviews)>0)
         <section class="rewies">
@@ -15,16 +13,16 @@
                     <div class="swiper-wrapper">
                 
                             @foreach ($reviews as $review )
-                            <?php $user=User::find($review->user_id);?>
+                            <?php $user=$review->user;?>
                                 <div class="swiper-slide">
                                     <div class="li_rewies">
                                         <div class="grid_img_rewies">
                                             <div class="item_grid_rewies">
-                                                <img src="{{asset('storage/uploads_product_price_list/'. $review->img_before )}}" alt="">
+                                                <img src="{{$review->urlImgBefore()}}" alt="">
                                                 <div class="title_rewies">До уборки</div>
                                             </div>
                                             <div class="item_grid_rewies">
-                                                <img src="{{asset('storage/uploads_product_price_list/' .$review->img_after )}}" alt="">
+                                                <img src="{{$review->urlImgAfter()}}" alt="">
                                                 <div class="title_rewies">После уборки</div>
                                             </div>
                                         </div>

@@ -22,10 +22,32 @@
     color: white;
 }
 
+.black_theme .li_organization_provider{
+    background: #0F0F0F;
+    border: none;
+}
+
+.black_theme .li_rewies,.black_theme .li_care{
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .bac_loader{
+    background: #050505;
+}
+
 .black_theme .title_parametr,.black_theme .black_text{
     color: white;
 }
 
+.black_theme .block_input_product_menu input,.black_theme .count_product_single input{
+    background: #0F0F0F;
+    color: white;
+    border: none;
+}
+
+.black_theme .text_single_product{
+    border: 1px solid #4E4E4E;
+}
 
 .black_theme .header_big, .black_theme footer, .black_theme .modal-body.message,.black_theme .li_product_monuments_grave,.black_theme .li_memorial_dinner,.black_theme .li_memorial_hall,.black_theme .li_faq,.black_theme .bac_gray,.black_theme .li_cat_product{
     background-color: #0F0F0F;

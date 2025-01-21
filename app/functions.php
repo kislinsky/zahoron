@@ -1008,7 +1008,10 @@ function createCity($city_name,$edge_name){
 
 
 function createArea($area_name,$edge_name){
-    
+    if($area_name==null || $edge_name==null){
+        return null;
+    }
+
     $edge=Edge::where('title',$edge_name)->first();
     if($edge==null){
         $edge=Edge::create([

@@ -10,7 +10,7 @@
                                 <div class="li_news">
                                     <a href="{{ $news_video_one->content }}" target="_target" class="href_video_news">
                                         <img src="{{asset('storage/uploads/Group 34.svg' )}}" alt="" class="open_video">
-                                        <img src="{{asset('storage/uploads_news/'. $news_video_one->img )}}" alt="">                                
+                                        <img src="{{asset('storage/'. $news_video_one->img )}}" alt="">                                
                                     </a>
                                     <div  class="title_news">{{ $news_video_one->title }}</div>
                                     <div class="text_li">{{ $news_video_one->created_at->format('d.m.Y') }}</div>

@@ -14,6 +14,10 @@ class CommentProduct extends Model
         return $this->belongsTo(Product::class);
     }
 
+    function organization(){
+        return $this->belongsTo(Organization::class);
+    }
+
     function btnReviewAccept(){
         if($this->status==0){
             $route=route('account.agency.review.product.accept',$this->id);

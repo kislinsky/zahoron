@@ -67,7 +67,7 @@ class Cemetery extends Model
 
     public function urlImg(){
         if($this->href_img==0){
-            return asset('storage/uploads_cemeteries/'.$this->img);
+            return asset('storage/'.$this->img);
         }
         return $this->img;
     }

@@ -9,4 +9,12 @@ class Review extends Model
 {
     use HasFactory;
     protected $guarded =[];
+
+    public function urlImgBefore(){
+        return asset('storage/'.$this->imgBefore);
+    }
+
+    public function urlImgAfter(){
+        return asset('storage/'.$this->imgBefore);
+    }
 }
