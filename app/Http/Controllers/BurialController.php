@@ -25,7 +25,7 @@ class BurialController extends Controller
 
     public static function searchProduct(Request $request){
         $data=request()->validate([
-            'city'=>['required','string'],
+            'city'=>['nullable','string'],
             'name'=>['required','string'],
             'surname'=>['required','string'],
             'patronymic'=>['required','string'],

@@ -480,6 +480,8 @@ $( ".li_cemetery_3" ).on( "click", function() {
 
   $('input[name="id_cemetery"]').val(value_id)
   $('input[name="location"]').val(value_html)  
+  $('input[name="location_cemetery"]').val(value_html)  
+
   $('#location_form_2').modal('hide')
 
 });

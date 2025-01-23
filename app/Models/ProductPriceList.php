@@ -25,7 +25,7 @@ class ProductPriceList extends Model
     }
 
     function reviews(){
-        return ReviewProductPriceList::orderBy('id','asc')->where('product_id',$this->id)->get();
+        return ReviewProductPriceList::orderBy('id','asc')->where('product_price_lists_id',$this->id)->get();
     }
 
     function variants(){
@@ -52,7 +52,14 @@ class ProductPriceList extends Model
         return AdvantagesProductPriceList::orderBy('id','desc')->where('product_id',$this->id)->get();
     }
 
-    
+    function priceProductPriceList(){
+        return $this->hasMany(PriceProductPriceList::class);
+    }
 
+    // В модели Service
+    public function getPriceForCity($cityId)
+    {
+        return $this->priceProductPriceList->where('city_id', $cityId)->first();
+    }
 
 }

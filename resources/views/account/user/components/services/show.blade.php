@@ -15,12 +15,12 @@
         <div class="flex_status_order">
             <div class="mini_flex_li_product">
                 <div class="title_label">Статус заказа:</div>
-                {!! statusOrder($order_service->status) !!}
+                {!! statusOrder($order_service) !!}
             </div>
             <div class="mini_flex_li_product">
                 <div class="title_label">Сумма:</div>
                 <?php $services=$order_service->services();?>
-                <div class="text_li color_black">{{ totalOrderService($services) }}</div>
+                <div class="text_li color_black">{{ $order_service->price }}</div>
             </div>
         </div>
 
@@ -34,12 +34,12 @@
         </div>
 
 
-        @if($order_service->status==2)
+        @if($order_service->status==3)
             <div class="light_blue_btn">В работе</div>
-        @elseif ($order_service->status==3)
-            <div class="green_btn">Исполнено</div>
-        @elseif ($order_service->status==5)
+        @elseif ($order_service->status==4)
             <div class="gray_btn">На проверке</div>
+        @elseif ($order_service->status==5)
+            <div class="green_btn">Исполнено</div>
         @endif
 
         
@@ -66,9 +66,9 @@
             </div>
         </div>
         
-        @if($order_service->status==0)
+        @if($order_service->paid!=1)
             <div class="blue_btn">Оплатить</div>
-        @elseif ($order_service->status==3)
+        @elseif ($order_service->status==5)
             <div class="blue_btn">Повторить</div>
         @endif
         

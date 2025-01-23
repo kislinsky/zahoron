@@ -110,6 +110,29 @@ function userPages(){
 }
 
 
+function agentPages(){
+    $pages=[
+        
+        ['Настройки','storage/uploads/icon_sidebar.svg',
+           [
+            ['Настройки','account.agent.settings']
+           ]
+        ],
+
+
+        ['Услуги','storage/uploads/icon_sidebar.svg',
+            [
+                ['Список','account.agent.services.index'],
+            ]
+        ],
+
+ 
+        
+    ];
+    return $pages;
+
+}
+
 
 function organizationPages(){
     $organizations=user()->organizations;
@@ -342,6 +365,52 @@ function mobilePagesAccountUser(){
 }
 
 
+function mobilePagesAccountDecoder(){
+    return [
+        
+        [
+            ['Главная',route('home')],
+            
+        ],
+
+        [
+            ['Настройки',route('account.decoder.settings')],
+            
+        ],
+
+        [
+            ['Распознавание могил',route('account.decoder.burial.edit')],
+            
+        ],
+
+        [
+            ['Чат',''],
+            
+        ],
+        
+    
+        [
+            ['Оплата',''],
+
+            [
+                ['Оплачено',route('account.decoder.payments.paid')],
+                ['На проверке',route('account.decoder.payments.verification')],
+            ],
+        ],
+
+
+        [
+            ['Обучающий материал',''],
+
+            [
+                ['Видео',route('account.decoder.training-material.video')],
+                ['Документация',route('account.decoder.training-material.file')],
+            ],
+        ],
+    
+    ];
+}
+
 
 
 function mobilePagesAccountAdmin(){
@@ -535,6 +604,27 @@ function mobilePagesAccountAgecny() {
         ],
     ];
     
+}
+
+
+
+function mobilePagesAccountAgent(){
+    $pages=[
+        
+        [
+            ['Настройки',route('account.agent.settings')]
+        ],
+
+
+        [
+            ['Услуги',route('account.agent.services.index')],
+        ],
+
+ 
+        
+    ];
+    return $pages;
+
 }
 
 ?>

@@ -23,15 +23,23 @@ class OrderServiceService
                 
                 foreach($cart_items as $cart_item){
                     $order_product=OrderBurial::where('burial_id',$cart_item[0])->where('user_id',Auth::user()->id)->get();
-                    if(count($order_product)>0){
+                    if($order_product->count()>0){
                         if($order_product[0]->status==1){
+                            $product=getBurial($cart_item[0]);
+                            $services=servicesBurial($cart_item[1]);
+                            $price=0;
+                            foreach($services as $service){
+                                $price+=$service->getPriceForCemetery($product->cemetery->id)->price;
+                            }
+
                             OrderService::create([
                                 'burial_id'=>$cart_item[0],
                                 'user_id'=>Auth::user()->id,
                                 'services_id'=>json_encode($cart_item[1]),
                                 'size'=>$cart_item[2],
                                 'customer_comment'=>$data['message'],
-                                'cemetery_id'=>$cart_item[3]
+                                'cemetery_id'=>$cart_item[3],
+                                'price'=>$price,
                             ]);
                            
                             

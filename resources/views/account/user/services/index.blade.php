@@ -10,10 +10,11 @@
     <div class="flex_titles_account">
 
         <div class="flex_titles_account">
-            <a href='{{ route('account.user.services.index') }}?status=1'class="btn_bac_gray <?php if($status!=null && $status==1){echo ' active_label_product';}?>">Оплаченные </a>
-            <a href='{{ route('account.user.services.index') }}?status=0'class="btn_bac_gray <?php if($status!=null && $status==0){echo ' active_label_product';}?>">Ожидают оплаты </a>
-            <a href='{{ route('account.user.services.index') }}?status=2'class="btn_bac_gray <?php if($status!=null && $status==2){echo ' active_label_product';}?>">В работе </a>
-            <a href='{{ route('account.user.services.index') }}?status=3'class="btn_bac_gray <?php if($status!=null && $status==3){echo ' active_label_product';}?>">Исполненные </a>
+            <a href='{{ route('account.user.services.index') }}?status=1'class="btn_bac_gray <?php if($status!=null && $status==1){echo ' active_label_product';}?>">Ожидают оплаты </a>
+            <a href='{{ route('account.user.services.index') }}?status=2'class="btn_bac_gray <?php if($status!=null && $status==2){echo ' active_label_product';}?>">Оплаченные </a>
+            <a href='{{ route('account.user.services.index') }}?status=3'class="btn_bac_gray <?php if($status!=null && $status==3){echo ' active_label_product';}?>">В работе </a>
+            <a href='{{ route('account.user.services.index') }}?status=4'class="btn_bac_gray <?php if($status!=null && $status==4){echo ' active_label_product';}?>">На проверке</a>
+            <a href='{{ route('account.user.services.index') }}?status=5'class="btn_bac_gray <?php if($status!=null && $status==5){echo ' active_label_product';}?>">Исполненные </a>
         </div>
 
     </div>

@@ -4,7 +4,7 @@
                 <img class='img_black_theme'src='{{ asset('storage/uploads/Group_black_theme.svg') }}'>{{ $city->title }}
     </a>
 
-    <?php $pages=mobilePagesAccountUser();?>
+    <?php $pages=mobilePagesAccountDecoder();?>
 
     {{view('header.pages',compact('pages'))}}
     

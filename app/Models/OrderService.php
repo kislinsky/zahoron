@@ -15,7 +15,7 @@ class OrderService extends Model
     }
 
     function services(){
-        return Service::whereIn('id',json_decode($this->services_id));
+        return Service::whereIn('id',json_decode($this->services_id))->get();
     }
 
 

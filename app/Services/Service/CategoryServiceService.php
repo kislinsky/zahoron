@@ -21,18 +21,16 @@ use App\Models\ServiceReviews;
 class CategoryServiceService {  
     
     public static function serviceOneTimeCleaning($service){
-        $cemetery=Cemetery::findOrFail($service->cemetery_id);
-        $city=City::findOrFail($cemetery->city_id);
-        $edge=Edge::findOrFail($city->edge_id);
+        $city=selectCity();
+        $edge=selectCity()->edge;
         $imgs_service=ImageService::where('service_id',$service->id)->get();
         $stages_service=StageService::orderBy('id','asc')->where('service_id',$service->id)->get();
-        return view('service.single.single-one-time-cleaning',compact('imgs_service','stages_service','service','cemetery','edge','city'));
+        return view('service.single.single-one-time-cleaning',compact('imgs_service','stages_service','service','edge','city'));
     }
 
     public static function servicePaintingFence($service){
-        $cemetery=Cemetery::findOrFail($service->cemetery_id);
-        $city=City::findOrFail($cemetery->city_id);
-        $edge=Edge::findOrFail($city->edge_id);
+        $city=selectCity();
+        $edge=selectCity()->edge;
         $reviews=ServiceReviews::orderBy('id','asc')->where('service_id',$service->id)->get();
         $imgs_service=ImageService::where('service_id',$service->id)->get();
         $stages_service=StageService::orderBy('id','asc')->where('service_id',$service->id)->get();
@@ -41,10 +39,8 @@ class CategoryServiceService {
     }
 
     public static function serviceDepartureBrigadeCalculation($service){
-        
-        $cemetery=Cemetery::findOrFail($service->cemetery_id);
-        $city=City::findOrFail($cemetery->city_id);
-        $edge=Edge::findOrFail($city->edge_id);
+        $city=selectCity();
+        $edge=selectCity()->edge;
         $reviews=ServiceReviews::orderBy('id','asc')->where('service_id',$service->id)->get();
         $imgs_service=ImageService::where('service_id',$service->id)->get();
         $stages_service=StageService::orderBy('id','asc')->where('service_id',$service->id)->get();

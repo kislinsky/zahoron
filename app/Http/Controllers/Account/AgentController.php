@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\Account\AgentService;
+use App\Services\Account\Agent\AgentService;
 
 class AgentController extends Controller
 {
@@ -12,21 +12,25 @@ class AgentController extends Controller
         return AgentService::index();
     }
 
-    public static function serviceIndex(){
-        return AgentService::serviceIndex();
-    }
-    public static function serviceFilter($status){
-        return AgentService::serviceFilter($status);
+
+    public static function services(Request $request){
+        $data=request()->validate([
+            'status'=>['integer','nullable'],
+        ]);
+        return AgentService::services($data);
     }
 
     public static function acceptService($id){
         return AgentService::acceptService($id);
     }
 
+    public static function getToWorkService($id){
+        return AgentService::getToWorkService($id);
+    }
+
     public static function agentSettings(){
         return AgentService::agentSettings();
     }
-
 
 
     public static function agentSettingsUpdate(Request $request){
@@ -47,7 +51,6 @@ class AgentController extends Controller
             'sms_notifications'=>['nullable','integer'],
            'language'=>['nullable','integer'],
            'theme'=>['nullable','string'],
-           'inn'=>['required','string'],
            'number_cart'=>['nullable','string'],
            'bank'=>['nullable','string'],
            'cemetery_ids'=>['nullable']
@@ -81,9 +84,7 @@ class AgentController extends Controller
     }
 
 
-    public static function agentDeleteCemetery($id){
-        return AgentService::agentDeleteCemetery($id);
-    }
+   
 
     public static function addCemetery(Request $request){
         $data=request()->validate([

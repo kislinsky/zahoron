@@ -78,9 +78,10 @@
 </form>
 <script>
 
-    $( ".change_theme" ).on( "click", function() {
-        $.get("{{route('change-theme')}}", function (response) {
-            $('body').toggleClass('black_theme')
-        });
-    })
+$( ".change_theme" ).on( "click", function() {
+    $('body').toggleClass('black_theme')
+
+    $.get("{{route('change-theme')}}", function (response) {
+    });
+})
     </script>

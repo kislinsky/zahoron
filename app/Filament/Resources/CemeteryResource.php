@@ -27,6 +27,7 @@ use App\Filament\Resources\CemeteryResource\Pages\EditCemetery;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use App\Filament\Resources\CemeteryResource\Pages\CreateCemetery;
 use App\Filament\Resources\CemeteryResource\Pages\ListCemeteries;
+use App\Filament\Resources\CemeteryResource\RelationManagers\PriceServiceRelationManager;
 
 class CemeteryResource extends Resource
 {
@@ -60,7 +61,16 @@ class CemeteryResource extends Resource
                     ->label('Долгота')
                     ->required()
                     ->maxLength(255),
+                    Forms\Components\TextInput::make('adres')
+                    ->label('Адрес')
+                    ->required()
+                    ->maxLength(255),
 
+                    Forms\Components\TextInput::make('price_burial_location')
+                    ->label('Цена за геопозицию')
+                    ->numeric()
+                    ->required()
+                    ->maxLength(255),
 
                     Forms\Components\TextInput::make('square')
                     ->label('Площадь')
@@ -101,7 +111,25 @@ class CemeteryResource extends Resource
                     ->label('Телефон')
                     ->maxLength(255),
 
-        
+            
+                    FileUpload::make('img')
+                    ->label('Картинка') // Название поля
+                    ->directory('/uploads_cemeteries') // Директория для сохранения
+                    ->image() // Только изображения (jpg, png и т.д.)
+                    ->maxSize(2048) // Максимальный размер файла в КБ
+                    ->required()
+                    ->afterStateUpdated(function ($set, $state, $record) {
+                        if ($state && $record) {
+                            
+                            // Получаем только имя файла (без директории)
+                            $filename = basename($state);
+                            
+                            // Обновляем запись в базе данных, сохраняя только имя файла
+                            $record->update([
+                                'href_img' => 0, // Или любое другое значение
+                            ]);
+                        }
+                    }),
                 RichEditor::make('mini_content') // Поле для редактирования HTML-контента
                     ->label('Краткое описание') // Соответствующая подпись
                     ->toolbarButtons([
@@ -142,29 +170,8 @@ class CemeteryResource extends Resource
                     ->disableLabel(false) // Показывать метку
                     ->placeholder('Введите HTML-контент здесь...'),
 
-                    
-                FileUpload::make('img')
-                    ->label('Картинка') // Название поля
-                    ->directory('/uploads_cemeteries') // Директория для сохранения
-                    ->image() // Только изображения (jpg, png и т.д.)
-                    ->maxSize(2048) // Максимальный размер файла в КБ
-                    ->required()
-                    ->afterStateUpdated(function ($set, $state, $record) {
-                        if ($state && $record) {
-                            
-                            // Получаем только имя файла (без директории)
-                            $filename = basename($state);
-                            
-                            // Обновляем запись в базе данных, сохраняя только имя файла
-                            $record->update([
-                                'href_img' => 0, // Или любое другое значение
-                            ]);
-                        }
-                    }),
-                    Forms\Components\TextInput::make('adres')
-                    ->label('Адрес')
-                    ->required()
-                    ->maxLength(255),
+                
+                   
                 
                     Placeholder::make('created_at')
                     ->label('Дата создания')
@@ -213,7 +220,7 @@ class CemeteryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PriceServiceRelationManager::class,
         ];
     }
 

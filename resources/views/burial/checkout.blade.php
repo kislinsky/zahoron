@@ -25,11 +25,11 @@
                     <?php $total=0; ?>
                     @foreach ($cart_items as $cart_item)
                         <?php $product=getBurial($cart_item);
-                            $total+=$product->price; ?>
+                            $total+=$product->cemetery->price_burial_location; ?>
                             <tr>
                                 <td class='title_cart title_burial_basket'>Предоставление геолокации</td>
                                 <td><a href='{{ $product->route() }}' class="title_cart decoration_on">{{ $product->surname }} {{ $product->name }} {{ $product->patronymic }}</div></td>
-                                <td class='title_cart'>{{ $product->price }} ₽</td>
+                                <td class='title_cart'>{{ $product->cemetery->price_burial_location }} ₽</td>
                                 <td><a href='{{ route('burial.delete',$product->id) }}'class="delete_cart"><img src="{{asset('storage/uploads/Trash.svg')}}" alt=""> Удалить</a></td>
                             </tr>
                     @endforeach

@@ -12,13 +12,14 @@ use Artesaos\SEOTools\Facades\SEOTools;
 class IndexService {  
     public static function single($id){
         $city=selectCity();
-        $service=Service::findOrFail($id);
+        $service=Service::find($id);
 
         $seo="$service->title в г. $city->title";
         SEOTools::setTitle($seo);
         SEOTools::setDescription($seo);
 
         if($service->category_id==11){
+
             return CategoryServiceService::serviceOneTimeCleaning($service);
         }
         if($service->category_id==12){

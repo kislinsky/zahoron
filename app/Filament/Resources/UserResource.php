@@ -48,6 +48,7 @@ class UserResource extends Resource
                     'organization' => 'Организация', // Значение 1 с названием "Раз"
                     'organization-provider' => 'Организация-поставщик', // Значение 1 с названием "Раз"
                     'user' => 'Пользователь', // Значение 1 с названием "Раз"
+                    'agent' => 'Работник', // Значение 1 с названием "Раз"
             ])->default('user'),
                 Forms\Components\TextInput::make('name')
                 ->label('Имя')
@@ -167,6 +168,7 @@ class UserResource extends Resource
                         'organization' => 'Организация', // Значение 1 с названием "Раз"
                         'organization-provider' => 'Организация-поставщик', // Значение 1 с названием "Раз"
                         'user' => 'Пользователь', // Значение 1 с названием "Раз"
+                        'agent' => 'Работник', // Значение 1 с названием "Раз"
                         default => 'Неизвестно',
                     }),
             ])

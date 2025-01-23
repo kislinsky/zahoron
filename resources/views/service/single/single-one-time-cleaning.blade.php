@@ -21,7 +21,7 @@ use App\Models\Service;
 <section class="single_service">
     <div class="container">
         <div class="title">
-            {{ $service->title }} могилы на <a href="{{ route('cemeteries.single',$cemetery->id) }}">{{ $cemetery->title }}</a> в городе {{ $city->title }} {{ $edge->title }} области
+            {{ $service->title }} могилы на кладбищах в городе {{ $city->title }} {{ $edge->title }} 
         </div>
         @if($service->text_under_title!=null)
             <div class="text_block">
@@ -121,10 +121,10 @@ use App\Models\Service;
                 <video controls src="{{asset('storage/uploads_service/'. $service->video_2 )}}"></video>
             </div>
         @endif
-        <div class="block_single_cemetery">
+        {{-- <div class="block_single_cemetery">
             <div id='mute-video'class="title_our_works">Кладбище <a href="{{ route('cemeteries.single',$cemetery->id) }}">"{{ $cemetery->title }}"</a> в городе {{ $city->title }}</div>
             <div id="map_cemetery_single" style="width: 100%; height: 600px"></div>
-        </div>
+        </div> --}}
 
         @include('forms.search-form') 
 
@@ -134,7 +134,7 @@ use App\Models\Service;
 </section>
 
 
-<script>
+{{-- <script>
     ymaps.ready(init);
 
 function init() {
@@ -151,6 +151,6 @@ function init() {
             iconCaption:  '{{ $cemetery->title }}'
         },));
 }
-</script>
+</script> --}}
 
 @include('footer.footer')

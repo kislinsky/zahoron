@@ -103,5 +103,9 @@ class Cemetery extends Model
     }
    
 
+    function priceService(){
+        return $this->hasMany(PriceService::class);
+    }
+
 
 }

@@ -22,7 +22,7 @@
                             <div class="li_service">
                                 <div class="flex_li_service">
                                     <a href='{{route('pricelist.single',$service->slug)}}'class="title_li decoration_on">{{ $service->title }}</a>
-                                    <div class="title_li">от {{ $service->price }} ₽</div>
+                                    <div class="title_li">от {{ $service->getPriceForCity($city->id)->price }} ₽</div>
                                 </div>
                                 <div class="text_li">{{ $service->excerpt }}</div>
                             </div>

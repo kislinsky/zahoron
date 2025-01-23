@@ -1,6 +1,9 @@
 <?php 
-use App\Models\Product;
+    $city=selectCity();
+    $user=user();
 ?>
+
+
 <!DOCTYPE html>
 <html lang="ru">
     <head>
@@ -18,106 +21,57 @@ use App\Models\Product;
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
         <link rel="stylesheet" href="{{asset('css/style.css')}}">
+        <link rel="stylesheet" href="{{asset('css/style-black-theme.css')}}">
         <link rel="stylesheet" href="{{asset('css/mobile.css')}}">
+
         <script src="https://api-maps.yandex.ru/1.1/index.xml" type="text/javascript"></script>
         <script src="https://api-maps.yandex.ru/2.1/?apikey=373ac95d-ec8d-4dfc-a70c-e48083741c72&lang=ru_RU"></script>
     </head>
 
-<body>
+<body class='{{getTheme()}}'>
+
+@include('components.all-forms-message')
+@include('header.header-mobile-agent')
 
 
-<header>
-   
-    <div class="container">  
-        <a class='logo' href='/'>
-            <img class='img_light_theme' src='{{asset('storage/uploads/zahoron.svg')}}'>
-            <img class='img_black_theme' src="{{asset('storage/uploads/РИТУАЛреестр.svg')}}" alt="">        </a>
-        @if (isset($page))
-            <div class='pages'>
-                <a href='{{ route('home') }}'class="btn_bac_gray <?php if($page==1){echo ' active_label_product';}?>">Главная </a>
-                <a href='{{ route('account.agent.services.index') }}'class="btn_bac_gray <?php if($page==3){echo ' active_label_product';}?>">Уборка захоронений</a>
-                <a href='{{ route('account.agent.settings') }}'class="btn_bac_gray <?php if($page==5){echo ' active_label_product';}?>">Настройки</a>
-                <a href='#'class="btn_bac_gray">Чат</a>
-            </div>
-        @else
-            <div class='pages'>
-                <a href='{{ route('home') }}'class="btn_bac_gray">Главная </a>
-                <a href='{{ route('account.agent.services.index') }}'class="btn_bac_gray">Уборка захоронений</a>
-                <a href='{{ route('account.agent.settings') }}'class="btn_bac_gray">Настройки</a>
-                <a href='#'class="btn_bac_gray">Чат</a>
-            </div>
-        @endif
-        <div class='flex_icon_header'>
-            <div class='icon_header'><img src='{{asset('storage/uploads/Group 23.svg')}}'></div>
-            <a href='/login' class='icon_header'><img src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
-            <a class="no_bac_btn logout" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Выйти</a>
-            
-        </div>
+<header class='header_decoder header_user'>
+    <a class='logo' href='{{route('index')}}'>
+        <img class='img_light_theme' src='{{asset('storage/uploads/zahoron.svg')}}'>
+        <img class='img_black_theme' src="{{asset('storage/uploads/РИТУАЛреестр.svg')}}" alt="">    </a>
+    
+    
+    <div class='flex_icon_header margin_left_auto'>
+        <div class='change_theme icon_header'><img class='img_light_theme' src='{{asset('storage/uploads/Group 23.svg')}}'><img class='img_black_theme' src='{{asset('storage/uploads/Group 23_black_theme.svg')}}'></div>
+
+        <a href='{{ route('index') }}' class='icon_header icon_login'><img class='img_black_theme' src='{{asset('storage/uploads/Group 1_black_theme.svg')}}'><img class='img_light_theme' src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
+        <a class="no_bac_btn logout" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Выйти</a>
     </div>
 </header>
 
 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
     @csrf
 </form>
-@if(session("message_words_memory"))
-    <div class="bac_black">
-        <div class='message'>
-            <div class="flex_title_message">
-                <div class="title_middle">Заявка принята</div>
-                <div class="close_message">
-                    <img src="{{ asset('storage/uploads/close (2).svg') }}" alt="">
-                </div>
-            </div>
-            <div class="content_message">{!!  session("message_words_memory") !!}  </div>
-            <div class="blue_btn close_message">OK</div>
-        </div>
+
+<div class="header_user_mini_info header_user_mini_info_2">
+    <div data-bs-toggle="modal" data-bs-target="#beautification_form" class="btn_border_blue">
+        <img src="{{asset('storage/uploads/Frame (3).svg')}}" alt="">
+        Облагородить 
     </div>
-@endif
-
-
-
-@if(session("message_cart"))
-    <div class="bac_black">
-        <div class='message'>
-            <div class="flex_title_message">
-                <div class="title_middle">{!!  session("message_cart") !!} </div>
-                <div class="close_message">
-                    <img src="{{ asset('storage/uploads/close (2).svg') }}" alt="">
-                </div>
-            </div>
-            <div class="blue_btn close_message">OK</div>
-        </div>
+    <div class="flex_icon_header">
+        <a href='{{ route('index') }}' class='icon_header icon_login'><img class='img_black_theme' src='{{asset('storage/uploads/Group 1_black_theme.svg')}}'><img class='img_light_theme' src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
+        <a class='gray_circle icon_header open_mobile_header' >
+            <img class='img_light_theme'src="{{asset('storage/uploads/Group 29.svg')}}" alt="">
+            <img class='img_black_theme'src="{{asset('storage/uploads/Group 29 (1)_black.svg')}}" alt="">
+        </a>
     </div>
-@endif
-
-@if(session("message_order_burial"))
-    <div class="bac_black">
-        <div class='message'>
-            <div class="flex_title_message">
-                <div class="title_middle">Заказ оформлен</div>
-                <div class="close_message">
-                    <img src="{{ asset('storage/uploads/close (2).svg') }}" alt="">
-                </div>
-            </div>
-            <div class="content_message">{{ session("message_order_burial") }}</div>
-            <div class="blue_btn close_message">OK</div>
-        </div>
-    </div>
-@endif
-
-@if(session("error"))
-    <div class="bac_black">
-        <div class='message'>
-            <div class="flex_title_message">
-                <div class="title_middle">Ошибка</div>
-                <div class="close_message">
-                    <img src="{{ asset('storage/uploads/close (2).svg') }}" alt="">
-                </div>
-            </div>
-            <div class="content_message">{{ session("error") }}</div>
-            <div class="blue_btn close_message">OK</div>
-        </div>
-    </div>
-@endif
+</div>
 
 
+<script>
+$( ".change_theme" ).on( "click", function() {
+    $('body').toggleClass('black_theme')
+
+    $.get("{{route('change-theme')}}", function (response) {
+    });
+})
+    </script>

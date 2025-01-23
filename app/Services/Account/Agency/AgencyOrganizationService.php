@@ -3,33 +3,17 @@
 namespace App\Services\Account\Agency;
 
 use App\Models\ActivityCategoryOrganization;
-use App\Models\User;
-use App\Models\Burial;
-use App\Models\Service;
 use App\Models\Cemetery;
-use App\Models\ImageAgent;
-use App\Models\OrderBurial;
-use App\Models\OrderService;
-use App\Models\SearchBurial;
-use Illuminate\Http\Request;
-use App\Models\Beautification;
 use App\Models\CategoryProduct;
 use App\Models\City;
 use App\Models\CommentProduct;
-use App\Models\FavouriteBurial;
-use App\Models\ImageAgency;
-use App\Models\ImageOrganization;
 use App\Models\ImageProduct;
 use App\Models\MemorialMenu;
-use App\Models\OrderProduct;
 use App\Models\Organization;
 use App\Models\Product;
 use App\Models\ProductParameters;
 use App\Models\ReviewsOrganization;
 use App\Models\WorkingHoursOrganization;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use PHPUnit\Framework\MockObject\Rule\Parameters;
 
 class AgencyOrganizationService {
 

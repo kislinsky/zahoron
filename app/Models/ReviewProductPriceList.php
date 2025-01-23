@@ -10,11 +10,11 @@ class ReviewProductPriceList extends Model
     use HasFactory;
 
     public function urlImgBefore(){
-        return asset('storage/'.$this->imgBefore);
+        return asset('storage/'.$this->img_before);
     }
 
     public function urlImgAfter(){
-        return asset('storage/'.$this->imgBefore);
+        return asset('storage/'.$this->img_after);
     }
 
     function user(){

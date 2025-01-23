@@ -50,7 +50,7 @@ class Burial extends Model
     }
 
     function services(){
-        return Service::orderBy('id', 'desc')->where('cemetery_id', $this->cemetery_id)->get();
+        return Service::orderBy('id', 'desc')->get();
     }
 
     function lifeStory(){

@@ -43,6 +43,9 @@ class City extends Model
         return City::orderBy('title','asc')->where('edge_id',$this->edge_id)->get();
     }
 
+    function priceProductPriceList(){
+        return $this->hasMany(PriceProductPriceList::class);
+    }
 
     
   

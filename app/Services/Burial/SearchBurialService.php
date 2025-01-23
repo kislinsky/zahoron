@@ -2,13 +2,14 @@
 
 namespace App\Services\Burial;
 
-use App\Models\User;
+use App\Models\City;
 use App\Models\News;
+use App\Models\User;
 use App\Models\Burial;
 use App\Models\SearchBurial;
-use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Artesaos\SEOTools\Facades\SEOTools;
 
 class SearchBurialService
 {
@@ -25,6 +26,14 @@ class SearchBurialService
     }
 
     public static function searchProduct($data){
+        $cemetery_ids=selectCity()->cemeteries->pluck('id');
+
+        if(isset($data['city'])){
+            $city=City::where('title','like', '%'.$data['city'].'%')->get();
+            if($city[0]!=null){
+                $cemetery_ids=$city[0]->cemeteries->pluck('id');
+            }
+        }
 
         $seo="Поиск ".$data['name'] . $data['surname'] . $data['patronymic'];
 
@@ -32,7 +41,7 @@ class SearchBurialService
         SEOTools::setDescription($seo);
 
         $news=News::orderBy('id', 'desc')->take(2)->get();
-        $products=Burial::where('name',$data['name'])->where('surname',$data['surname'])->where('patronymic',$data['patronymic'])->where('location_death','like','%'.$data['city'].'%')->where('status',1)->get();
+        $products=Burial::where('name',$data['name'])->where('surname',$data['surname'])->where('patronymic',$data['patronymic'])->whereIn('cemetery_id',$cemetery_ids)->where('status',1)->get();
         return view('burial.search-product',compact('products','news'));
     }
 

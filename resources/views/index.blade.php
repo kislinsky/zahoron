@@ -57,7 +57,6 @@
                     </div>
                     <div class="grid_btn">
                         <input class='blue_input'type="text" name='patronymic' placeholder='Отчество'>
-                        <input type="hidden" name='city' value={{$city->title}}>
                         <button class='blue_btn border_radius_btn' type='submit'>Найти</button>
                     </div>  
                 </form>

@@ -1,13 +1,8 @@
-@include('header.header-agent')
-@include('forms.location')
+@extends('account.agent.components.page')
+@section('title', 'Настройки')
+@include('forms.location-2')
 
-<?php 
-    use App\Models\Product;
-    use App\Models\Service;
-?>
-
-
-
+@section('content')
 
 <div class="bac_black input_print_form">
     <div class='message'>
@@ -39,32 +34,14 @@
 
 
 
-<section class="order_page bac_gray">
-    <div class="container">
-        <div class="content_order_page">
-            <div class="index_title">Настройки</div>    
-        </div>
-        <img class='rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
-        
-    </div>
-</section>
 
 <section class="settings">
     <div class="container">
         <form action='{{ route('account.agent.settings.update') }}' method='post' enctype='multipart/form-data' class="form_settings">
             @csrf
             <div class="title_middle settings_margin_form" style='margin-top:0px;'>Профиль пользователя</div>
-            <div class="flex_form_settings">
-                <div class="block_inpit_form_search">
-                    <label class='label_input'>ИНН</label>
-                    <input class='inn_input'type="text" name='inn' value='{{ $user->inn }}'placeholder='ИНН'>
-                    @error('inn')
-                        <div class='error-text'>{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-            
-            <div class="title_news settings_margin_form">Данные агента</div>
+           
+            <div class="title_news settings_margin_form">Данные для заключения договора</div>
             <div class="flex_search_form">
                 <div class="block_inpit_form_search">
                     <label class='label_input'>Имя</label>
@@ -243,41 +220,11 @@
                 </div>
            </div>
            
-           <div class="block_inpit_form_search">
-                
-                <div class="title_middle settings_margin_form">Список кладбищ:</div>
 
-                <div class="block_input input_location_flex">
-                    <div class="input_location_settings">
-                        <div class="input_location">
-                            <input type="hidden" name="id_cemetery" >
-                            <img  data-bs-toggle="modal" data-bs-target="#location_form" class='open_location' src="{{ asset('storage/uploads/Закрыть.svg') }}" alt="">
-                            <input type="text" name='location' placeholder='Расположение'>
-                        </div>
-                        <div class='text_location_input'>Впишите название кладбища (или района/
-                            области) либо нажмите "+" и выберите из списка</div>
-                    </div>
-                    
-                    <div class="blue_btn add_cemetery">Добавить кладбище</div>
-                </div> 
-                <div class="ul_cemtery">
-                    @if (isset($cemeteries))
-                        @if (count($cemeteries)>0)
-                            @foreach ($cemeteries as $cemetery)
-                            <div class="li_cemetery_agent">
-                                <div class="mini_flex_li_product">
-                                    <input type="hidden" value='{{ $cemetery->id }}'name="cemetery_ids[]">
-                                    <div class="title_label">{{ $cemetery->title }}</div>
-                                    <div class="text_li">Адрес: {{ $cemetery->adres }}</div>
-                                </div>
-                                <div  class="delete_cart delete_cemetery"><img src="{{asset('storage/uploads/Закрыть (1).svg')}}" alt=""></div>
-                            </div>
-                                
-                            @endforeach
-                        @endif
-                    @endif
-                </div>
-        </div>
+
+           {{view('account.agency.components.settings-organization.cemeteries',compact('cemeteries'))}}
+
+
            
            <button type="submit" class='blue_btn settings_margin_form'>Сохранить настройки</button>
 
@@ -286,33 +233,4 @@
     </div>
 </section>
 
-<script>
-    $( ".add_cemetery" ).on( "click", function() {
-    
-        let id_location= $(this).siblings('.input_location_settings').children('.input_location').children('input[name="id_cemetery"]').val();
-        let name_location = $(this).siblings('.input_location_settings').children('.input_location').children('input[name="location"]').val();
-        $.ajax({
-            type: 'POST',
-            url: '{{ route("add.cemetery.settings") }}',
-            data: {
-                "_token": "{{ csrf_token() }}",
-                'id_location': id_location,
-                'name_location': name_location,
-            }, success: function (result) {
-                
-                if(result['error']){
-                    alert(result['error'])
-                }else{
-                    $('.ul_cemtery').append('<div class="li_cemetery_agent"><div class="mini_flex_li_product"><input type="hidden" value="'+result['id_cemetery']+'"name="cemetery_ids[]"><div class="title_label">'+name_location+'</div><div class="text_li">Адрес: "'+result['adres']+'"</div></div><div  class="delete_cart delete_cemetery"><img src="{{asset('storage/uploads/Закрыть (1).svg')}}" alt=""></div></div>' );
-                }
-            },
-            error: function () {
-                alert('Ошибка');
-            }
-        });
-    
-    });
-    
-</script>
-
-@include('footer.footer') 
+@endsection

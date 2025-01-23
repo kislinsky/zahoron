@@ -2,7 +2,7 @@
 
 namespace App\Services\Order;
 
-
+use App\Models\Burial;
 use App\Models\User;
 use App\Models\OrderBurial;
 use Illuminate\Support\Facades\Auth;
@@ -19,10 +19,12 @@ class OrderBurialService
                 $isset_orderds_burials=OrderBurial::whereIn('burial_id',$cart_items)->where('user_id',Auth::user()->id)->get();
                 if(count($isset_orderds_burials)==0){
                     foreach($cart_items as $cart_item){
+                        $price=Burial::find($cart_item)->cemetery->price_burial_location;
                         OrderBurial::create([
                             'burial_id'=>$cart_item,
                             'user_id'=>Auth::user()->id,
-                            'customer_comment'=>$data['message']
+                            'customer_comment'=>$data['message'],
+                            'price'=>$price,
                         ]);
                     }
                 } else{
@@ -44,10 +46,12 @@ class OrderBurialService
                     'password'=>Hash::make($password),
                     ]);
                     foreach($cart_items as $cart_item){
+                        $price=Burial::find($cart_item)->cemetery->price_burial_location;
                         OrderBurial::create([
                             'burial_id'=>$cart_item,
                             'user_id'=>$last_id->id,
-                            'customer_comment'=>$data['message']
+                            'customer_comment'=>$data['message'],
+                            'price'=>$price,
                         ]);
                     }
                    

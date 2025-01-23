@@ -126,7 +126,9 @@ class User extends Authenticatable
 
     function orderServices($status=null){
         if($status!=null){
-            return $this->hasMany(OrderService::class)->where('status',$status);
+            if($status==2){
+                return $this->hasMany(OrderService::class)->where('status',$status)->where('paid',1);
+            }
         }
         return $this->hasMany(OrderService::class);
     }

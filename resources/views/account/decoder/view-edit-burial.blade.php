@@ -36,7 +36,10 @@
                         </div>
                         <div class="li_info_edit_burial">
                             <div class="text_black_big_bold">Кладбище: </div>
-                            <div class="text_black">{{$burial->cemetery->title}}</div>
+                            @if($burial->cemetery!=null)
+                                <div class="text_black">{{$burial->cemetery->title}}</div>
+
+                            @endif
                         </div>
                         <div class="li_info_edit_burial">
                             <div class="text_black_big_bold">Расположение: </div>

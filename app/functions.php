@@ -105,8 +105,8 @@ function totalOrderService($services){
 
 }
 
-function statusOrder($status){
-   if($status==0){
+function statusOrder($order){
+   if($order->paid==0 || $order->paid==null){
         return '<div class="text_li">Не оплачен</div>';
    }
     else{

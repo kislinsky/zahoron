@@ -150,10 +150,12 @@ class DecoderService {
         ]);
         $payment_last=Task::orderBy('id','desc')->whereIn('status',[0])->where('user_id',$user->id)->first();     
 
+        $price=get_acf(12,'price');
+
         if($payment_last!=null){
             $payment_last->update([
                 'count'=>$payment_last->count+1,
-                'price'=>$payment_last->price+$burial->cemetery()->price_decode,
+                'price'=>$payment_last->price+$price,
             ]);
 
         }else{
@@ -162,7 +164,7 @@ class DecoderService {
                 'count'=>1,
                 'burial_id'=>$burial->id,
                 'user_id'=>user()->id,
-                'price'=>$burial->cemetery()->price_decode,
+                'price'=>$price,
             ]);
         }
         return redirect()->back()->with("message_cart", 'Захоронение успешно обновлено');

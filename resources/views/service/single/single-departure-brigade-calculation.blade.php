@@ -21,7 +21,7 @@ use App\Models\Service;
 <section class="single_service">
     <div class="container">
         <div class="title">
-            Поиск могилы без присутствия заказчика на <a href="{{ route('cemeteries.single',$cemetery->id) }}">кладбище {{ $cemetery->title }}</a> в городе {{ $city->title }} , с предоставление сметы по облагораживанию захоронения с видео и фотоотчёта заказчику.
+            Поиск могилы без присутствия заказчика на кладбищах в городе {{ $city->title }} , с предоставление сметы по облагораживанию захоронения с видео и фотоотчёта заказчику.
         </div>
         @if($service->text_under_title!=null)
             <div class="text_block">
@@ -109,7 +109,7 @@ use App\Models\Service;
         </div>
         @if($service->text_sale!=null)
             <div class="text_block border_gray">
-                <div class="title_li">Услуги по покраске ограды  <a href="{{ route('cemeteries.single',$cemetery->id) }}">кладбище {{ $cemetery->title }}</a></div>
+                <div class="title_li">Услуги по покраске ограды </div>
 
                 {!! $service->text_sale !!}
             </div>
@@ -121,15 +121,15 @@ use App\Models\Service;
        
         @if($service->text_under_img!=null)
             <div class="text_block border_gray">
-                <div class="title_li">Стоимость покраски оградки на <a href="{{ route('cemeteries.single',$cemetery->id) }}">кладбище {{ $cemetery->title }}</a> </div>
+                <div class="title_li">Стоимость покраски оградки </div>
                 {!! $service->text_under_img !!}
             </div>
         @endif
        
-        <div class="block_single_cemetery">
+        {{-- <div class="block_single_cemetery">
             <div id='mute-video'class="title_our_works">Кладбище <a href="{{ route('cemeteries.single',$cemetery->id) }}">"{{ $cemetery->title }}"</a> в городе {{ $city->title }}</div>
             <div id="map_cemetery_single" style="width: 100%; height: 600px"></div>
-        </div>
+        </div> --}}
 
         @include('forms.search-form') 
 
@@ -142,7 +142,7 @@ use App\Models\Service;
     </div>
 </section>
 
-
+{{-- 
 <script>
     ymaps.ready(init);
 
@@ -160,6 +160,6 @@ function init() {
             iconCaption:  '{{ $cemetery->title }}'
         },));
 }
-</script>
+</script> --}}
 
 @include('footer.footer')

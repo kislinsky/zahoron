@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Account;
+namespace App\Services\Account\Agent;
 
 
 use App\Models\User;
@@ -18,62 +18,54 @@ use Illuminate\Support\Facades\Hash;
 
 class AgentService {
 
+     
     public static function index(){
-        $page=1;
-        $user=Auth::user();
-        if($user->cemetery_ids!=null){
-            $last_orders_services=OrderService::orderBy('id', 'desc')->where('worker_id',null)->where('status',0)->whereIn('cemetery_id',json_decode($user->cemetery_ids))->get();
-        }else{
-            $last_orders_services=null;
-        }
-        return view('account.agent.index',compact('user','last_orders_services','page'));
+        $user=user();
+        $orders_services=OrderService::orderBy('id','desc')->where('status',0)->where('worker_id',null)->whereIn('cemetery_id',json_decode($user->cemetery_ids))->get();
+        return view('account.agent.index',compact('user','orders_services'));
     }
-    
-    public static function serviceIndex(){
-        $page=3;
-        $user=Auth::user();
-        if($user->cemetery_ids!=null){
-            $orders=OrderService::orderBy('id', 'desc')->where('worker_id',$user->id)->whereIn('cemetery_id',json_decode($user->cemetery_ids))->get();
-            $orders_2=OrderService::orderBy('id', 'desc')->where('worker_id',null)->where('status',0)->whereIn('cemetery_id',json_decode($user->cemetery_ids))->get();
-        }else{
-            $orders=null;
-            $orders_2=null;
-        }
-       
-        return view('account.agent.services.index',compact('orders','page','orders_2'));
-    }
-    
 
-    public static function serviceFilter($status){
-        $page=3;
-        $user=Auth::user();
-        if($user->cemetery_ids!=null){
-            if($status==1){
-                $orders=OrderService::orderBy('id', 'desc')->where('worker_id',$user->id)->whereIn('status',[1,2,3])->whereIn('cemetery_id',json_decode($user->cemetery_ids))->get();
-                return view('account.agent.services.index',compact('orders','status'));
+
+
+    public static function services($data){
+        $user=user();
+        $status=null;
+        if(isset($data['status']) && $data['status']!=null ){
+            if($data['status']==2){
+                $orders_services=OrderService::orderBy('id','desc')->where('paid',1)->where('worker_id',$user->id)->paginate(6);
             }
-            elseif($status==4){
-                $orders=OrderService::orderBy('id', 'desc')->where('worker_id',null)->whereIn('cemetery_id',json_decode($user->cemetery_ids))->get();
-                return view('account.agent.services.index',compact('orders','status'));
+            
+            else{
+                $orders_services=OrderService::orderBy('id','desc')->where('status',$data['status'])->where('worker_id',$user->id)->paginate(6);
             }
-            $orders=OrderService::orderBy('id', 'desc')->where('worker_id',$user->id)->where('status',$status)->whereIn('cemetery_id',json_decode($user->cemetery_ids))->get();
-
+            $status=$data['status'];
         }else{
-            $orders=null;
+            $orders_services=OrderService::orderBy('id','desc')->where('worker_id',$user->id)->paginate(6);
         }
-        return view('account.agent.services.index',compact('orders','status','page'));
-    }
+        return view('account.agent.services.index',compact('orders_services','status'));
 
+    }
 
     public static function acceptService($id){
         $user=Auth::user();
         $order=OrderService::findOrFail($id);
         $order->update([
             'worker_id'=>$user->id,
-            'status'=>2,
+            'status'=>1,
         ]);
         return redirect()->back();
     }
+
+    public static function getToWorkService($id){
+        $user=Auth::user();
+        $order=OrderService::findOrFail($id);
+        $order->update([
+            'status'=>3,
+        ]);
+        return redirect()->back();
+    }
+
+    
 
     public static function agentSettings(){
         $page=5;
@@ -89,8 +81,6 @@ class AgentService {
 
 
     public static function agentSettingsUpdate($data){
-
-        $page=5;
         $user=Auth::user();
         $user_email=User::where('email',$data['email'])->where('id','!=',$user->id)->get();
         $user_phone=User::where('phone',$data['phone'])->where('id','!=',$user->id)->get();
@@ -107,7 +97,6 @@ class AgentService {
                 'telegram'=>$data['telegram'],
                 'language'=>$data['language'],
                 'theme'=>$data['theme'],
-                'inn'=>$data['inn'],
                 'number_cart'=>$data['number_cart'],
                 'bank'=>$data['bank'],
             ]);
@@ -187,7 +176,7 @@ class AgentService {
         }
         $result=implode('|',$names);
         $order->update([
-            'status'=>5,
+            'status'=>4,
             'imgs'=> $result,
         ]);
         return redirect()->back();

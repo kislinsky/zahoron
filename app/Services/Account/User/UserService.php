@@ -5,6 +5,7 @@ namespace App\Services\Account\User;
 
 use App\Models\User;
 
+use App\Models\OrderService;
 use Illuminate\Support\Facades\Hash;
 
 class UserService {
@@ -19,14 +20,33 @@ class UserService {
 
 
 
+    // public static function services($data){
+    //     $user=user();
+    //     $status=null;
+    //     if(isset($data['status']) && $data['status']!=null ){
+    //         $orders_services=$user->orderServices($data['status'])->orderBy('id','desc')->paginate(6);
+    //         $status=$data['status'];
+    //     }else{
+    //         $orders_services=$user->orderServices()->orderBy('id','desc')->paginate(6);
+    //     }
+    //     return view('account.user.services.index',compact('orders_services','status'));
+
+    // }
+
     public static function services($data){
         $user=user();
         $status=null;
         if(isset($data['status']) && $data['status']!=null ){
-            $orders_services=$user->orderServices($data['status'])->orderBy('id','desc')->paginate(6);
+            if($data['status']==2){
+                $orders_services=OrderService::orderBy('id','desc')->where('paid',1)->where('user_id',$user->id)->paginate(6);
+            }
+            
+            else{
+                $orders_services=OrderService::orderBy('id','desc')->where('status',$data['status'])->where('user_id',$user->id)->paginate(6);
+            }
             $status=$data['status'];
         }else{
-            $orders_services=$user->orderServices()->orderBy('id','desc')->paginate(6);
+            $orders_services=OrderService::orderBy('id','desc')->where('user_id',$user->id)->paginate(6);
         }
         return view('account.user.services.index',compact('orders_services','status'));
 

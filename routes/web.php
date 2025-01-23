@@ -388,14 +388,13 @@ Route::prefix($city)->group(function () {
         Route::post('/account/agent/upload-seal/add', [AgentController::class, 'addUploadSeal'])->name('account.agent.upload-seal.add');
         Route::get('/account/agent/upload-seal/{id}/delete', [AgentController::class, 'deleteUploadSeal'])->name('account.agent.upload-seal.delete');
 
-        Route::get('/account/agent/cemetery/{id}/delete', [AgentController::class, 'agentDeleteCemetery'])->name('account.agent.delete.cemetery');
 
 
-        Route::get('/account/agent/services', [AgentController::class, 'serviceIndex'])->name('account.agent.services.index');
+        Route::get('/services', [AgentController::class, 'services'])->name('account.agent.services.index');       
         Route::post('/account/agent/services/rent', [AgentController::class, 'rentService'])->name('account.agent.services.rent');
-        Route::get('/account/agent/services/{status}/status', [AgentController::class, 'serviceFilter'])->name('account.agent.services.filter');
-        Route::get('/account/agent/service/{id}/accept', [AgentController::class, 'acceptService'])->name('account.agent.service.accept');
-
+        Route::patch('/account/agent/service/{id}/accept', [AgentController::class, 'acceptService'])->name('account.agent.service.accept');
+        Route::patch('/account/agent/service/{id}/get-to-work', [AgentController::class, 'getToWorkService'])->name('account.agent.service.get-to-work');
+        
     });
 
 
