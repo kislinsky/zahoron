@@ -35,7 +35,7 @@ class InfoEditBurialService {
             $filename=generateRandomString().".jpeg";
             $file->storeAs("uploads_burial_personal", $filename, "public");
             ImagePersonal::create([
-                'title'=>$filename,
+                'title'=>'uploads_burial_personal/'.$filename,
                 'burial_id'=>$data['burial_id_image_personal'],
             ]);
         }
@@ -47,7 +47,7 @@ class InfoEditBurialService {
             $filename=generateRandomString().".jpeg";
             $file->storeAs("uploads_burial_monument", $filename, "public");
             ImageMonument::create([
-                'title'=>$filename,
+                'title'=>'uploads_burial_monument/'.$filename,
                 'burial_id'=>$data['burial_id_image_monument'],
             ]);
         }

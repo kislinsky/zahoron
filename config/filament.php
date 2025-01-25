@@ -1,5 +1,12 @@
 <?php
 
+use Filament\Navigation\NavigationItem;
+use App\Http\Middleware\AdminMiddleware;
+use Filament\Navigation\NavigationGroup;
+use Filament\Http\Middleware\Authenticate;
+use App\Filament\Resources\ReviewCemeteryResource;
+use App\Filament\Resources\ReviewMortuaryResource;
+
 return [
 
     /*
@@ -89,4 +96,14 @@ return [
     'brand' => [
         'name' => 'Моя Админка',
     ],
+
+    'middleware' => [
+    'web',
+        Authenticate::class, // Стандартный middleware Filament
+
+        AdminMiddleware::class, // Ваш middleware
+    ],
+    
+
+    
 ];

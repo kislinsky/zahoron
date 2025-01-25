@@ -19,7 +19,7 @@ class WordsMemoryService {
             $filename=generateRandomString().".jpeg";
             $data['file']->storeAs("uploads_memory_words", $filename, "public");
             WordsMemory::create([
-                'img'=>$filename,
+                'img'=>'uploads_memory_words/'.$filename,
                 'burial_id'=>$data['product_id'],
                 'content'=>$data['content'],
             ]);

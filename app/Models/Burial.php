@@ -2,32 +2,50 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Area;
 use App\Models\Service;
 use App\Models\Cemetery;
+use App\Models\OrderBurial;
 use App\Models\WordsMemory;
 use App\Models\ImageMonument;
 use App\Models\ImagePersonal;
 use App\Models\LifeStoryBurial;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Burial extends Model
 {
     use HasFactory;
+
     protected $guarded =[];
 
     function route(){
         return route('burial.single',$this->slug);
     }
 
-    function cemetery(){
+    function cemetery() {
         return $this->belongsTo(Cemetery::class);
     }
 
+    // Связь с районом через кладбище
+    function area() {
+        return $this->hasOneThrough(
+            Area::class,
+            Cemetery::class,
+            'id',          // Внешний ключ в Cemetery
+            'id',          // Внешний ключ в Area
+            'cemetery_id', // Локальный ключ в Burial
+            'area_id'      // Локальный ключ в Cemetery
+        );
+    }
+
+
+
+
     public function urlImg(){
         if($this->href_img==0){
-            return asset('storage/uploads_burials/'.$this->img);
+            return asset('storage/'.$this->img);
         }
         return $this->img;
     }

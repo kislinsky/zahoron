@@ -30,6 +30,10 @@ class City extends Model
         return $this->belongsTo(Edge::class);
     }
 
+    function area(){
+        return $this->belongsTo(Area::class);
+    }
+
     public function districts(){
         return $this->hasMany(District::class);
         // return District::where('city_id',$this->id)->get();

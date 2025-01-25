@@ -11,7 +11,13 @@
             <div class="title_label">Место захоронения:</div>
             <div class="text_li">{{ $burial->location_death }}</div>
         </div>
-        <a href='{{$burial->route() }}'class="btn_border_blue">Подробнее</a>
+
+        @if($order_service->paid==1 && $order_service->status!=0)
+            <a href='{{$burial->route() }}'class="btn_border_blue">Подробнее</a>
+        @else
+            <a href='{{$burial->cemetery->route() }}'class="btn_border_blue">Подробнее</a>
+
+        @endif
         
         <div class="flex_status_order">
             <div class="mini_flex_li_product">

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Burial;
+use App\Models\Cemetery;
 use App\Models\Faq;
 use App\Models\City;
 use App\Models\PriceProductPriceList;

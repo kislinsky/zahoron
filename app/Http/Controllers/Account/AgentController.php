@@ -32,6 +32,7 @@ class AgentController extends Controller
         return AgentService::agentSettings();
     }
 
+    
 
     public static function agentSettingsUpdate(Request $request){
         $data=request()->validate([

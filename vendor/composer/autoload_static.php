@@ -48,6 +48,7 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         'ce9671a430e4846b44e1c68c7611f9f5' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery.php',
         'a1cfe24d14977df6878b9bf804af2d1c' => __DIR__ . '/..' . '/nunomaduro/collision/src/Adapters/Phpunit/Autoload.php',
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
+        'c379e2a4ec3735f6c4915556c8c81813' => __DIR__ . '/..' . '/rap2hpoutre/fast-excel/src/functions/fastexcel.php',
         '320163ac6b93aebe3dc25b60a0533d56' => __DIR__ . '/..' . '/spatie/laravel-ignition/src/helpers.php',
         '3adb193d4261a019502ea897e056f4fe' => __DIR__ . '/../..' . '/app/functions.php',
         '911eb329818fee27968ca43c14598c00' => __DIR__ . '/../..' . '/app/pages.php',
@@ -60,6 +61,7 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         ),
         'Z' => 
         array (
+            'Znck\\Eloquent\\' => 14,
             'ZipStream\\' => 10,
         ),
         'Y' => 
@@ -109,6 +111,7 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
             'Symfony\\Component\\ErrorHandler\\' => 31,
             'Symfony\\Component\\CssSelector\\' => 30,
             'Symfony\\Component\\Console\\' => 26,
+            'Staudenmeir\\BelongsToThrough\\' => 29,
             'Spatie\\LaravelPackageTools\\' => 27,
             'Spatie\\LaravelIgnition\\' => 23,
             'Spatie\\Invade\\' => 14,
@@ -123,6 +126,7 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         array (
             'RyanChandler\\BladeCaptureDirective\\Database\\Factories\\' => 54,
             'RyanChandler\\BladeCaptureDirective\\' => 35,
+            'Rap2hpoutre\\FastExcel\\' => 22,
             'Ramsey\\Uuid\\' => 12,
             'Ramsey\\Collection\\' => 18,
         ),
@@ -267,6 +271,10 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         'voku\\' => 
         array (
             0 => __DIR__ . '/..' . '/voku/portable-ascii/src/voku',
+        ),
+        'Znck\\Eloquent\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/staudenmeir/belongs-to-through/src',
         ),
         'ZipStream\\' => 
         array (
@@ -416,6 +424,10 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         array (
             0 => __DIR__ . '/..' . '/symfony/console',
         ),
+        'Staudenmeir\\BelongsToThrough\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/staudenmeir/belongs-to-through/src',
+        ),
         'Spatie\\LaravelPackageTools\\' => 
         array (
             0 => __DIR__ . '/..' . '/spatie/laravel-package-tools/src',
@@ -461,6 +473,10 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         'RyanChandler\\BladeCaptureDirective\\' => 
         array (
             0 => __DIR__ . '/..' . '/ryangjchandler/blade-capture-directive/src',
+        ),
+        'Rap2hpoutre\\FastExcel\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/rap2hpoutre/fast-excel/src',
         ),
         'Ramsey\\Uuid\\' => 
         array (
@@ -929,6 +945,10 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         'App\\Filament\\Resources\\OrganizationResource\\Pages\\EditOrganization' => __DIR__ . '/../..' . '/app/Filament/Resources/OrganizationResource/Pages/EditOrganization.php',
         'App\\Filament\\Resources\\OrganizationResource\\Pages\\ListOrganizations' => __DIR__ . '/../..' . '/app/Filament/Resources/OrganizationResource/Pages/ListOrganizations.php',
         'App\\Filament\\Resources\\OrganizationResource\\RelationManagers\\ProductsRelationManager' => __DIR__ . '/../..' . '/app/Filament/Resources/OrganizationResource/RelationManagers/ProductsRelationManager.php',
+        'App\\Filament\\Resources\\PriceAplicationResource' => __DIR__ . '/../..' . '/app/Filament/Resources/PriceAplicationResource.php',
+        'App\\Filament\\Resources\\PriceAplicationResource\\Pages\\CreatePriceAplication' => __DIR__ . '/../..' . '/app/Filament/Resources/PriceAplicationResource/Pages/CreatePriceAplication.php',
+        'App\\Filament\\Resources\\PriceAplicationResource\\Pages\\EditPriceAplication' => __DIR__ . '/../..' . '/app/Filament/Resources/PriceAplicationResource/Pages/EditPriceAplication.php',
+        'App\\Filament\\Resources\\PriceAplicationResource\\Pages\\ListPriceAplications' => __DIR__ . '/../..' . '/app/Filament/Resources/PriceAplicationResource/Pages/ListPriceAplications.php',
         'App\\Filament\\Resources\\ProductPriceListResource' => __DIR__ . '/../..' . '/app/Filament/Resources/ProductPriceListResource.php',
         'App\\Filament\\Resources\\ProductPriceListResource\\Pages\\CreateProductPriceList' => __DIR__ . '/../..' . '/app/Filament/Resources/ProductPriceListResource/Pages/CreateProductPriceList.php',
         'App\\Filament\\Resources\\ProductPriceListResource\\Pages\\EditProductPriceList' => __DIR__ . '/../..' . '/app/Filament/Resources/ProductPriceListResource/Pages/EditProductPriceList.php',
@@ -976,10 +996,23 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         'App\\Filament\\Resources\\ServiceResource\\Pages\\EditService' => __DIR__ . '/../..' . '/app/Filament/Resources/ServiceResource/Pages/EditService.php',
         'App\\Filament\\Resources\\ServiceResource\\Pages\\ListServices' => __DIR__ . '/../..' . '/app/Filament/Resources/ServiceResource/Pages/ListServices.php',
         'App\\Filament\\Resources\\ServiceResource\\RelationManagers\\PriceServiceRelationManager' => __DIR__ . '/../..' . '/app/Filament/Resources/ServiceResource/RelationManagers/PriceServiceRelationManager.php',
+        'App\\Filament\\Resources\\TypeApplicationResource' => __DIR__ . '/../..' . '/app/Filament/Resources/TypeApplicationResource.php',
+        'App\\Filament\\Resources\\TypeApplicationResource\\Pages\\CreateTypeApplication' => __DIR__ . '/../..' . '/app/Filament/Resources/TypeApplicationResource/Pages/CreateTypeApplication.php',
+        'App\\Filament\\Resources\\TypeApplicationResource\\Pages\\EditTypeApplication' => __DIR__ . '/../..' . '/app/Filament/Resources/TypeApplicationResource/Pages/EditTypeApplication.php',
+        'App\\Filament\\Resources\\TypeApplicationResource\\Pages\\ListTypeApplications' => __DIR__ . '/../..' . '/app/Filament/Resources/TypeApplicationResource/Pages/ListTypeApplications.php',
+        'App\\Filament\\Resources\\TypeServiceResource' => __DIR__ . '/../..' . '/app/Filament/Resources/TypeServiceResource.php',
+        'App\\Filament\\Resources\\TypeServiceResource\\Pages\\CreateTypeService' => __DIR__ . '/../..' . '/app/Filament/Resources/TypeServiceResource/Pages/CreateTypeService.php',
+        'App\\Filament\\Resources\\TypeServiceResource\\Pages\\EditTypeService' => __DIR__ . '/../..' . '/app/Filament/Resources/TypeServiceResource/Pages/EditTypeService.php',
+        'App\\Filament\\Resources\\TypeServiceResource\\Pages\\ListTypeServices' => __DIR__ . '/../..' . '/app/Filament/Resources/TypeServiceResource/Pages/ListTypeServices.php',
+        'App\\Filament\\Resources\\UserRequestAmountResource' => __DIR__ . '/../..' . '/app/Filament/Resources/UserRequestAmountResource.php',
+        'App\\Filament\\Resources\\UserRequestAmountResource\\Pages\\CreateUserRequestAmount' => __DIR__ . '/../..' . '/app/Filament/Resources/UserRequestAmountResource/Pages/CreateUserRequestAmount.php',
+        'App\\Filament\\Resources\\UserRequestAmountResource\\Pages\\EditUserRequestAmount' => __DIR__ . '/../..' . '/app/Filament/Resources/UserRequestAmountResource/Pages/EditUserRequestAmount.php',
+        'App\\Filament\\Resources\\UserRequestAmountResource\\Pages\\ListUserRequestAmounts' => __DIR__ . '/../..' . '/app/Filament/Resources/UserRequestAmountResource/Pages/ListUserRequestAmounts.php',
         'App\\Filament\\Resources\\UserResource' => __DIR__ . '/../..' . '/app/Filament/Resources/UserResource.php',
         'App\\Filament\\Resources\\UserResource\\Pages\\CreateUser' => __DIR__ . '/../..' . '/app/Filament/Resources/UserResource/Pages/CreateUser.php',
         'App\\Filament\\Resources\\UserResource\\Pages\\EditUser' => __DIR__ . '/../..' . '/app/Filament/Resources/UserResource/Pages/EditUser.php',
         'App\\Filament\\Resources\\UserResource\\Pages\\ListUsers' => __DIR__ . '/../..' . '/app/Filament/Resources/UserResource/Pages/ListUsers.php',
+        'App\\Filament\\Resources\\UserResource\\RelationManagers\\UserRequestCountRelationManager' => __DIR__ . '/../..' . '/app/Filament/Resources/UserResource/RelationManagers/UserRequestCountRelationManager.php',
         'App\\Functions\\Functions' => __DIR__ . '/../..' . '/app/Functions/Functions.php',
         'App\\Http\\Controllers\\Account\\Admin\\AdminBurialController' => __DIR__ . '/../..' . '/app/Http/Controllers/Account/Admin/AdminBurialController.php',
         'App\\Http\\Controllers\\Account\\Admin\\AdminController' => __DIR__ . '/../..' . '/app/Http/Controllers/Account/Admin/AdminController.php',
@@ -1113,6 +1146,7 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         'App\\Models\\OtpCodes' => __DIR__ . '/../..' . '/app/Models/OtpCodes.php',
         'App\\Models\\OurWork' => __DIR__ . '/../..' . '/app/Models/OurWork.php',
         'App\\Models\\Page' => __DIR__ . '/../..' . '/app/Models/Page.php',
+        'App\\Models\\PriceAplication' => __DIR__ . '/../..' . '/app/Models/PriceAplication.php',
         'App\\Models\\PriceListOrganization' => __DIR__ . '/../..' . '/app/Models/PriceListOrganization.php',
         'App\\Models\\PriceProductPriceList' => __DIR__ . '/../..' . '/app/Models/PriceProductPriceList.php',
         'App\\Models\\PriceService' => __DIR__ . '/../..' . '/app/Models/PriceService.php',
@@ -1144,11 +1178,15 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         'App\\Models\\StockProduct' => __DIR__ . '/../..' . '/app/Models/StockProduct.php',
         'App\\Models\\Task' => __DIR__ . '/../..' . '/app/Models/Task.php',
         'App\\Models\\Training' => __DIR__ . '/../..' . '/app/Models/Training.php',
+        'App\\Models\\TypeApplication' => __DIR__ . '/../..' . '/app/Models/TypeApplication.php',
+        'App\\Models\\TypeService' => __DIR__ . '/../..' . '/app/Models/TypeService.php',
         'App\\Models\\UsefulCemetery' => __DIR__ . '/../..' . '/app/Models/UsefulCemetery.php',
         'App\\Models\\UsefulColumbarium' => __DIR__ . '/../..' . '/app/Models/UsefulColumbarium.php',
         'App\\Models\\UsefulCrematorium' => __DIR__ . '/../..' . '/app/Models/UsefulCrematorium.php',
         'App\\Models\\UsefulMortuary' => __DIR__ . '/../..' . '/app/Models/UsefulMortuary.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
+        'App\\Models\\UserRequestAmount' => __DIR__ . '/../..' . '/app/Models/UserRequestAmount.php',
+        'App\\Models\\UserRequestsCount' => __DIR__ . '/../..' . '/app/Models/UserRequestsCount.php',
         'App\\Models\\VariantProductPriceList' => __DIR__ . '/../..' . '/app/Models/VariantProductPriceList.php',
         'App\\Models\\VideoProductPriceList' => __DIR__ . '/../..' . '/app/Models/VideoProductPriceList.php',
         'App\\Models\\WordsMemory' => __DIR__ . '/../..' . '/app/Models/WordsMemory.php',
@@ -1178,7 +1216,7 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         'App\\Services\\Account\\Agency\\Aplications\\AgencyDeadAplicationOrganization' => __DIR__ . '/../..' . '/app/Services/Account/Agency/Aplications/AgencyDeadAplicationOrganization.php',
         'App\\Services\\Account\\Agency\\Aplications\\AgencyFuneralServiceAplicationOrganization' => __DIR__ . '/../..' . '/app/Services/Account/Agency/Aplications/AgencyFuneralServiceAplicationOrganization.php',
         'App\\Services\\Account\\Agency\\Aplications\\AgencyMemorialAplicationOrganization' => __DIR__ . '/../..' . '/app/Services/Account/Agency/Aplications/AgencyMemorialAplicationOrganization.php',
-        'App\\Services\\Account\\AgentService' => __DIR__ . '/../..' . '/app/Services/Account/AgentService.php',
+        'App\\Services\\Account\\Agent\\AgentService' => __DIR__ . '/../..' . '/app/Services/Account/Agent/AgentService.php',
         'App\\Services\\Account\\DecoderService' => __DIR__ . '/../..' . '/app/Services/Account/DecoderService.php',
         'App\\Services\\Account\\User\\UserService' => __DIR__ . '/../..' . '/app/Services/Account/User/UserService.php',
         'App\\Services\\Auth\\SmsService' => __DIR__ . '/../..' . '/app/Services/Auth/SmsService.php',
@@ -8520,6 +8558,12 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         'Ramsey\\Uuid\\UuidInterface' => __DIR__ . '/..' . '/ramsey/uuid/src/UuidInterface.php',
         'Ramsey\\Uuid\\Validator\\GenericValidator' => __DIR__ . '/..' . '/ramsey/uuid/src/Validator/GenericValidator.php',
         'Ramsey\\Uuid\\Validator\\ValidatorInterface' => __DIR__ . '/..' . '/ramsey/uuid/src/Validator/ValidatorInterface.php',
+        'Rap2hpoutre\\FastExcel\\Exportable' => __DIR__ . '/..' . '/rap2hpoutre/fast-excel/src/Exportable.php',
+        'Rap2hpoutre\\FastExcel\\Facades\\FastExcel' => __DIR__ . '/..' . '/rap2hpoutre/fast-excel/src/Facades/FastExcel.php',
+        'Rap2hpoutre\\FastExcel\\FastExcel' => __DIR__ . '/..' . '/rap2hpoutre/fast-excel/src/FastExcel.php',
+        'Rap2hpoutre\\FastExcel\\Importable' => __DIR__ . '/..' . '/rap2hpoutre/fast-excel/src/Importable.php',
+        'Rap2hpoutre\\FastExcel\\Providers\\FastExcelServiceProvider' => __DIR__ . '/..' . '/rap2hpoutre/fast-excel/src/Providers/FastExcelServiceProvider.php',
+        'Rap2hpoutre\\FastExcel\\SheetCollection' => __DIR__ . '/..' . '/rap2hpoutre/fast-excel/src/SheetCollection.php',
         'ReturnTypeWillChange' => __DIR__ . '/..' . '/symfony/polyfill-php81/Resources/stubs/ReturnTypeWillChange.php',
         'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirective' => __DIR__ . '/..' . '/ryangjchandler/blade-capture-directive/src/BladeCaptureDirective.php',
         'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider' => __DIR__ . '/..' . '/ryangjchandler/blade-capture-directive/src/BladeCaptureDirectiveServiceProvider.php',
@@ -9001,6 +9045,8 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         'Spatie\\LaravelPackageTools\\Exceptions\\InvalidPackage' => __DIR__ . '/..' . '/spatie/laravel-package-tools/src/Exceptions/InvalidPackage.php',
         'Spatie\\LaravelPackageTools\\Package' => __DIR__ . '/..' . '/spatie/laravel-package-tools/src/Package.php',
         'Spatie\\LaravelPackageTools\\PackageServiceProvider' => __DIR__ . '/..' . '/spatie/laravel-package-tools/src/PackageServiceProvider.php',
+        'Staudenmeir\\BelongsToThrough\\IdeHelperServiceProvider' => __DIR__ . '/..' . '/staudenmeir/belongs-to-through/src/IdeHelperServiceProvider.php',
+        'Staudenmeir\\BelongsToThrough\\IdeHelper\\BelongsToThroughRelationsHook' => __DIR__ . '/..' . '/staudenmeir/belongs-to-through/src/IdeHelper/BelongsToThroughRelationsHook.php',
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'Symfony\\Component\\Console\\Application' => __DIR__ . '/..' . '/symfony/console/Application.php',
         'Symfony\\Component\\Console\\Attribute\\AsCommand' => __DIR__ . '/..' . '/symfony/console/Attribute/AsCommand.php',
@@ -10506,6 +10552,9 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         'ZipStream\\Zip64\\ExtendedInformationExtraField' => __DIR__ . '/..' . '/maennchen/zipstream-php/src/Zip64/ExtendedInformationExtraField.php',
         'ZipStream\\ZipStream' => __DIR__ . '/..' . '/maennchen/zipstream-php/src/ZipStream.php',
         'ZipStream\\Zs\\ExtendedInformationExtraField' => __DIR__ . '/..' . '/maennchen/zipstream-php/src/Zs/ExtendedInformationExtraField.php',
+        'Znck\\Eloquent\\Relations\\BelongsToThrough' => __DIR__ . '/..' . '/staudenmeir/belongs-to-through/src/Relations/BelongsToThrough.php',
+        'Znck\\Eloquent\\Traits\\BelongsToThrough' => __DIR__ . '/..' . '/staudenmeir/belongs-to-through/src/Traits/BelongsToThrough.php',
+        'Znck\\Eloquent\\Traits\\HasTableAlias' => __DIR__ . '/..' . '/staudenmeir/belongs-to-through/src/Traits/HasTableAlias.php',
         'voku\\helper\\ASCII' => __DIR__ . '/..' . '/voku/portable-ascii/src/voku/helper/ASCII.php',
     );
 

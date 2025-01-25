@@ -10,10 +10,12 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\UserResource\RelationManagers;
+use App\Filament\Resources\UserResource\RelationManagers\UserRequestCountRelationManager;
 
 class UserResource extends Resource
 {
@@ -43,12 +45,12 @@ class UserResource extends Resource
                 Select::make('role')
                 ->label('Роль')
                 ->options([
-                    'admin' => 'Админ', // Значение 1 с названием "Раз"
-                    'decoder' => 'Расшифровщик', // Значение 1 с названием "Раз"
-                    'organization' => 'Организация', // Значение 1 с названием "Раз"
-                    'organization-provider' => 'Организация-поставщик', // Значение 1 с названием "Раз"
-                    'user' => 'Пользователь', // Значение 1 с названием "Раз"
-                    'agent' => 'Работник', // Значение 1 с названием "Раз"
+                    'admin' => 'Админ', 
+                    'decoder' => 'Расшифровщик', 
+                    'organization' => 'Организация', 
+                    'organization-provider' => 'Организация-поставщик', 
+                    'user' => 'Пользователь', 
+                    'agent' => 'Работник', 
             ])->default('user'),
                 Forms\Components\TextInput::make('name')
                 ->label('Имя')
@@ -118,8 +120,8 @@ class UserResource extends Resource
                 Select::make('sms_notifications') // Поле для статуса
                     ->label('Смс оповещения') // Название поля
                     ->options([
-                        0 => 'нет', // Значение 1 с названием "Раз"
-                        1 => 'да', // Значение 1 с названием "Раз"
+                        0 => 'нет', 
+                        1 => 'да', 
                     ])
                     ->required() // Поле обязательно для заполнения
                     ->default(1), // Значение
@@ -127,8 +129,8 @@ class UserResource extends Resource
                     Select::make('email_notifications') // Поле для статуса
                     ->label('email оповещения') // Название поля
                     ->options([
-                        0 => 'нет', // Значение 1 с названием "Раз"
-                        1 => 'да', // Значение 1 с названием "Раз"
+                        0 => 'нет', 
+                        1 => 'да', 
                     ])
                     ->required() // Поле обязательно для заполнения
                     ->default(1), // Значение
@@ -136,8 +138,8 @@ class UserResource extends Resource
                     Select::make('theme') // Поле для статуса
                     ->label('Тема') // Название поля
                     ->options([
-                        'light' => 'Светлая', // Значение 1 с названием "Раз"
-                        'black' => 'Темная', // Значение 1 с названием "Раз"
+                        'light' => 'Светлая', 
+                        'black' => 'Темная', 
                     ])
                     ->default(1), // Значение
             ]);
@@ -163,17 +165,27 @@ class UserResource extends Resource
                     TextColumn::make('role')
                     ->label('Роль')
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'admin' => 'Админ', // Значение 1 с названием "Раз"
-                        'decoder' => 'Расшифровщик', // Значение 1 с названием "Раз"
-                        'organization' => 'Организация', // Значение 1 с названием "Раз"
-                        'organization-provider' => 'Организация-поставщик', // Значение 1 с названием "Раз"
-                        'user' => 'Пользователь', // Значение 1 с названием "Раз"
-                        'agent' => 'Работник', // Значение 1 с названием "Раз"
+                        'admin' => 'Админ', 
+                        'decoder' => 'Расшифровщик', 
+                        'organization' => 'Организация', 
+                        'organization-provider' => 'Организация-поставщик', 
+                        'user' => 'Пользователь', 
+                        'agent' => 'Работник', 
                         default => 'Неизвестно',
                     }),
             ])
             ->filters([
-                //
+                SelectFilter::make('role')
+                ->label('Роль')
+                ->options([
+                    'admin' => 'Админ', 
+                        'decoder' => 'Расшифровщик', 
+                        'organization' => 'Организация', 
+                        'organization-provider' => 'Организация-поставщик', 
+                        'user' => 'Пользователь', 
+                        'agent' => 'Работник', 
+                ]),
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -190,7 +202,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            UserRequestCountRelationManager::class
         ];
     }
 

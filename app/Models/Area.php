@@ -14,4 +14,12 @@ class Area extends Model
         return $this->belongsTo(Edge::class);
     }
 
+    function cemetery(){
+        return $this->hasMnay(Cemetery::class);
+    }
+
+    function city(){
+        return $this->hasMnay(City::class);
+    }
+
 }

@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Area;
 use App\Models\Organization;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Cemetery extends Model
 {
@@ -14,6 +15,10 @@ class Cemetery extends Model
 
     public function city(){
         return $this->belongsTo(City::class);
+    }
+
+    public function area(){
+        return $this->belongsTo(Area::class);
     }
 
     public function district(){

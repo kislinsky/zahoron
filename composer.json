@@ -31,7 +31,9 @@
         "nesbot/carbon": "^2.72",
         "nutnet/laravel-sms": "^0.11.0",
         "phpoffice/phpspreadsheet": "^3.3",
+        "rap2hpoutre/fast-excel": "^5.5",
         "smsaero/smsaero_api": "^1.0",
+        "staudenmeir/belongs-to-through": "^2.15",
         "tinymce/tinymce": "^7.6",
         "yoomoney/yookassa-sdk-php": "^3.7"
     },

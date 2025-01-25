@@ -151,7 +151,9 @@ class User extends Authenticatable
     }
 
 
-
+    function userRequestCount(){
+        return $this->hasMany(UserRequestsCount::class);
+    }
 
      
 }

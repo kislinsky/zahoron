@@ -14,4 +14,8 @@ class Edge extends Model
         return $this->hasMany(City::class);
     }
 
+    function area(){
+        return $this->hasMany(Area::class);
+    }
+
 }
