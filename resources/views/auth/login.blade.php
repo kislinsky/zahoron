@@ -1,3 +1,8 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+?>
 @include('header.header')
 
 <div class="container">

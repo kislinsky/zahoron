@@ -34,8 +34,9 @@ class CemeteryService {
         $cemeteries_map=Cemetery::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $cemeteries=Cemetery::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
 
+        $pages_navigation=[['Главная',route('index')],['Кладбища']];
         
-        return view('cemetery.index',compact('cemeteries','city','products','usefuls','cemeteries_map'));
+        return view('cemetery.index',compact('cemeteries','city','products','usefuls','cemeteries_map','pages_navigation'));
     }
 
     public static function singleCemetery($cemetery){
@@ -56,7 +57,10 @@ class CemeteryService {
         $characteristics=json_decode($cemetery->characteristics);
         $images=ImageCemetery::where('cemetery_id',$cemetery->id)->get();
         $similar_cemeteries=Cemetery::where('city_id',$cemetery->city_id)->where('id','!=',$cemetery->id)->get();
-        return view('cemetery.single',compact('title_h1','images','similar_cemeteries','cemetery','reviews','reviews_main','organizations_our','services','city','faqs','cemetery_all','characteristics'));
+
+        $pages_navigation=[['Главная',route('index')],['Кладбища',route('cemeteries')],[$cemetery->title]];
+
+        return view('cemetery.single',compact('pages_navigation','title_h1','images','similar_cemeteries','cemetery','reviews','reviews_main','organizations_our','services','city','faqs','cemetery_all','characteristics'));
     }
 
     public static function ajaxCemetery($city){

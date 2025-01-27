@@ -25,7 +25,10 @@ class CrematoriumService {
         $products=randomProductsPlace(33);
         $crematoriums_map=Crematorium::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $crematoriums=Crematorium::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
-        return view('crematorium.index',compact('crematoriums','city','products','usefuls','crematoriums_map'));
+        
+        $pages_navigation=[['Главная',route('index')],['Крематории']];
+
+        return view('crematorium.index',compact('pages_navigation','crematoriums','city','products','usefuls','crematoriums_map'));
     }
 
     public static function single($id){
@@ -45,7 +48,10 @@ class CrematoriumService {
         $characteristics=json_decode($crematorium->characteristics);
         $images=$crematorium->images;
         $similar_crematoriums=Crematorium::where('city_id',$crematorium->city_id)->where('id','!=',$crematorium->id)->get();
-        return view('crematorium.single',compact('title_h1','organizations_our','images','similar_crematoriums','crematorium','reviews','reviews_main','services','city','faqs','crematorium_all','characteristics'));
+        
+        $pages_navigation=[['Главная',route('index')],['Крематории',route('crematorium')],[$crematorium->title]];
+
+        return view('crematorium.single',compact('pages_navigation','title_h1','organizations_our','images','similar_crematoriums','crematorium','reviews','reviews_main','services','city','faqs','crematorium_all','characteristics'));
     }
 
     public static function addReview($data){

@@ -19,6 +19,7 @@ class CategoryProductResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Категории МК'; // Название в меню
+    protected static ?string $navigationGroup = 'Категории'; // Указываем группу
 
     public static function form(Form $form): Form
     {

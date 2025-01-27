@@ -28,7 +28,10 @@ class MortuaryService {
         $products=randomProductsPlace(32);
         $mortuaries_map=Mortuary::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $mortuaries=Mortuary::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
-        return view('mortuary.index',compact('mortuaries','city','products','usefuls','mortuaries_map'));
+
+        $pages_navigation=[['Главная',route('index')],['Морги']];
+
+        return view('mortuary.index',compact('pages_navigation','mortuaries','city','products','usefuls','mortuaries_map'));
     }
 
     public static function single($id){
@@ -48,7 +51,10 @@ class MortuaryService {
         $characteristics=json_decode($mortuary->characteristics);
         $images=$mortuary->images;
         $similar_mortuaries=Mortuary::where('city_id',$mortuary->city_id)->where('id','!=',$mortuary->id)->get();
-        return view('mortuary.single',compact('title_h1','organizations_our','images','similar_mortuaries','mortuary','reviews','reviews_main','services','city','faqs','mortuary_all','characteristics'));
+
+        $pages_navigation=[['Главная',route('index')],['Морги',route('mortuaries')],[$mortuary->title]];
+
+        return view('mortuary.single',compact('pages_navigation','title_h1','organizations_our','images','similar_mortuaries','mortuary','reviews','reviews_main','services','city','faqs','mortuary_all','characteristics'));
     }
 
     public static function addReview($data){

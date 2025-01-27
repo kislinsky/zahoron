@@ -23,6 +23,7 @@ class CommentProductResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Отзывы о товарах из МК'; // Название в меню
+    protected static ?string $navigationGroup = 'Отзывы'; // Указываем группу
 
     public static function form(Form $form): Form
     {

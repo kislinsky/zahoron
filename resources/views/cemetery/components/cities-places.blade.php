@@ -1,11 +1,11 @@
 @php 
 
-$cities=selectCity()->edgeCities();
+$cities=selectCity()->edgeCities('cemeteries');
 
 @endphp
 <section class="block_cities_places">
     <div class="container">
-        <div class="title_middle">Города нашего края и их кладбища</div>
+        <div class="title_middle">Города {{selectCity()->edge->title}} и их кладбища</div>
         @if(isset($cities) && $cities!=null && $cities->count()>0)
             <div class="ul_cities_places">
                 @foreach($cities as $city_place)

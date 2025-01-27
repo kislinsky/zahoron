@@ -2801,7 +2801,7 @@ text-align: left;
 
 
 .product_market{
-    padding: 40px 0px;
+    padding: 20px 0px;
 }
 .grid_product_two{
     margin-top: 30px;
@@ -4985,7 +4985,7 @@ text-align: left;
 }
 
 .organization_marketplace{
-    padding: 40px 0px;
+    padding: 20px 0px;
 }
 .organization_marketplace .grid_product_two{
     margin: 0px;
@@ -5990,6 +5990,42 @@ width: auto;
 }
 
 
+.navigation_pages{
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    font-size: 16px;
+    font-weight: 400;
+    color: #808080;
+    line-height: 24px;
+    text-align: left;
+}
+
+.navigation_pages a{
+    font-size: 16px;
+    font-weight: 400;
+    color: #808080;
+    text-decoration: none;
+    line-height: 24px;
+    text-align: left;
+}
+
+.navigation_pages a:hover{
+    color: #0080D7;
+    transition: all ease-in-out 0.2s;
+}
+
+.navigation_pages span{
+    color: #1A1A1A;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    text-align: left;
+
+}
 .open_working_times{
     width: 15px;
     cursor: pointer;

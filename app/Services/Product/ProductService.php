@@ -104,6 +104,8 @@ class ProductService
             $data['category']=$cat_slug->id;
         }
 
+
+
         $city=selectCity();
         $page=2;
         $materials_filter=Product::pluck('material')->unique()->filter(function ($value) { return !is_null($value); });
@@ -134,7 +136,10 @@ class ProductService
         SEOTools::setDescription(formatContentCategory(getSeo('marketplace','description'),$category,$products));
         $title_h1=formatContentCategory(getSeo('marketplace','h1'),$category,$products);
 
-        return view('product.marketplace',compact('title_h1','district','layerings','sort','districts_all','cemeteries_all','reviews','products','city','cats','materials_filter','faqs','cemetery','category','page'));
+        $pages_navigation=[['Главная',route('index')],['Маркетплэйс',route('marketplace')],[$category->title]];
+
+        
+        return view('product.marketplace',compact('pages_navigation','title_h1','district','layerings','sort','districts_all','cemeteries_all','reviews','products','city','cats','materials_filter','faqs','cemetery','category','page'));
 
     }
 

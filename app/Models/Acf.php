@@ -10,4 +10,8 @@ class Acf extends Model
     use HasFactory;
     protected $guarded =[];
 
+    function page(){
+        return $this->belongsTo(Page::class);
+    }
+
 }

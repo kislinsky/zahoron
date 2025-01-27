@@ -11,8 +11,11 @@
 </section>
 
 
+{{view('components.navigation',compact('pages_navigation'))}}
+
 
 <section class="price_service">
+
     <div class="container grid_two_page">
         <div class="">
             <div class="ul_services">

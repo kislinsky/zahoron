@@ -10,6 +10,8 @@
     </div>
 </section>
 
+{{view('components.navigation',compact('pages_navigation'))}}
+
 
 <div class="block_ritual_objects">
 

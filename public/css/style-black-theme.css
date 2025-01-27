@@ -294,9 +294,10 @@ color: white;
 }
 
 
-.black_theme .navigation span,.black_theme .text_single_product{
+.black_theme .navigation span,.black_theme .navigation_pages span ,.black_theme .text_single_product{
     color: white;
 }
+
 
 .black_theme .li_product_market {
     background: #0F0F0F;

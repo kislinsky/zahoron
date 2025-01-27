@@ -23,6 +23,7 @@ class MortuaryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Морги'; // Название в меню
+    protected static ?string $navigationGroup = 'Ритуальные обьекты'; // Указываем группу
 
     public static function form(Form $form): Form
     {

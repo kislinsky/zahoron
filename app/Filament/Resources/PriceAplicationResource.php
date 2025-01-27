@@ -17,6 +17,7 @@ class PriceAplicationResource extends Resource
 {
     protected static ?string $model = PriceAplication::class;
     protected static ?string $navigationLabel = 'Цены на заявки в городах'; // Название в меню
+    protected static ?string $navigationGroup = 'Заявки'; // Указываем группу
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

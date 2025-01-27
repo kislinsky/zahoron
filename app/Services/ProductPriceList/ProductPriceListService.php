@@ -24,7 +24,10 @@ class ProductPriceListService {
         if($services->count()<3){
             SEOMeta::setRobots('noindex, nofollow');
         }
-        return view('product-pricelist.index',compact('services','page','cats','city'));
+
+        $pages_navigation=[['Главная',route('index')],['Товары и услуги']];
+        
+        return view('product-pricelist.index',compact('services','page','cats','city','pages_navigation'));
     }
 
     public static function serviceCategory($slug){        
@@ -40,7 +43,10 @@ class ProductPriceListService {
         $page=8;
         $faqs=$cat_selected->faqs();
         $services=$cat_selected->services();
-        return view('product-pricelist.index',compact('services','our_works','page','cats','city','cat_selected','faqs'));
+
+        $pages_navigation=[['Главная',route('index')],['Товары и услуги',route('pricelist')],[$cat_selected->title]];
+
+        return view('product-pricelist.index',compact('services','our_works','page','cats','city','cat_selected','faqs','pages_navigation'));
     }
 
 

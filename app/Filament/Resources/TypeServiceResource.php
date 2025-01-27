@@ -19,7 +19,9 @@ class TypeServiceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Услуги заявки'; // Название в меню
+    protected static ?string $navigationGroup = 'Заявки'; // Указываем группу
 
+    
     public static function form(Form $form): Form
     {
         return $form

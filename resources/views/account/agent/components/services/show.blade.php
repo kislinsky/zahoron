@@ -27,7 +27,7 @@
             <div class="mini_flex_li_product">
                 <div class="title_label">Сумма:</div>
                 <?php $services=$order_service->services();?>
-                <div class="text_li color_black">{{ $order_service->price }}</div>
+                <div class="text_li color_black">{{ $order_service->priceForAgent() }}</div>
             </div>
         </div>
 

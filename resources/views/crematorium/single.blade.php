@@ -11,6 +11,8 @@
     </div>
 </section>
 
+{{view('components.navigation',compact('pages_navigation'))}}
+
 <section class="organization_single">
     <div class="container">
         <div class="grid_organization_single">

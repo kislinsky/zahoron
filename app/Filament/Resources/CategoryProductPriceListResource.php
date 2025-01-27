@@ -19,6 +19,7 @@ class CategoryProductPriceListResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Категории Прайс-листа'; // Название в меню
+    protected static ?string $navigationGroup = 'Категории'; // Указываем группу
 
     public static function form(Form $form): Form
     {

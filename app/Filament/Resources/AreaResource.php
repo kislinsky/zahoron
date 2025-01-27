@@ -19,6 +19,7 @@ class AreaResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Округи'; // Название в меню
+    protected static ?string $navigationGroup = 'Cубъекты'; // Указываем группу
 
     public static function form(Form $form): Form
     {

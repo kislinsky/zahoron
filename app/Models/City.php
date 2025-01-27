@@ -18,12 +18,18 @@ class City extends Model
 
     public function cemeteries(){
         return $this->hasMany(Cemetery::class);
-        // return Cemetery::where('city_id',$this->id)->get();
     }
 
     public function mortuaries(){
         return $this->hasMany(Mortuary::class);
-        // return Mortuary::where('city_id',$this->id)->get();
+    }
+
+    public function columbariums(){
+        return $this->hasMany(Columbarium::class);
+    }
+
+    public function crematoriums(){
+        return $this->hasMany(Crematorium::class);
     }
 
     function edge(){
@@ -36,15 +42,14 @@ class City extends Model
 
     public function districts(){
         return $this->hasMany(District::class);
-        // return District::where('city_id',$this->id)->get();
     }
 
     public function route(){
         return route('city.select',$this->id);
     }
 
-    public function edgeCities(){
-        return City::orderBy('title','asc')->where('edge_id',$this->edge_id)->get();
+    public function edgeCities($nameObject){
+        return $cities=City::orderBy('title','asc')->where('edge_id', selectCity()->edge_id)->whereHas($nameObject)->get();
     }
 
     function priceProductPriceList(){

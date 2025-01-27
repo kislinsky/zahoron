@@ -10,4 +10,7 @@ class Page extends Model
     use HasFactory;
     protected $guarded =[];
 
+    function acfs(){
+        return $this->hasMany(Acf::class);
+    }
 }
