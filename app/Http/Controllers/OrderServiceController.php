@@ -12,7 +12,6 @@ class OrderServiceController extends Controller
             'name'=>['required','string'],
             'surname'=>['required','string'],
             'phone'=>['required','string'],
-            'email'=>['required','email'],
             'message'=>['string','nullable'],
             'choose_pay'=>['required'],
             'aplication'=>['required'],

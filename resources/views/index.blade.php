@@ -2,7 +2,7 @@
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-            <div class="title">Актуальные цены на ритуальные услуги г. {{$city->title}}</div>
+            <div data-bs-toggle="modal" data-bs-target="#cemetery_choose_form" class="title">Актуальные цены на ритуальные услуги г. {{$city->title}}</div>
         </div>
         <img class='img_light_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
         <img class='img_black_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">

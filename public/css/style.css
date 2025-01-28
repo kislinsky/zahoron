@@ -5319,6 +5319,27 @@ margin: 0 auto;
     display: none ;
 }
 
+.ul_objects{
+    max-height: 400px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ul_objects_children{
+    margin-top: 10px;
+    display: none;
+}
+.active_ul_objects_children{
+    display: flex;
+}
+.li_object{
+    width: 100%;
+}
+.active_title_object{
+    color: #0080D7;
+}
 .li_organization_provider{
     padding: 30px;
     width: 100%; /* Ширина родительского блока */

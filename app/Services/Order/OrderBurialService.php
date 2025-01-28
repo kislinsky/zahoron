@@ -13,16 +13,20 @@ use Illuminate\Support\Facades\Hash;
 class OrderBurialService
 {
     public static function orderAdd($data){
+        if(Auth::check()){
+            $user=Auth::user();
+        }else{
+            $user=createUserWithPhone($data['phone'],$data['name']); 
+        }
         if(isset($_COOKIE['add_to_cart_burial'])){
             $cart_items = json_decode($_COOKIE['add_to_cart_burial']);            
-            if(Auth::check()){ 
-                $isset_orderds_burials=OrderBurial::whereIn('burial_id',$cart_items)->where('user_id',Auth::user()->id)->get();
-                if(count($isset_orderds_burials)==0){
+                $isset_orderds_burials=OrderBurial::whereIn('burial_id',$cart_items)->where($user->id)->get();
+                if($isset_orderds_burials->count()==0){
                     foreach($cart_items as $cart_item){
                         $price=Burial::find($cart_item)->cemetery->price_burial_location;
                         OrderBurial::create([
                             'burial_id'=>$cart_item,
-                            'user_id'=>Auth::user()->id,
+                            'user_id'=>$user->id,
                             'customer_comment'=>$data['message'],
                             'price'=>$price,
                         ]);
@@ -33,38 +37,7 @@ class OrderBurialService
                 setcookie('add_to_cart_burial', '', -1, '/');
                 $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
                 return redirect()->back()->with('message_order_burial',$message);
-            }else{
-                $user=User::where('email',$data['email'])->where('phone',$data['phone'])->get();
-                if(!isset($user[0])){
-                    $password=generateRandomString(8);
-                    // mail($data['email'], 'Ваш пароль', $password);
-                    $last_id=User::create([
-                    'name'=>$data['name'],
-                    'surname'=>$data['surname'],
-                    'phone'=>$data['phone'],
-                    'email'=>$data['email'],
-                    'password'=>Hash::make($password),
-                    ]);
-                    foreach($cart_items as $cart_item){
-                        $price=Burial::find($cart_item)->cemetery->price_burial_location;
-                        OrderBurial::create([
-                            'burial_id'=>$cart_item,
-                            'user_id'=>$last_id->id,
-                            'customer_comment'=>$data['message'],
-                            'price'=>$price,
-                        ]);
-                    }
-                   
-                    setcookie('add_to_cart_burial', '', -1, '/');
-                    $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете, ваш пароль отправлен на почту и телефон';
-                    return redirect()->back()->with('message_order_burial',$message);
-    
-                }
-                else{
-                    return redirect()->back()->with("error", 'Такой пользователь уже существует');
-                }
             }
-        }
         return redirect()->back();
 
     }

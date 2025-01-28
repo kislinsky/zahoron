@@ -57,7 +57,7 @@
           </div>
           <div class="blue_btn">Напишите нам</div>
        </div>
-       <div class="block_info_footer">Все права защищены © 2024 Ритуал.реестр</div>
+       <div class="block_info_footer">Все права защищены © <?php echo date("Y"); ?> Ритуал.реестр</div>
     </div>
  </footer>
  

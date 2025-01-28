@@ -2,6 +2,7 @@
 @include('forms.memorial-form')
 @include('forms.city')
 @include('forms.dead')
+@include('forms.cemetery-choose')
 @include('forms.funeral-services')
 
 

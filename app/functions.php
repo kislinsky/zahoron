@@ -1608,3 +1608,7 @@ function createUserWithPhone($phone,$name='',$role='user'){
     return $userCreate;
 
 }
+
+function edges(){
+    return Edge::orderBy('title','asc')->get();
+}

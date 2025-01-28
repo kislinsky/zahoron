@@ -17,21 +17,13 @@
             @enderror
         </div>
     </div>
-    <div class="flex_checkout_form">
-        <div class="block_checkout_form">
-            <label for="">Эл. почта</label>
-            <input type="eamil" name="email" id="" placeholder="Эл. почта" <?php if(isset($user)){if($user!=null){echo 'value='.$user->email;}}?>>
-            @error('email')
-            <div class='error-text'>{{ $message }}</div>
-            @enderror
-        </div>
-        <div class="block_checkout_form">
-            <label for="">Номер телефона</label>
-            <input type="text" name="phone" id="" class='phone' placeholder="Номер телефона" <?php if(isset($user)){if($user!=null){echo 'value="'.$user->phone.'"';}}?> >
-            @error('phone')
-            <div class='error-text'>{{ $message }}</div>
-            @enderror
-        </div>
+
+    <div class="block_checkout_form">
+        <label for="">Номер телефона</label>
+        <input type="text" name="phone" id="" class='phone' placeholder="Номер телефона" <?php if(isset($user)){if($user!=null){echo 'value="'.$user->phone.'"';}}?> >
+        @error('phone')
+        <div class='error-text'>{{ $message }}</div>
+        @enderror
     </div>
     <div class="block_checkout_form">
         <label for="">Комментарий к заказу</label>

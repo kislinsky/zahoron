@@ -905,3 +905,9 @@ $(".open_form_with_phone").click(function() {
   $('.form_with_phone').css('display','flex')
   $('.form_with_email').hide()
 });
+
+$(".open_children_object").click(function() {
+  $(this).toggleClass('active_title_object')
+  $(this).siblings('.ul_objects_children').toggleClass('active_ul_objects_children')
+
+});

@@ -18,8 +18,8 @@ class Area extends Model
         return $this->hasMnay(Cemetery::class);
     }
 
-    function city(){
-        return $this->hasMnay(City::class);
+    function cities(){
+        return $this->hasMany(City::class);
     }
 
 }
