@@ -54,6 +54,11 @@ class Burial extends Model
         return $this->hasMany(ImageMonument::class);
     }
 
+
+    function infoEditBurial(){
+        return $this->hasMany(InfoEditBurial::class);
+    }
+
     function imagePersonal(){
         return $this->hasMany(ImagePersonal::class);
     }

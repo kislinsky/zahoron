@@ -8,6 +8,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Organization;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\View;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
@@ -82,9 +83,11 @@ class OrganizationResource extends Resource
                 ->maxLength(255),
 
             Forms\Components\TextInput::make('slug')
-                ->label('slug')
-                ->unique()
+                ->required()
+                ->unique(ignoreRecord: true) // Игнорировать текущую запись при редактировании
+                ->label('Slug')
                 ->maxLength(255),
+
 
             Forms\Components\TextInput::make('whatsapp')
                 ->label('whatsapp')
@@ -130,6 +133,12 @@ class OrganizationResource extends Resource
                         ]);
                     }
                 }),
+
+                View::make('image')
+                ->label('Текущее изображение')
+                ->view('filament.forms.components.custom-image-organization') // Указываем путь к Blade-шаблону
+                ->extraAttributes(['class' => 'custom-image-class'])
+                ->columnSpan('full'),
     
             RichEditor::make('mini_content') // Поле для редактирования HTML-контента
                 ->label('Краткое описание') // Соответствующая подпись

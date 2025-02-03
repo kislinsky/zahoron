@@ -11,6 +11,7 @@ use App\Models\Cemetery;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\View;
 use Filament\Tables\Filters\Filter;
 use Rap2hpoutre\FastExcel\FastExcel;
 use Filament\Forms\Components\Select;
@@ -20,11 +21,13 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\BurialResource\Pages;
 use App\Filament\Resources\BurialResource\RelationManagers\WordsMemoryRelationManager;
 use App\Filament\Resources\BurialResource\RelationManagers\ImageMonumentRelationManager;
 use App\Filament\Resources\BurialResource\RelationManagers\ImagePersonalRelationManager;
+use App\Filament\Resources\BurialResource\RelationManagers\InfoEditBurialRelationManager;
 use App\Filament\Resources\BurialResource\RelationManagers\LifeStoryBurialRelationManager;
 
 class BurialResource extends Resource
@@ -205,7 +208,11 @@ class BurialResource extends Resource
                                 }
                             }),
 
-
+                          View::make('image')
+                            ->label('Текущее изображение')
+                            ->view('filament.forms.components.custom-image') // Указываем путь к Blade-шаблону
+                            ->extraAttributes(['class' => 'custom-image-class'])
+                            ->columnSpan('full'),
                            
 
                 Forms\Components\TextInput::make('location_death')
@@ -242,14 +249,7 @@ class BurialResource extends Resource
                     ->required() // Поле обязательно для заполнения
                     ->default(1), // Значение по умолчанию
 
-                    Select::make('status') // Поле для статуса
-                    ->label('вид захоронения') // Название поля
-                    ->options([
-                        'Гражданский' => 'Гражданский',
-                        'Ветеран' => 'Ветеран',
-                    ])
-                    ->required() // Поле обязательно для заполнения
-                    ->default('Гражданский'), // Значение по умолчанию
+                  
             ]);
     }
 
@@ -301,16 +301,9 @@ class BurialResource extends Resource
                         0 => 'Не распознан',
                         1 => 'Распознан',
                         2 => 'Отправлен на проверку',
-                        default => 'Неизвестно',
                     }),
 
-                    TextColumn::make('status')
-                    ->label('Статус')
-                    ->formatStateUsing(fn (int $state): string => match ($state) {
-                       'Гражданский' => 'Гражданский',
-                        'Ветеран' => 'Ветеран',
-                        default => 'Неизвестно',
-                    }),
+                 
             ])
             ->filters([
                 SelectFilter::make('status')
@@ -356,6 +349,33 @@ class BurialResource extends Resource
                             $query->where('patronymic', 'like', '%' . $data['patronymic'] . '%');
                         }
                     }),
+
+                    SelectFilter::make('cemetery_id')
+                    ->label('Кладбище')
+                    ->relationship('cemetery', 'title') // Используем отношение и поле для отображения
+                    ->searchable() // Добавляем поиск
+                    ->preload(), // Предзагрузка данных
+            
+                // Фильтр по городу
+                SelectFilter::make('city_id')
+                    ->label('Город')
+                    ->relationship('cemetery.city', 'title') // Используем вложенное отношение
+                    ->searchable()
+                    ->preload(),
+            
+                // Фильтр по округу
+                SelectFilter::make('area_id')
+                    ->label('Округ')
+                    ->relationship('cemetery.city.area', 'title') // Вложенное отношение
+                    ->searchable()
+                    ->preload(),
+            
+                // Фильтр по краю
+                SelectFilter::make('edge_id')
+                    ->label('Край')
+                    ->relationship('cemetery.city.area.edge', 'title') // Вложенное отношение
+                    ->searchable()
+                    ->preload(),
                  
             ])
             ->actions([
@@ -374,46 +394,58 @@ class BurialResource extends Resource
                     ->action(function (HasTable $livewire) {
                         // Получаем текущий запрос таблицы
                         $query = Burial::query();
-            
+
                         // Применяем фильтры таблицы, если они есть
                         if (property_exists($livewire, 'tableFilters') && !empty($livewire->tableFilters)) {
                             foreach ($livewire->tableFilters as $filterName => $filterValue) {
                                 if (!empty($filterValue)) {
-                                    $query->where($filterName, $filterValue);
+                                    // Обработка сложных фильтров (например, диапазонов дат)
+                                    if (is_array($filterValue)) {
+                                        if (isset($filterValue['start']) && isset($filterValue['end'])) {
+                                            // Пример для фильтрации по диапазону дат
+                                            $query->whereBetween($filterName, [$filterValue['start'], $filterValue['end']]);
+                                        } elseif (isset($filterValue['value'])) {
+                                            // Пример для фильтрации по значению
+                                            $query->where($filterName, $filterValue['value']);
+                                        }
+                                    } else {
+                                        // Простая фильтрация по значению
+                                        switch ($filterName) {
+                                            case 'city_id':
+                                                // Фильтрация по city_id через отношение cemetery
+                                                $query->whereHas('cemetery', function ($q) use ($filterValue) {
+                                                    $q->where('city_id', $filterValue);
+                                                });
+                                                break;
+                                            case 'area_id':
+                                                // Фильтрация по area_id через отношение cemetery.city
+                                                $query->whereHas('cemetery.city', function ($q) use ($filterValue) {
+                                                    $q->where('area_id', $filterValue);
+                                                });
+                                                break;
+                                            case 'edge_id':
+                                                // Фильтрация по edge_id через отношение cemetery.city.area
+                                                $query->whereHas('cemetery.city.area', function ($q) use ($filterValue) {
+                                                    $q->where('edge_id', $filterValue);
+                                                });
+                                                break;
+                                            default:
+                                                // Простая фильтрация по полям таблицы burials
+                                                $query->where($filterName, $filterValue);
+                                                break;
+                                        }
+                                    }
                                 }
                             }
                         }
-            
+                        
                         // Применяем сортировку таблицы, если она есть
                         if (property_exists($livewire, 'tableSortColumn') && $livewire->tableSortColumn) {
                             $query->orderBy($livewire->tableSortColumn, $livewire->tableSortDirection ?? 'asc');
                         }
-            
+                        
                         // Получаем данные с учётом фильтров и сортировки (или всю таблицу, если фильтров нет)
-                        $burials = $query->get()
-                            ->map(function ($burial) {
-                                return [
-                                    'ID' => $burial->id,
-                                    'Имя' => $burial->name,
-                                    'Фамилия' => $burial->surname,
-                                    'Отчество' => $burial->patronymic,
-                                    'Дата рождения' => $burial->date_birth,
-                                    'Дата смерти' => $burial->date_death,
-                                    'Кладбище' => $burial->cemetery->title,
-                                    'Вид захоронения' => $burial->who,
-                                    'Статус' => match ($burial->status) {
-                                        0 => 'Не распознан',
-                                        1 => 'Распознан',
-                                        2 => 'Отправлен на проверку',
-                                        default => 'Неизвестно',
-                                    },
-                                ];
-                            });
-            
-                        // Если данные пустые, возвращаем сообщение
-                        if ($burials->isEmpty()) {
-                            $burials = Burial::query()
-                            ->orderBy('name') // Сортировка по названию
+                        $burials = $query->with(['cemetery.city.area.edge']) // Предзагрузка отношений
                             ->get()
                             ->map(function ($burial) {
                                 return [
@@ -423,7 +455,10 @@ class BurialResource extends Resource
                                     'Отчество' => $burial->patronymic,
                                     'Дата рождения' => $burial->date_birth,
                                     'Дата смерти' => $burial->date_death,
-                                    'Кладбище' => $burial->cemetery->title,
+                                    'Край' => $burial->cemetery->city->area->edge->title ?? 'Не указано',
+                                    'Район' => $burial->cemetery->city->area->title ?? 'Не указано',
+                                    'Город' => $burial->cemetery->city->title ?? 'Не указано',
+                                    'Кладбище' => $burial->cemetery->title ?? 'Не указано',
                                     'Вид захоронения' => $burial->who,
                                     'Статус' => match ($burial->status) {
                                         0 => 'Не распознан',
@@ -433,8 +468,36 @@ class BurialResource extends Resource
                                     },
                                 ];
                             });
+                        
+                        // Если данные пустые, возвращаем сообщение
+                        if ($burials->isEmpty()) {
+                            $burials = Burial::query()
+                                ->with(['cemetery.city.area.edge']) // Предзагрузка отношений
+                                ->orderBy('name') // Сортировка по названию
+                                ->get()
+                                ->map(function ($burial) {
+                                    return [
+                                        'ID' => $burial->id,
+                                        'Имя' => $burial->name,
+                                        'Фамилия' => $burial->surname,
+                                        'Отчество' => $burial->patronymic,
+                                        'Дата рождения' => $burial->date_birth,
+                                        'Дата смерти' => $burial->date_death,
+                                        'Край' => $burial->cemetery->city->area->edge->title ?? 'Не указано',
+                                        'Район' => $burial->cemetery->city->area->title ?? 'Не указано',
+                                        'Город' => $burial->cemetery->city->title ?? 'Не указано',
+                                        'Кладбище' => $burial->cemetery->title ?? 'Не указано',
+                                        'Вид захоронения' => $burial->who,
+                                        'Статус' => match ($burial->status) {
+                                            0 => 'Не распознан',
+                                            1 => 'Распознан',
+                                            2 => 'Отправлен на проверку',
+                                            default => 'Неизвестно',
+                                        },
+                                    ];
+                                });
                         }
-            
+                        
                         // Экспорт в Excel
                         return (new FastExcel($burials))->download('burials.xlsx');
                     }),
@@ -447,6 +510,7 @@ class BurialResource extends Resource
             // Добавляем связи для вывода фотографий
             ImagePersonalRelationManager::class,
             WordsMemoryRelationManager::class,
+            InfoEditBurialRelationManager::class,
             ImageMonumentRelationManager::class,
             LifeStoryBurialRelationManager::class,
         ];

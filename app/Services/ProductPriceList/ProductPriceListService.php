@@ -60,14 +60,14 @@ class ProductPriceListService {
         SEOTools::setDescription(formatContent(getSeo('product-pricelist-single','description'),$product));
         $title_h1=formatContent(getSeo('product-pricelist-single','h1'),$product);
 
-        $advices=$product->advices();
-        $reviews=$product->reviews();
-        $variants=$product->variants();
+        $advices=$product->advices;
+        $reviews=$product->reviews;
+        $variants=$product->variants;
         $city=selectCity();
-        $faqs=$product->faqs();
-        $stages=$product->stages();
-        $imgs_service=$product->imgsService();
-        $advantages=$product->advantages();
+        $faqs=$product->faqs;
+        $stages=$product->stages;
+        $imgs_service=$product->imgsService;
+        $advantages=$product->advantages;
         return view('product-pricelist.single',compact('title_h1','product','city','advantages','imgs_service','reviews','stages','variants','faqs','advices'));
     }
 

@@ -15,6 +15,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 class WordsMemoryRelationManager extends RelationManager
 {
     protected static string $relationship = 'wordsMemory';
+    protected static ?string $title = 'Слова памяти';
 
     public function form(Form $form): Form
     {

@@ -11,6 +11,7 @@ use App\Models\Cemetery;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\View;
 use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\FileUpload;
@@ -112,12 +113,6 @@ class CemeteryResource extends Resource
                         }
                     }),
 
-
-
-
-
-
-
                     Forms\Components\TextInput::make('adres')
                     ->label('Ориентир')
                     ->required()
@@ -147,10 +142,6 @@ class CemeteryResource extends Resource
                     ->label('Стоимость спонсорства звонка с кладбища')
                     ->maxLength(1000),
                     
-
-               
-
-
                
 
                 Forms\Components\TextInput::make('email')
@@ -181,7 +172,12 @@ class CemeteryResource extends Resource
                         }
                     }),
              
-
+                    View::make('image')
+                    ->label('Текущее изображение')
+                    ->view('filament.forms.components.custom-image') // Указываем путь к Blade-шаблону
+                    ->extraAttributes(['class' => 'custom-image-class'])
+                    ->columnSpan('full'),
+                    
                 RichEditor::make('content') // Поле для редактирования HTML-контента
                     ->label('Описание') // Соответствующая подпись
                     ->toolbarButtons([

@@ -37,7 +37,7 @@
                             <div class="swiper-wrapper">
                                 @foreach ($images as $image)
                                     <div class="swiper-slide">
-                                        <img src="{{ asset('storage/uploads_product/'.$image->title) }}" alt="">
+                                        <img src="{{ $image->url() }}" alt="">
                                     </div>
                                 @endforeach
                             </div>

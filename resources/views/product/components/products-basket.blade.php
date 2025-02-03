@@ -23,7 +23,7 @@ use App\Models\AdditionProduct;
                                     <?php $images=$product->getImages;?>
                                     @if (isset($images))
                                         @if (count($images)>0)
-                                            <img  src="{{ asset('storage/uploads_product/'.$images[0]->title) }}" alt="">
+                                            <img  src="{{ $images[0]->url() }}" alt="">
                                         @endif
                                     @endif
                                 </div>

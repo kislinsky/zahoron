@@ -18,4 +18,6 @@ class PriceProductPriceList extends Model
     function productPriceList(){
         return $this->belongsTo(ProductPriceList::class);
     }
+
+    
 }

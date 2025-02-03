@@ -11,5 +11,7 @@ class ImageProduct extends Model
     protected $guarded =[];
 
     
-
+    public function url(){
+        return asset('storage/'.$this->title);
+    }
 }

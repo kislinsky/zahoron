@@ -34,6 +34,13 @@ class CategoryProductPriceListResource extends Resource
                     ->label('Родительская категория')
                     ->options(CategoryProductPriceList::whereNull('parent_id')->pluck('title', 'id')) // Только главные категории
                     ->nullable(),
+
+                Forms\Components\TextInput::make('slug')
+                    ->required()
+                    ->unique(ignoreRecord: true) // Игнорировать текущую запись при редактировании
+                    ->label('Slug')
+                    ->maxLength(255),
+
             ]);
     }
 

@@ -15,6 +15,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 class ImagePersonalRelationManager extends RelationManager
 {
     protected static string $relationship = 'imagePersonal';
+    protected static ?string $title = 'Фотографии умершего';
 
     public function form(Form $form): Form
     {

@@ -325,38 +325,36 @@ Route::prefix($city)->group(function () {
 
     Route::group(['middleware'=>'auth'],function(){
 
-
-        Route::group(['middleware'=>'auth'],function(){
-
             Route::group(['prefix'=>'account'], function() {
             
 
                 Route::group(['prefix'=>'user'], function() {
 
-                    Route::group(['prefix'=>'products'], function() {
-                        Route::get('/', [AccountController::class, 'products'])->name('account.user.products');
-                        Route::delete('/{order}/delete', [AccountController::class, 'productDelete'])->name('account.user.product.delete');        
-                    }); 
-
+                    Route::group(['middleware'=>'user.role.check'],function(){
+                       
+                        Route::group(['prefix'=>'products'], function() {
+                            Route::get('/', [AccountController::class, 'products'])->name('account.user.products');
+                            Route::delete('/{order}/delete', [AccountController::class, 'productDelete'])->name('account.user.product.delete');        
+                        }); 
+                        
+                        Route::get('/services', [AccountController::class, 'services'])->name('account.user.services.index');       
+    
+                        Route::get('/burials', [AccountController::class, 'burials'])->name('account.user.burial');            
+                        Route::get('/burial-requests', [AccountController::class, 'burialRequestIndex'])->name('account.user.burial-request.index');
+                        Route::delete('/burial-request/{burial_request}/delete', [AccountController::class, 'burialRequestDelete'])->name('account.user.burial-request.delete');
+    
+    
+                        Route::get('/burial/{id}/delete', [AccountController::class, 'burialDelete'])->name('account.burial.delete');
+                        Route::get('/burials/favorite', [AccountController::class, 'favoriteProduct'])->name('account.user.burial.favorite');
+                    });
 
                     Route::get('/settings', [AccountController::class, 'userSettings'])->name('account.user.settings');
                     Route::post('/update', [AccountController::class, 'userSettingsUpdate'])->name('account.user.settings.update');
-            
-            
-                    Route::get('/services', [AccountController::class, 'services'])->name('account.user.services.index');       
-
-                    Route::get('/burials', [AccountController::class, 'burials'])->name('account.user.burial');            
-                    Route::get('/burial-requests', [AccountController::class, 'burialRequestIndex'])->name('account.user.burial-request.index');
-                    Route::delete('/burial-request/{burial_request}/delete', [AccountController::class, 'burialRequestDelete'])->name('account.user.burial-request.delete');
-
-
-                    Route::get('/burial/{id}/delete', [AccountController::class, 'burialDelete'])->name('account.burial.delete');
-                    Route::get('/burials/favorite', [AccountController::class, 'favoriteProduct'])->name('account.user.burial.favorite');
 
                 });
             
             });
-        });
+
 
 
         Route::get('/organization/like/add/{id}', [OrganizationController::class, 'addLikeOrganization'])->name('organization.like.add');
@@ -381,6 +379,15 @@ Route::prefix($city)->group(function () {
 
 
     Route::group(['middleware'=>['auth','agent']],function(){
+        
+        Route::group(['middleware'=>'user.role.check'],function(){
+
+            Route::get('/services', [AgentController::class, 'services'])->name('account.agent.services.index');       
+            Route::post('/account/agent/services/rent', [AgentController::class, 'rentService'])->name('account.agent.services.rent');
+            Route::patch('/account/agent/service/{id}/accept', [AgentController::class, 'acceptService'])->name('account.agent.service.accept');
+            Route::patch('/account/agent/service/{id}/get-to-work', [AgentController::class, 'getToWorkService'])->name('account.agent.service.get-to-work');
+        
+        });
 
         Route::get('/account/agent/settings', [AgentController::class, 'agentSettings'])->name('account.agent.settings');
         Route::post('/account/agent/settings/update', [AgentController::class, 'agentSettingsUpdate'])->name('account.agent.settings.update');
@@ -390,10 +397,7 @@ Route::prefix($city)->group(function () {
 
 
 
-        Route::get('/services', [AgentController::class, 'services'])->name('account.agent.services.index');       
-        Route::post('/account/agent/services/rent', [AgentController::class, 'rentService'])->name('account.agent.services.rent');
-        Route::patch('/account/agent/service/{id}/accept', [AgentController::class, 'acceptService'])->name('account.agent.service.accept');
-        Route::patch('/account/agent/service/{id}/get-to-work', [AgentController::class, 'getToWorkService'])->name('account.agent.service.get-to-work');
+        
         
     });
 
@@ -409,127 +413,129 @@ Route::prefix($city)->group(function () {
             
             Route::group(['prefix'=>'agency'], function() {
 
-                Route::group(['prefix'=>'aplication'], function() {
 
-                    Route::group(['prefix'=>'dead'], function() {
-                        Route::get('new', [AgencyOrganizationAplicationDeadController::class, 'new'])->name('account.agency.organization.aplication.dead.new');
-                        Route::get('in-work', [AgencyOrganizationAplicationDeadController::class, 'inWork'])->name('account.agency.organization.aplication.dead.in-work');
-                        Route::get('completed', [AgencyOrganizationAplicationDeadController::class, 'completed'])->name('account.agency.organization.aplication.dead.completed');
-                        // Route::get('not-completed', [AgencyOrganizationAplicationDeadController::class, 'Notcompleted'])->name('account.agency.organization.aplication.dead.not-completed');
-                        Route::patch('{aplication}/complete', [AgencyOrganizationAplicationDeadController::class, 'complete'])->name('account.agency.organization.aplication.dead.complete');     
-                        Route::patch('{aplication}/accept', [AgencyOrganizationAplicationDeadController::class, 'accept'])->name('account.agency.organization.aplication.dead.accept');     
+                Route::group(['middleware'=>'user.role.check'],function(){
 
+                    Route::group(['prefix'=>'aplication'], function() {
+
+                        Route::group(['prefix'=>'dead'], function() {
+                            Route::get('new', [AgencyOrganizationAplicationDeadController::class, 'new'])->name('account.agency.organization.aplication.dead.new');
+                            Route::get('in-work', [AgencyOrganizationAplicationDeadController::class, 'inWork'])->name('account.agency.organization.aplication.dead.in-work');
+                            Route::get('completed', [AgencyOrganizationAplicationDeadController::class, 'completed'])->name('account.agency.organization.aplication.dead.completed');
+                            // Route::get('not-completed', [AgencyOrganizationAplicationDeadController::class, 'Notcompleted'])->name('account.agency.organization.aplication.dead.not-completed');
+                            Route::patch('{aplication}/complete', [AgencyOrganizationAplicationDeadController::class, 'complete'])->name('account.agency.organization.aplication.dead.complete');     
+                            Route::patch('{aplication}/accept', [AgencyOrganizationAplicationDeadController::class, 'accept'])->name('account.agency.organization.aplication.dead.accept');     
+
+                        });
+
+                        Route::group(['prefix'=>'memorial'], function() {
+                            Route::get('new', [AgencyOrganizationAplicationMemorialController::class, 'new'])->name('account.agency.organization.aplication.memorial.new');
+                            Route::get('in-work', [AgencyOrganizationAplicationMemorialController::class, 'inWork'])->name('account.agency.organization.aplication.memorial.in-work');
+                            Route::get('completed', [AgencyOrganizationAplicationMemorialController::class, 'completed'])->name('account.agency.organization.aplication.memorial.completed');
+                            Route::get('not-completed', [AgencyOrganizationAplicationMemorialController::class, 'Notcompleted'])->name('account.agency.organization.aplication.memorial.not-completed');
+                            Route::patch('{aplication}/complete', [AgencyOrganizationAplicationMemorialController::class, 'complete'])->name('account.agency.organization.aplication.memorial.complete');     
+                            Route::patch('{aplication}/accept', [AgencyOrganizationAplicationMemorialController::class, 'accept'])->name('account.agency.organization.aplication.memorial.accept');     
+
+                        });
+
+
+                        Route::group(['prefix'=>'beautification'], function() {
+                            Route::get('new', [AgencyOrganizationAplicationBeautificationController::class, 'new'])->name('account.agency.organization.aplication.beautification.new');
+                            Route::get('in-work', [AgencyOrganizationAplicationBeautificationController::class, 'inWork'])->name('account.agency.organization.aplication.beautification.in-work');
+                            Route::get('completed', [AgencyOrganizationAplicationBeautificationController::class, 'completed'])->name('account.agency.organization.aplication.beautification.completed');
+                            Route::get('not-completed', [AgencyOrganizationAplicationBeautificationController::class, 'Notcompleted'])->name('account.agency.organization.aplication.beautification.not-completed');
+                            Route::patch('{aplication}/accept', [AgencyOrganizationAplicationBeautificationController::class, 'accept'])->name('account.agency.organization.aplication.beautification.accept');     
+                            Route::patch('{aplication}/complete', [AgencyOrganizationAplicationBeautificationController::class, 'complete'])->name('account.agency.organization.aplication.beautification.complete');     
+
+                        });
+
+                        Route::group(['prefix'=>'funeral-service'], function() {
+                            Route::get('new', [AgencyOrganizationAplicationFuneralServiceController::class, 'new'])->name('account.agency.organization.aplication.funeral-service.new');
+                            Route::get('in-work', [AgencyOrganizationAplicationFuneralServiceController::class, 'inWork'])->name('account.agency.organization.aplication.funeral-service.in-work');
+                            Route::get('completed', [AgencyOrganizationAplicationFuneralServiceController::class, 'completed'])->name('account.agency.organization.aplication.funeral-service.completed');
+                            Route::get('not-completed', [AgencyOrganizationAplicationFuneralServiceController::class, 'Notcompleted'])->name('account.agency.organization.aplication.funeral-service.not-completed');
+                            Route::get('filter-service', [AgencyOrganizationAplicationFuneralServiceController::class, 'filterService'])->name('account.agency.organization.aplication.funeral-service.filter');
+                            Route::patch('{aplication}/accept', [AgencyOrganizationAplicationFuneralServiceController::class, 'accept'])->name('account.agency.organization.aplication.funeral-service.accept');     
+                            Route::patch('{aplication}/complete', [AgencyOrganizationAplicationFuneralServiceController::class, 'complete'])->name('account.agency.organization.aplication.funeral-service.complete');     
+                        });
+                        
                     });
 
-                    Route::group(['prefix'=>'memorial'], function() {
-                        Route::get('new', [AgencyOrganizationAplicationMemorialController::class, 'new'])->name('account.agency.organization.aplication.memorial.new');
-                        Route::get('in-work', [AgencyOrganizationAplicationMemorialController::class, 'inWork'])->name('account.agency.organization.aplication.memorial.in-work');
-                        Route::get('completed', [AgencyOrganizationAplicationMemorialController::class, 'completed'])->name('account.agency.organization.aplication.memorial.completed');
-                        Route::get('not-completed', [AgencyOrganizationAplicationMemorialController::class, 'Notcompleted'])->name('account.agency.organization.aplication.memorial.not-completed');
-                        Route::patch('{aplication}/complete', [AgencyOrganizationAplicationMemorialController::class, 'complete'])->name('account.agency.organization.aplication.memorial.complete');     
-                        Route::patch('{aplication}/accept', [AgencyOrganizationAplicationMemorialController::class, 'accept'])->name('account.agency.organization.aplication.memorial.accept');     
-
-                    });
-
-
-                    Route::group(['prefix'=>'beautification'], function() {
-                        Route::get('new', [AgencyOrganizationAplicationBeautificationController::class, 'new'])->name('account.agency.organization.aplication.beautification.new');
-                        Route::get('in-work', [AgencyOrganizationAplicationBeautificationController::class, 'inWork'])->name('account.agency.organization.aplication.beautification.in-work');
-                        Route::get('completed', [AgencyOrganizationAplicationBeautificationController::class, 'completed'])->name('account.agency.organization.aplication.beautification.completed');
-                        Route::get('not-completed', [AgencyOrganizationAplicationBeautificationController::class, 'Notcompleted'])->name('account.agency.organization.aplication.beautification.not-completed');
-                        Route::patch('{aplication}/accept', [AgencyOrganizationAplicationBeautificationController::class, 'accept'])->name('account.agency.organization.aplication.beautification.accept');     
-                        Route::patch('{aplication}/complete', [AgencyOrganizationAplicationBeautificationController::class, 'complete'])->name('account.agency.organization.aplication.beautification.complete');     
-
-                    });
-
-                    Route::group(['prefix'=>'funeral-service'], function() {
-                        Route::get('new', [AgencyOrganizationAplicationFuneralServiceController::class, 'new'])->name('account.agency.organization.aplication.funeral-service.new');
-                        Route::get('in-work', [AgencyOrganizationAplicationFuneralServiceController::class, 'inWork'])->name('account.agency.organization.aplication.funeral-service.in-work');
-                        Route::get('completed', [AgencyOrganizationAplicationFuneralServiceController::class, 'completed'])->name('account.agency.organization.aplication.funeral-service.completed');
-                        Route::get('not-completed', [AgencyOrganizationAplicationFuneralServiceController::class, 'Notcompleted'])->name('account.agency.organization.aplication.funeral-service.not-completed');
-                        Route::get('filter-service', [AgencyOrganizationAplicationFuneralServiceController::class, 'filterService'])->name('account.agency.organization.aplication.funeral-service.filter');
-                        Route::patch('{aplication}/accept', [AgencyOrganizationAplicationFuneralServiceController::class, 'accept'])->name('account.agency.organization.aplication.funeral-service.accept');     
-                        Route::patch('{aplication}/complete', [AgencyOrganizationAplicationFuneralServiceController::class, 'complete'])->name('account.agency.organization.aplication.funeral-service.complete');     
-                    });
+                    Route::get('organization/settings/{id}', [AgencyOrganizationController::class, 'settings'])->name('account.agency.organization.settings');
+                    Route::get('choose-organization/{id}', [AgencyController::class, 'chooseOrganization'])->name('account.agency.choose.organization');
+                    Route::post('organization/settings/update', [AgencyOrganizationController::class, 'update'])->name('account.agency.organization.settings.update');
+    
+                    Route::get('add-organization', [AgencyOrganizationController::class, 'searchOrganizations'])->name('account.agency.add.organization');     
                     
+                    Route::get('applications', [AgencyOrganizationController::class, 'aplications'])->name('account.agency.applications');     
+    
+                    Route::get('buy-applications-funeral-services', [AgencyOrganizationController::class, 'buyAplicationsFuneralServices'])->name('account.agency.applications.funeral-services.buy');     
+                    Route::get('buy-applications-calls-organization', [AgencyOrganizationController::class, 'buyAplicationsCallsOrganization'])->name('account.agency.applications.calls-organization.buy');     
+                    Route::get('buy-applications-product-marketplace', [AgencyOrganizationController::class, 'buyAplicationsProductRequestsFromMarketplace'])->name('account.agency.applications.product-marketplace.buy');     
+                    Route::get('buy-applications-improvemen-graves', [AgencyOrganizationController::class, 'buyAplicationsImprovemenGraves'])->name('account.agency.applications.improvemen-graves.buy');     
+                    Route::get('buy-applications-memorial', [AgencyOrganizationController::class, 'buyAplicationsMemorial'])->name('account.agency.applications.memorial.buy');     
+                    
+    
+    
+    
+                    Route::get('products', [AgencyOrganizationController::class, 'allProducts'])->name('account.agency.products');     
+                    Route::get('add-product', [AgencyOrganizationController::class, 'addProduct'])->name('account.agency.add.product');     
+                    Route::get('delete-product/{id}', [AgencyOrganizationController::class, 'deleteProduct'])->name('account.agency.delete.product');     
+                    Route::get('update-product-price', [AgencyOrganizationController::class, 'updatePriceProduct'])->name('account.agency.update.product.price');     
+                    Route::get('search-product', [AgencyOrganizationController::class, 'searchProduct'])->name('account.agency.search.product');     
+                    Route::get('filters-product', [AgencyOrganizationController::class, 'filtersProduct'])->name('account.agency.filters.product');     
+                    Route::post('create-product', [AgencyOrganizationController::class, 'createProduct'])->name('account.agency.create.product');     
+                    Route::get('product/orders/new', [AgencyOrganizationController::class, 'ordersNew'])->name('account.agency.product.orders.new');  
+                    Route::get('product/orders/in-work', [AgencyOrganizationController::class, 'ordersInWork'])->name('account.agency.product.orders.in-work');  
+                    Route::get('product/orders/completed', [AgencyOrganizationController::class, 'ordersCompleted'])->name('account.agency.product.orders.completed');     
+                    Route::patch('product/order/{order}/complete', [AgencyOrganizationController::class, 'orderComplete'])->name('account.agency.product.order.complete');     
+                    Route::patch('product/order/{order}/accept', [AgencyOrganizationController::class, 'orderAccept'])->name('account.agency.product.order.accept');     
+    
+                    
+    
+    
+    
+                    Route::get('reviews-organization', [AgencyOrganizationController::class, 'reviewsOrganization'])->name('account.agency.reviews.organization');     
+                    Route::get('reviews-products', [AgencyOrganizationController::class, 'reviewsProduct'])->name('account.agency.reviews.product');     
+                    Route::get('review-organization/{id}/delete', [AgencyOrganizationController::class, 'reviewOrganizationDelete'])->name('account.agency.review.organization.delete');     
+                    Route::get('review-product/{id}/delete', [AgencyOrganizationController::class, 'reviewProductDelete'])->name('account.agency.review.product.delete');     
+                    Route::get('review-organization/{id}/accept', [AgencyOrganizationController::class, 'reviewOrganizationAccept'])->name('account.agency.review.organization.accept');     
+                    Route::get('review-product/{id}/accept', [AgencyOrganizationController::class, 'reviewProductAccept'])->name('account.agency.review.product.accept');     
+                    Route::get('review-organization/update', [AgencyOrganizationController::class, 'updateReviewOrganization'])->name('account.agency.review.organization.update');     
+                    Route::get('review-product/update', [AgencyOrganizationController::class, 'updateReviewProduct'])->name('account.agency.review.product.update');     
+                    Route::get('review-organization/update/organization-response', [AgencyOrganizationController::class, 'updateOrganizationResponseReviewOrganization'])->name('account.agency.review.organization.update.organization-response');     
+                    Route::get('review-product/update/organization-response', [AgencyOrganizationController::class, 'updateOrganizationResponseReviewProduct'])->name('account.agency.review.product.update.organization-response');     
+                    
+                    Route::get('provider/requests/products/add', [AgencyOrganizationProviderController::class, 'requestsCostProductSuppliers'])->name('account.agency.provider.requests.products.add');     
+                    Route::get('provider/requests/products/create', [AgencyOrganizationProviderController::class, 'addRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.create');     
+                    Route::get('provider/requests/products/created', [AgencyOrganizationProviderController::class, 'createdRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.created');     
+                    Route::get('provider/requests/products/answer', [AgencyOrganizationProviderController::class, 'answerRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.answer');     
+                    Route::delete('provider/request/products/{request}/delete', [AgencyOrganizationProviderController::class, 'deletRequest'])->name('account.agency.provider.request.delete');     
+    
+                    
+                    
+    
+                    Route::get('like-organizations', [AgencyOrganizationProviderController::class, 'likeOrganizations'])->name('account.agency.provider.like.organizations');     
+    
+                    Route::get('provider/stocks', [AgencyOrganizationProviderController::class, 'stocksOrganizationProviders'])->name('account.agency.provider.stocks');     
+                    Route::get('provider/discounts', [AgencyOrganizationProviderController::class, 'discountsOrganizationProviders'])->name('account.agency.provider.discounts');     
+    
+                    Route::get('provider/offer/add', [AgencyOrganizationProviderController::class, 'addOfferToProvider'])->name('account.agency.provider.offer.add');     
+                    Route::post('provider/offer/add', [AgencyOrganizationProviderController::class, 'createOfferToProvider'])->name('account.agency.provider.offer.create');     
+    
+                    Route::get('provider/offers/created', [AgencyOrganizationProviderController::class, 'createdOfferToProvider'])->name('account.agency.provider.offer.created');     
+                    Route::get('provider/offers/answers', [AgencyOrganizationProviderController::class, 'answerOfferToProvider'])->name('account.agency.provider.offer.answers'); 
+    
+    
+                    Route::get('provider/offers/created/category', [AgencyOrganizationProviderController::class, 'filterCategoryCreatedOfferToProvider'])->name('account.agency.provider.offer.created.category');     
+                    Route::get('provider/offers/answers/category', [AgencyOrganizationProviderController::class, 'filterCategoryAnswerOfferToProvider'])->name('account.agency.provider.offer.answers.category'); 
+    
+    
+                    Route::delete('provider/offer/{offer}/delete', [AgencyOrganizationProviderController::class, 'deleteOffer'])->name('account.agency.provider.offer.delete');     
+
                 });
-
-
                 
-
                 Route::get('settings', [AgencyController::class, 'settings'])->name('account.agency.settings');
-                Route::get('organization/settings/{id}', [AgencyOrganizationController::class, 'settings'])->name('account.agency.organization.settings');
-                Route::get('choose-organization/{id}', [AgencyController::class, 'chooseOrganization'])->name('account.agency.choose.organization');
-                Route::post('organization/settings/update', [AgencyOrganizationController::class, 'update'])->name('account.agency.organization.settings.update');
-
-                Route::get('add-organization', [AgencyOrganizationController::class, 'searchOrganizations'])->name('account.agency.add.organization');     
-                
-                Route::get('applications', [AgencyOrganizationController::class, 'aplications'])->name('account.agency.applications');     
-
-                Route::get('buy-applications-funeral-services', [AgencyOrganizationController::class, 'buyAplicationsFuneralServices'])->name('account.agency.applications.funeral-services.buy');     
-                Route::get('buy-applications-calls-organization', [AgencyOrganizationController::class, 'buyAplicationsCallsOrganization'])->name('account.agency.applications.calls-organization.buy');     
-                Route::get('buy-applications-product-marketplace', [AgencyOrganizationController::class, 'buyAplicationsProductRequestsFromMarketplace'])->name('account.agency.applications.product-marketplace.buy');     
-                Route::get('buy-applications-improvemen-graves', [AgencyOrganizationController::class, 'buyAplicationsImprovemenGraves'])->name('account.agency.applications.improvemen-graves.buy');     
-                Route::get('buy-applications-memorial', [AgencyOrganizationController::class, 'buyAplicationsMemorial'])->name('account.agency.applications.memorial.buy');     
-                
-
-
-
-                Route::get('products', [AgencyOrganizationController::class, 'allProducts'])->name('account.agency.products');     
-                Route::get('add-product', [AgencyOrganizationController::class, 'addProduct'])->name('account.agency.add.product');     
-                Route::get('delete-product/{id}', [AgencyOrganizationController::class, 'deleteProduct'])->name('account.agency.delete.product');     
-                Route::get('update-product-price', [AgencyOrganizationController::class, 'updatePriceProduct'])->name('account.agency.update.product.price');     
-                Route::get('search-product', [AgencyOrganizationController::class, 'searchProduct'])->name('account.agency.search.product');     
-                Route::get('filters-product', [AgencyOrganizationController::class, 'filtersProduct'])->name('account.agency.filters.product');     
-                Route::post('create-product', [AgencyOrganizationController::class, 'createProduct'])->name('account.agency.create.product');     
-                Route::get('product/orders/new', [AgencyOrganizationController::class, 'ordersNew'])->name('account.agency.product.orders.new');  
-                Route::get('product/orders/in-work', [AgencyOrganizationController::class, 'ordersInWork'])->name('account.agency.product.orders.in-work');  
-                Route::get('product/orders/completed', [AgencyOrganizationController::class, 'ordersCompleted'])->name('account.agency.product.orders.completed');     
-                Route::patch('product/order/{order}/complete', [AgencyOrganizationController::class, 'orderComplete'])->name('account.agency.product.order.complete');     
-                Route::patch('product/order/{order}/accept', [AgencyOrganizationController::class, 'orderAccept'])->name('account.agency.product.order.accept');     
-
-                
-
-
-
-                Route::get('reviews-organization', [AgencyOrganizationController::class, 'reviewsOrganization'])->name('account.agency.reviews.organization');     
-                Route::get('reviews-products', [AgencyOrganizationController::class, 'reviewsProduct'])->name('account.agency.reviews.product');     
-                Route::get('review-organization/{id}/delete', [AgencyOrganizationController::class, 'reviewOrganizationDelete'])->name('account.agency.review.organization.delete');     
-                Route::get('review-product/{id}/delete', [AgencyOrganizationController::class, 'reviewProductDelete'])->name('account.agency.review.product.delete');     
-                Route::get('review-organization/{id}/accept', [AgencyOrganizationController::class, 'reviewOrganizationAccept'])->name('account.agency.review.organization.accept');     
-                Route::get('review-product/{id}/accept', [AgencyOrganizationController::class, 'reviewProductAccept'])->name('account.agency.review.product.accept');     
-                Route::get('review-organization/update', [AgencyOrganizationController::class, 'updateReviewOrganization'])->name('account.agency.review.organization.update');     
-                Route::get('review-product/update', [AgencyOrganizationController::class, 'updateReviewProduct'])->name('account.agency.review.product.update');     
-                Route::get('review-organization/update/organization-response', [AgencyOrganizationController::class, 'updateOrganizationResponseReviewOrganization'])->name('account.agency.review.organization.update.organization-response');     
-                Route::get('review-product/update/organization-response', [AgencyOrganizationController::class, 'updateOrganizationResponseReviewProduct'])->name('account.agency.review.product.update.organization-response');     
-                
-                Route::get('provider/requests/products/add', [AgencyOrganizationProviderController::class, 'requestsCostProductSuppliers'])->name('account.agency.provider.requests.products.add');     
-                Route::get('provider/requests/products/create', [AgencyOrganizationProviderController::class, 'addRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.create');     
-                Route::get('provider/requests/products/created', [AgencyOrganizationProviderController::class, 'createdRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.created');     
-                Route::get('provider/requests/products/answer', [AgencyOrganizationProviderController::class, 'answerRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.answer');     
-                Route::delete('provider/request/products/{request}/delete', [AgencyOrganizationProviderController::class, 'deletRequest'])->name('account.agency.provider.request.delete');     
-
-                
-                
-
-                Route::get('like-organizations', [AgencyOrganizationProviderController::class, 'likeOrganizations'])->name('account.agency.provider.like.organizations');     
-
-                Route::get('provider/stocks', [AgencyOrganizationProviderController::class, 'stocksOrganizationProviders'])->name('account.agency.provider.stocks');     
-                Route::get('provider/discounts', [AgencyOrganizationProviderController::class, 'discountsOrganizationProviders'])->name('account.agency.provider.discounts');     
-
-                Route::get('provider/offer/add', [AgencyOrganizationProviderController::class, 'addOfferToProvider'])->name('account.agency.provider.offer.add');     
-                Route::post('provider/offer/add', [AgencyOrganizationProviderController::class, 'createOfferToProvider'])->name('account.agency.provider.offer.create');     
-
-                Route::get('provider/offers/created', [AgencyOrganizationProviderController::class, 'createdOfferToProvider'])->name('account.agency.provider.offer.created');     
-                Route::get('provider/offers/answers', [AgencyOrganizationProviderController::class, 'answerOfferToProvider'])->name('account.agency.provider.offer.answers'); 
-
-
-                Route::get('provider/offers/created/category', [AgencyOrganizationProviderController::class, 'filterCategoryCreatedOfferToProvider'])->name('account.agency.provider.offer.created.category');     
-                Route::get('provider/offers/answers/category', [AgencyOrganizationProviderController::class, 'filterCategoryAnswerOfferToProvider'])->name('account.agency.provider.offer.answers.category'); 
-
-
-                Route::delete('provider/offer/{offer}/delete', [AgencyOrganizationProviderController::class, 'deleteOffer'])->name('account.agency.provider.offer.delete');     
-             
                 
             });
 
@@ -567,27 +573,30 @@ Route::prefix($city)->group(function () {
         Route::group(['prefix'=>'account'], function() {
             
             Route::group(['prefix'=>'decoder'], function() {
+                
+                Route::group(['middleware'=>'user.role.check'],function(){
+                
+                    Route::get('training-material/video', [DecoderController::class, 'trainingMaterialVideo'])->name('account.decoder.training-material.video');
+                    Route::get('training-material/file', [DecoderController::class, 'trainingMaterialFile'])->name('account.decoder.training-material.file');
+                    
+                    Route::get('payments/payd', [DecoderController::class, 'paymentsPaid'])->name('account.decoder.payments.paid');
+                    Route::get('payments/verification', [DecoderController::class, 'paymentsOnVerification'])->name('account.decoder.payments.verification');
+                    
+                    Route::post('icon/add', [DecoderController::class, 'iconUpdateUser'])->name('account.decoder.upload-icon.add');
+               
+                    Route::get('view-edit-burial', [DecoderController::class, 'viewEditBurial'])->name('account.decoder.burial.edit');
+    
+                    Route::get('burial/add/comment', [DecoderController::class, 'addCommentBurial'])->name('account.decoder.burial.add.comment');
+                    
+                    Route::get('burial/update', [DecoderController::class, 'updateBurial'])->name('account.decoder.burial.update');
 
-                Route::get('withdraw/{id}', [DecoderController::class, 'withdraw'])->name('account.decoder.withdraw');
+                    Route::get('withdraw/{id}', [DecoderController::class, 'withdraw'])->name('account.decoder.withdraw');
+
+                });
 
                 Route::get('settings', [DecoderController::class, 'settings'])->name('account.decoder.settings');
                 Route::get('settings/update', [DecoderController::class, 'settingsUpdate'])->name('account.decoder.settings.update');
-                
-                Route::get('training-material/video', [DecoderController::class, 'trainingMaterialVideo'])->name('account.decoder.training-material.video');
-                Route::get('training-material/file', [DecoderController::class, 'trainingMaterialFile'])->name('account.decoder.training-material.file');
-                
-                Route::get('payments/payd', [DecoderController::class, 'paymentsPaid'])->name('account.decoder.payments.paid');
-                Route::get('payments/verification', [DecoderController::class, 'paymentsOnVerification'])->name('account.decoder.payments.verification');
-                
-                Route::post('icon/add', [DecoderController::class, 'iconUpdateUser'])->name('account.decoder.upload-icon.add');
-           
-                Route::get('view-edit-burial', [DecoderController::class, 'viewEditBurial'])->name('account.decoder.burial.edit');
 
-                Route::get('burial/add/comment', [DecoderController::class, 'addCommentBurial'])->name('account.decoder.burial.add.comment');
-                
-                Route::get('burial/update', [DecoderController::class, 'updateBurial'])->name('account.decoder.burial.update');
-
-                
             });    
 
         });
