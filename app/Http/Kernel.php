@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\CheckCity;
 use App\Http\Middleware\UserMiddleware;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\AgentMiddleware;
@@ -78,6 +79,7 @@ class Kernel extends HttpKernel
         'admin'=>AdminMiddleware::class,
         'catalog.provider'=>CatalogProviderMiddleware::class,
         'user.role.check'=>CheckUserStatus::class,
+        'check.city' => CheckCity::class,
 
     ];
 }

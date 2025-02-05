@@ -8,12 +8,15 @@ class AgencyFuneralServiceAplicationOrganization {
 
     public static function new($data){
         $organization=user()->organization();
+        $aplications=collect();
+        if($organization!=null){
         if(isset($data['service'])){
             $aplications=FuneralService::orderBy('id','desc')->where('status',0)->where('city_id',$organization->city->id)->where('service',$data['service'])->paginate(6);
 
         }else{
             $aplications=FuneralService::orderBy('id','desc')->where('status',0)->where('city_id',$organization->city->id)->paginate(6);
         }
+    }
         return view('account.agency.organization.aplications.funeral-services.new',compact('aplications'));
     }
 
@@ -22,36 +25,45 @@ class AgencyFuneralServiceAplicationOrganization {
 
     public static function inWork($data){
         $organization=user()->organization();
+        $aplications=collect();
+        if($organization!=null){
         if(isset($data['service'])){
             $aplications=FuneralService::orderBy('id','desc')->where('status',1)->where('organization_id',$organization->id)->where('service',$data['service'])->paginate(6);
 
         }else{
             $aplications=FuneralService::orderBy('id','desc')->where('status',1)->where('organization_id',$organization->id)->paginate(6);
         }
+    }
         return view('account.agency.organization.aplications.funeral-services.in-work',compact('aplications'));
     }
 
 
     public static function completed($data){
         $organization=user()->organization();
+        $aplications=collect();
+        if($organization!=null){
         if(isset($data['service'])){
             $aplications=FuneralService::orderBy('id','desc')->where('status',2)->where('organization_id',$organization->id)->where('service',$data['service'])->paginate(6);
 
         }else{
             $aplications=FuneralService::orderBy('id','desc')->where('status',2)->where('organization_id',$organization->id)->paginate(6);
         }
+    }
         return view('account.agency.organization.aplications.funeral-services.completed',compact('aplications'));
     }
 
 
     public static function notCompleted($data){
         $organization=user()->organization();
+        $aplications=collect();
+        if($organization!=null){
         if(isset($data['service'])){
             $aplications=FuneralService::orderBy('id','desc')->where('status',4)->where('city_id',$organization->city->id)->where('service',$data['service'])->paginate(6);
 
         }else{
             $aplications=FuneralService::orderBy('id','desc')->where('status',4)->where('city_id',$organization->city->id)->paginate(6);
         }
+    }
         return view('account.agency.organization.aplications.funeral-services.not-completed',compact('aplications'));
     }
 

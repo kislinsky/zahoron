@@ -12,9 +12,10 @@ use Filament\Tables\Table;
 use App\Models\CategoryProduct;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers\GetParamRelationManager;
@@ -222,7 +223,29 @@ class ProductResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('category_parent_id')
+                ->label('Категория')
+                ->relationship('parentCategory', 'title', function (Builder $query) {
+                    $query->whereNull('parent_id'); // Проверяем parent_id именно в таблице категорий
+                })
+                ->searchable()
+                ->preload(),
+        
+            // Фильтр по подкатегории
+            SelectFilter::make('category_id')
+                ->label('Подкатегория')
+                ->relationship('category', 'title',function (Builder $query) {
+                    $query->whereNotNull('parent_id'); // Проверяем parent_id именно в таблице категорий
+                }) // Используем отношение category
+                ->searchable()
+                ->preload(),
+        
+            // Фильтр по городу
+            SelectFilter::make('city_id')
+                ->label('Город')
+                ->relationship('city', 'title') // Используем отношение city
+                ->searchable()
+                ->preload(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

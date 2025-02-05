@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\City;
 use Illuminate\Http\Request;
 use App\Services\City\CityService;
 
@@ -38,6 +39,30 @@ class CityController extends Controller
             's'=>['nullable','string'],
         ]);
         return CityService::ajaxCitySearchInInput($data);
+    }
+
+
+    public function index(Request $request)
+    {
+        $city = $request->get('city'); // Текущий город доступен через middleware
+        redirect()->back();
+
+    }
+
+    public function changeCity(Request $request, $currentCity, $selectedCity)
+    {
+        // Проверяем, что выбранный город существует в системе
+        $city = City::where('slug', $selectedCity)->first();
+        
+
+        if (!$city) {
+            abort(404, 'City not found');
+        }
+
+        setcookie("city", $city->id, time()+20*24*60*60,'/');
+
+        // Перенаправляем пользователя на новый префикс
+        return redirect()->route('city.index', ['city' => $city->slug]);
     }
 
 }

@@ -97,11 +97,16 @@ if (!request()->is('storage/*') && !request()->is('css/*') && !request()->is('js
 }
 
 
-Route::prefix($city)->group(function () {
-    
+// Route::group(['prefix' => '{city}', 'middleware' => 'check.city'], function () {
+//     Route::get('/', [CityController::class, 'index'])->name('city.index');
+//     Route::get('/change-city/{selectedCity}', [CityController::class, 'changeCity'])->name('city.change');
+// });
+
+
+Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
+   
     Auth::routes();
-
-
+    
     Route::get('/', [MainController::class, 'index'])->name('index');
     Route::get('/speczialist', [MainController::class, 'speczialist'])->name('speczialist');
 
@@ -115,9 +120,18 @@ Route::prefix($city)->group(function () {
 
 
     Route::post('/register-with-phone', [RegisterController::class, 'registerWithPhone'])->name('register.phone');
+    Route::get('/confirm-inn-information-phone', [RegisterController::class, 'confirmInnInformationPhone'])->name('confirm.inn.information.phone');
+    Route::get('/confirm-inn-information-email', [RegisterController::class, 'confirmInnInformationEmail'])->name('confirm.inn.information.email');
+    Route::post('/accept-inn-information', [RegisterController::class, 'acceptInnInformation'])->name('accept.inn.information');
+    Route::post('/create-user-organization-email', [RegisterController::class, 'createUserOrganizationEmail'])->name('create.user.organization.email');
+
+    
+
     Route::get('/verify-code', [RegisterController::class, 'verifyCode'])->name('register.verify.code');
     Route::post('/verify-code-send', [RegisterController::class, 'verifyCodeSend'])->name('register.verify.code.send');
     Route::post('/login-with-phone', [LoginController::class, 'loginWithPhone'])->name('login.phone');
+
+    
 
     
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

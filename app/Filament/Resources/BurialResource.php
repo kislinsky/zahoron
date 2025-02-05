@@ -58,17 +58,18 @@ class BurialResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                Forms\Components\TextInput::make('date_death')
-                    ->label('Дата смерти')
-                    ->required()
-                    ->maxLength(255),
+            
 
                 Forms\Components\TextInput::make('date_birth')
                     ->label('Дата рождения')
                     ->required()
                     ->maxLength(255),
 
-                    
+                    Forms\Components\TextInput::make('date_death')
+                    ->label('Дата смерти')
+                    ->required()
+                    ->maxLength(255),
+                            
                     Forms\Components\TextInput::make('width')
                     ->label('Широта')
                     ->required()
@@ -350,32 +351,35 @@ class BurialResource extends Resource
                         }
                     }),
 
+                    SelectFilter::make('edge_id')
+                        ->label('Край')
+                        ->relationship('cemetery.city.area.edge', 'title') // Вложенное отношение
+                        ->searchable()
+                        ->preload(),
+
+
+                     // Фильтр по округу
+                    SelectFilter::make('area_id')
+                        ->label('Округ')
+                        ->relationship('cemetery.city.area', 'title') // Вложенное отношение
+                        ->searchable()
+                        ->preload(),
+
+                    // Фильтр по городу
+                    SelectFilter::make('city_id')
+                        ->label('Город')
+                        ->relationship('cemetery.city', 'title') // Используем вложенное отношение
+                        ->searchable()
+                        ->preload(),
+                    
                     SelectFilter::make('cemetery_id')
-                    ->label('Кладбище')
-                    ->relationship('cemetery', 'title') // Используем отношение и поле для отображения
-                    ->searchable() // Добавляем поиск
-                    ->preload(), // Предзагрузка данных
+                        ->label('Кладбище')
+                        ->relationship('cemetery', 'title') // Используем отношение и поле для отображения
+                        ->searchable() // Добавляем поиск
+                        ->preload(), // Предзагрузка данных
             
-                // Фильтр по городу
-                SelectFilter::make('city_id')
-                    ->label('Город')
-                    ->relationship('cemetery.city', 'title') // Используем вложенное отношение
-                    ->searchable()
-                    ->preload(),
-            
-                // Фильтр по округу
-                SelectFilter::make('area_id')
-                    ->label('Округ')
-                    ->relationship('cemetery.city.area', 'title') // Вложенное отношение
-                    ->searchable()
-                    ->preload(),
-            
-                // Фильтр по краю
-                SelectFilter::make('edge_id')
-                    ->label('Край')
-                    ->relationship('cemetery.city.area.edge', 'title') // Вложенное отношение
-                    ->searchable()
-                    ->preload(),
+             
+               
                  
             ])
             ->actions([

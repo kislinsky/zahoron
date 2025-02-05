@@ -1588,7 +1588,7 @@ function generateSixDigitCode() {
     return str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 }
 
-function createUserWithPhone($phone,$name='',$role='user'){
+function createUserWithPhone($phone,$name='',$role='user',$inn='',$organization_form=''){
 
     $user=User::where('phone',$phone)->get();
     if(isset($user[0])){
@@ -1604,6 +1604,9 @@ function createUserWithPhone($phone,$name='',$role='user'){
         'name'=>$name,
         'phone'=>$phone,
         'password'=>Hash::make($password),
+        'role'=>$role,
+        'organization_form'=>$organization_form,
+        'inn'=>$inn,
     ]);
     return $userCreate;
 
@@ -1612,3 +1615,5 @@ function createUserWithPhone($phone,$name='',$role='user'){
 function edges(){
     return Edge::orderBy('title','asc')->get();
 }
+
+

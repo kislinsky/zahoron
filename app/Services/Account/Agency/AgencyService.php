@@ -26,7 +26,10 @@ class AgencyService {
 
     public static function index(){
         $user=Auth::user();
-        $last_orders_services=OrderService::orderBy('id', 'desc')->where('worker_id',null)->where('status',0)->whereIn('cemetery_id',json_decode($user->cemetery_ids))->get();
+        $last_orders_services=[];
+        if($user->cemetery_ids!=null){
+            $last_orders_services=OrderService::orderBy('id', 'desc')->where('worker_id',null)->where('status',0)->whereIn('cemetery_id',json_decode($user->cemetery_ids))->get();
+        }
         return view('account.agency.index',compact('user','last_orders_services'));
     }
 

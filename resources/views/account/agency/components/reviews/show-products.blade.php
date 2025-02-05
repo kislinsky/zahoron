@@ -1,3 +1,5 @@
+@if($reviews->count()>0)
+
 <div class="ul_reviews_organiaztions">
     @foreach ($reviews as $review)
         <div class="li_review_in_panel">
@@ -42,3 +44,7 @@
 
 {{view('account.agency.components.reviews.form-update-review-product')}}
 {{view('account.agency.components.reviews.form-update-review-product-organization-response')}}
+
+@else
+<div class="text_black">Нет отзывов</div>
+@endif

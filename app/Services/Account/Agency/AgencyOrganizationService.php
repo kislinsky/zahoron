@@ -240,7 +240,10 @@ class AgencyOrganizationService {
         $categories=CategoryProduct::where('parent_id',null)->get();
         $categories_children=childrenCategoryProducts($categories[0]);
         $organization=user()->organization();
-        $products=filtersProductsOrganizations($data);
+        $products=collect();
+        if($organization!=null){
+            $products=filtersProductsOrganizations($data);
+        }
         return view('account.agency.organization.product.products',compact('city','categories','categories_children','products'));
     }
 
@@ -397,13 +400,19 @@ class AgencyOrganizationService {
 
     public static function reviewsOrganization(){
         $organization=user()->organization();
-        $reviews=ReviewsOrganization::orderBy('id','desc')->where('organization_id',$organization->id)->paginate(10);
+        $reviews=collect();
+        if($organization!=null){
+            $reviews=ReviewsOrganization::orderBy('id','desc')->where('organization_id',$organization->id)->paginate(10);
+        }
         return view('account.agency.organization.reviews.reviews-organization',compact('reviews'));
     }
 
     public static function reviewsProduct(){
         $organization=user()->organization();
-        $reviews=CommentProduct::orderBy('id','desc')->where('organization_id',$organization->id)->paginate(10);
+        $reviews=collect();
+        if($organization!=null){
+            $reviews=CommentProduct::orderBy('id','desc')->where('organization_id',$organization->id)->paginate(10);
+        }   
         return view('account.agency.organization.reviews.reviews-product',compact('reviews'));
     }
 
@@ -463,21 +472,30 @@ class AgencyOrganizationService {
 
     public static function ordersNew(){
         $organization=user()->organization();
-        $orders=$organization->ordersNew;
+        $orders=collect();
+        if($organization!=null){
+            $orders=$organization->ordersNew;
+        }
         return view('account.agency.organization.product.orders.new',compact('orders'));
     }
 
 
     public static function ordersInWork(){
         $organization=user()->organization();
-        $orders=$organization->ordersInWork;
+        $orders=collect();
+        if($organization!=null){
+            $orders=$organization->ordersInWork;
+        }
         return view('account.agency.organization.product.orders.in-work',compact('orders'));
     }
 
 
     public static function ordersCompleted(){
         $organization=user()->organization();
-        $orders=$organization->ordersCompleted;
+        $orders=collect();
+        if($organization!=null){
+            $orders=$organization->ordersCompleted;
+        }
         // $orders=user()->organization()->with('ordersCompleted')->paginate(1);
         return view('account.agency.organization.product.orders.completed',compact('orders'));
     }

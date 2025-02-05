@@ -31,7 +31,7 @@ class Product extends Model
     }
 
     public function parentCategory(){
-        return $this->category->parent;
+        return $this->belongsTo(CategoryProduct::class, 'category_parent_id');
     }
     
     

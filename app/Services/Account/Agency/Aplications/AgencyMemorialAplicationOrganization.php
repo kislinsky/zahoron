@@ -8,26 +8,38 @@ class AgencyMemorialAplicationOrganization {
 
     public static function new(){
         $organization=user()->organization();
+        $aplications=collect();
+        if($organization!=null){
         $aplications=Memorial::orderBy('id','desc')->where('status',0)->where('city_id',$organization->city->id)->paginate(6);
+        }
         return view('account.agency.organization.aplications.memorial.new',compact('aplications'));
     }
 
     public static function inWork(){
         $organization=user()->organization();
+        $aplications=collect();
+        if($organization!=null){
         $aplications=Memorial::orderBy('id','desc')->where('status',1)->where('organization_id',$organization->id)->paginate(6);
+        }
         return view('account.agency.organization.aplications.memorial.in-work',compact('aplications'));
     }
 
 
     public static function completed(){
         $organization=user()->organization();
+        $aplications=collect();
+        if($organization!=null){
         $aplications=Memorial::orderBy('id','desc')->where('status',2)->where('organization_id',$organization->id)->paginate(6);
+        }
         return view('account.agency.organization.aplications.memorial.completed',compact('aplications'));
     }
 
     public static function notCompleted(){
         $organization=user()->organization();
+        $aplications=collect();
+        if($organization!=null){
         $aplications=Memorial::orderBy('id','desc')->where('status',4)->where('city_id',$organization->city->id)->paginate(6);
+        }
         return view('account.agency.organization.aplications.memorial.not-completed',compact('aplications'));
     }
 

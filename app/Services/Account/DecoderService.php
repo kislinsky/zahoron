@@ -137,7 +137,7 @@ class DecoderService {
     public static function updateBurial($data){
         $user=user();
         $burial=Burial::find($data['burial_id']);
-        $slug=slug("{$data['surname']} {$data['name']} {$data['patronymic']} {$data['date_birth']}");
+        $slug=slug("{$data['surname']} {$data['name']} {$data['patronymic']} {$data['date_birth']}-{$data['date_death']}");
         $burial->update([
             'name'=>$data['name'],
             'surname'=>$data['surname'],
