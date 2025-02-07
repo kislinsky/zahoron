@@ -28,8 +28,8 @@ class SearchBurialService
     public static function searchProduct($data){
         $cemetery_ids=selectCity()->cemeteries->pluck('id');
 
-        if(isset($data['city'])){
-            $city=City::where('title','like', '%'.$data['city'].'%')->get();
+        if(isset($data['city_search_burial'])){
+            $city=City::where('title','like', '%'.$data['city_search_burial'].'%')->get();
             if($city[0]!=null){
                 $cemetery_ids=$city[0]->cemeteries->pluck('id');
             }

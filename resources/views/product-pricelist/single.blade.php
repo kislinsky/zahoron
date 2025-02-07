@@ -20,7 +20,7 @@
             <div class="ul_advice">
                 @foreach($advices as $advice)
                     <div class="li_advice">
-                        <img src="{{asset('storage/uploads_product_price_list/'.$advice->img)}}" alt="">
+                        <img src="{{asset('storage/'.$advice->img)}}" alt="">
                         <div class="title_advice">{{$advice->title}}</div>
                     </div>
                 @endforeach
@@ -38,7 +38,7 @@
             <div class="ul_advanyages_service">
                 @foreach($advantages as $advantage)
                     <div class="li_advantage_service">
-                        <img src="{{asset('storage/uploads_product_price_list/'.$advantage->img)}}" alt="">
+                        <img src="{{asset('storage/'.$advantage->img)}}" alt="">
                         <div class="title_news">{{$advantage->title}}</div>
                         <div class="title_rewies">{{$advantage->content}}</div>
                     </div>
@@ -55,7 +55,7 @@
         @if($product->video_1!=null)
             <div class="video_service">
                 <img class='btn_play_video' src="{{asset('storage/uploads/Group 34.svg')}}" alt="">
-                <video controls src="{{asset('storage/uploads_product_price_list/'. $product->video_1 )}}"></video>
+                <video controls src="{{asset('storage/'. $product->video_1 )}}"></video>
             </div>
         @endif
 
@@ -96,8 +96,8 @@
                         <div class="li_our_work">
                             <div class="title_before_our_works">До уборки</div>
                             <div class="title_after_our_works">После уборки</div>
-                            <img src="{{asset('storage/uploads_product_price_list/'. $img_service->img_before )}}" alt="">
-                            <img src="{{asset('storage/uploads_product_price_list/'. $img_service->img_after )}}" alt="">
+                            <img src="{{asset('storage/'. $img_service->img_before )}}" alt="">
+                            <img src="{{asset('storage/'. $img_service->img_after )}}" alt="">
                         </div>
                     @endforeach
                 </div>
@@ -120,7 +120,7 @@
         @if($product->video_2!=null)
             <div class="video_service">
                 <img class='btn_play_video' src="{{asset('storage/uploads/Group 34.svg')}}" alt="">
-                <video controls src="{{asset('storage/uploads_product_price_list/'. $product->video_2 )}}"></video>
+                <video controls src="{{asset('storage/'. $product->video_2 )}}"></video>
             </div>
         @endif
 
@@ -160,7 +160,7 @@
                     <div class="ul_variants">
                         @foreach($variants as $variant)
                             <div class="li_variant">
-                                <img src="{{asset('storage/uploads_product_price_list/'. $variant->img )}}" alt="">
+                                <img src="{{asset('storage/'. $variant->img )}}" alt="">
                                 <div class="title_li">{{$variant->title}}</div>
                             </div>
                         @endforeach
@@ -184,8 +184,8 @@
                         <div class="li_our_work">
                             <div class="title_before_our_works">До уборки</div>
                             <div class="title_after_our_works">После уборки</div>
-                            <img src="{{asset('storage/uploads_product_price_list/'. $img_service->img_before )}}" alt="">
-                            <img src="{{asset('storage/uploads_product_price_list/'. $img_service->img_after )}}" alt="">
+                            <img src="{{asset('storage/'. $img_service->img_before )}}" alt="">
+                            <img src="{{asset('storage/'. $img_service->img_after )}}" alt="">
                         </div>
                     @endforeach
                 </div>

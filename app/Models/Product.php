@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
+
     protected $guarded =[];
 
     public function getImages(){
@@ -30,15 +31,21 @@ class Product extends Model
     }
 
     public function parentCategory(){
-        $cat= CategoryProduct::find($this->category_id);
-        $parent_cat=CategoryProduct::find($cat->parent_id);
-        return $parent_cat;
+        return $this->belongsTo(CategoryProduct::class, 'category_parent_id');
     }
     
     
 
     public function district(){
         return $this->belongsTo(District::class);
+    }
+
+    public function cemetery(){
+        return $this->belongsTo(Cemetery::class);
+    }
+
+    public function city(){
+        return $this->belongsTo(City::class);
     }
 
     public function memorialMenu(){

@@ -17,7 +17,7 @@ use App\Models\Product;
                             <?php $images=$product_funeral_service->getImages;?>
                             @if (isset($images))
                                 @if (count($images)>0)
-                                    <img class='img_market_product' src="{{ asset('storage/uploads_product/'.$images[0]->title) }}" alt="">
+                                    <img class='img_market_product' src="{{ $images[0]->url() }}" alt="">
                                 @endif
                             @endif
                             <a href='{{$product_funeral_service->route() }}'class="title_news">{{ $product_funeral_service->title }}</a>

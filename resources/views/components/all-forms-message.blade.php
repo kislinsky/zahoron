@@ -1,3 +1,4 @@
+
 @include('forms.beautification-burial')
 @include('forms.memorial-form')
 @include('forms.city')
@@ -74,6 +75,20 @@
 <div class="to_top">
     <img src="{{asset('storage/uploads/arrow-top-svgrepo-com.svg')}}" alt="">
 </div>
+
+
+<div class="cart_icon">
+    <img class='open_cart_icon' src="{{asset('storage/uploads/Icon (6).svg')}}" alt="">
+    <img class='close_cart_icon' src="{{asset('storage/uploads/close-svgrepo-com (8).svg')}}" alt="">
+
+    <div class="children_icon_cart">
+        <a href='{{ route('checkout.burial') }}' class='cart_icon_choose'><img class='open_cart_icon' src="{{asset('storage/uploads/Vector (58).svg')}}" alt=""></a>
+        <a href='{{ route('checkout.service') }}' class='cart_icon_choose'><img class='open_cart_icon' src="{{asset('storage/uploads/rect24962-0.svg')}}" alt=""></a>
+    </div>
+</div>
+
+
+
 
 <div class="bac_loader"></div>   
 <div class="load_block">

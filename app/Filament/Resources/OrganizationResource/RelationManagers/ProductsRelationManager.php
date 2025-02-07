@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ProductsRelationManager extends RelationManager
 {
     protected static string $relationship = 'products';
+    protected static ?string $title = 'Продукты организации';
 
     public function form(Form $form): Form
     {
@@ -30,7 +31,7 @@ class ProductsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->label('Название'),
-                Tables\Columns\TextColumn::make('price')
+                Tables\Columns\TextColumn::make('total_price')
                     ->label('Цена')
                     ->money('rub'), // Форматирование цены
                 Tables\Columns\TextColumn::make('created_at')

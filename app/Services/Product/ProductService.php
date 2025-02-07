@@ -90,7 +90,7 @@ class ProductService
             return view('product.single.single-button-grave',compact('title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
         
-        $category_products=Product::orderBy('id','desc')->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('cemetery_id',$product->cemetery_id)->get();
+        $category_products=Product::orderBy('id','desc')->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('organization_id',$product->organization->id)->get();
 
         return view('product.single.single',compact('title_h1','agent','product','organization','sales','images','parameters','category','size','additionals','comments','category_products'));
     }

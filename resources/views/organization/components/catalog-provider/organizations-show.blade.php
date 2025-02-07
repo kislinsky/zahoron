@@ -23,7 +23,7 @@
                             @endif
                         @endif
                     </div>
-                    <div class="title_blue">{{$organization_category->categoryProductProvider()->title}}: {{$organization_category->price}} ₽</div>
+                    <div class="title_blue">{{$organization_category->categoryProductProvider->title}}: {{$organization_category->price}} ₽</div>
                     <div class="flex_raiting">
                         <div class="flex_stars">
                             <img src="{{asset('storage/uploads/Frame 334.svg')}}" alt="">

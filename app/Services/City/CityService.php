@@ -20,7 +20,7 @@ class CityService {
     }
 
     public static function ajaxCity($city){
-        $cities=City::orderBy('title','asc')->where('title','like',$city.'%')->get();
+        $cities=City::orderBy('title','asc')->where('title','like','%'. $city.'%')->get();
         return view('components.components_form.cities',compact('cities'));
     }
 
@@ -30,7 +30,7 @@ class CityService {
     }
 
     public static function ajaxCityInInput($city){
-        $cities=City::orderBy('title','asc')->where('title','like',$city.'%')->get();
+        $cities=City::orderBy('title','asc')->where('title','like','%'. $city.'%')->get();
         return view('components.components_form.cities-input',compact('cities'));
     }
 
@@ -38,7 +38,7 @@ class CityService {
     public static function ajaxCitySearchInInput($data){
         $citites=[];
         if(isset($data['s']) && $data['s']!=null){
-            $cities=City::orderBy('title','asc')->where('title','like',$data['s'].'%')->get();
+            $cities=City::orderBy('title','asc')->where('title','like','%'.$data['s'].'%')->get();
         }
         return view('components.components_form.cities-input-search',compact('cities'));
     }

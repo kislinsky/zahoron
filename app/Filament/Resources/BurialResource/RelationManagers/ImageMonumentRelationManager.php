@@ -15,6 +15,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 class ImageMonumentRelationManager extends RelationManager
 {
     protected static string $relationship = 'imageMonument';
+    protected static ?string $title = 'Фотографии памятника';
 
     public function form(Form $form): Form
     {
@@ -28,8 +29,8 @@ class ImageMonumentRelationManager extends RelationManager
                 Select::make('status') // Поле для статуса
                 ->label('Статус') // Название поля
                 ->options([
-                    0 => 'В обработке', // Значение 1 с названием "Раз"
-                    1 => 'Распознан', // Значение 2 с названием "Два"
+                    0 => 'Не одобрено', // Значение 1 с названием "Раз"
+                    1 => 'Одобрено', // Значение 2 с названием "Два"
                 ])
                 ->required() // Поле обязательно для заполнения
                 ->default(1) // Значение
@@ -47,8 +48,8 @@ class ImageMonumentRelationManager extends RelationManager
                 TextColumn::make('status')
                     ->label('Статус')
                     ->formatStateUsing(fn (int $state): string => match ($state) {
-                        0 => 'В обработке', // Значение 1 с названием "Раз"
-                        1 => 'Распознан', // Значение 2 с названием "Два"
+                        0 => 'Не одобрено', // Значение 1 с названием "Раз"
+                        1 => 'Одобрено', // Значение 2 с названием "Два"
                         default => 'Неизвестно',
                     }),
             ])

@@ -14,6 +14,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 class UserRequestCountRelationManager extends RelationManager
 {
     protected static string $relationship = 'userRequestCount';
+    protected static ?string $title = 'Заявки пользователя';
 
     public function form(Form $form): Form
     {

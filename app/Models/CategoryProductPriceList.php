@@ -22,7 +22,7 @@ class CategoryProductPriceList extends Model
     }
 
     function services(){
-        return ProductPriceList::orderBy('id', 'desc')->where('category_id',$this->id)->get();
+        return $this->hasMany(ProductPriceList::class);
     }
 
 

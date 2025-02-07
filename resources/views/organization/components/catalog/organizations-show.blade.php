@@ -5,7 +5,7 @@
         
         <div class="li_organization">
 
-            <?php $category_organiaztion=$organization_category->categoryProduct();?>
+            <?php $category_organiaztion=$organization_category->categoryProduct;?>
 
 
             <div class="info_li_org_mobile li_org_mobile">

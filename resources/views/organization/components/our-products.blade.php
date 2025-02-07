@@ -15,7 +15,7 @@ use App\Models\ImageProduct;
                         <?php $images=ImageProduct::where('product_id',$product_our->id)->get();?>
                         @if (isset($images))
                             @if (count($images)>0)
-                                <img class='img_market_product' src="{{ asset('storage/uploads_product/'.$images[0]->title) }}" alt="">
+                                <img class='img_market_product' src="{{ $images[0]->url() }}" alt="">
                             @endif
                         @endif
                         <a href='{{$product_our->route()}}'class="text_gray">{{$product_our->title}} </a>

@@ -21,35 +21,31 @@ class ProductPriceList extends Model
     protected $guarded =[];
 
     function advices(){
-        return AdviceProductPriceList::orderBy('id','asc')->where('product_id',$this->id)->get();
+        return $this->hasMany(AdviceProductPriceList::class);
     }
 
     function reviews(){
-        return ReviewProductPriceList::orderBy('id','asc')->where('product_price_lists_id',$this->id)->get();
+        return $this->hasMany(ReviewProductPriceList::class);
     }
 
     function variants(){
-        return VariantProductPriceList::orderBy('id','asc')->where('product_id',$this->id)->get();
-    }
-
-    function city(){
-        return City::findOrFail($this->city_id);
+        return $this->hasMany(VariantProductPriceList::class);
     }
 
     function faqs(){
-        return FaqProductPriceList::orderBy('id','asc')->where('product_id',$this->id)->get();
+        return $this->hasMany(FaqProductPriceList::class);
     }
 
     function stages(){
-        return StageProductPriceList::orderBy('id','asc')->where('product_id',$this->id)->get();
+        return $this->hasMany(StageProductPriceList::class);
     }
 
     function imgsService(){
-        return ImageProductPriceList::orderBy('id','desc')->where('product_id',$this->id)->get();
+        return $this->hasMany(ImageProductPriceList::class);
     }
 
     function advantages(){
-        return AdvantagesProductPriceList::orderBy('id','desc')->where('product_id',$this->id)->get();
+        return $this->hasMany(AdvantagesProductPriceList::class);
     }
 
     function priceProductPriceList(){
@@ -62,4 +58,8 @@ class ProductPriceList extends Model
         return $this->priceProductPriceList->where('city_id', $cityId)->first();
     }
 
+
+    function category(){
+        return $this->belongsTo(CategoryProductPriceList::class);
+    }
 }

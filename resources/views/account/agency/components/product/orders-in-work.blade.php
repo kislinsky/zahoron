@@ -9,7 +9,7 @@
                             $images=$product->getImages;?>
                         @if (isset($images))
                             @if (count($images)>0)
-                                <img class='order_prduct_img' src="{{ asset('storage/uploads_product/'.$images[0]->title) }}" alt="">
+                                <img class='order_prduct_img' src="{{ $images[0]->url() }}" alt="">
                             @endif
                         @endif
                         <div class="mini_flex_li_product">

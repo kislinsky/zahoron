@@ -33,10 +33,18 @@ class UserResource extends Resource
                 ->label('email')
                 ->maxLength(255),
                 
-                Forms\Components\TextInput::make('password')
-                ->label('Пароль')
-                ->maxLength(255)
-                ->required(),
+
+                Select::make('status') // Поле для статуса
+                ->label('Статус') // Название поля
+                ->options([
+                    0 => 'Заблокирован',
+                    1 => 'Разблокирован',
+                ])
+                ->required() // Поле обязательно для заполнения
+                ->default(1), // Значение по умолчанию
+
+
+                
 
                 Forms\Components\TextInput::make('phone')
                 ->label('Телефон')
@@ -185,6 +193,11 @@ class UserResource extends Resource
                         'user' => 'Пользователь', 
                         'agent' => 'Работник', 
                 ]),
+                SelectFilter::make('city_id')
+                ->label('Город')
+                ->relationship('city', 'title') // Используем вложенное отношение
+                ->searchable()
+                ->preload(),
 
             ])
             ->actions([

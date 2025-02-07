@@ -8,26 +8,38 @@ class AgencyBeautificationAplicationOrganization {
 
     public static function new(){
         $organization=user()->organization();
-        $aplications=Beautification::orderBy('id','desc')->where('status',0)->where('city_id',$organization->city->id)->paginate(6);
+       $aplications=collect();
+        if($organization!=null){
+            $aplications=Beautification::orderBy('id','desc')->where('status',0)->where('city_id',$organization->city->id)->paginate(6);
+        }
         return view('account.agency.organization.aplications.beautifications.new',compact('aplications'));
     }
 
     public static function inWork(){
         $organization=user()->organization();
-        $aplications=Beautification::orderBy('id','desc')->where('status',1)->where('organization_id',$organization->id)->paginate(6);
+       $aplications=collect();
+        if($organization!=null){
+            $aplications=Beautification::orderBy('id','desc')->where('status',1)->where('organization_id',$organization->id)->paginate(6);
+        }
         return view('account.agency.organization.aplications.beautifications.in-work',compact('aplications'));
     }
 
 
     public static function completed(){
         $organization=user()->organization();
-        $aplications=Beautification::orderBy('id','desc')->where('status',2)->where('organization_id',$organization->id)->paginate(6);
+       $aplications=collect();
+        if($organization!=null){
+            $aplications=Beautification::orderBy('id','desc')->where('status',2)->where('organization_id',$organization->id)->paginate(6);
+        }
         return view('account.agency.organization.aplications.beautifications.completed',compact('aplications'));
     }
 
     public static function notCompleted(){
         $organization=user()->organization();
-        $aplications=Beautification::orderBy('id','desc')->where('status',4)->where('city_id',$organization->city->id)->paginate(6);
+       $aplications=collect();
+        if($organization!=null){
+            $aplications=Beautification::orderBy('id','desc')->where('status',4)->where('city_id',$organization->city->id)->paginate(6);
+        }
         return view('account.agency.organization.aplications.beautifications.not-completed',compact('aplications'));
     }
 

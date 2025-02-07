@@ -99,15 +99,20 @@ class AgencyOrganizationProviderService {
     }
 
     public static function createdOfferToProvider($data){
-        $categories_products_provider=CategoryProductProvider::where('parent_id','!=',null)->get();
-        $requests_to_provider=ProductRequestToSupplier::orderBy('id','desc')->where('status',0);
-        $category_choose=0;
-        if(isset($data['category']) && $data['category']!=0){
-            $requests_to_provider=$requests_to_provider->where('category_id',$data['category']);
-            $category_choose=$data['category'];
-        }
+        $user=user();
         $city=selectCity();
-        $requests=$requests_to_provider->paginate(10);
+        $categories_products_provider=CategoryProductProvider::where('parent_id','!=',null)->get();
+        $requests=collect();
+        $category_choose=0;
+        if($user->organization()!=null){
+            $requests_to_provider=ProductRequestToSupplier::orderBy('id','desc')->where($user->organization()->id)->where('status',0);
+            if(isset($data['category']) && $data['category']!=0){
+                $requests_to_provider=$requests_to_provider->where('category_id',$data['category']);
+                $category_choose=$data['category'];
+            }
+            $requests=$requests_to_provider->paginate(10);
+        }
+            
         return view('account.agency.organization.provider.offers.created',compact('city','requests','category_choose','categories_products_provider'));
     }
 
@@ -124,15 +129,20 @@ class AgencyOrganizationProviderService {
     
 
     public static function answerOfferToProvider($data){
+        $user=user();
         $categories_products_provider=CategoryProductProvider::where('parent_id','!=',null)->get();
-        $requests_to_provider=ProductRequestToSupplier::orderBy('id','desc')->where('status',1);
         $category_choose=0;
-        if(isset($data['category']) && $data['category']!=0){
-            $requests_to_provider=$requests_to_provider->where('category_id',$data['category']);
-            $category_choose=$data['category'];
-        }
+        $requests=collect();
         $city=selectCity();
-        $requests=$requests_to_provider->paginate(10);
+        if($user->organization()!=null){
+            $requests_to_provider=ProductRequestToSupplier::orderBy('id','desc')->where('organization_id',$user->organization()->id)->where('status',1);
+            if(isset($data['category']) && $data['category']!=0){
+                $requests_to_provider=$requests_to_provider->where('category_id',$data['category']);
+                $category_choose=$data['category'];
+            }
+            $requests=$requests_to_provider->paginate(10);
+        }
+       
         
         return view('account.agency.organization.provider.offers.answer',compact('city','requests','categories_products_provider','category_choose'));
     }
@@ -140,13 +150,21 @@ class AgencyOrganizationProviderService {
 
 
     public static function answerRequestsCostProductSuppliers(){
-        $requests=RequestsCostProductsSupplier::orderBy('id','desc')->where('status',1)->paginate(10);
+        $user=user();
+        $requests=collect();
+        if($user->organization()!=null){
+            $requests=RequestsCostProductsSupplier::orderBy('id','desc')->where('status',1)->paginate(10);
+        }
         return view('account.agency.organization.provider.requests.answer',compact('requests'));
 
     }
 
     public static function createdRequestsCostProductSuppliers(){
-        $requests=RequestsCostProductsSupplier::orderBy('id','desc')->where('status',0)->paginate(10);
+        $user=user();
+        $requests=collect();
+        if($user->organization()!=null){
+            $requests=RequestsCostProductsSupplier::orderBy('id','desc')->where('status',0)->paginate(10);
+        }
         return view('account.agency.organization.provider.requests.created',compact('requests'));
     }
 

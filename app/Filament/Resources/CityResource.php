@@ -30,9 +30,9 @@ class CityResource extends Resource
                     ->label('Название')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('edge_id')
-                    ->label('Край')
-                    ->relationship('edge', 'title')
+                Forms\Components\Select::make('area_id')
+                    ->label('Округ')
+                    ->relationship('area', 'title')
                     ->required()
                     ->searchable()
                     ->preload(),
@@ -51,8 +51,8 @@ class CityResource extends Resource
                     ->label('Название')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('edge.title')
-                    ->label('Край')
+                Tables\Columns\TextColumn::make('area.title')
+                    ->label('Округ')
                     ->searchable()
                     ->sortable(),
             ])

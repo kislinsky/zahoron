@@ -14,15 +14,21 @@ class ActivityCategoryOrganization extends Model
 
     public function organization(){
         return $this->belongsTo(Organization::class);
-        // return Organization::find($this->organization_id);
     }
 
     public function categoryProduct(){
-        return CategoryProduct::find($this->category_children_id);
+        return $this->belongsTo(CategoryProduct::class, 'category_children_id');
     }
 
+
     public function categoryProductProvider(){
-        return CategoryProductProvider::find($this->category_children_id);
+        return $this->belongsTo(CategoryProductProvider::class, 'category_children_id');
     }
+
+    function city(){
+        return $this->belongsTo(City::class);
+    }
+
+    
 }
 

@@ -911,3 +911,23 @@ $(".open_children_object").click(function() {
   $(this).siblings('.ul_objects_children').toggleClass('active_ul_objects_children')
 
 });
+
+
+
+$('.select_role').on( "change", function() {
+  val=$(this).children('option:checked').val()
+
+  if(val=='organization' || val=='organization-provider'){
+      $('.input_organization').addClass('block_input')
+  }else{
+      $('.input_organization').removeClass('block_input')
+  }
+})
+
+
+$(".cart_icon").click(function() {
+  $(this).children('.open_cart_icon').toggle()
+  $(this).children('.close_cart_icon').toggle()
+  $(this).children('.children_icon_cart').toggleClass('children_icon_cart_active')
+
+});

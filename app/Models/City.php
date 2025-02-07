@@ -56,6 +56,10 @@ class City extends Model
         return $this->hasMany(PriceProductPriceList::class);
     }
 
+
+    function users(){
+        return $this->hasMany(User::class);
+    }
     
   
 }

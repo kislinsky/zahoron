@@ -70,8 +70,16 @@
 
                     <div class="block_content_organization_single info_about_organization">
                         <div class="title_li title_li_organization_single">ООО “{{ $organization->title }}”</div>
-                        <div class="text_black">Юридический адрес {{ $organization->user->adres }}</div>
-                        <div class="text_black">ИНН: {{ $organization->user->inn }}</div>
+                        <div class="text_black">Юридический адрес 
+                            @if($organization->user!=null)
+                                {{$organization->user->adres }} 
+                            @endif
+                        </div>
+                        <div class="text_black">ИНН: 
+                            @if($organization->user!=null)
+                                {{$organization->user->inn }} 
+                            @endif
+                        </div>
                         <div class="text_black">Свидетельство регистрации от 17.07.2015</div>
                         <div class="text_black">Регистрирующий орган: Нзвание органа</div>
                         <div class="text_black">Зарегистрирован в Реестре бытовых услуг 28.11.2017, номер 0000000737722</div>

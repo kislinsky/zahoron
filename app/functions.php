@@ -173,7 +173,9 @@ function filterProducts($data){
     $products=$products->where('category_id',$category->id);
     if($category->parent_id==36){
         if(isset($data['cemetery_id'])  && $data['cemetery_id']!='undefined'){
-            $products=$products->where('cemetery_id',$data['cemetery_id']);
+            $products=$products->whereHas('organization', function ($query) use ($data) {
+                $query->whereRaw("FIND_IN_SET(?, cemetery_ids)", [$data['cemetery_id']]);
+            });
          }
 
          if(isset($data['size'])){
@@ -358,7 +360,9 @@ function ddata(){
 
 
 function organizationRatingFuneralAgenciesPrices($city){
-    $sorted_organizations_ids=ActivityCategoryOrganization::whereIn('category_children_id',[32,33,34,35])->where('price','!=',null)->where('city_id',$city)->pluck('organization_id');
+    $sorted_organizations_ids=ActivityCategoryOrganization::whereIn('category_children_id',[32,33,34,35])->where('price','!=',null)->whereHas('organization', function ($query) use ($city) {
+        $query->where('city_id', $city);
+    })->pluck('organization_id');
     $orgainizations=Organization::whereIn('id',$sorted_organizations_ids)->get()->map(function ($organization) {
         $price_1=ActivityCategoryOrganization::where('category_children_id',32)->where('organization_id',$organization->id)->get();
         $price_2=ActivityCategoryOrganization::where('category_children_id',33)->where('organization_id',$organization->id)->get();
@@ -385,7 +389,9 @@ function organizationRatingFuneralAgenciesPrices($city){
 
 function organizationRatingUneralBureausRavesPrices($city){
 
-    $sorted_organizations_ids=ActivityCategoryOrganization::whereIn('category_children_id',[29,30,39])->where('price','!=',null)->where('city_id',$city)->pluck('organization_id');
+    $sorted_organizations_ids=ActivityCategoryOrganization::whereIn('category_children_id',[29,30,39])->where('price','!=',null)->whereHas('organization', function ($query) use ($city) {
+        $query->where('city_id', $city);
+    })->pluck('organization_id');
     $orgainizations=Organization::whereIn('id',$sorted_organizations_ids)->get()->map(function ($organization) {
         $price_1=ActivityCategoryOrganization::where('category_children_id',29)->where('organization_id',$organization->id)->get();
         $price_2=ActivityCategoryOrganization::where('category_children_id',30)->where('organization_id',$organization->id)->get();
@@ -406,14 +412,18 @@ function organizationRatingUneralBureausRavesPrices($city){
 
 
 function organizationratingEstablishmentsProvidingHallsHoldingCommemorations($city){
-    $sorted_organizations=ActivityCategoryOrganization::where('category_children_id',46)->where('price','!=',null)->orderBy('price','asc')->where('city_id',$city)->get();
+    $sorted_organizations=ActivityCategoryOrganization::where('category_children_id',46)->where('price','!=',null)->orderBy('price','asc')->whereHas('organization', function ($query) use ($city) {
+        $query->where('city_id', $city);
+    })->get();
     return $sorted_organizations->take(10);
 }
 
 
 function savingsPrice($id){
     $city=selectCity();
-    $orgainizations=ActivityCategoryOrganization::where('category_children_id',$id)->where('price','!=',null)->orderBy('price','asc')->where('city_id',$city->id)->get();
+    $orgainizations=ActivityCategoryOrganization::where('category_children_id',$id)->where('price','!=',null)->orderBy('price','asc')->whereHas('organization', function ($query) use ($city) {
+        $query->where('city_id', $city->id);
+    })->get();
 
     if(count($orgainizations)>0){
         $price=$orgainizations->last()->price-$orgainizations->first()->price;
@@ -425,7 +435,9 @@ function savingsPrice($id){
 }
 
 function reviewsOrganization($city){
-    $reviews_organization=ReviewsOrganization::orderBy('id','desc')->where('status',1)->where('city_id',$city)->get()->take(8);
+    $reviews_organization=ReviewsOrganization::orderBy('id','desc')->where('status',1)->whereHas('organization', function ($query) use ($city) {
+        $query->where('city_id', $city);
+    })->get()->take(8);
     return $reviews_organization;
 }
 
@@ -516,9 +528,14 @@ function countReviewsOrganization($organization){
 function orgniaztionsFilters($data){
     $city=selectCity();
     if(isset($data['category_id'])){
-        $organizations_category=ActivityCategoryOrganization::where('category_children_id',$data['category_id'])->where('city_id',$city->id)->where('role','organization');
+
+        $organizations_category=ActivityCategoryOrganization::where('category_children_id',$data['category_id'])->whereHas('organization', function ($query) use ($city) {
+            $query->where('city_id', $city->id)->where('role','organization');
+        });
     }else{
-        $organizations_category=ActivityCategoryOrganization::where('category_children_id',categoryProductChoose()->id)->where('city_id',$city->id)->where('role','organization');
+        $organizations_category=ActivityCategoryOrganization::where('category_children_id',categoryProductChoose()->id)->whereHas('organization', function ($query) use ($city) {
+            $query->where('city_id', $city->id)->where('role','organization');
+        });
     }
     if(isset($data['cemetery_id']) && $data['cemetery_id']!=null && $data['cemetery_id']!='null'){
         $cemetery_id=$data['cemetery_id'];
@@ -570,7 +587,9 @@ function organizationsPrices($data){
     if(isset($data['category_id'])){
         $category_id=$data['category_id'];
     }
-    $organizations_prices=ActivityCategoryOrganization::where('category_children_id',$category_id)->where('city_id',$city->id)->where('role','organization');
+    $organizations_prices=ActivityCategoryOrganization::where('category_children_id',$category_id)->whereHas('organization', function ($query) use ($city) {
+        $query->where('city_id', $city->id)->where('role','organization');
+    });
     if (isset($data['cemetery_id']) && $data['cemetery_id']!=null && $data['cemetery_id']!='null' ){
         $cemetery_id=$data['cemetery_id'];
         $organizations_prices=$organizations_prices->where(function($item) use ($cemetery_id){
@@ -649,9 +668,13 @@ function orgniaztionsProviderFilters($data){
     }
 
     if(isset($data['category_id']) && $data['category_id']!=null){
-        $organizations_category=ActivityCategoryOrganization::where('category_children_id',$data['category_id'])->where('city_id',$city->id)->where('role','organization-provider');
+        $organizations_category=ActivityCategoryOrganization::where('category_children_id',$data['category_id'])->whereHas('organization', function ($query) use ($city) {
+            $query->where('city_id', $city->id)->where('role','organization-provider');
+        });
     }else{
-        $organizations_category=ActivityCategoryOrganization::where('category_children_id',categoryProductProviderChoose()->id)->where('city_id',$city->id)->where('role','organization-provider');
+        $organizations_category=ActivityCategoryOrganization::where('category_children_id',categoryProductProviderChoose()->id)->whereHas('organization', function ($query) use ($city) {
+            $query->where('city_id', $city->id)->where('role','organization-provider');
+        });
     }
      
     
@@ -701,7 +724,9 @@ function organizationsProviderPrices($data){
         $category_id=$data['category_id'];
     }
     
-    $organizations_prices=ActivityCategoryOrganization::where('category_children_id',$category_id)->where('city_id',$city->id)->where('role','organization-provider');
+    $organizations_prices=ActivityCategoryOrganization::where('category_children_id',$category_id)->whereHas('organization', function ($query) use ($city) {
+        $query->where('city_id', $city->id)->where('role','organization-provider');
+    });
    
     if(isset($data['filter_work']) && $data['filter_work']!=null){
         if($data['filter_work']=='on'){
@@ -738,7 +763,9 @@ function searchOrganization($name){
 
 
 function cityWithOrganizationProvider(){
-    $ids_city=ActivityCategoryOrganization::where('role','organization-provider')->pluck('city_id');
+    $ids_city=ActivityCategoryOrganization::whereHas('organization', function ($query)  {
+        $query->where('role','organization-provider');
+    })->pluck('city_id');
     $cities=City::whereIn('id',$ids_city)->get();
     return $cities;
 }
@@ -1331,8 +1358,11 @@ function convertToCarbon($dateString)
 
 
 function minPriceCategoryProductOrganization($slug){
+    $city=selectCity();
     $cat=CategoryProduct::where('slug',$slug)->first();
-    $price=ActivityCategoryOrganization::where('city_id',selectCity()->id)->where('category_children_id',$cat->id)->min('price');
+    $price=ActivityCategoryOrganization::whereHas('organization', function ($query) use ($city) {
+        $query->where('city_id', $city->id);
+    })->where('category_children_id',$cat->id)->min('price');
     if($price!=null){
         return $price;
     }
@@ -1588,7 +1618,7 @@ function generateSixDigitCode() {
     return str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 }
 
-function createUserWithPhone($phone,$name='',$role='user'){
+function createUserWithPhone($phone,$name='',$role='user',$inn='',$organization_form=''){
 
     $user=User::where('phone',$phone)->get();
     if(isset($user[0])){
@@ -1604,6 +1634,9 @@ function createUserWithPhone($phone,$name='',$role='user'){
         'name'=>$name,
         'phone'=>$phone,
         'password'=>Hash::make($password),
+        'role'=>$role,
+        'organization_form'=>$organization_form,
+        'inn'=>$inn,
     ]);
     return $userCreate;
 
@@ -1612,3 +1645,5 @@ function createUserWithPhone($phone,$name='',$role='user'){
 function edges(){
     return Edge::orderBy('title','asc')->get();
 }
+
+

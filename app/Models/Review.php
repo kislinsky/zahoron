@@ -11,10 +11,10 @@ class Review extends Model
     protected $guarded =[];
 
     public function urlImgBefore(){
-        return asset('storage/'.$this->imgBefore);
+        return asset('storage/'.$this->img_before);
     }
 
     public function urlImgAfter(){
-        return asset('storage/'.$this->imgBefore);
+        return asset('storage/'.$this->img_after);
     }
 }

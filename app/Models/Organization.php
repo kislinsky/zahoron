@@ -45,7 +45,7 @@ class Organization extends Model
 
     public function urlImg(){
         if($this->href_img==0){
-            return asset('storage/uploads_organization/'.$this->logo);
+            return asset('storage/'.$this->logo);
         }
         return $this->logo;
     }
@@ -123,5 +123,13 @@ class Organization extends Model
     
     function products(){
         return $this->hasMany(Product::class);
+    }
+
+    function workingHours(){
+        return $this->hasMany(WorkingHoursOrganization::class);
+    }
+
+    function activityCategories(){
+        return $this->hasMany(ActivityCategoryOrganization::class);
     }
 }

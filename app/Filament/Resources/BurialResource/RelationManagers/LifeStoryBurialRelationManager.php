@@ -15,6 +15,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 class LifeStoryBurialRelationManager extends RelationManager
 {
     protected static string $relationship = 'lifeStory';
+    protected static ?string $title = 'Информация о человеке';
 
     public function form(Form $form): Form
     {
