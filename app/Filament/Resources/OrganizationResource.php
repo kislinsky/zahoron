@@ -10,10 +10,7 @@ use Filament\Tables\Table;
 use App\Models\Organization;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\View;
-<<<<<<< HEAD
 use Filament\Forms\Components\Select;
-=======
->>>>>>> 6bd80862a0e9deb37981c577b74dadbdfdf1e9ee
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
@@ -164,31 +161,7 @@ class OrganizationResource extends Resource
                 ->required()
                 ->maxLength(255),
                 
-<<<<<<< HEAD
            
-=======
-            FileUpload::make('logo')
-                ->label('Картинка')
-                ->directory('/uploads_organization')
-                ->image()
-                ->maxSize(2048)
-                ->required()
-   
-                ->afterStateUpdated(function ($set, $state, $record) {
-                    if ($state && $record) {
-                        // Обновляем запись в базе данных, сохраняя путь к файлу
-                        $record->update([
-                            'href_img' => $state, // Сохраняем путь к файлу
-                        ]);
-                    }
-                }),
-
-                View::make('image')
-                ->label('Текущее изображение')
-                ->view('filament.forms.components.custom-image-organization') // Указываем путь к Blade-шаблону
-                ->extraAttributes(['class' => 'custom-image-class'])
-                ->columnSpan('full'),
->>>>>>> 6bd80862a0e9deb37981c577b74dadbdfdf1e9ee
     
             RichEditor::make('mini_content') // Поле для редактирования HTML-контента
                 ->label('Краткое описание') // Соответствующая подпись

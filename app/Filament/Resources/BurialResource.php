@@ -302,10 +302,6 @@ class BurialResource extends Resource
                         2 => 'Отправлен на проверку',
                     }),
 
-<<<<<<< HEAD
-=======
-                 
->>>>>>> 6bd80862a0e9deb37981c577b74dadbdfdf1e9ee
             ])
 
             
