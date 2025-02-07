@@ -52,7 +52,11 @@ class ProductResource extends Resource
                                 return $record->route(); // Возвращаем URL продукта
                             })
                             ->openUrlInNewTab()
+<<<<<<< HEAD
                         )->hidden(fn (?Product $record) => is_null($record)),
+=======
+                        ),
+>>>>>>> 6bd80862a0e9deb37981c577b74dadbdfdf1e9ee
 
 
                 Forms\Components\Select::make('organization_id')
@@ -119,6 +123,10 @@ class ProductResource extends Resource
                         'codeBlock', // блок кода
                         'undo', 'redo', // отмена/возврат действия
                     ])
+<<<<<<< HEAD
+=======
+                    ->required() // Опционально: сделать поле обязательным
+>>>>>>> 6bd80862a0e9deb37981c577b74dadbdfdf1e9ee
                     ->disableLabel(false) // Показывать метку
                     ->placeholder('Введите HTML-контент здесь...'),
 
@@ -126,7 +134,11 @@ class ProductResource extends Resource
 
             Select::make('category_parent_id')
                 ->label('Категория')
+<<<<<<< HEAD
                 ->options(CategoryProduct::where('parent_id',null)->pluck('title', 'id')) // Список всех категорий
+=======
+                ->options(CategoryProduct::all()->pluck('title', 'id')) // Список всех категорий
+>>>>>>> 6bd80862a0e9deb37981c577b74dadbdfdf1e9ee
                 ->searchable() // Добавляем поиск по тексту
                 ->reactive() // Делаем поле реактивным
                 ->afterStateUpdated(function ($state, callable $set) {
@@ -166,6 +178,14 @@ class ProductResource extends Resource
                 ->searchable()
                 ->preload(),
 
+<<<<<<< HEAD
+=======
+                Forms\Components\Select::make('cemetery_id')
+                ->label('Кладбище')
+                ->relationship('cemetery', 'title')
+                ->searchable()
+                ->preload(),
+>>>>>>> 6bd80862a0e9deb37981c577b74dadbdfdf1e9ee
 
                 Forms\Components\TextInput::make('material')
                     ->label('Материал')

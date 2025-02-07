@@ -101,7 +101,6 @@ if($city!='livewire'){
 //     Route::get('/change-city/{selectedCity}', [CityController::class, 'changeCity'])->name('city.change');
 // });
 
-
 Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
    
     Auth::routes();

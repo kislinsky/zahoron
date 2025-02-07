@@ -176,7 +176,11 @@ class CemeteryResource extends Resource
                     ->label('Текущее изображение')
                     ->view('filament.forms.components.custom-image') // Указываем путь к Blade-шаблону
                     ->extraAttributes(['class' => 'custom-image-class'])
+<<<<<<< HEAD
                     ->columnSpan('full')->hidden(fn (?Cemetery $record) => is_null($record)),
+=======
+                    ->columnSpan('full'),
+>>>>>>> 6bd80862a0e9deb37981c577b74dadbdfdf1e9ee
                     
                 RichEditor::make('content') // Поле для редактирования HTML-контента
                     ->label('Описание') // Соответствующая подпись

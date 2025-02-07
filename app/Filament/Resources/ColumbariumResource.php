@@ -206,7 +206,11 @@ class ColumbariumResource extends Resource
                     ->label('Текущее изображение')
                     ->view('filament.forms.components.custom-image') // Указываем путь к Blade-шаблону
                     ->extraAttributes(['class' => 'custom-image-class'])
+<<<<<<< HEAD
                     ->columnSpan('full')->hidden(fn (?Columbarium $record) => is_null($record)),
+=======
+                    ->columnSpan('full'),
+>>>>>>> 6bd80862a0e9deb37981c577b74dadbdfdf1e9ee
 
                     
                     Forms\Components\TextInput::make('adres')
