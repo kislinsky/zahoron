@@ -13,6 +13,10 @@ class Cemetery extends Model
     protected $guarded =[];
 
 
+    function burials(){
+        return $this->hasMany(Burial::class);
+    }
+
     public function city(){
         return $this->belongsTo(City::class);
     }
@@ -72,9 +76,9 @@ class Cemetery extends Model
 
     public function urlImg(){
         if($this->href_img==0){
-            return asset('storage/'.$this->img);
+            return asset('storage/'.$this->img_file);
         }
-        return $this->img;
+        return $this->img_url;
     }
     
     public function ulWorkingDays(){    
@@ -112,5 +116,9 @@ class Cemetery extends Model
         return $this->hasMany(PriceService::class);
     }
 
+
+    function workingHours(){
+        return $this->hasMany(WorkingHoursCemetery::class);
+    }
 
 }

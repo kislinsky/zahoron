@@ -267,6 +267,7 @@ function mobilePages(){
             ['Поиск могил',''],
 
             [
+                ['Поиск',route('search.burial')],
                 ['Герои',route('page.search.burial.filter')],
                 ['Заявка на поиск',route('page.search.burial.request')],
             ],

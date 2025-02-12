@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Burial;
 use App\Models\Cemetery;
-use App\Models\Faq;
 use App\Models\City;
+use App\Models\Faq;
 use App\Models\PriceProductPriceList;
 use App\Models\PriceService;
-use App\Services\Page\IndexService;
-use App\Services\OurWork\OurWorkService;
+use App\Models\WorkingHoursCemetery;
 use App\Services\Burial\SearchBurialService;
+use App\Services\OurWork\OurWorkService;
+use App\Services\Page\IndexService;
 
 
 class MainController extends Controller

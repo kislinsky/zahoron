@@ -10,4 +10,8 @@ class WorkingHoursCemetery extends Model
     use HasFactory;
     protected $guarded =[];
 
+
+    function cemetery(){
+        return $this->belongsTo(Cemetery::class);
+    }
 }

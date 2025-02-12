@@ -46,11 +46,13 @@ class Columbarium extends Model
         return ReviewColumbarium::where('columbarium_id',$this->id)->where('status',1)->count();
     }
 
+
+
     public function urlImg(){
         if($this->href_img==0){
-            return asset('storage/uploads_columbarium/'.$this->img);
+            return asset('storage/'.$this->img_file);
         }
-        return $this->img;
+        return $this->img_url;
     }
 
     public function ulWorkingDays(){    
@@ -90,5 +92,8 @@ class Columbarium extends Model
         return 'Выходной';
     }
 
+    function workingHours(){
+        return $this->hasMany(WorkingHoursColumbarium::class);
+    }
 
 }

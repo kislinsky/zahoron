@@ -3,6 +3,7 @@
 namespace App\Services\Parser;
 
 use App\Models\Burial;
+use App\Models\Cemetery;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -16,9 +17,9 @@ class ParserBurialService
         $sheet = $spreadsheet->getActiveSheet();
         $burials = array_slice($sheet->toArray(),1);
         foreach($burials as $burial){
+            $city=createCity($burial[2],$burial[1],);
+            $cemetery=createCemetery($burial[3],$city->title,str_replace(',','.',$burial[9]),str_replace(',','.',$burial[10]));
 
-            $city=createCity($burial[2],$burial[1]);
-            $cemetery=createCemetery($burial[3],$burial[2],str_replace(',','.',$burial[9]),str_replace(',','.',$burial[10]));
             $status=1;
             if($burial[16]!='Готово'){
                 $status=0;
@@ -33,12 +34,14 @@ class ParserBurialService
                     'date_birth'=>$burial[14],
                     'status'=>$status,
                     'href_img'=>1,
-                    'who'=>'Неопознанный',
+                    'who'=>'Гражданский',
                     'img'=>$burial[7],
+                    'img_original'=>$burial[8],
+
                     'width'=>str_replace(',','.',$burial[9]),
                     'longitude'=>str_replace(',','.',$burial[10]),
                     'cemetery_id'=>$cemetery->id ,
-                    'slug'=>slug("$burial[11]-$burial[12]-$burial[13]-$burial[15]"),
+                    'slug'=>slug("$burial[11]-$burial[12]-$burial[13]-$burial[14]-$burial[15]"),
                     'location_death'=>"Россия,$burial[1],$burial[2]",
                 ]);
                 

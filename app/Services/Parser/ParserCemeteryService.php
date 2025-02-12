@@ -7,7 +7,9 @@ use App\Models\City;
 
 use App\Models\Edge;
 use App\Models\ImageCemetery;
+use App\Models\PriceService;
 use App\Models\ReviewCemetery;
+use App\Models\Service;
 use App\Models\WorkingHoursCemetery;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -101,28 +103,27 @@ class ParserCemeteryService
         $sheet = $spreadsheet->getActiveSheet();
         $cemeteries = array_slice($sheet->toArray(),1);
         foreach($cemeteries as $cemetery){
-            $city=createCity($cemetery[7],$cemetery[5]);
-            $area=createArea($cemetery[6],$cemetery[5]);
-            if($city!=null && $area!=null && $cemetery[10]!=null && $cemetery[11]!=null){
+            $city=createCity($cemetery[5],$cemetery[3]);
+            $area=createArea($cemetery[4],$cemetery[3]);
+            if($city!=null && $area!=null && $cemetery[6]!=null && $cemetery[7]!=null){
                 // $timezone=getTimeByCoordinates($cemetery[10],$cemetery[11])['timezone'];                
                 $cemetery_create=Cemetery::create([
-                    'title'=>$cemetery[3],
-                    'adres'=>$cemetery[8],
-                    'width'=>$cemetery[9],
-                    'longitude'=>$cemetery[10],
+                    'title'=>$cemetery[1],
+                    'adres'=>$cemetery[5],
+                    'width'=>$cemetery[6],
+                    'longitude'=>$cemetery[7],
                     'img'=>'https://api.selcdn.ru/v1/SEL_266534/Images/main/Petropavlovsk-Kamchatsky/Cemeteries/70000001057067323!/Funeral-Services.jpg',
                     'city_id'=>$city->id,
                     'href_img'=>1,
-                    'phone'=>phoneImport($cemetery[11]),
+                    'phone'=>phoneImport($cemetery[8]),
                     'area_id'=>$area->id,
                     // 'time_difference'=>differencetHoursTimezone($timezone),
                     'time_difference'=>10,
-                    'square'=>$cemetery[19],
-                    'responsible'=>$cemetery[20],
-                    'cadastral_number'=>$cemetery[21],
+                    'square'=>$cemetery[15],
+                    'responsible'=>$cemetery[16],
+                    'cadastral_number'=>$cemetery[17],
                 ]);
 
-                
 
                 $days=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
                 foreach($days as $day){
@@ -134,6 +135,28 @@ class ParserCemeteryService
                         'cemetery_id'=>$cemetery_create->id,
                     ]);
                 }
+
+                
+                    PriceService::create([
+                        'cemetery_id'=>$cemetery_create->id,
+                        'price'=>8900,
+                        'service_id'=>5
+                    ]);
+                    PriceService::create([
+                        'cemetery_id'=>$cemetery_create->id,
+                        'price'=>10900,
+                        'service_id'=>6
+                    ]);
+                    PriceService::create([
+                        'cemetery_id'=>$cemetery_create->id,
+                        'price'=>4900,
+                        'service_id'=>7
+                    ]);
+                    PriceService::create([
+                        'cemetery_id'=>$cemetery_create->id,
+                        'price'=>3900,
+                        'service_id'=>8
+                    ]);
 
             }
         }

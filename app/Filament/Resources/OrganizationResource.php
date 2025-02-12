@@ -2,28 +2,33 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use App\Models\Cemetery;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use App\Models\Organization;
-use Filament\Resources\Resource;
-use Filament\Forms\Components\View;
-use Filament\Forms\Components\Select;
-use Illuminate\Database\Eloquent\Model;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\RichEditor;
-use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\Placeholder;
-use Filament\Tables\Filters\MultiSelectFilter;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\OrganizationResource\Pages;
 use App\Filament\Resources\OrganizationResource\RelationManagers;
+use App\Filament\Resources\OrganizationResource\RelationManagers\ActivityCategoriesRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\ProductsRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\WorkingHoursRelationManager;
-use App\Filament\Resources\OrganizationResource\RelationManagers\ActivityCategoriesRelationManager;
+use App\Models\Cemetery;
+use App\Models\Organization;
+use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\View;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Filters\MultiSelectFilter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class OrganizationResource extends Resource
 {
@@ -36,27 +41,40 @@ class OrganizationResource extends Resource
     {
         return $form
         ->schema([
+            Radio::make('href_img')
+            ->label('Выберите источник изображения')
+            ->options([
+                0 => 'Файл на сайте',
+                1 => 'Ссылка (URL)'
+            ])
+            ->inline()
+            ->live(), // Автоматически обновляет форму при изменении
 
-            FileUpload::make('logo')
-            ->label('Картинка')
-            ->directory('/uploads_organization')
+        // Поле для ссылки (отображается только если выбран вариант "Ссылка")
+        TextInput::make('img_url')
+            ->label('Ссылка на изображение')
+            ->placeholder('https://example.com/image.jpg')
+            ->reactive()
+            ->required(fn ($get) => intval($get('href_img')) === 1)
+            ->hidden(fn ($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
+
+        // Поле для загрузки файла (отображается только если выбран вариант "Файл на сайте")
+        FileUpload::make('img_file')
+            ->label('Загрузить изображение')
+            ->directory('/uploads_mortuaries') // Директория для хранения файлов
             ->image()
             ->maxSize(2048)
+            ->reactive()
+            ->required(fn ($get) => intval($get('href_img')) === 0)
+            ->hidden(fn ($get) => intval($get('href_img')) === 1), // Скрыто, если выбрано "Ссылка"
 
-            ->afterStateUpdated(function ($set, $state, $record) {
-                if ($state && $record) {
-                    // Обновляем запись в базе данных, сохраняя путь к файлу
-                    $record->update([
-                        'href_img' => 0, // Сохраняем путь к файлу
-                    ]);
-                }
-            }),
-
-            View::make('image')
+        // Отображение текущего изображения (если запись уже существует)
+        View::make('image')
             ->label('Текущее изображение')
-            ->view('filament.forms.components.custom-image-organization') // Указываем путь к Blade-шаблону
+            ->view('filament.forms.components.custom-image') // Указываем путь к Blade-шаблону
             ->extraAttributes(['class' => 'custom-image-class'])
-            ->columnSpan('full')->hidden(fn (?Organization $record) => is_null($record)),
+            ->columnSpan('full')
+            ->hidden(fn ($get) => intval($get('href_img')) === 0), 
 
             Forms\Components\TextInput::make('title')
                 ->label('Название')
@@ -71,19 +89,20 @@ class OrganizationResource extends Resource
                 ->preload(),
 
                 Select::make('cemetery_ids')
-                    ->label('Кладбища на которых работает организация')
-                    ->options(Cemetery::pluck('title', 'id')->toArray())
-                    ->multiple()
-                    ->searchable()
-                    ->required()
-                    ->default(function ($get) {
-                        $cemeteryIds = $get('cemetery_ids') ?? '';
-
-                        return array_filter(explode(',', rtrim($cemeteryIds, ',')));
-                    })
-                    ->afterStateUpdated(function ($state, $set) {
-                        $set('cemetery_ids', implode(',', (array) $state));
-                    }),
+                ->label('Кладбища, на которых работает организация')
+                ->options(Cemetery::pluck('title', 'id')->toArray()) // Загружаем кладбища
+                ->multiple() // Разрешаем выбор нескольких значений
+                ->searchable() // Добавляем поиск
+                ->required() // Обязательное поле
+                ->formatStateUsing(function ($state) {
+                    // Если данные уже есть (например, загружены из базы), преобразуем их в массив
+                    return $state ? array_map('intval', explode(',', trim($state, ','))) : [];
+                })
+                ->afterStateUpdated(function ($state, $set) {
+                    // Преобразуем массив обратно в строку для сохранения в базе данных
+                    $set('cemetery_ids', implode(',', (array) $state) . ',');
+                })
+                ->preload(),
 
             Forms\Components\TextInput::make('width')
                 ->label('Ширина')
@@ -105,9 +124,7 @@ class OrganizationResource extends Resource
                 ->label('Рядом с')
                 ->maxLength(255),
 
-            Forms\Components\TextInput::make('village')
-                ->label('Деревня')
-                ->maxLength(255),
+         
 
             Forms\Components\TextInput::make('email')
                 ->label('email')
@@ -287,6 +304,136 @@ class OrganizationResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(), // Удалить продукт
 
+            ])->headerActions([
+                \Filament\Tables\Actions\Action::make('export')
+    ->label('Экспорт в Excel')
+    ->action(function (HasTable $livewire) {
+        // Получаем текущий запрос таблицы
+        $query = Organization::query();
+
+        // Применяем фильтры таблицы, если они есть
+        if (property_exists($livewire, 'tableFilters') && !empty($livewire->tableFilters)) {
+            foreach ($livewire->tableFilters as $filterName => $filterValue) {
+                if (!empty($filterValue['value'])) {
+                    $filterValue=$filterValue['value'];
+
+                        // Простая фильтрация по значению
+                        switch ($filterName) {
+                            case 'city_id':
+
+                                // Фильтрация по city_id через отношение city
+                                $query->whereHas('city', function ($q) use ($filterValue) {
+                                    $q->where('id', $filterValue);
+                                });
+                                break;
+                            case 'area_id':
+                                // Фильтрация по area_id через отношение city.area
+                                $query->whereHas('city.area', function ($q) use ($filterValue) {
+                                    $q->where('id', $filterValue);
+                                });
+                                break;
+                            case 'edge_id':
+                                // Фильтрация по edge_id через отношение city.area.edge
+                                $query->whereHas('city.area.edge', function ($q) use ($filterValue) {
+                                    $q->where('id', $filterValue);
+                                });
+                                break;
+                            case 'cemetery_id':
+                                // Фильтрация по cemetery_id через поле cemetery_ids
+                                $query->whereRaw("FIND_IN_SET(?, cemetery_ids)", [$filterValue]);
+                                break;
+                             case 'user_id':
+
+                                    if ($filterValue === 'yes') {
+
+                                        $query->whereNotNull('user_id');
+                                    } elseif ($filterValue=== 'no') {
+                                        $query->whereNull('user_id');
+                                    }
+                                    break;
+                                default:
+                                    if (!empty($filterValue)) { // Проверка, что значение не пустое
+                                        $query->where($filterName, $filterValue);
+                                    }
+                                    break;
+                        }
+                    
+                }
+            }
+        }
+
+        // Применяем сортировку таблицы, если она есть
+        if (property_exists($livewire, 'tableSortColumn') && $livewire->tableSortColumn) {
+            $query->orderBy($livewire->tableSortColumn, $livewire->tableSortDirection ?? 'asc');
+        }
+
+        // Получаем данные с учётом фильтров и сортировки (или всю таблицу, если фильтров нет)
+        $organizations = $query->with(['city.area.edge', 'user']) // Предзагрузка отношений
+            ->get()
+            ->map(function ($organization) {
+                return [
+                    'ID' => $organization->id,
+                    'Название' => $organization->title,
+                    'Город' => $organization->city->title ?? 'Не указано',
+                    'Край' => $organization->city->area->edge->title ?? 'Не указано',
+                    'Округ' => $organization->city->area->title ?? 'Не указано',
+                    'Кладбища' => $organization->cemetery_ids,
+                    'Широта' => $organization->width,
+                    'Долгота' => $organization->longitude,
+                    'Метро' => $organization->underground,
+                    'Рядом с' => $organization->next_to,
+                    'Email' => $organization->email,
+                    'Телефон' => $organization->phone,
+                    'Адрес' => $organization->adres,
+                    'Тип организации' => $organization->name_type,
+                    'Slug' => $organization->slug,
+                    'WhatsApp' => $organization->whatsapp,
+                    'Telegram' => $organization->telegram,
+                    'Краткое описание' => $organization->mini_content,
+                    'Описание' => $organization->content,
+                    'ID пользователя' => $organization->user_id,
+                    'Дата создания' => $organization->created_at?->format('d.m.Y H:i:s'),
+                    'Рейтинг' => $organization->rating,
+                ];
+            });
+
+        // Если данные пустые, возвращаем сообщение
+        if ($organizations->isEmpty()) {
+            $organizations = Organization::query()
+                ->with(['city.area.edge', 'user']) // Предзагрузка отношений
+                ->orderBy('title') // Сортировка по названию
+                ->get()
+                ->map(function ($organization) {
+                    return [
+                        'ID' => $organization->id,
+                        'Название' => $organization->title,
+                        'Город' => $organization->city->title ?? 'Не указано',
+                        'Край' => $organization->city->area->edge->title ?? 'Не указано',
+                        'Округ' => $organization->city->area->title ?? 'Не указано',
+                        'Кладбища' => $organization->cemetery_ids,
+                        'Широта' => $organization->width,
+                        'Долгота' => $organization->longitude,
+                        'Метро' => $organization->underground,
+                        'Рядом с' => $organization->next_to,
+                        'Email' => $organization->email,
+                        'Телефон' => $organization->phone,
+                        'Адрес' => $organization->adres,
+                        'Тип организации' => $organization->name_type,
+                        'Slug' => $organization->slug,
+                        'WhatsApp' => $organization->whatsapp,
+                        'Telegram' => $organization->telegram,
+                        'Краткое описание' => $organization->mini_content,
+                        'Описание' => $organization->content,
+                        'ID пользователя' => $organization->user_id,
+                        'Дата создания' => $organization->created_at?->format('d.m.Y H:i:s'),
+                        'Рейтинг' => $organization->rating,
+                    ];
+                });
+        }
+
+        // Экспорт в Excel
+        return (new FastExcel($organizations))->download('organizations.xlsx');
+    })
             ])
             
             ->bulkActions([

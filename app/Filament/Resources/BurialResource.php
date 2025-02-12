@@ -110,11 +110,10 @@ class BurialResource extends Resource
                             ->afterStateHydrated(function (Select $component, $record) {
                                 // Устанавливаем начальное значение для edge_id при редактировании
                                 if ($record && $record->cemetery && $record->cemetery->area) {
-                                    $component->state($record->cemetery->area->edge_id);
+                                    $component->state($record->cemetery->city->area->edge_id);
                                 }
                             })
                             ->dehydrated(false), // Не сохранять значение в базу данных
-                        
                         Select::make('area_id')
                             ->label('Район')
                             ->options(function ($get) {
@@ -136,7 +135,7 @@ class BurialResource extends Resource
                             ->afterStateHydrated(function (Select $component, $record) {
                                 // Устанавливаем начальное значение для area_id при редактировании
                                 if ($record && $record->cemetery) {
-                                    $component->state($record->cemetery->area_id);
+                                    $component->state($record->cemetery->city->area_id);
                                 }
                             })
                             ->dehydrated(false), // Не сохранять значение в базу данных
@@ -145,7 +144,6 @@ class BurialResource extends Resource
                             ->label('Город')
                             ->options(function ($get) {
                                 $areaId = $get('area_id'); // Получаем выбранный район
-                        
                                 if (!$areaId) {
                                     return []; // Если район не выбран, возвращаем пустой список
                                 }
@@ -236,6 +234,7 @@ class BurialResource extends Resource
                     ->required()
                     ->unique(ignoreRecord: true) // Игнорировать текущую запись при редактировании
                     ->label('Slug')
+                    
                     ->maxLength(255),
 
                 Select::make('status') // Поле для статуса
@@ -382,7 +381,7 @@ class BurialResource extends Resource
                  
             ])
             ->actions([
-                Tables\Actions\Action::make('view')
+                Tables\Actions\Action::make('view_burial')
                 ->label('Посмотреть') // Текст кнопки
                 ->url(fn ($record) => $record->route()) // Ссылка на товар
                 ->icon('heroicon-o-eye') // Иконка "глаза"

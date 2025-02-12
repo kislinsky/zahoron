@@ -19,9 +19,9 @@ class Product extends Model
     protected $guarded =[];
 
     public function getImages(){
-        return $this->hasMany(ImageProduct::class);
+        return $this->hasMany(ImageProduct::class)->orderBy('selected','desc');
     }
-
+    
     public function getParam(){
         return $this->hasMany(ProductParameters::class);
     }

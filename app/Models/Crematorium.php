@@ -53,9 +53,9 @@ class Crematorium extends Model
 
     public function urlImg(){
         if($this->href_img==0){
-            return asset('storage/uploads_crematorium/'.$this->img);
+            return asset('storage/'.$this->img_file);
         }
-        return $this->img;
+        return $this->img_url;
     }
 
     public function ulWorkingDays(){    
@@ -88,5 +88,9 @@ class Crematorium extends Model
             return "{$get_hours->time_start_work}-{$get_hours->time_end_work}";
         }
         return 'Выходной';
+    }
+
+    function workingHours(){
+        return $this->hasMany(WorkingHoursCrematorium::class);
     }
 }

@@ -2,25 +2,32 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use App\Models\Area;
-use App\Models\City;
-use App\Models\Edge;
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use App\Models\Crematorium;
-use Filament\Resources\Resource;
-use Filament\Forms\Components\View;
-use Filament\Forms\Components\Select;
-use Illuminate\Database\Eloquent\Model;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\RichEditor;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\Placeholder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CrematoriumResource\Pages;
 use App\Filament\Resources\CrematoriumResource\RelationManagers;
+use App\Filament\Resources\CrematoriumResource\RelationManagers\WorkingHoursRelationManager;
+use App\Models\Area;
+use App\Models\City;
+use App\Models\Crematorium;
+use App\Models\Edge;
+use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\View;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class CrematoriumResource extends Resource
 {
@@ -112,22 +119,28 @@ class CrematoriumResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                Forms\Components\Select::make('district_id')
-                    ->label('Район')
-                    ->relationship('district', 'title')
-                    ->searchable()
-                    ->preload(),
+                    TextInput::make('map_link')
+                    ->label('Ссылка на карту')
+                    ->disabled()
+                    ->suffixAction(
+                        Action::make('open_map')
+                            ->button() // Отобразить как кнопку
+                            ->label('Открыть карту')
+                            ->icon('heroicon-s-map') // Иконка кнопки
+                            // Текст кнопки
+                            ->url(function ($get) {
+                                $latitude = $get('width');
+                                $longitude = $get('longitude');
 
-                Forms\Components\TextInput::make('underground')
-                    ->label('Метро')
-                    ->maxLength(255),
+                                return "https://yandex.ru/maps/?rtext=~{$latitude},{$longitude}";
+                            })
+                            ->openUrlInNewTab()
+                        ),
+
+
 
                 Forms\Components\TextInput::make('next_to')
                     ->label('Рядом с')
-                    ->maxLength(255),
-
-                Forms\Components\TextInput::make('village')
-                    ->label('Деревня')
                     ->maxLength(255),
 
                 Forms\Components\TextInput::make('email')
@@ -180,30 +193,45 @@ class CrematoriumResource extends Resource
                     ->placeholder('Введите HTML-контент здесь...'),
 
                     
-                FileUpload::make('img')
-                    ->label('Картинка') // Название поля
-                    ->directory('/uploads_crematorium') // Директория для сохранения
-                    ->image() // Только изображения (jpg, png и т.д.)
-                    ->maxSize(2048) // Максимальный размер файла в КБ
-                    ->required()
-                    ->afterStateUpdated(function ($set, $state, $record) {
-                        if ($state && $record) {
-                            
-                            // Получаем только имя файла (без директории)
-                            $filename = basename($state);
-                            
-                            // Обновляем запись в базе данных, сохраняя только имя файла
-                            $record->update([
-                                'href_img' => 0, // Или любое другое значение
-                            ]);
-                        }
-                    }),
+               
+                    Forms\Components\TextInput::make('underground')
+                    ->label('Метро')
+                    ->maxLength(255),
+                    Radio::make('href_img')
+                        ->label('Выберите источник изображения')
+                        ->options([
+                            0 => 'Файл на сайте',
+                            1 => 'Ссылка (URL)'
+                        ])
+                        ->inline()
+                        ->live(), // Автоматически обновляет форму при изменении
 
+                    // Поле для ссылки (отображается только если выбран вариант "Ссылка")
+                    TextInput::make('img_url')
+                        ->label('Ссылка на изображение')
+                        ->placeholder('https://example.com/image.jpg')
+                        ->reactive()
+                        ->required(fn ($get) => intval($get('href_img')) === 1)
+                        ->hidden(fn ($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
+
+                    // Поле для загрузки файла (отображается только если выбран вариант "Файл на сайте")
+                    FileUpload::make('img_file')
+                        ->label('Загрузить изображение')
+                        ->directory('/uploads_crematoriums') // Директория для хранения файлов
+                        ->image()
+                        ->maxSize(2048)
+                        ->reactive()
+                        ->required(fn ($get) => intval($get('href_img')) === 0)
+                        ->hidden(fn ($get) => intval($get('href_img')) === 1), // Скрыто, если выбрано "Ссылка"
+
+                    // Отображение текущего изображения (если запись уже существует)
                     View::make('image')
                         ->label('Текущее изображение')
                         ->view('filament.forms.components.custom-image') // Указываем путь к Blade-шаблону
                         ->extraAttributes(['class' => 'custom-image-class'])
-                        ->columnSpan('full')->hidden(fn (?Crematorium $record) => is_null($record)),
+                        ->columnSpan('full')
+                        ->hidden(fn ($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
+
                     
                     Forms\Components\TextInput::make('adres')
                     ->label('Адрес')
@@ -214,9 +242,8 @@ class CrematoriumResource extends Resource
                     ->label('Дата создания')
                     ->content(fn (?Model $record): string => $record?->created_at?->format('d.m.Y H:i:s') ?? ''),
                 
-                    Placeholder::make('rating')
-                    ->label('Рейтинг')
-                    ->content(fn ($state) => $state),
+                    TextInput::make('rating')
+                    ->label('Рейтинг'),
                 
                                     
             ]);
@@ -239,13 +266,154 @@ class CrematoriumResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('edge_id')
+                ->label('Край')
+                ->relationship('city.area.edge', 'title') // Вложенное отношение
+                ->searchable()
+                ->preload(),
+
+
+             // Фильтр по округу
+            SelectFilter::make('area_id')
+                ->label('Округ')
+                ->relationship('city.area', 'title') // Вложенное отношение
+                ->searchable()
+                ->preload(),
+
+            // Фильтр по городу
+            SelectFilter::make('city_id')
+                ->label('Город')
+                ->relationship('city', 'title') // Используем вложенное отношение
+                ->searchable()
+                ->preload(),
+
+                SelectFilter::make('has_phone')
+                ->label('Отсутсвует телефон')
+                ->options([
+                    'yes' => 'Да',
+                    'no' => 'Нет',
+                ])
+                ->query(function ($query, $state) {
+                    if ($state['value'] === 'no') {
+                        $query->whereNotNull('phone');
+                    } elseif ($state['value'] === 'yes') {
+                        $query->whereNull('phone');
+                    }
+                }),
+                // SelectFilter::make('has_phone')
+                // ->label('Отсутсвуют координаты')
+                // ->options([
+                //     'yes' => 'Да',
+                //     'no' => 'Нет',
+                // ])
+                // ->query(function ($query, $state) {
+                //     if ($state['value'] === 'no') {
+                //         $query->whereNotNull('width')->whereNotNull('longitude');
+                //     } elseif ($state['value'] === 'yes') {
+                //         $query->whereNull('width')->whereNull('longitude');
+                //     }
+                // }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(), // Удалить продукт
 
             ])
+            ->headerActions([
+                // Другие действия
+                \Filament\Tables\Actions\Action::make('export')
+                    ->label('Экспорт в Excel')
+                    ->action(function (HasTable $livewire) {
+        // Получаем текущий запрос таблицы
+        $query = Crematorium::query();
+
+        // Применяем фильтры таблицы, если они есть
+        if (property_exists($livewire, 'tableFilters') && !empty($livewire->tableFilters)) {
+            foreach ($livewire->tableFilters as $filterName => $filterValue) {
+                if (!empty($filterValue['value'])) {
+                    $filterValue=$filterValue['value'];
+                    switch ($filterName) {
+                        case 'edge_id':
+                            $query->whereHas('city.area.edge', function ($q) use ($filterValue) {
+                                $q->where('id', $filterValue);
+                            });
+                            break;
+                        case 'area_id':
+                            $query->whereHas('city.area', function ($q) use ($filterValue) {
+                                $q->where('id', $filterValue);
+                            });
+                            break;
+                        case 'city_id':
+                            $query->whereHas('city', function ($q) use ($filterValue) {
+                                $q->where('id', $filterValue);
+                            });
+                            break;
+                        case 'has_phone':
+                            if ($filterValue === 'no') {
+                                $query->whereNotNull('phone');
+                            } elseif ($filterValue === 'yes') {
+                                $query->whereNull('phone');
+                            }
+                            break;
+                       
+                    }
+                }
+            }
+        }
+
+        // Применяем сортировку таблицы, если она есть
+        if (property_exists($livewire, 'tableSortColumn') && $livewire->tableSortColumn) {
+            $query->orderBy($livewire->tableSortColumn, $livewire->tableSortDirection ?? 'asc');
+        }
+
+        // Получаем данные с учётом фильтров и сортировки
+        $cemeteries = $query->with(['city.area.edge', 'city.area', 'city'])
+            ->get()
+            ->map(function ($crematorium) {
+                return [
+                    'ID' => $crematorium->id,
+                    'Название' => $crematorium->title,
+                    'Ширина' => $crematorium->width,
+                    'Долгота' => $crematorium->longitude,
+                    'Ссылка на карту' => $crematorium->map_link,
+                    'Край' => $crematorium->city->area->edge->title ?? 'Не указано',
+                    'Район' => $crematorium->city->area->title ?? 'Не указано',
+                    'Город' => $crematorium->city->title ?? 'Не указано',
+                    'Ориентир' => $crematorium->adres,
+                    'Email' => $crematorium->email,
+                    'Телефон' => $crematorium->phone,
+                    'Рейтинг' => $crematorium->rating,
+                ];
+            });
+
+        // Если данные пустые, возвращаем все записи
+        if ($cemeteries->isEmpty()) {
+            $cemeteries = Crematorium::query()
+                ->with(['city.area.edge', 'city.area', 'city'])
+                ->orderBy('title')
+                ->get()
+                ->map(function ($crematorium) {
+                    return [
+                        'ID' => $crematorium->id,
+                        'Название' => $crematorium->title,
+                        'Ширина' => $crematorium->width,
+                        'Долгота' => $crematorium->longitude,
+                        'Ссылка на карту' => $crematorium->map_link,
+                        'Край' => $crematorium->city->area->edge->title ?? 'Не указано',
+                        'Район' => $crematorium->city->area->title ?? 'Не указано',
+                        'Город' => $crematorium->city->title ?? 'Не указано',
+                        'Ориентир' => $crematorium->adres,
+                        'Email' => $crematorium->email,
+                        'Телефон' => $crematorium->phone,
+                        'Рейтинг' => $crematorium->rating,
+                    ];
+                });
+        }
+
+        // Экспорт в Excel
+        return (new FastExcel($cemeteries))->download('columbariums.xlsx');
+    }),
+])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -256,7 +424,7 @@ class CrematoriumResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            WorkingHoursRelationManager::class,
         ];
     }
 

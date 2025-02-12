@@ -76,6 +76,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
             <div class="btn_bac_gray open_children_pages">
                 Поиск могил
                 <div class='children_pages'>
+                    <a href='{{ route('search.burial') }}'class="btn_bac_gray <?php if($page==11){echo ' active_label_product';}?>">Поиск </a>
                     <a href='{{ route('page.search.burial.filter') }}'class="btn_bac_gray <?php if($page==1){echo ' active_label_product';}?>">Герои </a>
                     <a href='{{ route('page.search.burial.request') }}'class="btn_bac_gray <?php if($page==3){echo ' active_label_product';}?>">Заявка на поиск</a>
                 </div>

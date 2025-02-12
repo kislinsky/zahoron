@@ -45,9 +45,9 @@ class Organization extends Model
 
     public function urlImg(){
         if($this->href_img==0){
-            return asset('storage/'.$this->logo);
+            return asset('storage/'.$this->img_file);
         }
-        return $this->logo;
+        return $this->img_url;
     }
 
     public function timeEndWorkingNow(){

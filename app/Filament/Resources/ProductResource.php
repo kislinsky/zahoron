@@ -2,25 +2,27 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use App\Models\Product;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
+use App\Filament\Resources\ProductResource\Pages;
+use App\Filament\Resources\ProductResource\RelationManagers\GetImagesRelationManager;
+use App\Filament\Resources\ProductResource\RelationManagers\GetParamRelationManager;
+use App\Filament\Resources\ProductResource\RelationManagers\MemorialMenuRelationManager;
 use App\Models\CategoryProduct;
-use Filament\Resources\Resource;
+use App\Models\Product;
+use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\Actions\Action;
-use App\Filament\Resources\ProductResource\Pages;
-use App\Filament\Resources\ProductResource\RelationManagers\GetParamRelationManager;
-use App\Filament\Resources\ProductResource\RelationManagers\GetImagesRelationManager;
-use App\Filament\Resources\ProductResource\RelationManagers\MemorialMenuRelationManager;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class ProductResource extends Resource
 {
@@ -63,37 +65,26 @@ class ProductResource extends Resource
                     ->preload(),
 
 
-
                     TextInput::make('price')
                     ->label('Цена')
                     ->required()
                     ->numeric()
-                    ->afterStateUpdated(function (Get $get, Set $set) {
-                        // Обновляем total_price при изменении price
-                        $set('total_price', $get('price'));
-                        // Для отладки
-                        logger()->info('Price updated. Total price:', ['total_price' => $get('total_price')]);
-                    }),
+                    ->live() // Делаем поле реактивным
+                    ->afterStateUpdated(fn (Get $get, Set $set) => $set('total_price', $get('price_sale') ?: $get('price'))), // Обновляем total_price
                 
                 TextInput::make('price_sale')
                     ->label('Цена со скидкой')
                     ->numeric()
-                    ->afterStateUpdated(function (Get $get, Set $set) {
-                        if (!empty($get('price_sale'))) {
-                            // Если price_sale не пустое, обновляем total_price
-                            $set('total_price', $get('price_sale'));
-                        } else {
-                            // Если price_sale пустое, возвращаем total_price к значению price
-                            $set('total_price', $get('price'));
-                        }
-                        // Для отладки
-                        logger()->info('Price sale updated. Total price:', ['total_price' => $get('total_price')]);
-                    }),
+                    ->live() // Делаем поле реактивным
+                    ->afterStateUpdated(fn (Get $get, Set $set) => 
+                        $set('total_price', !empty($get('price_sale')) ? $get('price_sale') : $get('price'))
+                    ), // Если \price_sale\ указано, берем его, иначе — \price\
                 
                 TextInput::make('total_price')
                     ->label('Итоговая цена')
                     ->numeric()
-                    ->hidden(),
+                    ->disabled() // Запрещаем редактирование вручную
+                    ->dehydrated(),
 
 
 
@@ -240,11 +231,140 @@ class ProductResource extends Resource
                 ->relationship('city', 'title') // Используем отношение city
                 ->searchable()
                 ->preload(),
+
+
+                SelectFilter::make('cemetery_id')
+                ->form([
+                    Select::make('cemetery_id')
+                        ->label('Кладбище')
+                        ->options(fn () => \App\Models\Cemetery::pluck('title', 'id'))
+                        ->searchable(),
+                ])
+                ->query(function (Builder $query, array $data) {
+                    if (!isset($data['cemetery_id']) || empty($data['cemetery_id'])) {
+                        return;
+                    }
+
+                    $query->whereHas('organization', function ($query) use ($data) {
+                        $query->whereRaw("FIND_IN_SET(?, cemetery_ids)", [$data['cemetery_id']]);
+                    });
+                }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(), // Удалить продукт
+                
 
+            ])
+
+            ->headerActions([
+                \Filament\Tables\Actions\Action::make('export')
+    ->label('Экспорт в Excel')
+    ->action(function (HasTable $livewire) {
+        // Получаем текущий запрос таблицы
+        $query = Product::query();
+
+        // Применяем фильтры таблицы, если они есть
+        if (property_exists($livewire, 'tableFilters') && !empty($livewire->tableFilters)) {
+            foreach ($livewire->tableFilters as $filterName => $filterValue) {
+                if (!empty($filterValue)) {
+                   
+                        // Простая фильтрация по значению
+                        switch ($filterName) {
+                            case 'city_id':
+                                // Фильтрация по city_id через отношение city
+                                $query->whereHas('city', function ($q) use ($filterValue) {
+                                    $q->where('id', $filterValue);
+                                });
+                                break;
+                                
+                            case 'category_parent_id':
+                                // Фильтрация по родительской категории
+                                $query->whereHas('parentCategory', function ($q) use ($filterValue) {
+                                    $q->where('id', $filterValue);
+                                });
+                                break;
+                                
+                            case 'category_id':
+                                // Фильтрация по подкатегории
+                                $query->whereHas('category', function ($q) use ($filterValue) {
+                                    $q->where('id', $filterValue);
+                                });
+                                break;
+                        
+                          
+                                
+                           
+                        }
+                    
+                }
+            }
+        }
+
+        // Применяем сортировку таблицы, если она есть
+        if (property_exists($livewire, 'tableSortColumn') && $livewire->tableSortColumn) {
+            $query->orderBy($livewire->tableSortColumn, $livewire->tableSortDirection ?? 'asc');
+        }
+
+        // Получаем данные с учётом фильтров и сортировки (или всю таблицу, если фильтров нет)
+        $products = $query->with(['parentCategory', 'category', 'city']) // Предзагрузка отношений
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'ID' => $product->id,
+                    'Название' => $product->title,
+                    'Ссылка на товар' => $product->map_link,
+                    'Организация' => $product->organization->title ?? 'Не указано',
+                    'Цена' => $product->price,
+                    'Цена со скидкой' => $product->price_sale,
+                    'Slug' => $product->slug,
+                    'Описание' => $product->content,
+                    'Категория' => $product->parentCategory->title ?? 'Не указано',
+                    'Подкатегория' => $product->category->title ?? 'Не указано',
+                    'Город' => $product->city->title ?? 'Не указано',
+                    'Материал' => $product->material,
+                    'Цвет' => $product->color,
+                    'Тип продукта' => $product->layering,
+                    'Кафе' => $product->cafe,
+                    'Размеры' => $product->size,
+                    'Широта' => $product->location_width,
+                    'Долгота' => $product->location_longitude,
+                ];
+            });
+
+        // Если данные пустые, возвращаем сообщение
+        if ($products->isEmpty()) {
+            $products = Product::query()
+                ->with(['parentCategory', 'category', 'city']) // Предзагрузка отношений
+                ->orderBy('title') // Сортировка по названию
+                ->get()
+                ->map(function ($product) {
+                    return [
+                        'ID' => $product->id,
+                        'Название' => $product->title,
+                        'Ссылка на товар' => $product->map_link,
+                        'Организация' => $product->organization->title ?? 'Не указано',
+                        'Цена' => $product->price,
+                        'Цена со скидкой' => $product->price_sale,
+                        'Slug' => $product->slug,
+                        'Описание' => $product->content,
+                        'Категория' => $product->parentCategory->title ?? 'Не указано',
+                        'Подкатегория' => $product->category->title ?? 'Не указано',
+                        'Город' => $product->city->title ?? 'Не указано',
+                        'Материал' => $product->material,
+                        'Цвет' => $product->color,
+                        'Тип продукта' => $product->layering,
+                        'Кафе' => $product->cafe,
+                        'Размеры' => $product->size,
+                        'Широта' => $product->location_width,
+                        'Долгота' => $product->location_longitude,
+                    ];
+                });
+        }
+
+        // Экспорт в Excel
+        return (new FastExcel($products))->download('products.xlsx');
+    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

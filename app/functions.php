@@ -39,7 +39,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 function mainCities(){
-    $cities=City::orderBy('title','asc')->take(8)->get();
+    $cities=City::orderBy('title','asc')->where('selected_form',1)->get();
     return $cities;
 }
 
@@ -1013,7 +1013,7 @@ function createCity($city_name,$edge_name){
         return null;
     }
 
-    $city=City::where('title',$city_name)->first();
+    $city=City::where('title','like','%'.preg_replace('/^г\.\s*/ui', '', $city_name).'%')->first();
     $edge=Edge::where('title',$edge_name)->first();
 
     if($edge==null){
@@ -1021,11 +1021,14 @@ function createCity($city_name,$edge_name){
             'title'=>$edge_name,
         ]);
     }
+
     if($city==null){
         $city=City::create([
             'title'=>$city_name,
             'slug'=>slug($city_name),
             'edge_id'=> $edge->id,
+            'area_id'=>5,
+
             
         ]);
     }
@@ -1060,8 +1063,8 @@ function createArea($area_name,$edge_name){
 
 
 function createCemetery($cemetery_name,$city_name,$width,$longitude){
+    $city=City::where('title','like','%'.preg_replace('/^г\.\s*/ui', '', $city_name).'%')->first();
     
-    $city=City::where('title',$city_name)->first();
     if($city==null){
         $city=City::create([
             'title'=>$city_name,
@@ -1074,7 +1077,7 @@ function createCemetery($cemetery_name,$city_name,$width,$longitude){
             'adres'=>$city->title,
             'width'=>$width,
             'longitude'=>$longitude,
-            'img'=>'https://api.selcdn.ru/v1/SEL_266534/Images/main/Petropavlovsk-Kamchatsky/Cemeteries/70000001057067323!/Funeral-Services.jpg',
+            'img_url'=>'https://api.selcdn.ru/v1/SEL_266534/Images/main/Petropavlovsk-Kamchatsky/Cemeteries/70000001057067323!/Funeral-Services.jpg',
             'href_img'=>1,
             'title'=>$cemetery_name,
             'city_id'=> $city->id,
