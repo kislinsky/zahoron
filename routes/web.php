@@ -277,7 +277,8 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
 
 
 
-    Route::get('/contacts', [MainController::class, 'contacts'])->name('contacts');
+    Route::get('/kontakty', [MainController::class, 'contacts'])->name('contacts');
+    Route::get('/terms-of-use', [MainController::class, 'termsIUser'])->name('terms-user');
 
     Route::get('/search-filter', [MainController::class, 'searchProductFilter'])->name('page.search.burial.filter');
     Route::get('/search-filter-who', [BurialController::class, 'searchProductFilter'])->name('search.burial.filter');

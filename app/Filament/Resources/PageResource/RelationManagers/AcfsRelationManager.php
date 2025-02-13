@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PageResource\RelationManagers;
 
 use Filament\Forms;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class AcfsRelationManager extends RelationManager
 {
     protected static string $relationship = 'acfs';
+    protected static ?string $title = 'Доп поля страницы';
 
     public function form(Form $form): Form
     {
@@ -22,9 +24,24 @@ class AcfsRelationManager extends RelationManager
                 ->label('Название')
                 ->required(),
 
-                Forms\Components\TextInput::make('content')
-                ->label('Значение')
-                ->required(),
+                RichEditor::make('content') // Поле для редактирования HTML-контента
+                    ->label('Описание') // Соответствующая подпись
+                    ->toolbarButtons([
+                        'attachFiles', // возможность прикрепить файлы
+                        'bold', // жирный текст
+                        'italic', // курсив
+                        'underline', // подчеркивание
+                        'strike', // зачеркнутый текст
+                        'link', // вставка ссылок
+                        'orderedList', // нумерованный список
+                        'bulletList', // маркированный список
+                        'blockquote', // цитата
+                        'h2', 'h3', 'h4', // заголовки второго, третьего и четвертого уровня
+                        'codeBlock', // блок кода
+                        'undo', 'redo', // отмена/возврат действия
+                    ])
+                    ->disableLabel(false) // Показывать метку
+                    ->placeholder('Введите HTML-контент здесь...'),
             ]);
     }
 
@@ -59,3 +76,5 @@ class AcfsRelationManager extends RelationManager
             ]);
     }
 }
+ 
+

@@ -6,6 +6,7 @@ use App\Filament\Resources\AcfResource\Pages;
 use App\Filament\Resources\AcfResource\RelationManagers;
 use App\Models\Acf;
 use Filament\Forms;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -29,9 +30,24 @@ class AcfResource extends Resource
                 ->label('Название')
                 ->required(),
 
-                Forms\Components\TextInput::make('content')
-                ->label('Значение')
-                ->required(),
+                RichEditor::make('content') // Поле для редактирования HTML-контента
+                ->label('Описание') // Соответствующая подпись
+                ->toolbarButtons([
+                    'attachFiles', // возможность прикрепить файлы
+                    'bold', // жирный текст
+                    'italic', // курсив
+                    'underline', // подчеркивание
+                    'strike', // зачеркнутый текст
+                    'link', // вставка ссылок
+                    'orderedList', // нумерованный список
+                    'bulletList', // маркированный список
+                    'blockquote', // цитата
+                    'h2', 'h3', 'h4', // заголовки второго, третьего и четвертого уровня
+                    'codeBlock', // блок кода
+                    'undo', 'redo', // отмена/возврат действия
+                ])
+                ->disableLabel(false) // Показывать метку
+                ->placeholder('Введите HTML-контент здесь...'),
 
                 Forms\Components\Select::make('page_id')
                     ->label('Страница')

@@ -27,6 +27,11 @@ class MainController extends Controller
         return view('contacts',compact('faqs','page'));
     }
    
+    public static function termsIUser(){
+        $content=get_acf('14','content');
+        return view('terms',compact('content'));
+    }
+    
 
     public static function ourWorks(){
         return OurWorkService::index();

@@ -27,7 +27,6 @@ class AgencyController extends Controller
                 'surname'=>['string','nullable'],
                 'patronymic'=>['string','nullable'],
                 'phone'=>['required','string'],
-                'city'=>['string','nullable'],
                 'adres'=>['string','nullable'],
                 'email'=>['string','email','nullable'],
                'whatsapp'=>['string','nullable'],
@@ -47,12 +46,12 @@ class AgencyController extends Controller
             ]);
         }
         elseif($user->organizational_form=='organization'){
+
             $data=request()->validate([
                 'name'=>['string','nullable'],
                 'surname'=>['string','nullable'],
                 'patronymic'=>['string','nullable'],
                 'phone'=>['required','string'],
-                'city'=>['string','nullable'],
                 'adres'=>['string','nullable'],
                 'email'=>['string','email','nullable'],
                'whatsapp'=>['string','nullable'],
@@ -71,6 +70,7 @@ class AgencyController extends Controller
                 'in_face'=>['required','string'],
                 'regulation'=>['required','string'],
             ]);
+
         }
 
         return AgencyService::organizationSettingsUpdate($data);

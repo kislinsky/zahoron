@@ -1650,3 +1650,24 @@ function edges(){
 }
 
 
+function normalizePhone($phone) {
+    // Удаляем все символы, кроме цифр
+    $phone = preg_replace('/[^0-9]/', '', $phone);
+
+    // Если номер начинается с 8, заменяем на 7
+    if (strlen($phone) === 11 && $phone[0] === '8') {
+        $phone = '7' . substr($phone, 1);
+    }
+
+    // Если номер начинается с +7, убираем +
+    if (strlen($phone) === 12 && strpos($phone, '+7') === 0) {
+        $phone = '7' . substr($phone, 2);
+    }
+
+    // Если номер короче 11 цифр, возвращаем null (некорректный номер)
+    if (strlen($phone) < 11) {
+        return null;
+    }
+
+    return $phone;
+}
