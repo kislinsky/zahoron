@@ -57,8 +57,12 @@
           </div>
           <div class="blue_btn">Напишите нам</div>
        </div>
-       <div class="block_info_footer">Все права защищены © <?php echo date("Y"); ?> Ритуал.реестр</div>
-    </div>
+       
+      <div>
+         <div class="block_info_footer">Все права защищены © <?php echo date("Y"); ?> Ритуал.реестр</div>
+         <a href='{{ route('terms-user') }}' class="block_info_footer">Пользовательское соглашение</a>
+      </div>
+   </div>
  </footer>
  
 

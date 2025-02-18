@@ -45,18 +45,18 @@ class AgencyMemorialAplicationOrganization {
 
     public static function accept($aplication){
         $organization=user()->organization();
-        if($organization->aplications_memorial>0 && $aplication->status==0){
-            $aplication->update([
-                'status'=>1,
-                'organization_id'=>$organization->id
-            ]);
-            $organization->update([
-                'aplications_memorial'=>$organization->aplications_memorial-1,
-            ]);
-            return redirect()->back()->with('message_cart','Заявка успешно принята');
+        $service=getTypeService('memorial');
+        if($service!=null){
+            if($service->count()>0 && $aplication->status==0){
+                $aplication->update([
+                    'status'=>1,
+                    'organization_id'=>$organization->id
+                ]);
+                $service->updateCount($service->count()-1);
+                return redirect()->back()->with('message_cart','Заявка успешно принята');
+            }
         }
         return redirect()->back()->with('error','Закончились заявки');
-
     }
 
     public static function complete($aplication){

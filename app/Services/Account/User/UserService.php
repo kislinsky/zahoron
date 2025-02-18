@@ -174,6 +174,79 @@ class UserService {
         $order->delete();
         return redirect()->back();
     }
+
+
+    public static function payBurial($order){
+        
+        $result = createPayment($order->price,'Покупка геолокации',route('account.user.burial.callback',$order->id));
+
+        if ($result['success']) { 
+            // Перенаправляем пользователя на страницу оплаты
+            return redirect()->away($result['redirect_url']);
+        } else {
+            // Обработка ошибки
+            return redirect()->back()->with('error','Ошибка оплаты');
+        }
+
+    }
+
+    public static function callbackPayBurial($request,$order){
+        $order->update([
+            'status'=>1,
+            'date_pay'=>now()
+            ]);
+            
+        return redirect()->route('account.user.burial');
+        
+    }
+
+    public static function payService($order){
+        
+        $result = createPayment($order->price,'Покупка услуг по облогораживанию',route('account.user.service.callback',$order->id));
+
+        if ($result['success']) { 
+            // Перенаправляем пользователя на страницу оплаты
+            return redirect()->away($result['redirect_url']);
+        } else {
+            // Обработка ошибки
+            return redirect()->back()->with('error','Ошибка оплаты');
+        }
+
+    }
+
+    public static function callbackPayService($request,$order){
+        $order->update([
+            'status'=>2,
+            'date_pay'=>now()
+            ]);
+            
+        return redirect()->route('account.user.services.index');
+    }
+
+    public static function payBurialRequest($order){
+
+        $result = createPayment($order->price,'Покупка геолокации',route('account.user.burial-request.callback',$order->id));
+
+        if ($result['success']) { 
+            // Перенаправляем пользователя на страницу оплаты
+            return redirect()->away($result['redirect_url']);
+        } else {
+            // Обработка ошибки
+            return redirect()->back()->with('error','Ошибка оплаты');
+        }
+    }
+
+    public static function callbackPayBurialRequest($request,$order){
+        $order->update([
+            'status'=>4,
+            'date_pay'=>now()
+            ]);
+            
+        return redirect()->route('account.user.burial-request.index');
+    }
+
+    
 }
+
 
 

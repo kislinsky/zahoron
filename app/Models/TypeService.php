@@ -18,4 +18,27 @@ class TypeService extends Model
     function priceAplication(){
         return $this->hasMany(PriceAplication::class);
     }
+
+    function count(){
+        $organization=user()->organization();
+        if($organization!=null){
+            $service_count=UserRequestsCount::where('organization_id',$organization->id)->where('type_service_id',$this->id)->get();
+            if(isset($service_count[0])){
+                return $service_count->first()->count;
+            }
+        }
+        return 0;
+    }
+
+    function updateCount($count){
+        $organization=user()->organization();
+        if($organization!=null){
+            $service_count=UserRequestsCount::where('organization_id',$organization->id)->where('type_service_id',$this->id)->get();
+            if(isset($service_count[0])){
+                return $service_count->first()->update(['count'=>$count]);
+            }
+        }
+        return null;
+    }
+
 }

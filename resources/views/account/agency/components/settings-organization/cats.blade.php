@@ -31,8 +31,8 @@
         @foreach ($categories_organization as $category_organization)
             <div class="li_cemetery_agent">
                 <div class="mini_flex_li_product">
-                    <input type="hidden" value='{{ $category_organization->categoryProduct()->id }}'name="categories_organization[]">
-                    <div class="title_label">{{ $category_organization->categoryProduct()->title }}</div>
+                    <input type="hidden" value='{{ $category_organization->categoryProduct->id }}'name="categories_organization[]">
+                    <div class="title_label">{{ $category_organization->categoryProduct->title ?? 'Default Title' }}</div>
                 </div>
                 <div  class="delete_cart delete_cat_organization"><img src="{{asset('storage/uploads/Закрыть (1).svg')}}" alt=""></div>
             </div>
@@ -78,7 +78,7 @@
 <div class="ul_info_settings_organization ul_price_organizations_settings">
     @foreach($categories_organization as $category_organization)
         <div class="block_input">
-            <label for="">{{ $category_organization->categoryProduct()->title }}</label>
+            <label for="">{{  $category_organization->categoryProduct->title ?? 'Default Title' }}</label>
             <input type="text" name='price_cats_organization[]' value='{{$category_organization->price}}'>
         </div>
     @endforeach

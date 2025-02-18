@@ -51,15 +51,16 @@ class AgencyBeautificationAplicationOrganization {
 
     public static function accept($aplication){
         $organization=user()->organization();
-        if($organization->applications_improvemen_graves>0 && $aplication->status==0){
-            $aplication->update([
-                'status'=>1,
-                'organization_id'=>$organization->id
-            ]);
-            $organization->update([
-                'applications_improvemen_graves'=>$organization->applications_improvemen_graves-1,
-            ]);
-            return redirect()->back()->with('message_cart','Заявка успешно принята');
+        $service=getTypeService('beatification');
+        if($service!=null){
+            if($service->count()>0 && $aplication->status==0){
+                $aplication->update([
+                    'status'=>1,
+                    'organization_id'=>$organization->id
+                ]);
+                $service->updateCount($service->count()-1);
+                return redirect()->back()->with('message_cart','Заявка успешно принята');
+            }
         }
         return redirect()->back()->with('error','Закончились заявки');
 

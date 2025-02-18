@@ -32,8 +32,11 @@
             </div>
             
         @else
-
-            <div class="blue_btn">Оплатить</div>        
+            <form action="{{ route('account.user.burial.pay',$burial) }}" method="post">
+                @csrf
+                @method('PATCH')
+                <button class="blue_btn">Оплатить</button>        
+            </form>
         @endif        
     </div>
 @endforeach

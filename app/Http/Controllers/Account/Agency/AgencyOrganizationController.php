@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Account\Agency;
 
 use App\Http\Controllers\Controller;
 use App\Models\OrderProduct;
+use App\Models\TypeService;
 use App\Services\Account\Agency\AgencyOrganizationService;
 use Illuminate\Http\Request;
 
@@ -58,44 +59,7 @@ class AgencyOrganizationController extends Controller
         return AgencyOrganizationService::aplications();
     }
 
-    public static function buyAplicationsFuneralServices(Request $request){ 
- 
-        $data=request()->validate([
-            'applications_funeral_services'=>['required','integer'],
-        ]);
 
-        return AgencyOrganizationService::buyAplicationsFuneralServices($data['applications_funeral_services']);
-    }
-
-    public static function buyAplicationsCallsOrganization(Request $request){  
-        $data=request()->validate([
-            'calls_organization'=>['required','integer'],
-        ]);
-        return AgencyOrganizationService::buyAplicationsCallsOrganization($data['calls_organization']);
-    }
-
-    public static function buyAplicationsProductRequestsFromMarketplace(Request $request){  
-        $data=request()->validate([
-            'product_requests_from_marketplace'=>['required','integer'],
-        ]);
-        return AgencyOrganizationService::buyAplicationsProductRequestsFromMarketplace($data['product_requests_from_marketplace']);
-    }
-
-    public static function buyAplicationsImprovemenGraves(Request $request){  
-        $data=request()->validate([
-            'applications_improvemen_graves'=>['required','integer'],
-        ]);
-        return AgencyOrganizationService::buyAplicationsImprovemenGraves($data['applications_improvemen_graves']);
-    }
-
-
-    public static function buyAplicationsMemorial(Request $request){  
-
-        $data=request()->validate([
-            'aplications_memorial'=>['required','integer'],
-        ]);
-        return AgencyOrganizationService::buyAplicationsMemorial($data['aplications_memorial']);
-    }
 
 
     public static function addProduct(){
@@ -254,6 +218,13 @@ class AgencyOrganizationController extends Controller
 
     public static function orderAccept(OrderProduct $order){
         return AgencyOrganizationService::orderAccept($order);
+    }
+    
+    public static function payApplication(TypeService $type_service,Request $request){
+        $data=request()->validate([
+            'count'=>['required','integer'],
+        ]);
+        return AgencyOrganizationService::payApplication($type_service,$data['count']);
     }
     
 }

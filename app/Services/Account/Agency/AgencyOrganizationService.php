@@ -13,6 +13,9 @@ use App\Models\Organization;
 use App\Models\Product;
 use App\Models\ProductParameters;
 use App\Models\ReviewsOrganization;
+use App\Models\TypeApplication;
+use App\Models\TypeService;
+use App\Models\UserRequestsCount;
 use App\Models\WorkingHoursOrganization;
 
 class AgencyOrganizationService {
@@ -181,50 +184,30 @@ class AgencyOrganizationService {
 
 
     public static function aplications(){
+        $types_aplications=TypeApplication::where('buy_for_organization',1)->get();
         $organization=user()->organization();
         $user=user();
-        return view('account.agency.organization.pay.buy-applications',compact('user','organization'));
+        return view('account.agency.organization.pay.buy-applications',compact('user','organization','types_aplications'));
     }
 
-
-    public static function buyAplicationsFuneralServices($count){  
+    public static function callbackPayAplucations($data){
         $organization=user()->organization();
-        $organization->update([
-            'applications_funeral_services'=>$organization->applications_funeral_services+$count,
-        ]);
-        return redirect()->back()->with('message_cart','Зявки успешно куплены');
-    }
-
-    public static function buyAplicationsCallsOrganization($count){  
-        $organization=user()->organization();
-        $organization->update([
-            'calls_organization'=>$organization->calls_organization+$count,
-        ]);
-        return redirect()->back()->with('message_cart','Зявки успешно куплены');
-    }
-
-    public static function buyAplicationsProductRequestsFromMarketplace($count){ 
-        $organization=user()->organization();
-        $organization->update([
-            'product_requests_from_marketplace'=>$organization->product_requests_from_marketplace+$count,
-        ]);
-        return redirect()->back()->with('message_cart','Зявки успешно куплены');
-    }
-
-    public static function buyAplicationsImprovemenGraves($count){  
-        $organization=user()->organization();
-        $organization->update([
-            'applications_improvemen_graves'=>$organization->applications_improvemen_graves+$count,
-        ]);
-        return redirect()->back()->with('message_cart','Зявки успешно куплены');
-    }
-
-    public static function buyAplicationsMemorial($count){  
-        $organization=user()->organization();
-        $organization->update([
-            'aplications_memorial'=>$organization->aplications_memorial+$count,
-        ]);
-        return redirect()->back()->with('message_cart','Зявки успешно куплены');
+        $service=TypeService::find(1);
+        $count_new=10;
+        $aplication=UserRequestsCount::where('type_service_id',$service->id)->where('organization_id',$organization->id)->first();
+        if($aplication!=null){
+            $aplication->update([
+                'count'=>$aplication->count+$count_new,
+            ]);
+        }else{
+            $aplication=UserRequestsCount::create([
+                'organization_id'=>$organization->id,
+                'type_service_id'=>$service->id,
+                'type_service_id'=>$service->type_application_id,
+                'count'=>$count_new,
+            ]);
+        }
+        redirect()->route('account.agency.applications');
     }
 
 
@@ -505,15 +488,32 @@ class AgencyOrganizationService {
     }
 
     public static function orderAccept($order){
-        $organization=user()->organization();
-        if($organization->product_requests_from_marketplace>0){
-            $order->update(['status'=>1]);
-            $organization->update([
-                'product_requests_from_marketplace'=>$organization->product_requests_from_marketplace-1,
-            ]);
-            return redirect()->back()->with('message_cart','Заказ успешно принят');
+        $service=getTypeService('products');
+        if($service!=null){
+            if($service->count()>0 && $order->status==0){
+                $order->update([
+                    'status'=>1,
+                ]);
+                $service->updateCount($service->count()-1);
+                return redirect()->back()->with('message_cart','Заявка успешно принята');
+            }
         }
         return redirect()->back()->with('error','Закончились заявки');
+
+    }
+
+    public static function payApplication($type_service,$count){
+        $price=$type_service->price*$count;
+        $description="Покупка заявок {$type_service->title_ru}";
+        $result = createPayment($price,$description,route('home'));
+
+        if ($result['success']) { 
+            // Перенаправляем пользователя на страницу оплаты
+            return redirect()->away($result['redirect_url']);
+        } else {
+            // Обработка ошибки
+            return redirect()->back()->with('error','Ошибка оплаты');
+        }
 
     }
     

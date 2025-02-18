@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Burial;
+use App\Models\CategoryNews;
 use App\Models\Cemetery;
 use App\Models\City;
 use App\Models\Faq;

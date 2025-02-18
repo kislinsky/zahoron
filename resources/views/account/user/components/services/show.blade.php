@@ -67,7 +67,11 @@
         </div>
         
         @if($order_service->paid!=1)
-            <div class="blue_btn">Оплатить</div>
+        
+        <form action="{{ route('account.user.service.pay',$order_service) }}" method="get">
+            @csrf
+            <button style='width:100%'class="blue_btn">Оплатить</button>        
+        </form>
         @elseif ($order_service->status==5)
             <div class="blue_btn">Повторить</div>
         @endif

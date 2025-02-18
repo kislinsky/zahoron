@@ -2,41 +2,42 @@
 
 use App\Models\Acf;
 use App\Models\ActivityCategoryOrganization;
-use App\Models\City;
-use App\Models\Edge;
-use App\Models\Page;
-use App\Models\Product;
-use App\Models\Cemetery;
-use App\Models\ImageService;
-use Illuminate\Support\Collection;
-use App\Models\OrderProduct;
-use App\Models\StageService;
 use App\Models\AdditionProduct;
 use App\Models\Area;
 use App\Models\Burial;
 use App\Models\CategoryProduct;
 use App\Models\CategoryProductPriceList;
 use App\Models\CategoryProductProvider;
+use App\Models\Cemetery;
+use App\Models\City;
 use App\Models\CommentProduct;
 use App\Models\District;
+use App\Models\Edge;
 use App\Models\FaqCategoryProduct;
 use App\Models\FaqService;
+use App\Models\ImageService;
 use App\Models\Mortuary;
+use App\Models\OrderProduct;
 use App\Models\Organization;
-use App\Models\OtpCodes;
+use App\Models\Page;
+use App\Models\Product;
 use App\Models\ReviewsOrganization;
+use App\Models\SEO;
 use App\Models\Service;
 use App\Models\ServiceReviews;
+use App\Models\StageService;
+use App\Models\TypeService;
 use App\Models\User;
+use App\Models\UserRequestsCount;
+use App\Models\WorkingHoursCemetery;
+use App\Services\Auth\SmsService;
+use App\Services\YooMoneyService;
 use Ausi\SlugGenerator\SlugGenerator;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\SEO;
-use App\Models\WorkingHoursCemetery;
-use App\Services\Auth\SmsService;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
+
 
 function mainCities(){
     $cities=City::orderBy('title','asc')->where('selected_form',1)->get();
@@ -1628,10 +1629,13 @@ function createUserWithPhone($phone,$name='',$role='user',$inn='',$organization_
         return null;
     }
     $password=generateRandomString();
-    // $send_sms=sendSms($phone,"Ваш пароль для входа в личный кабине: $password");
-    // if($send_sms!=true){
-    //     redirect()->back()->with('error','Ошибка отправки сообщения');
-    // }
+    if(env('API_WORK')=='true'){
+        $send_sms=sendSms($phone,"Ваш пароль для входа в личный кабине: $password");
+        if($send_sms!=true){
+            redirect()->back()->with('error','Ошибка отправки сообщения');
+        } 
+    }
+   
     
     $userCreate=User::create([
         'name'=>$name,
@@ -1670,4 +1674,66 @@ function normalizePhone($phone) {
     }
 
     return $phone;
+}
+
+
+function createPayment($amount, $description = 'Оплата на сайте', $returnUrl = 'https://zahoron.ru/elizovo')
+{
+    // Создаем экземпляр сервиса
+    $yooMoneyService = new YooMoneyService();
+
+    // Создаем платеж через сервис
+    $paymentResult = $yooMoneyService->createPayment($amount, $description, $returnUrl);
+
+    // Проверяем результат
+    if (!$paymentResult['success']) {
+        // Если создание платежа не удалось, возвращаем ошибку
+        return [
+            'success' => false,
+            'error' => 'Ошибка при создании платежа',
+            'details' => $paymentResult,
+        ];
+    }
+
+    // Возвращаем URL для редиректа на страницу оплаты
+    return [
+        'success' => true,
+        'redirect_url' => $paymentResult['redirect_url'],
+        'payment' => $paymentResult['payment'],
+    ];
+}
+
+function callbackPayment($request) {
+    $client = new YooKassa\Client();
+    
+    // Убедитесь, что ENV-переменные корректно загружены
+    $shopId = env('SHOP_ID_YOOMONEY');
+    $apiKey = env('API_YOOMONEY');
+
+    if (empty($shopId) || empty($apiKey)) {
+        return response()->json(['error' => 'YooMoney credentials are missing'], 500);
+    }
+
+    // Устанавливаем авторизацию
+    $client->setAuth($shopId, $apiKey);
+
+    // Получаем ID платежа из запроса
+    $paymentId = $request->query('paymentId');
+    
+    try {
+        // Запрашиваем информацию о платеже
+        $payment = $client->getPaymentInfo($paymentId);
+        
+        if ($payment->getStatus() === 'succeeded') {
+            return response()->json(['status' => 'success', 'payment' => $payment]);
+        } else {
+            return response()->json(['status' => 'failed', 'payment' => $payment]);
+        }
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
+function getTypeService($name){
+    return  TypeService::where('title',$name)->first();
 }

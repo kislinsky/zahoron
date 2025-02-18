@@ -49,8 +49,8 @@ class UserRequestAmountResource extends Resource
                 ->label('Тип услуги')
                 ->searchable()
                 ->sortable(),
-                Tables\Columns\TextColumn::make('user_id')
-                ->label('id пользователя')
+                Tables\Columns\TextColumn::make('organization_id')
+                ->label('id органиазции')
                 ->searchable()
                 ->sortable(),
                 Tables\Columns\TextColumn::make('price')

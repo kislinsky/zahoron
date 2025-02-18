@@ -132,4 +132,8 @@ class Organization extends Model
     function activityCategories(){
         return $this->hasMany(ActivityCategoryOrganization::class);
     }
+
+    function userRequestCount(){
+        return $this->hasMany(UserRequestsCount::class);
+    }
 }

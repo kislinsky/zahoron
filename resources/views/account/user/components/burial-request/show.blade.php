@@ -60,7 +60,10 @@
 
 
         @if($search_burial->status==2 && $search_burial->paid==0)
-            <div class="blue_btn">Оплатить</div>
+        <form action="{{ route('account.user.burial-request.pay',$search_burial) }}" method="get">
+            @csrf
+            <button style='width:100%'class="blue_btn">Оплатить</button>        
+        </form>
         @endif
 
         <form class='accept_order text_center margin_top_auto' action="{{route('account.user.burial-request.delete',$search_burial->id)}}" method="post">

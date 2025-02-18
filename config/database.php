@@ -35,6 +35,19 @@ return [
 
     'connections' => [
 
+
+        'zahoron_old' => [
+                'driver' => 'mysql',
+                'host' => env('OLD_DB_HOST', 'MySql-8.2'),
+                'port' => env('OLD_DB_PORT', '3306'),
+                'database' => env('OLD_DB_DATABASE', 'zahoron_old'),
+                'username' => env('OLD_DB_USERNAME', 'root'),
+                'password' => env('OLD_DB_PASSWORD', ''),
+                'charset' => 'utf8mb4',
+                'collation' => 'utf8mb4_unicode_ci',
+            ],
+
+
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DATABASE_URL'),

@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Account\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Burial;
+use App\Models\OrderBurial;
 use App\Models\OrderProduct;
+use App\Models\OrderService;
 use App\Models\SearchBurial;
-use Illuminate\Http\Request;
 use App\Services\Account\User\UserService;
 use App\Services\Order\OrderBurialService;
+use Illuminate\Http\Request;
 
 class AccountController extends Controller
 {
@@ -96,7 +99,31 @@ class AccountController extends Controller
         return UserService::productFilter($status);
     }
 
+    public static function payBurial(OrderBurial $order){
+        return UserService::payBurial($order);
+    }
+
+    public static function payService(OrderService $order){
+        return UserService::payService($order);
+    }
     
+    public static function payBurialRequest(SearchBurial $order){
+        return UserService::payBurialRequest($order);
+    }
+    
+    public static function callbackPayBurial(Request $request,OrderBurial $order){
+        return UserService::callbackPayBurial($request,$order);
+    }
+
+    public static function callbackPayService(Request $request,OrderBurial $order){
+        return UserService::callbackPayService($request,$order);
+    }
+
+    public static function callbackPayBurialRequest(Request $request,OrderBurial $order){
+        return UserService::callbackPayBurialRequest($request,$order);
+    }
+
+   
     
     
     

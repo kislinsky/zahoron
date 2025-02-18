@@ -12,7 +12,10 @@
         </div>
         <a href='{{ $burial->route() }}'class="btn_border_blue">Подробнее</a>
         @if($order_burial->status==0)
-            <div class="blue_btn">Оплатить</div>
+            <form action="{{ route('account.user.burial.pay',$order_burial) }}" method="get">
+                @csrf
+                <button style='width:100%'class="blue_btn">Оплатить</button>        
+            </form>
             <a href='{{ route('account.burial.delete',$order_burial->id) }}'class="delete_cart"><img src="{{asset('storage/uploads/Trash.svg')}}" alt=""> Отменить</a>
         @elseif($order_burial->status==1)
             <div class="mini_flex_li_product">

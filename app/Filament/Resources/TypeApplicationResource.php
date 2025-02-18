@@ -6,6 +6,7 @@ use App\Filament\Resources\TypeApplicationResource\Pages;
 use App\Filament\Resources\TypeApplicationResource\RelationManagers;
 use App\Models\TypeApplication;
 use Filament\Forms;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -36,6 +37,13 @@ class TypeApplicationResource extends Resource
                 ->required()
                 ->maxLength(255),
 
+            Radio::make('buy_for_organization')
+                ->label('Показывать возможность покупки организациям')
+                ->options([
+                    0 => 'Нет',
+                    1 => 'Да'
+                ])
+                ->inline()
             ]);
     }
 

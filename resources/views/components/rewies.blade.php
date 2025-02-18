@@ -3,7 +3,8 @@ use App\Models\Review;
 $reviews = Review::orderBy('id', 'desc')->get();
 
 ?>
-
+@if (isset($reviews))
+@if (count($reviews)>0)
 <section class="rewies">
     <div class="container">
         <div class="flex_block">
@@ -15,8 +16,7 @@ $reviews = Review::orderBy('id', 'desc')->get();
 
         <div class="swiper rewies_swiper">
             <div class="swiper-wrapper">
-            @if (isset($reviews))
-                @if (count($reviews)>0)
+           
                     @foreach ($reviews as $review )
                         <div class="swiper-slide">
                             <div class="li_rewies">
@@ -35,8 +35,7 @@ $reviews = Review::orderBy('id', 'desc')->get();
                             </div>
                         </div>
                     @endforeach
-                @endif
-            @endif
+               
                
             </div>
         </div>
@@ -45,3 +44,5 @@ $reviews = Review::orderBy('id', 'desc')->get();
         <div class="swiper-button-prev swiper_button_prev_rewies"><img src='{{asset('storage/uploads/Переключатель (1).svg')}}'></div>
     </div>
 </section>
+@endif
+            @endif

@@ -51,18 +51,23 @@ class AgencyService {
 
 
     public static function organizationSettingsUpdate($data){
-        //$organization_ddata=checkOrganizationInn($data['inn']);
-        // if($organization_ddata!=null && $organization_ddata['state']['status']=='ACTIVE'){
-        if(true){
-            $name_user_org='Иван';
-            $surname_user_org='Иванович';
-            $patronymic_user_org='Иванов';
-            $ogrn_user_org='435345';
+        $organization_ddata=null;
+        if(env('API_WORK')=='true'){
+            $organization_ddata=checkOrganizationInn($data['inn']);
+        }
+         if($organization_ddata!=null && $organization_ddata['state']['status']=='ACTIVE'){
+            $name_user_org=$organization_ddata['fio']['name'];
+            $surname_user_org=$organization_ddata['fio']['surname'];
+            $patronymic_user_org=$organization_ddata['fio']['patronymic'];
+            $ogrn_user_org=$organization_ddata['ogrn'];
             $user=Auth::user();
             $user_email=User::where('email',$data['email'])->where('id','!=',$user->id)->get();
             $user_phone=User::where('phone',$data['phone'])->where('id','!=',$user->id)->get();
             if(count($user_email)<1 && count($user_phone)<1){
                 $user->update([
+                    'name'=>$name_user_org,
+                    'surname'=>$surname_user_org,
+                    'patronymic'=>$patronymic_user_org,
                     'phone'=>$data['phone'],
                     'adres'=>$data['adres'],
                     'email'=>$data['email'],
@@ -158,7 +163,8 @@ class AgencyService {
             }
             return redirect()->back()->with("error", 'Такой телефон или email уже существует');
         }
-        redirect()->back()->with('error','Не существующий или не действуйющий инн');
+
+        return redirect()->back()->with('error','Не существующий или не действуйющий инн');
         
     }
 

@@ -89,15 +89,22 @@ class AgencyFuneralServiceAplicationOrganization {
 
     public static function accept($aplication){
         $organization=user()->organization();
-        if($organization->applications_funeral_services>0 && $aplication->status==0){
-            $aplication->update([
-                'status'=>1,
-                'organization_id'=>$organization->id
-            ]);
-            $organization->update([
-                'applications_funeral_services'=>$organization->applications_funeral_services-1,
-            ]);
-            return redirect()->back()->with('message_cart','Заявка успешно принята');
+        if($aplication->service==1){
+            $service=getTypeService('sending_cargo_200');
+        }elseif($aplication->service==3){
+            $service=getTypeService('funeral_arrangements');
+        }elseif($aplication->service==2){
+            $service=getTypeService('organization_cremation');
+        }
+        if($service!=null){
+            if($service->count()>0 && $aplication->status==0){
+                $aplication->update([
+                    'status'=>1,
+                    'organization_id'=>$organization->id
+                ]);
+                $service->updateCount($service->count()-1);
+                return redirect()->back()->with('message_cart','Заявка успешно принята');
+            }
         }
         return redirect()->back()->with('error','Закончились заявки');
 

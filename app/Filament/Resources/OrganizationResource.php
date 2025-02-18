@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OrganizationResource\Pages;
 use App\Filament\Resources\OrganizationResource\RelationManagers;
 use App\Filament\Resources\OrganizationResource\RelationManagers\ActivityCategoriesRelationManager;
+use App\Filament\Resources\OrganizationResource\RelationManagers\OrganizationRequestCountRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\ProductsRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\WorkingHoursRelationManager;
 use App\Models\Cemetery;
@@ -451,6 +452,7 @@ class OrganizationResource extends Resource
         return [
             ActivityCategoriesRelationManager::class,
             WorkingHoursRelationManager::class,
+            OrganizationRequestCountRelationManager::class,
             ProductsRelationManager::class, // Добавляем RelationManager
         ];
     }

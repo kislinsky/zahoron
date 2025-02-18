@@ -88,18 +88,27 @@ class RegisterController extends Controller
             Auth::login($user);
             return redirect()->route('home'); // Замените на маршрут после входа
         }
-    
-        return redirect()->route('confirm.inn.information.email')->with([
-            'email'             => $data['email'],
-            'role'              => $data['role'],
-            'password'          => Hash::make($data['password']),
-            'inn'               => $data['inn'],
-            'organization_form' => $data['organization_form'],
-            'contragent'        => '3edqwe',
-            'status'            => '4edqwe',
-            'okved'             => '5edqwe',
-        ]);
-    
+
+        $organization_ddata=null;
+        if(env('API_WORK')=='true'){
+            $organization_ddata=checkOrganizationInn($data['inn']);
+        }
+        $organization_ddata=checkOrganizationInn($data['inn']);
+        if($organization_ddata!=null && $organization_ddata['state']['status']=='ACTIVE'){
+
+            return redirect()->route('confirm.inn.information.email')->with([
+                'email'             => $data['email'],
+                'role'              => $data['role'],
+                'password'          => Hash::make($data['password']),
+                'inn'               => $data['inn'],
+                'organization_form' => $data['organization_form'],
+                'contragent'        => '3edqwe',
+                'status'            => 'Действующий',
+                'okved'             => $organization_ddata['okved'],
+            ]);
+        }
+        return redirect()->back()->with('error','Такого инн не существует или он не действителен');
+
     }
     
     /**
@@ -189,18 +198,24 @@ class RegisterController extends Controller
                 'role' => $data['role_phone'],
             ]);
 
-            // $send_sms=sendSms($data['phone'],$code);
-            // if($send_sms!=true){
-            //     redirect()->back()->with('error','Ошибка отправки сообщения');
-            // }
-
+            if(env('API_WORK')=='true'){
+                $send_sms=sendSms($data['phone'],$code);
+                if($send_sms!=true){
+                    redirect()->back()->with('error','Ошибка отправки сообщения');
+                }
+            }
             return redirect()->route('register.verify.code')->with('token', $token);
         } else {
-            //$organization_ddata=checkOrganizationInn($data['inn_phone']);
             $inn =$data['inn_phone'];
+            $status = 'Действующий';
             $contragent = '3edqwe';
-            $status = '4edqwe';
-            $okved = '5edqwe';
+            $okved='';
+            if(env('API_WORK')=='true'){
+                $organization_ddata=checkOrganizationInn($data['inn_phone']);
+                $contragent = '3edqwe';
+                $okved = $organization_ddata['okved'];
+            }
+            
             return redirect()->route('confirm.inn.information.phone')->with([
                 'phone' =>  $data['phone'],
                 'role'=>$data['role_phone'],
@@ -252,10 +267,13 @@ class RegisterController extends Controller
             'organization_form'=>$data['organization_form'],
         ]);
 
-        // $send_sms=sendSms($data['phone'],$code);
-        // if($send_sms!=true){
-        //     redirect()->back()->with('error','Ошибка отправки сообщения');
-        // }
+
+        if(env('API_WORK')=='true'){
+            $send_sms=sendSms($data['phone'],$code);
+            if($send_sms!=true){
+                redirect()->back()->with('error','Ошибка отправки сообщения');
+            }
+        }
 
         return redirect()->route('register.verify.code')->with('token', $token);
     }

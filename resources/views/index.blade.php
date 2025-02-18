@@ -9,6 +9,7 @@
         
     </div>
 </section>
+
 <section class='main_index_block'>
     <div class="container">
         <div class="grid_two index_block_grid">
