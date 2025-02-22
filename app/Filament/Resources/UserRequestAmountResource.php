@@ -29,7 +29,25 @@ class UserRequestAmountResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('organization_id')
+                ->label('Организация')
+                ->relationship('organization', 'title') // Предполагается, что есть отношение 'organization'
+                ->required(),
+
+            Forms\Components\Select::make('type_service_id')
+                ->label('Тип услуги')
+                ->relationship('typeService', 'title_ru') // Предполагается, что есть отношение 'typeService'
+                ->required(),
+
+            Forms\Components\Select::make('type_application_id')
+                ->label('Тип заявки')
+                ->relationship('typeApplication', 'title_ru') // Предполагается, что есть отношение 'typeApplication'
+                ->required(),
+
+            Forms\Components\TextInput::make('price')
+                ->label('Цена')
+                ->required()
+                ->numeric(),
             ]);
     }
 

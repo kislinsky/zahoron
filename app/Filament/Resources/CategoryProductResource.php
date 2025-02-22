@@ -6,6 +6,7 @@ use App\Filament\Resources\CategoryProductResource\Pages;
 use App\Filament\Resources\CategoryProductResource\RelationManagers;
 use App\Models\CategoryProduct;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -25,9 +26,25 @@ class CategoryProductResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->label('Название')
-                    ->required(),
+
+                TextInput::make('title')
+                ->label('Название')
+                ->required()
+                ->live(debounce: 1000) // Задержка автообновления
+                ->afterStateUpdated(function ($state, $set, $get) {
+                    // Проверяем, если длина title больше 3 символов, обновляем slug
+                    if (!empty($state) && strlen($state) > 3) {
+                        $set('slug', generateUniqueSlug($state, CategoryProduct::class, $get('id')));
+                    }
+                }),
+            
+            TextInput::make('slug')
+                ->required()
+                ->label('Slug')
+                ->maxLength(255)
+                ->unique(ignoreRecord: true) // Проверка уникальности
+                ->formatStateUsing(fn ($state) => slug($state)) // Форматируем slug
+                ->dehydrateStateUsing(fn ($state, $get) => generateUniqueSlug($state, CategoryProduct::class, $get('id'))),
 
                 // Поле для выбора родительской категории
                 Forms\Components\Select::make('parent_id')
@@ -35,11 +52,48 @@ class CategoryProductResource extends Resource
                     ->options(CategoryProduct::whereNull('parent_id')->pluck('title', 'id')) // Только главные категории
                     ->nullable(),
 
-                Forms\Components\TextInput::make('slug')
-                    ->required()
-                    ->unique(ignoreRecord: true) // Игнорировать текущую запись при редактировании
-                    ->label('Slug')
-                    ->maxLength(255),
+                    Forms\Components\TextInput::make('title')
+                    ->label('Название')
+                    ->required(),
+
+                Forms\Components\Select::make('parent_id')
+                    ->label('Родительская категория')
+                    ->relationship('parent', 'title') // предполагается наличие отношения 'parent'
+                    ->nullable(),
+
+                Forms\Components\FileUpload::make('icon')
+                    ->label('Иконка')
+                    ->directory('/uploads_cats_product') // Директория для сохранения
+                    ->nullable(),
+
+                Forms\Components\FileUpload::make('icon_white')
+                    ->directory('/uploads_cats_product') // Директория для сохранения
+                    ->label('Иконка при выбранной категории')
+                    ->nullable(),
+
+
+                Forms\Components\Textarea::make('content')
+                    ->label('Содержимое')
+                    ->nullable(),
+
+                Forms\Components\Textarea::make('manual')
+                    ->label('Руководство')
+                    ->nullable(),
+
+                Forms\Components\TextInput::make('manual_video')
+                    ->label('Видео руководство')
+                    ->nullable(),
+
+                   
+                
+
+                Forms\Components\Toggle::make('choose_admin')
+                    ->label('Выбор администратора')
+                    ->default(0),
+
+                Forms\Components\FileUpload::make('icon_map')
+                    ->label('Иконка на карте')
+                    ->nullable(),
 
             ]);
     }

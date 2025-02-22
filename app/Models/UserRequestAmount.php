@@ -20,7 +20,8 @@ class UserRequestAmount extends Model
         return $this->belongsTo(TypeService::class);
     }
 
-    function user(){
-        return $this->belongsTo(User::class);
+
+    function organization(){
+        return $this->belongsTo(Organization::class);
     }
 }

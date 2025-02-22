@@ -10,6 +10,7 @@ use App\Models\City;
 use App\Models\Edge;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -29,10 +30,25 @@ class CityResource extends Resource
     {
         return $form
             ->schema([
-                 Forms\Components\TextInput::make('title')
-                    ->label('Название')
-                    ->required()
-                    ->maxLength(255),
+                TextInput::make('title')
+                ->label('Название')
+                ->required()
+                ->live(debounce: 1000) // Задержка автообновления
+                ->afterStateUpdated(function ($state, $set, $get) {
+                    // Проверяем, если длина title больше 3 символов, обновляем slug
+                    if (!empty($state) && strlen($state) > 3) {
+                        $set('slug', generateUniqueSlug($state, City::class, $get('id')));
+                    }
+                }),
+            
+            TextInput::make('slug')
+                ->required()
+                ->label('Slug')
+                ->maxLength(255)
+                ->unique(ignoreRecord: true) // Проверка уникальности
+                ->formatStateUsing(fn ($state) => slug($state)) // Форматируем slug
+                ->dehydrateStateUsing(fn ($state, $get) => generateUniqueSlug($state, City::class, $get('id'))),
+
                
                     Select::make('edge_id')
                     ->label('Край')
@@ -51,7 +67,7 @@ class CityResource extends Resource
                     }), // Не сохранять значение в базу данных
                 
                 Select::make('area_id')
-                    ->label('Район')
+                    ->label('Округ')
                     ->options(function ($get) {
                         $edgeId = $get('edge_id'); // Получаем выбранный край
                 
@@ -92,11 +108,7 @@ class CityResource extends Resource
                     ->required() // Поле обязательно для заполнения
                     ->default(0), // Значение по умолчанию
                 
-            Forms\Components\TextInput::make('slug')
-            ->required()
-            ->unique(ignoreRecord: true) // Игнорировать текущую запись при редактировании
-            ->label('Slug')
-            ->maxLength(255),
+           
             ]);
     }
 

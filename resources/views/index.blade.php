@@ -103,7 +103,7 @@
                             предложения 
                             с разных кафе
                             вашего района 
-                            в г. Иваново</div>
+                            в г. {{$city->title}}</div>
                             <img class='img_light_theme mini_index_img' src="{{asset('storage/uploads/Group_index.svg')}}" alt="" >
                             <img class='img_black_theme mini_index_img' src="{{asset('storage/uploads/menu 1 (3)_black.svg')}}" alt="" >
                         </div>
@@ -113,7 +113,7 @@
                     <a href='{{route('marketplace.category','organizacia-kremacii')}}' class="title_li">Организация 
                         кремации г. {{$city->title}}</a>
                     <div class="flex_text_service_index">
-                        <div class="mini_text">Вам предоставят цены на кремацию от более 10 ритуальных агентств Иваново для выбора лучшего варианта.</div>
+                        <div class="mini_text">Вам предоставят цены на кремацию от более 10 ритуальных агентств {{$city->title}}  для выбора лучшего варианта.</div>
                         <img src="{{asset('storage/uploads/Group_cemetery.svg')}}" alt="" class="img_light_theme img_index_service">
                         <img src="{{asset('storage/uploads/_index_block_vblack.svg')}}" alt="" class="img_black_theme img_index_service">
                     </div>
@@ -127,7 +127,7 @@
                     <div class="mini_text">Сравнивайте и покупайте памятники, 
                         оградки,столики и лавочки, заказывайте 
                         поминки ивсе, что связано с ритуальными
-                         услугами в г. Иваново.</div>
+                         услугами в г. {{$city->title}}.</div>
                     <img src="{{asset('storage/uploads/437956-mogila-narisovannaia-24-Photoroom 1.svg')}}" alt="" class="img_index_service">
                 </div>
                 <div class="flex_btn">
@@ -149,7 +149,7 @@
                             предложения 
                             с разных кафе
                             вашего района 
-                            в г. Иваново</div>
+                            в г. {{$city->title}}</div>
                         <img class='mini_index_img' src="{{asset('storage/uploads/Group_index.svg')}}" alt="" class="img_index_service">
                     </div>
                     <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#memorial_form">Оформить заказ</div>
@@ -160,7 +160,7 @@
                     <div class="flex_text_service_index">
                         <a href='{{route('marketplace.category','organizacia-kremacii')}}' class="title_li title_li_mobile">Организация 
                             кремации г. {{$city->title}}</a> 
-                        <div class="mini_text">Вам предоставят цены на кремацию от более 10 ритуальных агентств Иваново для выбора лучшего варианта.</div>
+                        <div class="mini_text">Вам предоставят цены на кремацию от более 10 ритуальных агентств {{$city->title}} для выбора лучшего варианта.</div>
                         <img src="{{asset('storage/uploads/Group_cemetery.svg')}}" alt="" class="img_index_service">
                     </div>
                     <div class="blue_btn border_radius_btn open_organization_cremation">Узнать цены</div>

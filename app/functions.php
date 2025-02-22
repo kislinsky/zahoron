@@ -35,8 +35,10 @@ use App\Services\YooMoneyService;
 use Ausi\SlugGenerator\SlugGenerator;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+
 
 
 function mainCities(){
@@ -829,11 +831,11 @@ function user(){
 
 
 function slug($item){
-    
     $generator = new SlugGenerator(); 
-
-    return $generator->generate($item); 
-
+    if($item!=null){
+        return $generator->generate($item); 
+    }
+    return '';
 }
 
 
@@ -1736,4 +1738,51 @@ function callbackPayment($request) {
 
 function getTypeService($name){
     return  TypeService::where('title',$name)->first();
+}
+
+function getCemeteriesOptions($get)
+{
+    $cityId = $get('city_id'); // Получаем ID выбранного города
+
+    if (!$cityId) {
+        return []; // Если город не выбран, кладбища не отображаем
+    }
+
+    // Получаем связанные районы, города и регионы
+    $city = City::with('area.edge.area')->find($cityId);
+
+    if (!$city || !$city->area || !$city->area->edge || !$city->area->edge->area) {
+        return [];
+    }
+
+    // Получаем все ID районов
+    $areasIds = $city->area->edge->area->pluck('id')->toArray();
+
+    // Получаем ID всех городов в этих районах
+    $citiesIds = City::whereIn('area_id', $areasIds)->pluck('id')->toArray();
+
+    // Получаем кладбища этих городов
+    return Cemetery::whereIn('city_id', $citiesIds)->pluck('title', 'id')->toArray();
+}
+
+function generateUniqueSlug(string $title, string $modelClass, int $ignoreId = null): string
+{
+    // Проверяем, является ли переданный класс допустимой моделью Laravel
+    if (!is_subclass_of($modelClass, Model::class)) {
+        throw new InvalidArgumentException("Передан неверный класс модели: {$modelClass}");
+    }
+
+    $baseSlug = slug($title); // Преобразуем название в slug
+    $slug = $baseSlug;
+    $i = 1;
+
+    while ($modelClass::where('slug', $slug)
+        ->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))
+        ->exists()) 
+    {
+        $slug = $baseSlug . '-' . $i;
+        $i++;
+    }
+
+    return $slug;
 }

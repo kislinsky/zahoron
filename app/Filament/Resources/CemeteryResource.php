@@ -93,7 +93,7 @@ class CemeteryResource extends Resource
                     ->dehydrated(false), // Не сохранять значение в базу данных
                 
                 Select::make('area_id')
-                    ->label('Район')
+                    ->label('Округ')
                     ->options(function ($get) {
                         $edgeId = $get('edge_id'); // Получаем выбранный край
                 
@@ -424,7 +424,7 @@ class CemeteryResource extends Resource
                     'Долгота' => $cemetery->longitude,
                     'Ссылка на карту' => $cemetery->map_link,
                     'Край' => $cemetery->city->area->edge->title ?? 'Не указано',
-                    'Район' => $cemetery->city->area->title ?? 'Не указано',
+                    'Округ' => $cemetery->city->area->title ?? 'Не указано',
                     'Город' => $cemetery->city->title ?? 'Не указано',
                     'Ориентир' => $cemetery->adres,
                     'Цена за геопозицию' => $cemetery->price_burial_location,
@@ -453,7 +453,7 @@ class CemeteryResource extends Resource
                         'Долгота' => $cemetery->longitude,
                         'Ссылка на карту' => $cemetery->map_link,
                         'Край' => $cemetery->city->area->edge->title ?? 'Не указано',
-                        'Район' => $cemetery->city->area->title ?? 'Не указано',
+                        'Округ' => $cemetery->city->area->title ?? 'Не указано',
                         'Город' => $cemetery->city->title ?? 'Не указано',
                         'Ориентир' => $cemetery->adres,
                         'Цена за геопозицию' => $cemetery->price_burial_location,

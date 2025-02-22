@@ -45,6 +45,12 @@ class ProductsRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(), // Добавить продукт
             ])
             ->actions([
+                Tables\Actions\Action::make('view_product')
+                ->label('Посмотреть') // Текст кнопки
+                ->url(fn ($record) => '/'.selectCity()->slug.'/admin/products/'.$record->id.'/edit') // Ссылка на товар
+                ->icon('heroicon-o-eye') // Иконка "глаза"
+                ->color('primary') // Цвет кнопки
+                ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(), // Редактировать продукт
                 Tables\Actions\DeleteAction::make(), // Удалить продукт
             ])

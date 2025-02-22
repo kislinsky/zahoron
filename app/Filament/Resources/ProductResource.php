@@ -35,10 +35,25 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->label('Название')
-                    ->required()
-                    ->maxLength(255),
+                TextInput::make('title')
+                ->label('Название')
+                ->required()
+                ->live(debounce: 1000) // Задержка автообновления
+                ->afterStateUpdated(function ($state, $set, $get) {
+                    // Проверяем, если длина title больше 3 символов, обновляем slug
+                    if (!empty($state) && strlen($state) > 3) {
+                        $set('slug', generateUniqueSlug($state, Product::class, $get('id')));
+                    }
+                }),
+            
+            TextInput::make('slug')
+                ->required()
+                ->label('Slug')
+                ->maxLength(255)
+                ->unique(ignoreRecord: true) // Проверка уникальности
+                ->formatStateUsing(fn ($state) => slug($state)) // Форматируем slug
+                ->dehydrateStateUsing(fn ($state, $get) => generateUniqueSlug($state, Product::class, $get('id'))),
+
                 
                     TextInput::make('map_link')
                     ->label('Ссылка на товар')
@@ -88,12 +103,7 @@ class ProductResource extends Resource
 
 
 
-                    Forms\Components\TextInput::make('slug')
-                    ->required()
-                    ->unique(ignoreRecord: true) // Игнорировать текущую запись при редактировании
-                    ->label('Slug')
-                    ->maxLength(255),
-
+           
                 RichEditor::make('content') // Поле для редактирования HTML-контента
                     ->label('Описание') // Соответствующая подпись
                     ->toolbarButtons([
@@ -150,12 +160,6 @@ class ProductResource extends Resource
                         $component->state($record->category_id);
                     }
                 }),
-        
-                Forms\Components\Select::make('city_id')
-                ->label('Город')
-                ->relationship('city', 'title')
-                ->searchable()
-                ->preload(),
 
 
                 Forms\Components\TextInput::make('material')
@@ -170,23 +174,14 @@ class ProductResource extends Resource
                     ->label('Тип продукта (облогоражиавние)')
                     ->maxLength(255),
 
-                Forms\Components\TextInput::make('cafe')
-                    ->label('Кафе')
-                    ->maxLength(255),
+                
 
                     Forms\Components\TextInput::make('size')
                     ->label('Размеры')
                     ->maxLength(255),
 
 
-                Forms\Components\TextInput::make('location_width')
-                    ->label('Широта')
-                    ->maxLength(255),
-
-                Forms\Components\TextInput::make('location_longitude')
-                    ->label('Долгота')
-                    ->maxLength(255),
-
+               
             ]);
     }
 
@@ -251,6 +246,7 @@ class ProductResource extends Resource
                 }),
             ])
             ->actions([
+                
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(), // Удалить продукт
                 

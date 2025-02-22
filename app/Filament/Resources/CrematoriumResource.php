@@ -64,7 +64,7 @@ class CrematoriumResource extends Resource
                     ->dehydrated(false), // Не сохранять значение в базу данных
                 
                 Select::make('area_id')
-                    ->label('Район')
+                    ->label('Округ')
                     ->options(function ($get) {
                         $edgeId = $get('edge_id'); // Получаем выбранный край
                 
@@ -377,7 +377,7 @@ class CrematoriumResource extends Resource
                     'Долгота' => $crematorium->longitude,
                     'Ссылка на карту' => $crematorium->map_link,
                     'Край' => $crematorium->city->area->edge->title ?? 'Не указано',
-                    'Район' => $crematorium->city->area->title ?? 'Не указано',
+                    'Округ' => $crematorium->city->area->title ?? 'Не указано',
                     'Город' => $crematorium->city->title ?? 'Не указано',
                     'Ориентир' => $crematorium->adres,
                     'Email' => $crematorium->email,
@@ -400,7 +400,7 @@ class CrematoriumResource extends Resource
                         'Долгота' => $crematorium->longitude,
                         'Ссылка на карту' => $crematorium->map_link,
                         'Край' => $crematorium->city->area->edge->title ?? 'Не указано',
-                        'Район' => $crematorium->city->area->title ?? 'Не указано',
+                        'Округ' => $crematorium->city->area->title ?? 'Не указано',
                         'Город' => $crematorium->city->title ?? 'Не указано',
                         'Ориентир' => $crematorium->adres,
                         'Email' => $crematorium->email,

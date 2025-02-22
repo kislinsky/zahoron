@@ -44,14 +44,14 @@
                             @if (isset($id_cat))
                                 @foreach ($cats as $cat )
                                         @if($cat->id==$id_cat)
-                                            <a href='{{ route('news.category',$cat->id) }}'class="li_cat_news active_cat"><img src="{{asset('storage/uploads_cats_news/'. $cat->icon )}}" alt="{{ $cat->title }}"> {{ $cat->title }}</a>
+                                            <a href='{{ route('news.category',$cat->id) }}'class="li_cat_news active_cat"><img src="{{asset('storage/'. $cat->icon )}}" alt="{{ $cat->title }}"> {{ $cat->title }}</a>
                                         @else
-                                            <a href='{{ route('news.category',$cat->id) }}'class="li_cat_news"><img src="{{asset('storage/uploads_cats_news/'. $cat->icon )}}" alt="{{ $cat->title }}"> {{ $cat->title }}</a>
+                                            <a href='{{ route('news.category',$cat->id) }}'class="li_cat_news"><img src="{{asset('storage/'. $cat->icon )}}" alt="{{ $cat->title }}"> {{ $cat->title }}</a>
                                         @endif
                                     @endforeach 
                             @else
                                 @foreach ($cats as $cat )
-                                    <a href='{{ route('news.category',$cat->id) }}'class="li_cat_news"><img src="{{asset('storage/uploads_cats_news/'. $cat->icon )}}" alt="{{ $cat->title }}"> {{ $cat->title }}</a>
+                                    <a href='{{ route('news.category',$cat->id) }}'class="li_cat_news"><img src="{{asset('storage/'. $cat->icon )}}" alt="{{ $cat->title }}"> {{ $cat->title }}</a>
                                 @endforeach
                             @endif
                         @endif

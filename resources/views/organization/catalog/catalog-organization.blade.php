@@ -131,8 +131,8 @@
 @if($city->text_how_properly_arrange_funeral_services!=null)
     <section class="about_company bac_gray">
         <div class="container">
-            <div class="title">Как правильно оформить ритуальные услуги в г. {{$city->title}}</div>
-            <div class="content_block">{!!$city->text_how_properly_arrange_funeral_services !!}</div>
+            <div class="title">Как правильно оформить{{ $category->title }} в г. {{$city->title}}</div>
+            <div class="content_block">{!!$category->content !!}</div>
 
         </div>
     </section>

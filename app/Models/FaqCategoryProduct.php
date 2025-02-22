@@ -10,4 +10,7 @@ class FaqCategoryProduct extends Model
     use HasFactory;
     protected $guarded =[];
 
+    function category(){
+        return $this->belongsTo(CategoryProductPriceList::class,'category_id');
+    }
 }

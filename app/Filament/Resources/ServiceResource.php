@@ -2,18 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use App\Models\Service;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ServiceResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\ServiceResource\RelationManagers;
 use App\Filament\Resources\ServiceResource\RelationManagers\PriceServiceRelationManager;
+use App\Models\Service;
+use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
 
 class ServiceResource extends Resource
 {
@@ -22,14 +23,67 @@ class ServiceResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Услуги'; // Название в меню
 
-    public static function form(Form $form): Form
+    public static function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([
-               Forms\Components\TextInput::make('title')
-                ->label('Название')
-                ->required()
-                ->maxLength(255),
+                Section::make('Основные данные')->schema([
+                    TextInput::make('title')
+                        ->label('Название')
+                        ->required()
+                        ->maxLength(255),
+
+                    TextInput::make('price')
+                        ->label('Цена')
+                        ->required()
+                        ->maxLength(255),
+
+                    Textarea::make('content')
+                        ->label('Описание')
+                        ->required(),
+
+                  
+
+                    
+                ]),
+
+                Section::make('Дополнительная информация')->schema([
+                    Textarea::make('text_under_title')
+                        ->label('Текст под заголовком')
+                        ->nullable(),
+
+                    FileUpload::make('video_1')
+                        ->label('Видео 1')
+                        ->nullable(),
+
+                    Textarea::make('text_under_video_1')
+                        ->label('Текст под видео 1')
+                        ->nullable(),
+
+                    Textarea::make('text_under_img')
+                        ->label('Текст под изображением')
+                        ->nullable(),
+
+                    Textarea::make('text_sale')
+                        ->label('Текст скидки')
+                        ->nullable(),
+
+                    Textarea::make('text_stages')
+                        ->label('Текст этапов')
+                        ->nullable(),
+
+                    FileUpload::make('video_2')
+                        ->label('Видео 2')
+                        ->nullable(),
+
+                    FileUpload::make('img_structure')
+                        ->label('Изображение структуры')
+                        ->nullable()
+                        ->disk('public')
+                        ->directory('services/images')
+                        ->maxSize(1024) // 1MB
+                        ->image(),
+                ]),
             ]);
     }
 

@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class FaqColumbarium extends Model
 {
     use HasFactory;
+    protected $guarded =[];
+
 }

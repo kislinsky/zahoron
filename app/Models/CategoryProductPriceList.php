@@ -22,7 +22,11 @@ class CategoryProductPriceList extends Model
     }
 
     function services(){
-        return $this->hasMany(ProductPriceList::class);
+        return $this->hasMany(ProductPriceList::class, 'category_id');
+        }
+
+    function servicesView(){
+        return $this->services->where('view',1);
     }
 
 

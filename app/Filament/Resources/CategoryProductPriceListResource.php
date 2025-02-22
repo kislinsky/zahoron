@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CategoryProductPriceListResource\Pages;
 use App\Models\CategoryProductPriceList;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -23,9 +24,24 @@ class CategoryProductPriceListResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->label('Название')
-                    ->required(),
+                TextInput::make('title')
+                ->label('Название')
+                ->required()
+                ->live(debounce: 1000) // Задержка автообновления
+                ->afterStateUpdated(function ($state, $set, $get) {
+                    // Проверяем, если длина title больше 3 символов, обновляем slug
+                    if (!empty($state) && strlen($state) > 3) {
+                        $set('slug', generateUniqueSlug($state, CategoryProductPriceList::class, $get('id')));
+                    }
+                }),
+            
+            TextInput::make('slug')
+                ->required()
+                ->label('Slug')
+                ->maxLength(255)
+                ->unique(ignoreRecord: true) // Проверка уникальности
+                ->formatStateUsing(fn ($state) => slug($state)) // Форматируем slug
+                ->dehydrateStateUsing(fn ($state, $get) => generateUniqueSlug($state, CategoryProductPriceList::class, $get('id'))),
 
                 // Поле для выбора родительской категории
                 Forms\Components\Select::make('parent_id')
@@ -33,11 +49,29 @@ class CategoryProductPriceListResource extends Resource
                     ->options(CategoryProductPriceList::whereNull('parent_id')->pluck('title', 'id')) // Только главные категории
                     ->nullable(),
 
-                Forms\Components\TextInput::make('slug')
-                    ->required()
-                    ->unique(ignoreRecord: true) // Игнорировать текущую запись при редактировании
-                    ->label('Slug')
-                    ->maxLength(255),
+
+                Forms\Components\FileUpload::make('icon')
+                    ->label('Иконка')
+                    ->directory('/uploads_cats_product_price_list') // Директория для сохранения
+                    ->image()
+                    ->nullable(),
+
+                    Forms\Components\FileUpload::make('icon_white')
+                    ->label('Иконка при выборе категории')
+                    ->directory('/uploads_cats_product_price_list') // Директория для сохранения
+                    ->image()
+                    ->nullable(),
+
+                Forms\Components\Textarea::make('content')
+                    ->label('Контент')
+                    ->required(),
+
+                Forms\Components\FileUpload::make('video')
+                    ->label('Видео')
+                    ->directory('/uploads_cats_product_price_list') // Директория для сохранения
+                    ->nullable(),
+
+           
 
             ]);
     }

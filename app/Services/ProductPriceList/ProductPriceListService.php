@@ -19,7 +19,7 @@ class ProductPriceListService {
 
         $cats=CategoryProductPriceList::orderBy('id', 'desc')->where('parent_id',null)->get();
         $page=8;
-        $services=ProductPriceList::orderBy('id', 'desc')->get();
+        $services=ProductPriceList::orderBy('id', 'desc')->where('view',1)->get();
 
         if($services->count()<3){
             SEOMeta::setRobots('noindex, nofollow');
@@ -42,7 +42,7 @@ class ProductPriceListService {
         $cats=CategoryProductPriceList::orderBy('id', 'desc')->where('parent_id',null)->get();
         $page=8;
         $faqs=$cat_selected->faqs();
-        $services=$cat_selected->services();
+        $services=$cat_selected->servicesView();
 
         $pages_navigation=[['Главная',route('index')],['Товары и услуги',route('pricelist')],[$cat_selected->title]];
 

@@ -9,8 +9,11 @@ use App\Filament\Resources\OrganizationResource\RelationManagers\OrganizationReq
 use App\Filament\Resources\OrganizationResource\RelationManagers\ProductsRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\WorkingHoursRelationManager;
 use App\Models\Cemetery;
+use App\Models\City;
 use App\Models\Organization;
+use App\Models\User;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
@@ -77,34 +80,36 @@ class OrganizationResource extends Resource
             ->columnSpan('full')
             ->hidden(fn ($get) => intval($get('href_img')) === 0), 
 
-            Forms\Components\TextInput::make('title')
-                ->label('Название')
-                ->required()
-                ->maxLength(255),
+
+            TextInput::make('title')
+            ->label('Название фирмы')
+            ->required()
+            ->live(debounce: 1000) // Задержка автообновления
+            ->afterStateUpdated(function ($state, $set, $get) {
+                // Проверяем, если длина title больше 3 символов, обновляем slug
+                if (!empty($state) && strlen($state) > 3) {
+                    $set('slug', generateUniqueSlug($state, Organization::class, $get('id')));
+                }
+            }),
+        
+        TextInput::make('slug')
+            ->required()
+            ->label('Slug')
+            ->maxLength(255)
+            ->unique(ignoreRecord: true) // Проверка уникальности
+            ->formatStateUsing(fn ($state) => slug($state)) // Форматируем slug
+            ->dehydrateStateUsing(fn ($state, $get) => generateUniqueSlug($state, Organization::class, $get('id'))),
+
 
             Forms\Components\Select::make('city_id')
                 ->label('Город')
                 ->relationship('city', 'title')
                 ->required()
                 ->searchable()
-                ->preload(),
+                ->preload()
+                ->live(), // Позволяет обновлять зависимые поля при изменении
 
-                Select::make('cemetery_ids')
-                ->label('Кладбища, на которых работает организация')
-                ->options(Cemetery::pluck('title', 'id')->toArray()) // Загружаем кладбища
-                ->multiple() // Разрешаем выбор нескольких значений
-                ->searchable() // Добавляем поиск
-                ->required() // Обязательное поле
-                ->formatStateUsing(function ($state) {
-                    // Если данные уже есть (например, загружены из базы), преобразуем их в массив
-                    return $state ? array_map('intval', explode(',', trim($state, ','))) : [];
-                })
-                ->afterStateUpdated(function ($state, $set) {
-                    // Преобразуем массив обратно в строку для сохранения в базе данных
-                    $set('cemetery_ids', implode(',', (array) $state) . ',');
-                })
-                ->preload(),
-
+               
             Forms\Components\TextInput::make('width')
                 ->label('Ширина')
                 ->required()
@@ -143,11 +148,7 @@ class OrganizationResource extends Resource
                 ->label('Тип организации')
                 ->maxLength(255),
 
-            Forms\Components\TextInput::make('slug')
-                ->required()
-                ->unique(ignoreRecord: true) // Игнорировать текущую запись при редактировании
-                ->label('Slug')
-                ->maxLength(255),
+            
 
 
             Forms\Components\TextInput::make('whatsapp')
@@ -158,48 +159,6 @@ class OrganizationResource extends Resource
                 ->label('telegram')
                 ->maxLength(255),
 
-            Forms\Components\TextInput::make('applications_funeral_services')
-                ->label('Количество заявок на ритуальные услуги')
-                ->maxLength(255),
-            Forms\Components\TextInput::make('aplications_memorial')
-                ->label('Количество заявок на поминки')
-                ->required()
-                ->maxLength(255),
-            Forms\Components\TextInput::make('calls_organization')
-                ->label('Количество заявок на звонки')
-                ->maxLength(255),
-            Forms\Components\TextInput::make('product_requests_from_marketplace')
-                ->label('Количество заявок на заказы из маркетплэйса')
-                ->numeric() // Разрешить только числовые значения
-                ->required()
-                ->maxLength(255),
-            Forms\Components\TextInput::make('applications_improvemen_graves')
-                ->label('Количество заявок на облогораживание')
-                ->numeric() // Разрешить только числовые значения
-                ->required()
-                ->maxLength(255),
-                
-           
-    
-            RichEditor::make('mini_content') // Поле для редактирования HTML-контента
-                ->label('Краткое описание') // Соответствующая подпись
-                ->toolbarButtons([
-                    'attachFiles', // возможность прикрепить файлы
-                    'bold', // жирный текст
-                    'italic', // курсив
-                    'underline', // подчеркивание
-                    'strike', // зачеркнутый текст
-                    'link', // вставка ссылок
-                    'orderedList', // нумерованный список
-                    'bulletList', // маркированный список
-                    'blockquote', // цитата
-                    'h2', 'h3', 'h4', // заголовки второго, третьего и четвертого уровня
-                    'codeBlock', // блок кода
-                    'undo', 'redo', // отмена/возврат действия
-                ])
-                ->required() // Опционально: сделать поле обязательным
-                ->disableLabel(false) // Показывать метку
-                ->placeholder('Введите HTML-контент здесь...'),
 
             RichEditor::make('content') // Поле для редактирования HTML-контента
                 ->label('Описание') // Соответствующая подпись
@@ -222,19 +181,46 @@ class OrganizationResource extends Resource
                 ->placeholder('Введите HTML-контент здесь...'),
 
                 
-                Forms\Components\Select::make('user_id')
-                ->label('id пользователя')
-                ->relationship('user', 'id')
-                ->searchable()
-                ->preload(),
+      
+
+                TextInput::make('map_link')
+                ->label('Страница пользователя')
+                ->disabled()
+                ->suffixAction(
+                    Action::make('open_map')
+                        ->button() // Отобразить как кнопку
+                        ->label('Страница пользователя')
+                        ->icon('heroicon-s-eye') // Иконка глаза
+                        // Текст кнопки
+                        ->url(function ($record) {
+                            // Используем $record для получения текущего продукта
+                            return '/'.selectCity()->slug.'/admin/users/'.$record->user_id.'/edit'; // Возвращаем URL продукта
+                        })
+                        ->openUrlInNewTab()
+                    )->hidden(fn (?Organization $record) => is_null($record)),
 
                 Placeholder::make('created_at')
                 ->label('Дата создания')
                 ->content(fn (?Model $record): string => $record?->created_at?->format('d.m.Y H:i:s') ?? ''),
             
-                Placeholder::make('rating')
+                Forms\Components\TextInput::make('rating')
                 ->label('Рейтинг')
-                ->content(fn ($state) => $state),
+                ->required()
+                ->maxLength(255),
+
+                Select::make('cemetery_ids')
+                ->label('Кладбища, на которых работает организация')
+                ->options(fn ($get) => getCemeteriesOptions($get))
+                ->multiple() // Разрешаем выбор нескольких значений
+                ->searchable() // Добавляем поиск
+                ->required() // Обязательное поле
+                ->formatStateUsing(function ($state) {
+                    // Если данные уже есть (например, загружены из базы), преобразуем их в массив
+                    return $state ? array_map('intval', explode(',', trim($state, ','))) : [];
+                })
+                ->preload()
+                ->dehydrateStateUsing(fn ($state) => implode(',', (array) $state)), // Преобразуем в строку перед сохранением
+
             ]);
     }
 

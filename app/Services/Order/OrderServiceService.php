@@ -29,7 +29,7 @@ class OrderServiceService
                             $services=servicesBurial($cart_item[1]);
                             $price=0;
                             foreach($services as $service){
-                                $price+=$service->getPriceForCemetery($product->cemetery->id)->price;
+                                $price+=$service->getPriceForCemetery($product->cemetery->id);
                             }
 
                             OrderService::create([

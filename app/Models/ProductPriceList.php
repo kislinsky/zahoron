@@ -55,7 +55,12 @@ class ProductPriceList extends Model
     // В модели Service
     public function getPriceForCity($cityId)
     {
-        return $this->priceProductPriceList->where('city_id', $cityId)->first();
+
+        if($this->priceProductPriceList->where('city_id', $cityId)->first()==null){
+            return $this->price;
+        }
+
+        return $this->priceProductPriceList->where('city_id', $cityId)->first()->price;
     }
 
 

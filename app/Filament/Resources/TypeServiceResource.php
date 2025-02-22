@@ -36,6 +36,11 @@ class TypeServiceResource extends Resource
                 ->required()
                 ->maxLength(255),
 
+            Forms\Components\TextInput::make('price')
+                ->label('Цена')
+                ->required()
+                ->maxLength(255),
+
             Forms\Components\Select::make('type_application_id')
                 ->label('Тип услуги')
                 ->relationship('typeApplication', 'title_ru')

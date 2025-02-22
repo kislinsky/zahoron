@@ -64,7 +64,7 @@ class ColumbariumResource extends Resource
                     ->dehydrated(false), // Не сохранять значение в базу данных
                 
                 Select::make('area_id')
-                    ->label('Район')
+                    ->label('Округ')
                     ->options(function ($get) {
                         $edgeId = $get('edge_id'); // Получаем выбранный край
                 
@@ -377,7 +377,7 @@ class ColumbariumResource extends Resource
                     'Долгота' => $columbarium->longitude,
                     'Ссылка на карту' => $columbarium->map_link,
                     'Край' => $columbarium->city->area->edge->title ?? 'Не указано',
-                    'Район' => $columbarium->city->area->title ?? 'Не указано',
+                    'Округ' => $columbarium->city->area->title ?? 'Не указано',
                     'Город' => $columbarium->city->title ?? 'Не указано',
                     'Ориентир' => $columbarium->adres,
                     'Email' => $columbarium->email,
@@ -400,7 +400,7 @@ class ColumbariumResource extends Resource
                         'Долгота' => $columbarium->longitude,
                         'Ссылка на карту' => $columbarium->map_link,
                         'Край' => $columbarium->city->area->edge->title ?? 'Не указано',
-                        'Район' => $columbarium->city->area->title ?? 'Не указано',
+                        'Округ' => $columbarium->city->area->title ?? 'Не указано',
                         'Город' => $columbarium->city->title ?? 'Не указано',
                         'Ориентир' => $columbarium->adres,
                         'Email' => $columbarium->email,

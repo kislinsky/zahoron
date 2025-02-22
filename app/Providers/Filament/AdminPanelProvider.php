@@ -29,7 +29,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('/admin')
+            ->path(selectCity()->slug.'/admin')
             ->login()
             ->colors([
                 'primary' => '#0080D7',

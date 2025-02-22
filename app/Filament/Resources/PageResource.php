@@ -28,6 +28,7 @@ class PageResource extends Resource
                 Forms\Components\TextInput::make('title')
                 ->label('Значение')
                 ->required()
+                
                 ->maxLength(255),Forms\Components\TextInput::make('title_ru')
                 ->label('Название')
                 ->required()

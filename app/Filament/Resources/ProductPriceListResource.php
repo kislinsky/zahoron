@@ -2,27 +2,28 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
+use App\Filament\Resources\ProductPriceListResource\Pages;
+use App\Filament\Resources\ProductPriceListResource\RelationManagers;
+use App\Filament\Resources\ProductPriceListResource\RelationManagers\AdvantagesRelationManager;
+use App\Filament\Resources\ProductPriceListResource\RelationManagers\AdvicesRelationManager;
+use App\Filament\Resources\ProductPriceListResource\RelationManagers\FaqsRelationManager;
+use App\Filament\Resources\ProductPriceListResource\RelationManagers\ImgsServiceRelationManager;
+use App\Filament\Resources\ProductPriceListResource\RelationManagers\PriceProductPriceListRelationManager;
+use App\Filament\Resources\ProductPriceListResource\RelationManagers\StagesRelationManager;
+use App\Filament\Resources\ProductPriceListResource\RelationManagers\VariantsRelationManager;
 use App\Models\ProductPriceList;
-use Filament\Resources\Resource;
+use Filament\Forms;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\ProductPriceListResource\Pages;
-use App\Filament\Resources\ProductPriceListResource\RelationManagers;
-use App\Filament\Resources\ProductPriceListResource\RelationManagers\FaqsRelationManager;
-use App\Filament\Resources\ProductPriceListResource\RelationManagers\StagesRelationManager;
-use App\Filament\Resources\ProductPriceListResource\RelationManagers\AdvicesRelationManager;
-use App\Filament\Resources\ProductPriceListResource\RelationManagers\VariantsRelationManager;
-use App\Filament\Resources\ProductPriceListResource\RelationManagers\AdvantagesRelationManager;
-use App\Filament\Resources\ProductPriceListResource\RelationManagers\ImgsServiceRelationManager;
-use App\Filament\Resources\ProductPriceListResource\RelationManagers\PriceProductPriceListRelationManager;
 
 class ProductPriceListResource extends Resource
 {
@@ -38,22 +39,44 @@ class ProductPriceListResource extends Resource
             ->schema([
                 // Поле "title"
                 TextInput::make('title')
-                    ->label('Название')
-                    ->required()
-                    ->maxLength(255),
+                ->label('Название фирмы')
+                ->required()
+                ->live(debounce: 1000) // Задержка автообновления
+                ->afterStateUpdated(function ($state, $set, $get) {
+                    // Проверяем, если длина title больше 3 символов, обновляем slug
+                    if (!empty($state) && strlen($state) > 3) {
+                        $set('slug', generateUniqueSlug($state, ProductPriceList::class, $get('id')));
+                    }
+                }),
+            
+            TextInput::make('slug')
+                ->required()
+                ->label('Slug')
+                ->maxLength(255)
+                ->unique(ignoreRecord: true) // Проверка уникальности
+                ->formatStateUsing(fn ($state) => slug($state)) // Форматируем slug
+                ->dehydrateStateUsing(fn ($state, $get) => generateUniqueSlug($state, ProductPriceList::class, $get('id'))),
     
+    
+                TextInput::make('price')
+                ->label('Цена')
+                ->required(),
+    
+                Radio::make('view')
+                ->label('Отображение продукта')
+                ->options([
+                    0 => 'Не показывать',
+                    1 => 'Показывать'
+                ])
+                ->inline(),
+
                     // Поле "category_id"
                 Select::make('category_id')
                 ->label('Категория')
                 ->required()
                 ->relationship('category', 'title'), // Убедитесь, что у вас есть связь "category"
 
-                // Поле "slug"
-                TextInput::make('slug')
-                    ->required()
-                    ->unique(ignoreRecord: true) // Игнорировать текущую запись при редактировании
-                    ->label('Slug')
-                    ->maxLength(255),
+               
     
                
     

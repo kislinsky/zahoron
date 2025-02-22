@@ -25,9 +25,9 @@
                             <div class="li_service">
                                 <div class="flex_li_service">
                                     <a href='{{route('pricelist.single',$service->slug)}}'class="title_li decoration_on">{{ $service->title }}</a>
-                                    <div class="title_li">от {{ $service->getPriceForCity($city->id)->price }} ₽</div>
+                                    <div class="title_li">от {{ $service->getPriceForCity($city->id) }} ₽</div>
                                 </div>
-                                <div class="text_li">{{ $service->excerpt }}</div>
+                                <div class="text_li">{!! $service->excerpt !!}</div>
                             </div>
                         @endforeach
                     @endif
@@ -45,7 +45,7 @@
                             @foreach ($cats as $cat)
                                 <div class="main_cat">
             
-                                    <div id_category='{{ $cat->id }}' class="li_cat_main_marketplace"><img class='icon_black'src="{{ asset('storage/uploads_cats_product_price_list/'.$cat->icon) }}" alt=""> <img class='icon_white'src="{{ asset('storage/uploads_cats_product_price_list/'.$cat->icon_white) }}" alt="">{{ $cat->title }}</div>
+                                    <div id_category='{{ $cat->id }}' class="li_cat_main_marketplace"><img class='icon_black'src="{{ asset('storage/'.$cat->icon) }}" alt=""> <img class='icon_white'src="{{ asset('storage/'.$cat->icon_white) }}" alt="">{{ $cat->title }}</div>
                                     <?php $cats_children=childrenCategoryProductsPriceList($cat);?>
                                     @if (count($cats_children)>0)
                                         <ul class="ul_childern_cats_marketplace">

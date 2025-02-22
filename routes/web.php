@@ -88,7 +88,7 @@ if($city!='livewire'){
                 header("Refresh:0");
                 
             }
-            if($_COOKIE['city'] != $c_b_s__->id){
+            if(isset($_COOKIE['city']) && $_COOKIE['city'] != $c_b_s__->id){
                 setcookie('city', '', -1, '/');
                 setcookie("city", $c_b_s__->id, time()+20*24*60*60,'/');
                 header("Refresh:0");

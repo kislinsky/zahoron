@@ -1,6 +1,7 @@
 <?php 
 namespace App\Http\Controllers;
 
+use App\Models\Edge;
 use Illuminate\Http\Request;
 use YooKassa\Client;
 
@@ -40,6 +41,9 @@ class YooMoneyController extends Controller
 
     public function handleCallback(Request $request)
     {
+        Edge::create([
+            'title'=>'fewrf',
+        ]);
         // Обработка уведомления от YooMoney
         $paymentId = $request->input('paymentId');
         $payment = $this->client->getPaymentInfo($paymentId);

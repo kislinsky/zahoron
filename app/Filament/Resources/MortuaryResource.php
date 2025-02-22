@@ -95,7 +95,7 @@ class MortuaryResource extends Resource
                     ->dehydrated(false), // Не сохранять значение в базу данных
                 
                 Select::make('area_id')
-                    ->label('Район')
+                    ->label('Округ')
                     ->options(function ($get) {
                         $edgeId = $get('edge_id'); // Получаем выбранный край
                 
@@ -141,12 +141,7 @@ class MortuaryResource extends Resource
                     }),
 
 
-                Forms\Components\Select::make('district_id')
-                    ->label('Район')
-                    ->relationship('district', 'title')
-                    ->searchable()
-                    ->preload(),
-
+               
                 Forms\Components\TextInput::make('underground')
                     ->label('Метро')
                     ->maxLength(255),
@@ -166,25 +161,7 @@ class MortuaryResource extends Resource
                     ->maxLength(255),
 
         
-                RichEditor::make('mini_content') // Поле для редактирования HTML-контента
-                    ->label('Краткое описание') // Соответствующая подпись
-                    ->toolbarButtons([
-                        'attachFiles', // возможность прикрепить файлы
-                        'bold', // жирный текст
-                        'italic', // курсив
-                        'underline', // подчеркивание
-                        'strike', // зачеркнутый текст
-                        'link', // вставка ссылок
-                        'orderedList', // нумерованный список
-                        'bulletList', // маркированный список
-                        'blockquote', // цитата
-                        'h2', 'h3', 'h4', // заголовки второго, третьего и четвертого уровня
-                        'codeBlock', // блок кода
-                        'undo', 'redo', // отмена/возврат действия
-                    ])
-                    ->required() // Опционально: сделать поле обязательным
-                    ->disableLabel(false) // Показывать метку
-                    ->placeholder('Введите HTML-контент здесь...'),
+                
 
                 RichEditor::make('content') // Поле для редактирования HTML-контента
                     ->label('Описание') // Соответствующая подпись
@@ -390,7 +367,7 @@ class MortuaryResource extends Resource
                     'Долгота' => $mortuary->longitude,
                     'Ссылка на карту' => $mortuary->map_link,
                     'Край' => $mortuary->city->area->edge->title ?? 'Не указано',
-                    'Район' => $mortuary->city->area->title ?? 'Не указано',
+                    'Округ' => $mortuary->city->area->title ?? 'Не указано',
                     'Город' => $mortuary->city->title ?? 'Не указано',
                     'Ориентир' => $mortuary->adres,
                     'Email' => $mortuary->email,
@@ -413,7 +390,7 @@ class MortuaryResource extends Resource
                         'Долгота' => $mortuary->longitude,
                         'Ссылка на карту' => $mortuary->map_link,
                         'Край' => $mortuary->city->area->edge->title ?? 'Не указано',
-                        'Район' => $mortuary->city->area->title ?? 'Не указано',
+                        'Округ' => $mortuary->city->area->title ?? 'Не указано',
                         'Город' => $mortuary->city->title ?? 'Не указано',
                         'Ориентир' => $mortuary->adres,
                         'Email' => $mortuary->email,
