@@ -219,7 +219,7 @@ class OrganizationResource extends Resource
                     return $state ? array_map('intval', explode(',', trim($state, ','))) : [];
                 })
                 ->preload()
-                ->dehydrateStateUsing(fn ($state) => implode(',', (array) $state)), // Преобразуем в строку перед сохранением
+                ->dehydrateStateUsing(fn ($state) => implode(',', (array) $state).','), // Преобразуем в строку перед сохранением
 
             ]);
     }

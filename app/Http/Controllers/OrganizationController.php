@@ -56,6 +56,20 @@ class OrganizationController extends Controller
     }
 
     public static function catalogOrganization(Request $request){
+        // $data=request()->validate([
+        //     'cemetery_id'=>['nullable'],
+        //     'filter_work'=>['nullable','string'],
+        //     'district_id'=>['nullable'],
+        //     'sort'=>['nullable'],
+        //     'category_id'=>['nullable','integer'],
+        // ]);
+
+        // return OrganizationService::catalogOrganization($data);
+        return redirect()->route('organizations.category',categoryProductChoose()->slug);
+    }
+
+
+    public static function catalogOrganizationCategory($slug,Request $request){
         $data=request()->validate([
             'cemetery_id'=>['nullable'],
             'filter_work'=>['nullable','string'],
@@ -64,7 +78,7 @@ class OrganizationController extends Controller
             'category_id'=>['nullable','integer'],
         ]);
 
-        return OrganizationService::catalogOrganization($data);
+        return OrganizationService::catalogOrganization($slug,$data);
     }
 
     public static function ajaxMapOrganizations(Request $request){

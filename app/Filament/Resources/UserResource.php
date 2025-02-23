@@ -3,20 +3,18 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
 use App\Filament\Resources\UserResource\RelationManagers\OrganizationsRelationManager;
-use App\Filament\Resources\UserResource\RelationManagers\UserRequestCountRelationManager;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
 {
@@ -34,7 +32,15 @@ class UserResource extends Resource
                 ->label('email')
                 ->maxLength(255),
                 
-
+                TextInput::make('password')
+                ->label('Пароль')
+                ->required(fn ($context) => $context !== 'edit')
+                ->password()
+                ->maxLength(255)
+                ->dehydrated(fn ($state) => filled($state))
+                ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                ->nullable(fn ($context) => $context === 'edit'),
+                
                 Select::make('status') // Поле для статуса
                 ->label('Статус') // Название поля
                 ->options([

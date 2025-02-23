@@ -28,12 +28,6 @@
                 <div class='error-text'>{{ $message }}</div>
                 @enderror
             </div>
-            <div class="block_input">
-                <input type="text" name='city' placeholder='Город'>
-                @error('city')
-                <div class='error-text'>{{ $message }}</div>
-                @enderror
-            </div>
             <div class="block_input"><button class="blue_btn" type='submit'>Найти</button></div>
         </form>
     </div>

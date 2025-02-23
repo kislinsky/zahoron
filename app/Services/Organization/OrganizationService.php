@@ -146,8 +146,14 @@ class OrganizationService
     }
 
 
-    public static function catalogOrganization($data){
-        
+    public static function catalogOrganization($slug,$data){
+
+        $category=CategoryProduct::where('slug',$slug)->first();
+        if($category==null){
+            return redirect()->route('organizations.category',categoryProductChoose()->slug);
+        }
+        $category_main=CategoryProduct::find($category->parent_id);
+
         $city=selectCity();
         $news_video=News::orderBy('id', 'desc')->where('type',2)->get();
         $news=News::orderBy('id', 'desc')->take(3)->get();
@@ -157,12 +163,12 @@ class OrganizationService
        
         $cemeteries=Cemetery::where('city_id',$city->id)->get();
 
-        $category=categoryProductChoose();
-        $category_main=CategoryProduct::find($category->parent_id);
-        if(isset($data['category_id'])){
-            $category=CategoryProduct::find($data['category_id']);
-            $category_main=CategoryProduct::find($category->parent_id);
-        }
+        // $category=categoryProductChoose();
+        // $category_main=CategoryProduct::find($category->parent_id);
+        // if(isset($data['category_id'])){
+        //     $category=CategoryProduct::find($data['category_id']);
+        //     $category_main=CategoryProduct::find($category->parent_id);
+        // }
 
         $cemetery_choose=null;
         $district_choose=null;
@@ -193,9 +199,10 @@ class OrganizationService
         if($organizations_category->count()<3){
             SEOMeta::setRobots('noindex, nofollow');
         }
-        SEOTools::setTitle(formatContentCategory(getSeo('organizations-catalog','title'),$category,$organizations_category));
-        SEOTools::setDescription(formatContentCategory(getSeo('organizations-catalog','description'),$category,$organizations_category));
-        $title_h1=formatContentCategory(getSeo('organizations-catalog','h1'),$category,$organizations_category);
+
+        SEOTools::setTitle(formatContentCategory(getSeo($category->slug.'-catalog-organization','title'),$category,$organizations_category));
+        SEOTools::setDescription(formatContentCategory(getSeo($category->slug.'-catalog-organization','description'),$category,$organizations_category));
+        $title_h1=formatContentCategory(getSeo($category->slug.'-catalog-organization','h1'),$category,$organizations_category);
 
         $pages_navigation=[['Главная',route('index')],['Организации',route('organizations')],[$category->title]];
 
@@ -242,7 +249,7 @@ class OrganizationService
         $city=selectCity();
 
         $organizations_category=orgniaztionsFilters($data);
-        $title_h1=formatContentCategory(getSeo('organizations-catalog','h1'),$category,$organizations_category);
+        $title_h1=formatContentCategory(getSeo($category->slug.'-catalog-organization','h1'),$category,$organizations_category);
 
         return  view('organization.components.catalog.title-page',compact('title_h1'));
     }

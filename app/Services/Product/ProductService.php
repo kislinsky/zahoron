@@ -42,8 +42,13 @@ class ProductService
         $category=$product->category;
         $sales=ActivityCategoryOrganization::where('organization_id',$organization->id)->where('category_children_id',$category->id)->where('sales','!=',null)->get();
         $city=selectCity();  
-        $cemeteries=$city->cemeteries;
-        $mortuaries=$city->mortuaries;
+
+        $cemeteries=Cemetery::whereIn('id',explode(',', rtrim($product->organization->cemetery_ids,',')))->get();
+        
+        $cities=$city->area->edge->area->flatMap(function($area_one) {
+            return $area_one->cities; // Здесь предполагается, что есть связь mortuaries
+        });
+        $mortuaries=Mortuary::whereIn('city_id',$cities->pluck('id'))->get();
         $category_products=Product::orderBy('id','desc')->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('city_id',$product->city_id)->get();
 
         
@@ -92,7 +97,7 @@ class ProductService
         
         $category_products=Product::orderBy('id','desc')->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('organization_id',$product->organization->id)->get();
 
-        return view('product.single.single',compact('title_h1','agent','product','organization','sales','images','parameters','category','size','additionals','comments','category_products'));
+        return view('product.single.single',compact('cemeteries','title_h1','agent','product','organization','sales','images','parameters','category','size','additionals','comments','category_products'));
     }
 
 
@@ -127,14 +132,13 @@ class ProductService
         $category=ajaxCatContent($data);
         $districts_all=$city->districts;
 
-
         if($products->count()<3){
             SEOMeta::setRobots('noindex, nofollow');
         }
 
-        SEOTools::setTitle(formatContentCategory(getSeo('marketplace','title'),$category,$products));
-        SEOTools::setDescription(formatContentCategory(getSeo('marketplace','description'),$category,$products));
-        $title_h1=formatContentCategory(getSeo('marketplace','h1'),$category,$products);
+        SEOTools::setTitle(formatContentCategory(getSeo($category->slug.'-marketplace','title'),$category,$products));
+        SEOTools::setDescription(formatContentCategory(getSeo($category->slug.'-marketplace','description'),$category,$products));
+        $title_h1=formatContentCategory(getSeo($category->slug.'-marketplace','h1'),$category,$products);
 
         $pages_navigation=[['Главная',route('index')],['Маркетплэйс',route('marketplace')],[$category->title]];
 
@@ -226,6 +230,7 @@ class ProductService
         if(isset($data['category'])){
             $category=CategoryProduct::find($data['category']);
         }
+        
         // if(isset($data['district_id'])){
         //     $district=District::find($data['district_id']);
         // }
@@ -234,7 +239,7 @@ class ProductService
         // }
         $city=selectCity();
         $products=filterProducts($data);
-        $title_h1=formatContentCategory(getSeo('marketplace','h1'),$category,$products);
+        $title_h1=formatContentCategory(getSeo($category->slug.'-marketplace','h1'),$category,$products);
 
         return view("product.components.catalog.title", compact('title_h1'));
     }

@@ -26,27 +26,28 @@ class SearchBurialService
     }
 
     public static function searchProduct($data){
-        $cemetery_ids=selectCity()->cemeteries->pluck('id');
-
-        if(isset($data['city_search_burial'])){
-            $city=City::where('title','like', '%'.$data['city_search_burial'].'%')->get();
-            if($city[0]!=null){
-                $cemetery_ids=$city[0]->cemeteries->pluck('id');
-            }
-        }
-
+        $cemetery_ids = selectCity()->area->cities->flatMap(function($city) {
+            return $city->cemeteries->pluck('id');
+        });
         $news=News::orderBy('id', 'desc')->take(2)->get();
         $products=collect();
-        $seo='Поиск могил';
+        $seo='Поиск могил '. $data['surname'];
+        $products=Burial::where('surname',$data['surname'])->whereIn('cemetery_id',$cemetery_ids)->where('status',1);
 
-        if(isset($data['name']) && isset($data['surname']) && isset($data['patronymic'])){
-            $products=Burial::where('name',$data['name'])->where('surname',$data['surname'])->where('patronymic',$data['patronymic'])->whereIn('cemetery_id',$cemetery_ids)->where('status',1)->get();
-            $seo="Поиск ".$data['name'] . $data['surname'] . $data['patronymic'];
+        if(isset($data['name'])  ){
+            $products=$products->where('name',$data['name']);
+            $seo=$seo.' '.$data['name'];
         }
-
+        
+        if(isset($data['patronymic'])  ){
+            $products=$products->where('patronymic',$data['patronymic']);
+            $seo=$seo.' '.$data['patronymic'];
+        }
+        
         SEOTools::setTitle($seo);
         SEOTools::setDescription($seo);
         $page=11;
+        $products=$products->get();
         return view('burial.search-product',compact('products','news','page'));
     }
 

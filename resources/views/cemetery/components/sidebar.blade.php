@@ -10,7 +10,7 @@
                 <?php $images=$product->getImages;?>
                     @if (isset($images))
                         @if (count($images)>0)
-                            <img class='img_market_product' src="{{ asset('storage/uploads_product/'.$images[0]->title) }}" alt="">
+                            <img class='img_market_product' src="{{ asset('storage/'.$images[0]->title) }}" alt="">
                         @endif
                     @endif
                     <a href='{{ $product->route() }}'class="title_product_market">{{ $product->title }}</a>

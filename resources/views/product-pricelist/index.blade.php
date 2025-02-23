@@ -20,7 +20,7 @@
         <div class="">
             <div class="ul_services">
                 @if (isset($services))
-                    @if (count($services)>0)
+                    @if ($services->count()>0)
                         @foreach ($services as $service )
                             <div class="li_service">
                                 <div class="flex_li_service">

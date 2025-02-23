@@ -84,6 +84,23 @@
                         @endif
                     </select>
                 </div>
+
+                <div class="block_input" >
+                    <label for="">Выберите кладбище</label>
+                    <div class="select">
+                        <select name="cemetery_id" >                   
+                            @if($cemeteries->count()>0)
+                                @foreach($cemeteries as $cemetery)
+                                    <option value="{{$cemetery->id}}">{{$cemetery->title}}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+                    @error('cemetery_id')
+                        <div class='error-text'>{{ $message }}</div>
+                    @enderror  
+                </div>  
+
                 {{view('product.components.single.additionals',compact('additionals'))}}
 
                 {{view('product.components.single.user-inputs')}}

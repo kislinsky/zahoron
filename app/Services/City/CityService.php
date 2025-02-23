@@ -36,7 +36,7 @@ class CityService {
 
 
     public static function ajaxCitySearchInInput($data){
-        $citites=[];
+        $cities=[];
         if(isset($data['s']) && $data['s']!=null){
             $cities=City::orderBy('title','asc')->where('title','like','%'.$data['s'].'%')->get();
         }

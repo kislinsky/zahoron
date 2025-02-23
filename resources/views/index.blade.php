@@ -322,7 +322,7 @@
     <section class="about_company bac_gray">
         <div class="container">
             <div class="title">О проекте "Цены на ритуальные услуги в г. {{$city->title}}</div>
-            <div class="content_block">{!! $city->text_about_project !!}</div>
+            <div class="content_block">{!! get_acf(15,'content_1') !!}</div>
 
         </div>
     </section>
@@ -336,7 +336,7 @@
     <section class="about_company bac_gray">
         <div class="container">
             <div class="title">Как правильно оформить ритуальные услуги в г. {{$city->title}}</div>
-            <div class="content_block">{!!$city->text_how_properly_arrange_funeral_services !!}</div>
+            <div class="content_block">{!!get_acf(15,'content_2') !!}</div>
 
         </div>
     </section>

@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Burial;
-use App\Models\CategoryNews;
-use App\Models\Cemetery;
-use App\Models\City;
+use App\Models\CategoryProduct;
 use App\Models\Faq;
-use App\Models\PriceProductPriceList;
-use App\Models\PriceService;
-use App\Models\WorkingHoursCemetery;
+use App\Models\SEO;
+use App\Models\SeoObject;
 use App\Services\Burial\SearchBurialService;
 use App\Services\OurWork\OurWorkService;
 use App\Services\Page\IndexService;

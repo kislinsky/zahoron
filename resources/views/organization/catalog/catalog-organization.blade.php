@@ -145,6 +145,8 @@
 
 $( ".li_cat_children_marketplace" ).on( "click", function() {
 
+    let slug=$(this).attr('slug')
+
     if( $(this).parent('.ul_childern_cats_marketplace').siblings('.li_cat_main_marketplace').attr('id_category')==45){
         $( ".filter_block_organization select" ).removeClass('active_select_filter_organiaztion')
         $('#district_id').addClass('active_select_filter_organiaztion')
@@ -231,7 +233,7 @@ $( ".li_cat_children_marketplace" ).on( "click", function() {
                 strings.push(key+"="+value)
             }
             let st = strings.join("&")
-            window.history.pushState('organizations', 'Title', '/{{$city->slug}}/organizations?'+st);
+            window.history.pushState('organizations', 'Title', '/{{$city->slug}}/organizations/'+slug,+'?'+st);
         },
         error: function () {
             alert('Ошибка');
@@ -339,7 +341,7 @@ $( ".filter_block_organization select" ).on( "change", function() {
                 strings.push(key+"="+value)
             }
             let st = strings.join("&")
-            window.history.pushState('organizations', 'Title', '/{{$city->slug}}/organizations?'+st);
+            window.history.pushState('organizations', 'Title', '/{{$city->slug}}/organizations/'+$('.active_category').attr('slug')+'?'+st);
         },
         error: function () {
             alert('Ошибка');
@@ -423,7 +425,7 @@ $( ".filter_sort .li_sort" ).on( "click", function() {
                     strings.push(key+"="+value)
                 }
                 let st = strings.join("&")
-                window.history.pushState('organizations', 'Title', '/{{$city->slug}}/organizations?'+st);
+                window.history.pushState('organizations', 'Title', '/{{$city->slug}}/organizations'+$('.active_category').attr('slug')+'?'+st);
                 $('.bac_loader').fadeOut()
                 $('.load_block').fadeOut()
 
@@ -490,7 +492,7 @@ $( "#filter_work" ).on( "change", function() {
                 strings.push(key+"="+value)
             }
             let st = strings.join("&")
-            window.history.pushState('organizations', 'Title', '/{{$city->slug}}/organizations?'+st);
+            window.history.pushState('organizations', 'Title', '/{{$city->slug}}/organizations'+$('.active_category').attr('slug')+'?'+st);
             $('.bac_loader').fadeOut()
             $('.load_block').fadeOut()
 

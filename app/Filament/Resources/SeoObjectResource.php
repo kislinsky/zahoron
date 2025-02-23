@@ -29,11 +29,9 @@ class SeoObjectResource extends Resource
         return $form
             ->schema([
                 TextInput::make('ru_title')
-                    ->label('Значение')
-                    ->disabled(),
+                    ->label('Значение'),
                 TextInput::make('title')
-                    ->label('Название')
-                    ->disabled(),
+                    ->label('Название'),
 
                     Repeater::make('SEO')
                     ->relationship('SEO') // Указываем название связи

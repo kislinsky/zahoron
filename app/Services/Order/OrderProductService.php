@@ -165,6 +165,7 @@ class OrderProductService
                 'customer_comment'=>$data['message'],
                 'count'=>1,
                 'price'=>$price_product,
+                'cemetery_id'=>$data['cemetery_id'],
                 'size'=>$data['size'],
                 'additional'=>$additionals,
                 'organization_id'=>$product->organization->id

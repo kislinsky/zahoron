@@ -1,6 +1,7 @@
 @if($product->type=='beautification')
     <div class="mini_flex_li_product">
         <div class="text_black">Размер: {{ $order->size }}</div>
+        <div class="text_black">Кладбище: <a href="{{ $order->cemetery->route() }}">{{ $order->cemetery->title }}</a></div>
         <div class="text_black">материал: {{ $product->material }}</div>
     </div>
 

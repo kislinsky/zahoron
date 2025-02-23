@@ -174,7 +174,7 @@ function filterProducts($data){
         }
     }
     $products=$products->where('category_id',$category->id);
-    if($category->parent_id==36){
+    if($category->parent->slug=='oblagorazivanie-mogil'){
         if(isset($data['cemetery_id'])  && $data['cemetery_id']!='undefined'){
             $products=$products->whereHas('organization', function ($query) use ($data) {
                 $query->whereRaw("FIND_IN_SET(?, cemetery_ids)", [$data['cemetery_id']]);
@@ -200,7 +200,7 @@ function filterProducts($data){
             }
         }
     }
-    if($category->parent_id==45){
+    if($category->parent->slug=='organizacia-pominok'){
         if(isset($data['district_id'])  && $data['district_id']!='undefined'){
             $products=$products->where('district_id',$data['district_id']);
          }
@@ -1389,6 +1389,30 @@ function getSeo($page,$column){
 }
 
 function formatContent($content,$model){
+    $city=selectCity()->title;
+    $title='';
+    $adres='';
+    $organization='';
+    if($model!=null){
+        $title=$model->title;
+        $adres=$model->adres;
+        if($model->organization!=null){
+            $organization=$model->organization->title;
+        }
+    }
+    
+    $time=date('H:i');
+    $date=date('Y-m-d');
+    $year= date('Y');
+ 
+    $result=str_replace(["{title}","{city}","{adres}","{time}","{date}","{Year}","{organization}"],[$title,$city,$adres,$time,$date,$year,$organization],$content);
+    
+    return $result;
+
+}
+
+
+function formatContentCategoryProduct($content,$model){
     $city=selectCity()->title;
     $title='';
     $adres='';

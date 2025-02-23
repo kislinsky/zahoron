@@ -9,7 +9,7 @@
        <div class="flex_footer">
           <a class='logo' href='/'>
             <img class='img_light_theme' src='{{asset('storage/uploads/zahoron.svg')}}'>
-            <img class='img_black_theme' src="{{asset('storage/uploads/РИТУАЛреестр.svg')}}" alt="">         </a>
+            <img class='img_black_theme' src="{{asset('storage/uploads/РИТУАЛреестр.svg')}}" alt=""> </a>
          <div class='pages'>
             <a href='{{ route('page.search.burial.filter') }}'class="no_bac_btn">Герои </a>
             <a href='{{ route('marketplace') }}'class="no_bac_btn">Маркетплейс</a>
@@ -78,7 +78,6 @@
    $( ".block_ajax_input_search_cities .input_search_cities" ).on( "input", function() {
          let city_id_input=$(this).siblings('.city_id_input')
          let this_block=$(this).parent('.block_ajax_input_search_cities')
-         console.log($(this).val())
         let data  = {
             "_token": "{{ csrf_token() }}",
             's':$(this).val(),

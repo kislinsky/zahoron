@@ -1,3 +1,4 @@
+
 @include('header.header')
 <section class="order_page bac_gray">
     <div class="container order_page_search">
@@ -8,7 +9,6 @@
                 <input type="text" name='surname' placeholder='Фамилия'>
                 <input type="text" name='name' placeholder='Имя'>
                 <input type="text" name='patronymic' placeholder='Отчество'>
-                <input type="text" name='city_search_burial' placeholder='Город'>
                 <button class='blue_btn' type='submit'>Найти</button>
             </form>
         </div>

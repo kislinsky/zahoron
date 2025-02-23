@@ -52,9 +52,9 @@ class OrganizationProviderService
             $filter_work='on';
         }
 
-        SEOTools::setTitle(formatContentCategory(getSeo('organizations-catalog','title'),$category,$organizations_category));
-        SEOTools::setDescription(formatContentCategory(getSeo('organizations-catalog','description'),$category,$organizations_category));
-        $title_h1=formatContentCategory(getSeo('organizations-catalog','h1'),$category,$organizations_category);
+        SEOTools::setTitle(formatContentCategory(getSeo($category->slug.'-catalog-organization','title'),$category,$organizations_category));
+        SEOTools::setDescription(formatContentCategory(getSeo($category->slug.'-catalog-organization','description'),$category,$organizations_category));
+        $title_h1=formatContentCategory(getSeo($category->slug.'-catalog-organization','h1'),$category,$organizations_category);
 
 
         if($organizations_category->count()<3){
@@ -100,7 +100,7 @@ class OrganizationProviderService
         }
         
         $organizations_category=orgniaztionsFilters($data);
-        $title_h1=formatContentCategory(getSeo('organizations-catalog','h1'),$category,$organizations_category);
+        $title_h1=formatContentCategory(getSeo($category->slug.'-catalog-organization','h1'),$category,$organizations_category);
 
         return  view('organization.components.catalog-provider.title-page',compact('city','category','category_main'));
     }

@@ -125,6 +125,8 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
 
     Route::get('/organization/{slug}', [OrganizationController::class, 'single'])->name('organization.single');
     Route::get('/organizations', [OrganizationController::class, 'catalogOrganization'])->name('organizations');
+    Route::get('/organizations/{slug}', [OrganizationController::class, 'catalogOrganizationCategory'])->name('organizations.category');
+
 
 
     Route::post('/register-with-phone', [RegisterController::class, 'registerWithPhone'])->name('register.phone');
@@ -150,6 +152,7 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
         Route::get('category/children/ul', [CategoryProductController::class, 'ajaxCategoryChildrenUl'])->name('category.product.children.ul');
                 
         Route::post('/add-cemetery-setings', [AgentController::class, 'addCemetery'])->name('add.cemetery.settings');
+
 
         Route::get('/organizations/filters', [OrganizationController::class, 'ajaxFilterCatalog'])->name('organizations.ajax.filters');
         Route::get('/organizations/category-prices', [OrganizationController::class, 'ajaxCategoryPrices'])->name('organizations.ajax.category-prices');

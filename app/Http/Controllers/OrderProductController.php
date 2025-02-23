@@ -81,6 +81,7 @@ class OrderProductController extends Controller
             'phone'=>['required','string'],
             'message'=>['string','nullable'],
             'additionals'=>['nullable'],
+            'cemetery_id'=>['required','integer'],
             'size'=>['required','string'],
             'product_id'=>['required','integer'],
         ]);

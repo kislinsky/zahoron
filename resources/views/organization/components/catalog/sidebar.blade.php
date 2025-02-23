@@ -12,7 +12,7 @@
                     @if (count($cats_children)>0)
                         <ul class="ul_childern_cats_marketplace">
                             @foreach ($cats_children as $cat_children)
-                                <li   id_category={{ $cat_children->id }} class='li_cat_children_marketplace <?php if($category!=null){if($category->id==$cat_children->id){echo 'active_category';}}?>'>{{ $cat_children->title }}</li>
+                                <li slug='{{ $cat_children->slug }}'  id_category={{ $cat_children->id }} class='li_cat_children_marketplace <?php if($category!=null){if($category->id==$cat_children->id){echo 'active_category';}}?>'>{{ $cat_children->title }}</li>
                             @endforeach
                         </ul>    
                     @endif
