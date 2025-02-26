@@ -10,6 +10,7 @@ use App\Models\CategoryProduct;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -54,7 +55,15 @@ class ProductResource extends Resource
                 ->formatStateUsing(fn ($state) => slug($state)) // Форматируем slug
                 ->dehydrateStateUsing(fn ($state, $get) => generateUniqueSlug($state, Product::class, $get('id'))),
 
-                
+                Radio::make('view')
+            ->label('Отображение товара')
+            ->options([
+                0 => 'Не показывать',
+                1 => 'Показывать'
+            ])
+            ->inline(),
+
+            
                     TextInput::make('map_link')
                     ->label('Ссылка на товар')
                     ->disabled()

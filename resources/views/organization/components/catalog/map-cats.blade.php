@@ -26,7 +26,7 @@
                  iconCaption: '{{$organization->title}}'
              },{
                  iconLayout: 'default#image',
-                 iconImageHref: "{{asset('storage/uploads_cats_product/'.$category->icon_map)}}",
+                 iconImageHref: "{{asset('storage/'.$category->icon_map)}}",
                  iconImageSize: [40,40] // Размер иконки
              }));
          @endforeach

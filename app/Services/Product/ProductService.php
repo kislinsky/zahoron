@@ -24,7 +24,7 @@ class ProductService
 {
     public static function singleProduct($slug){
         $product=Product::where('slug',$slug)->first();
-        if($product==null){
+        if($product==null || $product->view!=1){
             return redirect()->back();
         }
         $id=$product->id;
@@ -49,7 +49,7 @@ class ProductService
             return $area_one->cities; // Здесь предполагается, что есть связь mortuaries
         });
         $mortuaries=Mortuary::whereIn('city_id',$cities->pluck('id'))->get();
-        $category_products=Product::orderBy('id','desc')->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('city_id',$product->city_id)->get();
+        $category_products=Product::orderBy('id','desc')->where('view',1)->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('city_id',$product->city_id)->get();
 
         
         if($category->type=='funeral-service'){
@@ -95,7 +95,7 @@ class ProductService
             return view('product.single.single-button-grave',compact('title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
         
-        $category_products=Product::orderBy('id','desc')->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('organization_id',$product->organization->id)->get();
+        $category_products=Product::orderBy('id','desc')->where('view',1)->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('organization_id',$product->organization->id)->get();
 
         return view('product.single.single',compact('cemeteries','title_h1','agent','product','organization','sales','images','parameters','category','size','additionals','comments','category_products'));
     }

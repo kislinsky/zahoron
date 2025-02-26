@@ -3,7 +3,7 @@
 $city=selectCity();
 $reviews_organization=reviewsOrganization($city->id);
 ?>
-@if(count($reviews_organization)>0)
+@if($reviews_organization->count()>0)
 <section class='reviews_organizations'>
     <div class="container">
         <div class="title">Отзывы клиентов о ритуальных агентствах в г. {{$city->title}}</div>

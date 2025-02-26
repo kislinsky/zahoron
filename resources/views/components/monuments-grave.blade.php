@@ -1,7 +1,7 @@
 <?php
 use App\Models\Product;
  $city=selectCity();
- $products_monuments_grave=Product::where('city_id', $city->id)->where('category_id',29)->get();
+ $products_monuments_grave=Product::where('city_id', $city->id)->where('view',1)->where('category_id',29)->get();
 ?>
 
 @if(count($products_monuments_grave)>0)

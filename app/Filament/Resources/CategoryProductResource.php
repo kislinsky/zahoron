@@ -91,9 +91,12 @@ class CategoryProductResource extends Resource
                     ->label('Выбор администратора')
                     ->default(0),
 
+
                 Forms\Components\FileUpload::make('icon_map')
+                    ->directory('/uploads_cats_product') // Директория для сохранения
                     ->label('Иконка на карте')
                     ->nullable(),
+              
 
             ]);
     }

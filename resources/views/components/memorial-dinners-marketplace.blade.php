@@ -2,7 +2,7 @@
 use App\Models\Product;
 
  $city=selectCity();
- $products_memorial_dinners=Product::where('city_id', $city->id)->where('category_id',46)->get();
+ $products_memorial_dinners=Product::where('city_id', $city->id)->where('view',1)->where('category_id',46)->get();
 ?>
 
 @if(count($products_memorial_dinners)>0)

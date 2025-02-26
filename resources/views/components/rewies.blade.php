@@ -3,8 +3,7 @@ use App\Models\Review;
 $reviews = Review::orderBy('id', 'desc')->get();
 
 ?>
-@if (isset($reviews))
-@if (count($reviews)>0)
+@if (isset($reviews) && $reviews->count()>0)
 <section class="rewies">
     <div class="container">
         <div class="flex_block">
@@ -45,4 +44,3 @@ $reviews = Review::orderBy('id', 'desc')->get();
     </div>
 </section>
 @endif
-            @endif

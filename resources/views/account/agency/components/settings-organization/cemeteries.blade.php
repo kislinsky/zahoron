@@ -65,7 +65,7 @@
                 if(result['error']){
                     alert(result['error'])
                 }else{
-                    $('.ul_cemtery').append('<div class="li_cemetery_agent"><div class="mini_flex_li_product"><input type="hidden" value="'+result['id_cemetery']+'"name="cemetery_ids[]"><div class="title_label">'+name_location+'</div><div class="text_li">Адрес: "'+result['adres']+'"</div></div><div  class="delete_cart delete_cemetery"><img src="{{asset('storage/uploads/Закрыть (1).svg')}}" alt=""></div></div>' );
+                    $('.ul_cemtery').append('<div class="li_cemetery_agent" onclick="$(this).remove()" ><div class="mini_flex_li_product"><input type="hidden" value="'+result['id_cemetery']+'"name="cemetery_ids[]"><div class="title_label">'+name_location+'</div><div class="text_li">Адрес: "'+result['adres']+'"</div></div><div  class="delete_cart delete_cemetery"><img src="{{asset('storage/uploads/Закрыть (1).svg')}}" alt=""></div></div>' );
                 }
             },
             error: function () {

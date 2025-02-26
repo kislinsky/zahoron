@@ -52,7 +52,7 @@ class ProductPriceListService {
 
     public static function singleProduct($slug){
         $product=ProductPriceList::where('slug',$slug)->first();
-        if($product==null){
+        if($product==null || $product->view!=1){
             return redirect()->back();
         }
         

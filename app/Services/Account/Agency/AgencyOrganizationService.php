@@ -41,7 +41,6 @@ class AgencyOrganizationService {
 
     public static function update($data){
         $organization=Organization::findOrFail($data['id']);
-
         $cemeteries='';
         if(isset($data['cemetery_ids'])){
             $cemeteries=implode(",", $data['cemetery_ids']).',';
@@ -49,14 +48,13 @@ class AgencyOrganizationService {
         }
         $organization->update([
             'title'=>$data['title'],
-            'mini_content'=>$data['mini_content'],
             'content'=>$data['content'],
             'cemetery_ids'=>$cemeteries,
             'phone'=>$data['phone'],
             'telegram'=>$data['telegram'],
             'whatsapp'=>$data['whatsapp'],
             'email'=>$data['email'],
-            'city_id'=>$data['city'],
+            'city_id'=>$data['city_id'],
             'next_to'=>$data['next_to'],
             'underground'=>$data['underground'],
             'adres'=>$data['adres'],
@@ -137,15 +135,7 @@ class AgencyOrganizationService {
             ]);
         }
         
-        if(!isset($data['сonclusion_contract'])){
-            $organization->update([
-                'сonclusion_contract'=>0
-            ]);
-        }else{
-            $organization->update([
-                'сonclusion_contract'=>1
-            ]);
-        }
+        
 
         if(!isset($data['state_compensation'])){
             $organization->update([

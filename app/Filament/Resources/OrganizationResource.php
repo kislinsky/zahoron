@@ -100,6 +100,13 @@ class OrganizationResource extends Resource
             ->formatStateUsing(fn ($state) => slug($state)) // Форматируем slug
             ->dehydrateStateUsing(fn ($state, $get) => generateUniqueSlug($state, Organization::class, $get('id'))),
 
+            Radio::make('status')
+            ->label('Отображение организации')
+            ->options([
+                0 => 'Не показывать',
+                1 => 'Показывать'
+            ])
+            ->inline(),
 
             Forms\Components\Select::make('city_id')
                 ->label('Город')

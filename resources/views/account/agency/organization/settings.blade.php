@@ -14,14 +14,7 @@
                 <div class='error-text'>{{ $message }}</div>
             @enderror
         </div>
-        <div class="block_input">
-            <label for="">Короткое описание</label>
-            <textarea name="mini_content" >{!!$organization->mini_content!!}</textarea> 
-            @error('mini_content')
-                <div class='error-text'>{{ $message }}</div>
-            @enderror
-            
-        </div>
+       
         <div class="block_input">
             <label for="">Обширное описание</label>
             <textarea placeholder="Заполните обширное описание агентства, адрес, какие услуги осуществляете, чтобы мы автоматически сгенерировали хорошее описание вашей фирмы." name="content" >{!!$organization->content!!}</textarea>

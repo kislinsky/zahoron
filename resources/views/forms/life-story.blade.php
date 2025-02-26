@@ -45,8 +45,8 @@ if(Auth::check()){
                         </div>
                     </div>
                     <div class="flex_btn_error">
-                        <a href='#'class="border_blue_btn">Зарегистрироваться</a>
-                        <a href="#" class="blue_btn">Войти</a>
+                        <a href='{{ route('register') }}'class="border_blue_btn">Зарегистрироваться</a>
+                        <a href="{{ route('login') }}" class="blue_btn">Войти</a>
                     </div>
                 </div>
             </div>

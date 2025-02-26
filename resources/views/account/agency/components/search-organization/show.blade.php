@@ -8,6 +8,7 @@
                     <a href='{{$organization->route()}}' class="title_middle_black_bold">{{$organization->title}}</a>
                     <div class="text_black">{{$organization->name_type}}</div>
                     <div class="text_black">{{$organization->adres}}</div>
+                    
                     {!!btnAddOrganization($organization->id)!!}
                 </div>
             </div>

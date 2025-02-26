@@ -931,3 +931,9 @@ $(".cart_icon").click(function() {
   $(this).children('.children_icon_cart').toggleClass('children_icon_cart_active')
 
 });
+
+
+$('.open_form_call_organization').on( "click", function() {
+  $('#call_organization').modal('show')
+  $('#call_organization input[name="organization_id_call"]').val($(this).attr('id_organization'))
+});

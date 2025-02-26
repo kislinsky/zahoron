@@ -9,6 +9,23 @@ use App\Services\Organization\OrganizationService;
 class OrganizationController extends Controller
 {
 
+    public static function sendCode(Request $request){
+        $data=request()->validate([
+            'organization_id'=>['required','integer'],
+        ]);
+
+        return OrganizationService::sendCode($data);
+    }
+
+    public static function acceptCode(Request $request){
+        $data=request()->validate([
+            'organization_id'=>['required','integer'],
+            'code'=>['required','integer'],
+        ]);
+
+        return OrganizationService::acceptCode($data);
+    }
+    
     public static function single($slug){
         return OrganizationService::single($slug);
     }

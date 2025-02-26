@@ -5,7 +5,7 @@ $city=selectCity();
 $organizations=organizationRatingFuneralAgenciesPrices($city->id);
 ?>
 
-@if($organizations!=null && count($organizations)>0)
+@if($organizations!=null && isset($organizations[1]) && $organizations->count()>0)
 <section class="raiting">
     <div class="container">
         <div class="title_our_works">Рейтинг ритуальных агентств в г. {{$city->title}}: 10 лучших предложений по ценам</div>

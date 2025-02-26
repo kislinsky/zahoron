@@ -26,7 +26,9 @@
     background: #0F0F0F;
     border: none;
 }
-
+.black_theme .search_organization_input{
+    background: #050505;
+}
 .black_theme .li_rewies,.black_theme .li_care{
     border: 1px solid #4E4E4E;
 }

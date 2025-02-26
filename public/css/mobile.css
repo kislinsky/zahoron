@@ -1135,6 +1135,17 @@
     .main_block_organization_single .logo_organization_single.logo_organization_single_ritual_object{
         display: block;
     }
+
+    .block_search_organization_add form{
+        flex-direction: column;
+    }
+    .search_organization_input{
+        max-width: 100%;
+    }
+    .block_search_organization_add form .blue_btn{
+        width: 100%;
+    }
+
 }
 
 @media(max-width:430px){

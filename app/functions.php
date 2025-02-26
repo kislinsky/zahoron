@@ -32,6 +32,7 @@ use App\Models\UserRequestsCount;
 use App\Models\WorkingHoursCemetery;
 use App\Services\Auth\SmsService;
 use App\Services\YooMoneyService;
+use App\Services\ZvonokService;
 use Ausi\SlugGenerator\SlugGenerator;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -91,6 +92,16 @@ function sizesProducts(){
 
 function generateRandomString($length = 10) {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[random_int(0, $charactersLength - 1)];
+    }
+    return $randomString;
+}
+
+function generateRandomNumber($length = 4) {
+    $characters = '0123456789';
     $charactersLength = strlen($characters);
     $randomString = '';
     for ($i = 0; $i < $length; $i++) {
@@ -205,7 +216,7 @@ function filterProducts($data){
             $products=$products->where('district_id',$data['district_id']);
          }
     }
-    return $products->paginate(12);
+    return $products->paginate(getSeo('marketplace','count'));
 
 }
 
@@ -364,7 +375,7 @@ function ddata(){
 
 function organizationRatingFuneralAgenciesPrices($city){
     $sorted_organizations_ids=ActivityCategoryOrganization::whereIn('category_children_id',[32,33,34,35])->where('price','!=',null)->whereHas('organization', function ($query) use ($city) {
-        $query->where('city_id', $city);
+        $query->where('city_id', $city)->where('status',1);
     })->pluck('organization_id');
     $orgainizations=Organization::whereIn('id',$sorted_organizations_ids)->get()->map(function ($organization) {
         $price_1=ActivityCategoryOrganization::where('category_children_id',32)->where('organization_id',$organization->id)->get();
@@ -379,7 +390,6 @@ function organizationRatingFuneralAgenciesPrices($city){
 
     });
     
-    
     // Сортируем продукты по минимальной цене
     $sortedProducts = $orgainizations->sortBy('all_price');
     // Возвращаем 10 самых выгодных продуктов
@@ -393,7 +403,7 @@ function organizationRatingFuneralAgenciesPrices($city){
 function organizationRatingUneralBureausRavesPrices($city){
 
     $sorted_organizations_ids=ActivityCategoryOrganization::whereIn('category_children_id',[29,30,39])->where('price','!=',null)->whereHas('organization', function ($query) use ($city) {
-        $query->where('city_id', $city);
+        $query->where('city_id', $city)->where('status',1);
     })->pluck('organization_id');
     $orgainizations=Organization::whereIn('id',$sorted_organizations_ids)->get()->map(function ($organization) {
         $price_1=ActivityCategoryOrganization::where('category_children_id',29)->where('organization_id',$organization->id)->get();
@@ -580,7 +590,7 @@ function orgniaztionsFilters($data){
             $organizations_category=$organizations_category->whereIn('id',$organizations_category_ids->where('open',1)->pluck('id'));
         }  
     }
-    return $organizations_category->paginate(15);
+    return $organizations_category->whereHas('organization', function ($query) use ($city) {$query->where('status',1);})->paginate(getSeo('organizations-catalog','count'));
     
 }
 
@@ -591,7 +601,7 @@ function organizationsPrices($data){
         $category_id=$data['category_id'];
     }
     $organizations_prices=ActivityCategoryOrganization::where('category_children_id',$category_id)->whereHas('organization', function ($query) use ($city) {
-        $query->where('city_id', $city->id)->where('role','organization');
+        $query->where('city_id', $city->id)->where('role','organization')->where('status',1);
     });
     if (isset($data['cemetery_id']) && $data['cemetery_id']!=null && $data['cemetery_id']!='null' ){
         $cemetery_id=$data['cemetery_id'];
@@ -711,7 +721,7 @@ function orgniaztionsProviderFilters($data){
         }  
     }
 
-    return $organizations_category->paginate(15);
+    return $organizations_category->where('status',1)->paginate(getSeo('organizations-catalog','count'));
 }
 
 
@@ -728,7 +738,7 @@ function organizationsProviderPrices($data){
     }
     
     $organizations_prices=ActivityCategoryOrganization::where('category_children_id',$category_id)->whereHas('organization', function ($query) use ($city) {
-        $query->where('city_id', $city->id)->where('role','organization-provider');
+        $query->where('city_id', $city->id)->where('role','organization-provider')->where('status',1);
     });
    
     if(isset($data['filter_work']) && $data['filter_work']!=null){
@@ -900,10 +910,10 @@ function getCoordinatesCity($city){
 
 function randomProductsPlace($category=null){
     if($category!=null){
-        $products=Product::inRandomOrder()->where('city_id',selectCity()->id)->where('category_id',$category)->get()->take(2);
+        $products=Product::inRandomOrder()->where('view',1)->where('city_id',selectCity()->id)->where('category_id',$category)->get()->take(2);
         return $products;
     }
-    $products=Product::inRandomOrder()->where('city_id',selectCity()->id)->get()->take(2);
+    $products=Product::inRandomOrder()->where('view',1)->where('city_id',selectCity()->id)->get()->take(2);
     return $products;
 }
 
@@ -1257,9 +1267,9 @@ function btnAddOrganization($id_organization){
     $organization=Organization::find($id_organization);
     if($organization->user_id==$user->id){
         $route=route('account.agency.organization.settings',$organization->id);
-        return "<a href='{$route}' class='blue_btn'>Доступ уже есть</a>";
+        return "<a href='$route' class='blue_btn'>Доступ уже есть</a>";
     }
-    return "<a href='#' class='blue_btn'>Получить доступ</a>";
+    return "<div id_organization='$organization->id' class='blue_btn open_form_call_organization'>Получить доступ</div>";
 }
 
 function filtersProductsOrganizations($data){
@@ -1809,4 +1819,38 @@ function generateUniqueSlug(string $title, string $modelClass, int $ignoreId = n
     }
 
     return $slug;
+}
+
+function sendCode($phone,$code){
+    $service=new ZvonokService();
+    $service->addCall(formatPhoneNumber($phone),$code);
+    return true;
+}
+
+function formatPhoneNumber($phone) {
+    // Удалим все символы, кроме цифр
+    $cleaned = preg_replace('/\D/', '', $phone);
+
+    // Проверим длину номера
+    if (strlen($cleaned) < 10) {
+        return 'Ошибка: номер слишком короткий.';
+    }
+
+    // Если номер начинает с 8, заменим на 7
+    if (strlen($cleaned) == 11 && $cleaned[0] == '8') {
+        $cleaned[0] = '7';
+    }
+
+    // Если номер состоит из 10 цифр, добавим код страны
+    if (strlen($cleaned) == 10) {
+        $cleaned = '7' . $cleaned;
+    }
+
+    // Проверяем, что номер теперь состоит из 11 цифр
+    if (strlen($cleaned) != 11) {
+        return 'Ошибка: номер не соответствует формату.';
+    }
+
+    // Формируем номер в нужном формате
+    return '+7' . substr($cleaned, 1);
 }

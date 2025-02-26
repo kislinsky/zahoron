@@ -2,20 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use Filament\Forms\Form;
+use App\Filament\Resources\SeoObjectResource\Pages;
+use App\Filament\Resources\SeoObjectResource\Widgets\SeoInfoWidget;
 use App\Models\SeoObject;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\SeoObjectResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\SeoObjectResource\RelationManagers;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
 
 class SeoObjectResource extends Resource
 {
@@ -82,6 +80,13 @@ class SeoObjectResource extends Resource
     {
         return [
             //
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            SeoInfoWidget::class,
         ];
     }
 

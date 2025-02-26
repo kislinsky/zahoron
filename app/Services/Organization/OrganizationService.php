@@ -19,16 +19,39 @@ use App\Models\User;
 use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Support\Facades\Auth;
 use Artesaos\SEOTools\Facades\SEOTools;
+use Illuminate\Support\Facades\Hash;
 
 class OrganizationService 
 {
 
+    public static function sendCode($data){
+        $organization=Organization::find($data['organization_id']);
+        $code=generateRandomNumber();
+        #sendCode($organization->phone,$code);
+        setcookie("code", Hash::make($code), time() + (20 * 24 * 60 * 60), '/');
+        return true;
+    }
+
+
+    public static function acceptCode($data){
+        $code=$_COOKIE['code'];
+        if(Hash::check($data['code'],$code)){
+            $organization=Organization::find($data['organization_id']);
+            $organization->update([
+                'user_id'=>user()->id,
+            ]);
+            setcookie("code", '', time()-20, '/');
+            return true;
+        }
+        return response('error');
+        
+    }
+
     public static function single($slug){
         
-        $organization=Organization::where('slug',$slug)->where('status',1)->first();
-        
+        $organization=Organization::where('slug',$slug)->first();
         $user=user();
-        if($organization==null){
+        if($organization==null || $organization->status!=1){
             return redirect()->back();
         }
 
@@ -44,12 +67,12 @@ class OrganizationService
         $city=selectCity();
         $user_organization=User::find($organization->user_id);
         $images=ImageOrganization::orderBy('id','desc')->where('organization_id', $organization->id)->get();
-        $ritual_products=Product::orderBy('id','desc')->where('organization_id',$organization->id)->where('type','ritual-product')->get();
+        $ritual_products=Product::orderBy('id','desc')->where('view',1)->where('organization_id',$organization->id)->where('type','ritual-product')->get();
         $reviews=$organization->reviews;
         $main_categories=CategoryProduct::where('parent_id',null)->get();
         $children_categories=CategoryProduct::where('parent_id',$main_categories->first()->id)->get();
 
-        $ritual_products=Product::orderBy('id','desc')->where('organization_id',$id)->where('category_id',$children_categories->first()->id)->get();
+        $ritual_products=Product::orderBy('id','desc')->where('view',1)->where('organization_id',$id)->where('category_id',$children_categories->first()->id)->get();
       
         $rating_reviews=0;
 
@@ -58,7 +81,7 @@ class OrganizationService
         }
         $similar_organizations=Organization::whereIn('id',ActivityCategoryOrganization::whereIn('category_children_id',ActivityCategoryOrganization::where('organization_id',$id)->pluck('category_children_id'))->where('organization_id','!=',$id)->pluck('organization_id'))->get();
         $reviews_main=$reviews->take(3);
-        $products_our=Product::orderBy('id','desc')->where('organization_id',$organization->id)->where('type','product')->get()->take(8);
+        $products_our=Product::orderBy('id','desc')->where('view',1)->where('organization_id',$organization->id)->where('type','product')->get()->take(8);
 
         if($organization->role=='organization' ){
             return view('organization.single.single-agency',compact('title_h1','categories_organization','city','similar_organizations','main_categories','children_categories','rating_reviews','organization','images','reviews','products_our','reviews','reviews_main','ritual_products'));
@@ -79,7 +102,7 @@ class OrganizationService
 
     public static function ajaxProductsChildrenCat($data){
         $category=CategoryProduct::findOrFail($data['category_id']);
-        $ritual_products=Product::orderBy('id','desc')->where('organization_id',$data['organization_id'])->where('category_id',$category->id)->get();
+        $ritual_products=Product::orderBy('id','desc')->where('view',1)->where('organization_id',$data['organization_id'])->where('category_id',$category->id)->get();
 
         return view('organization.components.ajax.products-services-organization',compact('ritual_products'));
     }
@@ -87,7 +110,7 @@ class OrganizationService
     public static function ajaxProductsMainCat($data){
         $category=CategoryProduct::findOrFail($data['category_id']);
         $categories_children=CategoryProduct::where('parent_id',$data['category_id'])->get();
-        $ritual_products=Product::orderBy('id','desc')->where('organization_id',$data['organization_id'])->where('category_id',$categories_children->first()->id)->get();
+        $ritual_products=Product::orderBy('id','desc')->where('view',1)->where('organization_id',$data['organization_id'])->where('category_id',$categories_children->first()->id)->get();
         return view('organization.components.ajax.products-services-organization',compact('ritual_products'));
     }
 

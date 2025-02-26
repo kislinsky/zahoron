@@ -44,7 +44,7 @@
         </div>
         <div class="flex_center_single_organization">
             <div class="btn_border_gray">{{$organization->openOrNot()}}</div>
-            <div class="mini_text_blue">Вы владелец?</div>
+            <div id_organization="{{ $organization->id }}" class="mini_text_blue open_form_call_organization" >Вы владелец?</div>
         </div>
     </div>
     <div class="flex_btn_single_organization">

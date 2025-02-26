@@ -107,6 +107,11 @@ if($city!='livewire'){
 
 Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
     
+
+
+
+
+
     Route::group(['prefix'=>'yoomoney'], function() {
         Route::get('/payment', [YooMoneyController::class, 'createPayment'])->name('yoomoney.payment');
         Route::post('/callback', [YooMoneyController::class, 'handleCallback'])->name('yoomoney.callback');
@@ -350,6 +355,11 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
 
 
     Route::group(['middleware'=>'auth'],function(){
+
+        Route::post('/organization/send-code', [OrganizationController::class, 'sendCode'])->name('organization.send-code');
+        Route::post('/organization/accept-code', [OrganizationController::class, 'acceptCode'])->name('organization.accept-code');
+
+
 
             Route::group(['prefix'=>'account'], function() {
             

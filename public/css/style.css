@@ -5601,7 +5601,9 @@ background: #F7F7F8;
     height: 55px;
     object-fit: cover;
 }
-
+.open_form_call_organization{
+    cursor: pointer;
+}
 .all_money_decoder{
     margin-left: auto;
     padding:3px 22px;
@@ -7288,5 +7290,10 @@ text-decoration-skip-ink: none;
 }
 
 .img_black_theme{
+    display: none;
+}
+
+
+.accept_code_call_organization{
     display: none;
 }

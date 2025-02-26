@@ -26,7 +26,7 @@
     <div class="block_input">
         <label for="">Город</label>
         <div class="select">
-            <select name="city" id="">
+            <select name="city_id" id="">
                 @foreach($cities as $city)
                     <option value="{{$city->id}}" <?php if($city->id==$organization->city_id){echo 'selected';}?>>{{$city->title}}</option>
                 @endforeach

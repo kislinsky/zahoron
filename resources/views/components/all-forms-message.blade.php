@@ -3,6 +3,7 @@
 @include('forms.memorial-form')
 @include('forms.city')
 @include('forms.dead')
+@include('forms.call-organization')
 @include('forms.cemetery-choose')
 @include('forms.funeral-services')
 

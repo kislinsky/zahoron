@@ -26,7 +26,7 @@ class BurialController extends Controller
     public static function searchProduct(Request $request){
         $data=request()->validate([
             'name'=>['nullable','string'],
-            'surname'=>['required','string'],
+            'surname'=>['nullable','string'],
             'patronymic'=>['nullable','string'],
         ]);
         return SearchBurialService::searchProduct($data);
