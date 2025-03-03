@@ -140,8 +140,10 @@ function organizationPages(){
     foreach($organizations as $organization){
         $ul_organizations[]=[$organization->title,'account.agency.organization.settings',$organization->id];
     }
-    $ul_organizations[]=['Добваить организацию','account.agency.add.organization'];
-    $pages=[
+    $ul_organizations[]=['Привязать организацию','account.agency.add.organization'];
+    $ul_organizations[]=['Создать организацию','account.agency.organization.create-page'];
+
+       $pages=[
         ['Организации','storage/uploads/Icon_sidebar_2.svg',
             $ul_organizations
         ],
@@ -501,6 +503,7 @@ function mobilePagesAccountAgecny() {
         $ul_organizations[]=[$organization->title,route('account.agency.organization.settings',$organization->id)];
     }
     $ul_organizations[]=['Добваить организацию',route('account.agency.add.organization')];
+    $ul_organizations[]=['Создать организацию',route('account.agency.organization.create-page')];
 
     return [
         

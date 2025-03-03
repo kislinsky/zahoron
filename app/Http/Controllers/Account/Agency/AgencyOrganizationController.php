@@ -11,6 +11,39 @@ use Illuminate\Http\Request;
 class AgencyOrganizationController extends Controller
 {
 
+    public static function createPage(){
+        return AgencyOrganizationService::createPage();
+    }
+
+    public static function create(Request $request){
+
+        $data = $request->validate([
+            'title' => ['string', 'required'],
+            'content' => ['string', 'nullable'],
+            'cemetery_ids' => ['nullable'],
+            'phone' => ['string', 'nullable'],
+            'telegram' => ['string', 'nullable'],
+            'whatsapp' => ['string', 'nullable'],
+            'email' => ['string', 'nullable'],
+            'city_id' => ['integer', 'required'],
+            'next_to' => ['string', 'nullable'],
+            'underground' => ['string', 'nullable'],
+            'adres' => ['string', 'required'],
+            'width' => ['numeric', 'required'],
+            'longitude' => ['numeric', 'required'],
+            'available_installments' => ['boolean', 'nullable'],
+            'found_cheaper' => ['boolean', 'nullable'],
+            'сonclusion_contract' => ['boolean', 'nullable'],
+            'state_compensation' => ['boolean', 'nullable'],
+            'categories_organization' => ['nullable', 'array'],
+            'price_cats_organization' => ['nullable', 'array'],
+            'working_day' => ['nullable', 'array'],
+            'holiday_day' => ['nullable', 'array'],
+        ]);
+        return AgencyOrganizationService::create($data);
+
+    }
+
     public static function settings($id){
         return AgencyOrganizationService::settings($id);
     }

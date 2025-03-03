@@ -39,6 +39,87 @@ class AgencyOrganizationService {
     }
 
 
+    public static function createPage(){
+        $cities=City::orderBy('title','asc')->get();
+        $cemeteries=[];
+        $categories=CategoryProduct::where('parent_id',null)->get();
+        $categories_children=childrenCategoryProducts($categories[0]);
+        return view('account.agency.organization.create',compact('cemeteries','cities','categories_children','categories'));
+
+    } 
+
+    public static function create($data){
+
+        if (isset($data['cemetery_ids']) && is_array($data['cemetery_ids'])) {
+            $data['cemetery_ids'] = implode(",", $data['cemetery_ids']) . ',';
+        }
+
+        // Создаем организацию
+        $organization = Organization::create([
+            'title' => $data['title'],
+            'status'=>0,
+            'content' => $data['content'],
+            'cemetery_ids' => $data['cemetery_ids'],
+            'phone' => $data['phone'],
+            'telegram' => $data['telegram'],
+            'user_id'=>user()->id,
+            'whatsapp' => $data['whatsapp'],
+            'email' => $data['email'],
+            'city_id' => $data['city_id'],
+            'slug'=>slugOrganization($data['title']),
+            'next_to' => $data['next_to'],
+            'underground' => $data['underground'],
+            'adres' => $data['adres'],
+            'width' => $data['width'],
+            'longitude' => $data['longitude'],
+            'available_installments' => $data['available_installments'] ?? false,
+            'found_cheaper' => $data['found_cheaper'] ?? false,
+            'state_compensation' => $data['state_compensation'] ?? false,
+        ]);
+
+        // Создаем связи с категориями
+        if (isset($data['categories_organization']) && isset($data['price_cats_organization'])) {
+            foreach ($data['categories_organization'] as $key => $category_organization) {
+                $cat = CategoryProduct::find($category_organization);
+                ActivityCategoryOrganization::create([
+                    'organization_id' => $organization->id,
+                    'category_main_id' => $cat->parent_id,
+                    'category_children_id' => $cat->id,
+                    'rating' => $organization->rating,
+                    'cemetery_ids' => $data['cemetery_ids'],
+                    'price' => $data['price_cats_organization'][$key],
+                ]);
+            }
+        }
+
+        // Обрабатываем рабочие часы
+        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        $holidays = $data['holiday_day'] ?? [];
+        $working_days = $data['working_day'] ?? [];
+
+        foreach ($days as $key => $day) {
+            if (in_array($day, $holidays)) {
+                WorkingHoursOrganization::create([
+                    'day' => $day,
+                    'holiday' => 1,
+                    'organization_id' => $organization->id,
+                ]);
+            } else {
+                $time_start_work = explode(' - ', $working_days[$key])[0] ?? null;
+                $time_end_work = explode(' - ', $working_days[$key])[1] ?? null;
+                WorkingHoursOrganization::create([
+                    'day' => $day,
+                    'time_start_work' => $time_start_work,
+                    'time_end_work' => $time_end_work,
+                    'organization_id' => $organization->id,
+                ]);
+            }
+        }
+
+        return redirect()->route('home')->with('message_cart', 'Организация успешно создана');
+    }
+
+
     public static function update($data){
         $organization=Organization::findOrFail($data['id']);
         $cemeteries='';

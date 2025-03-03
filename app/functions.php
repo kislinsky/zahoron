@@ -1854,3 +1854,9 @@ function formatPhoneNumber($phone) {
     // Формируем номер в нужном формате
     return '+7' . substr($cleaned, 1);
 }
+
+
+function changeContent($content){
+    $result=str_replace(["{city}"],[selectCity()->title],$content);
+    return $result;
+}

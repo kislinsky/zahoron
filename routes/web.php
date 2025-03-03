@@ -501,7 +501,8 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
                         });
                         
                     });
-
+                    Route::get('organization/create-page', [AgencyOrganizationController::class, 'createPage'])->name('account.agency.organization.create-page');
+                    Route::post('organization/create', [AgencyOrganizationController::class, 'create'])->name('account.agency.organization.create');
                     Route::get('organization/settings/{id}', [AgencyOrganizationController::class, 'settings'])->name('account.agency.organization.settings');
                     Route::get('choose-organization/{id}', [AgencyController::class, 'chooseOrganization'])->name('account.agency.choose.organization');
                     Route::post('organization/settings/update', [AgencyOrganizationController::class, 'update'])->name('account.agency.organization.settings.update');

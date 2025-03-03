@@ -12,7 +12,7 @@
                                 <div class="title_li">{{ $faq->title }}</div>
                                 <img class='open_faq'src="{{asset('storage/uploads/Переключатель (2).svg')}}" alt="">
                             </div>
-                            <div class="text_li">{{ $faq->content }}</div>
+                            <div class="text_li">{{ changeContent($faq->content) }}</div>
                         </div>
                     @endforeach
             

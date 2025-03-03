@@ -7,10 +7,10 @@
                         @foreach ($usefuls as $useful )    
                             <div class="li_faq">
                                 <div class="flex_li_service">
-                                    <div class="title_li">{{ $useful->title }}</div>
+                                    <div class="title_li">{{ changeContent($useful->title) }}</div>
                                     <img class='open_faq'src="{{asset('storage/uploads/Переключатель (2).svg')}}" alt="">
                                 </div>
-                                <div class="text_li">{{ $useful->content }}</div>
+                                <div class="text_li">{{ changeContent($useful->content) }}</div>
                             </div>
                         @endforeach
                 </div>
