@@ -6,6 +6,7 @@ use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers\GetImagesRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\GetParamRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\MemorialMenuRelationManager;
+use App\Filament\Resources\ProductResource\RelationManagers\ViewsRelationManager;
 use App\Models\CategoryProduct;
 use App\Models\Product;
 use Filament\Forms;
@@ -387,6 +388,8 @@ class ProductResource extends Resource
             GetParamRelationManager::class,
             MemorialMenuRelationManager::class,
             GetImagesRelationManager::class,
+            ViewsRelationManager::class,
+
         ];
     }
 

@@ -25,8 +25,8 @@
         <div class="">
             <div class="ul_services">
                 @if(isset($products))
-                    @if(count($products)>0)
-                        <div class="title_our_works">Найдено {{ count($products) }} захоронения</div>
+                    @if($products->count()>0)
+                        <div class="title_our_works">Найдено {{ $products->count() }} захоронения</div>
                         @foreach ($products as $product)
                             <div class="li_product">
                                 <div class="one_block_li_product">

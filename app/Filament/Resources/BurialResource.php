@@ -1,33 +1,34 @@
 <?php
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use App\Models\Area;
-use App\Models\City;
-use App\Models\Edge;
-use Filament\Tables;
-use App\Models\Burial;
-use App\Models\Cemetery;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Filament\Forms\Components\View;
-use Filament\Tables\Filters\Filter;
-use Rap2hpoutre\FastExcel\FastExcel;
-use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Contracts\HasTable;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\FileUpload;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\BurialResource\Pages;
-use App\Filament\Resources\BurialResource\RelationManagers\WordsMemoryRelationManager;
 use App\Filament\Resources\BurialResource\RelationManagers\ImageMonumentRelationManager;
 use App\Filament\Resources\BurialResource\RelationManagers\ImagePersonalRelationManager;
 use App\Filament\Resources\BurialResource\RelationManagers\InfoEditBurialRelationManager;
 use App\Filament\Resources\BurialResource\RelationManagers\LifeStoryBurialRelationManager;
+use App\Filament\Resources\BurialResource\RelationManagers\ViewsRelationManager;
+use App\Filament\Resources\BurialResource\RelationManagers\WordsMemoryRelationManager;
+use App\Models\Area;
+use App\Models\Burial;
+use App\Models\Cemetery;
+use App\Models\City;
+use App\Models\Edge;
+use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\View;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class BurialResource extends Resource
 {
@@ -525,6 +526,7 @@ class BurialResource extends Resource
             WordsMemoryRelationManager::class,
             InfoEditBurialRelationManager::class,
             ImageMonumentRelationManager::class,
+            ViewsRelationManager::class,
             LifeStoryBurialRelationManager::class,
         ];
     }

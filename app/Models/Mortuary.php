@@ -11,6 +11,9 @@ class Mortuary extends Model
     
     protected $guarded =[];
 
+    public function views(){
+        return $this->hasMany(View::class, 'entity_id')->where('entity_type', 'mortuary');
+    }
 
     public function city(){
         return $this->belongsTo(City::class);

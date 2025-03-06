@@ -20,6 +20,10 @@ class Burial extends Model
 
     protected $guarded =[];
 
+    public function views(){
+        return $this->hasMany(View::class, 'entity_id')->where('entity_type', 'burial');
+    }
+
     function route(){
         return route('burial.single',$this->slug);
     }

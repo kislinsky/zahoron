@@ -38,6 +38,7 @@ class ColumbariumService {
 
     public static function single($id){
         $columbarium=Columbarium::find($id);
+        addView('columbarium',$columbarium->id,user()->id ?? null,'site');
 
         SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$columbarium));
         SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$columbarium));

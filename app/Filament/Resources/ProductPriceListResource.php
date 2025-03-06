@@ -11,6 +11,7 @@ use App\Filament\Resources\ProductPriceListResource\RelationManagers\ImgsService
 use App\Filament\Resources\ProductPriceListResource\RelationManagers\PriceProductPriceListRelationManager;
 use App\Filament\Resources\ProductPriceListResource\RelationManagers\StagesRelationManager;
 use App\Filament\Resources\ProductPriceListResource\RelationManagers\VariantsRelationManager;
+use App\Filament\Resources\ProductResource\RelationManagers\ViewsRelationManager;
 use App\Models\ProductPriceList;
 use Filament\Forms;
 use Filament\Forms\Components\Radio;

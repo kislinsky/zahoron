@@ -55,5 +55,8 @@ class Beautification extends Model
         }
     }
     
+    function products(){
+        return CategoryProductPriceList::whereIn('id',json_decode($this->products_id))->get();
+    }
 
 }

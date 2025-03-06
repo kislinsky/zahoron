@@ -5,8 +5,14 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OrganizationResource\Pages;
 use App\Filament\Resources\OrganizationResource\RelationManagers;
 use App\Filament\Resources\OrganizationResource\RelationManagers\ActivityCategoriesRelationManager;
+use App\Filament\Resources\OrganizationResource\RelationManagers\BeatificationsRelationManager;
+use App\Filament\Resources\OrganizationResource\RelationManagers\DeadAplicationsRelationManager;
+use App\Filament\Resources\OrganizationResource\RelationManagers\FuneralServicesRelationManager;
+use App\Filament\Resources\OrganizationResource\RelationManagers\MemorialsRelationManager;
+use App\Filament\Resources\OrganizationResource\RelationManagers\OrderPorductsRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\OrganizationRequestCountRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\ProductsRelationManager;
+use App\Filament\Resources\OrganizationResource\RelationManagers\ViewsRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\WorkingHoursRelationManager;
 use App\Models\Cemetery;
 use App\Models\City;
@@ -447,6 +453,12 @@ class OrganizationResource extends Resource
             WorkingHoursRelationManager::class,
             OrganizationRequestCountRelationManager::class,
             ProductsRelationManager::class, // Добавляем RelationManager
+            ViewsRelationManager::class,
+            BeatificationsRelationManager::class,
+            DeadAplicationsRelationManager::class,
+            FuneralServicesRelationManager::class,
+            MemorialsRelationManager::class,
+            OrderPorductsRelationManager::class
         ];
     }
 

@@ -31,9 +31,12 @@ class SearchBurialService
         });
         $news=News::orderBy('id', 'desc')->take(2)->get();
         $products=collect();
-        $seo='Поиск могил '. $data['surname'];
-        $products=Burial::where('surname',$data['surname'])->whereIn('cemetery_id',$cemetery_ids)->where('status',1);
+        $seo='Поиск могил ';
 
+        if(isset($data['surname'])  ){
+            $products=Burial::where('surname',$data['surname'])->whereIn('cemetery_id',$cemetery_ids)->where('status',1);
+            $seo=$seo.' '.$data['surname'];
+        }
         if(isset($data['name'])  ){
             $products=$products->where('name',$data['name']);
             $seo=$seo.' '.$data['name'];
@@ -47,7 +50,9 @@ class SearchBurialService
         SEOTools::setTitle($seo);
         SEOTools::setDescription($seo);
         $page=11;
-        $products=$products->get();
+        if($products->count()!==0){
+            $products=$products->get();
+        }
         return view('burial.search-product',compact('products','news','page'));
     }
 

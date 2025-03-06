@@ -13,5 +13,9 @@ class OrderBurial extends Model
     function burial(){
         return $this->belongsTo(Burial::class);
     }
+
+    function user(){
+        return $this->belongsTo(User::class);
+    }
     
 }

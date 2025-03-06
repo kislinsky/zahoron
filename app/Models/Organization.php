@@ -10,6 +10,11 @@ class Organization extends Model
     use HasFactory;
     protected $guarded =[];
 
+    public function views(){
+        return $this->hasMany(View::class, 'entity_id')->where('entity_type', 'organization');
+    }
+
+
     function reviews(){
         return $this->hasMany(ReviewsOrganization::class)->orderBy('id','desc')->where('status',1);
     }
@@ -135,5 +140,26 @@ class Organization extends Model
 
     function userRequestCount(){
         return $this->hasMany(UserRequestsCount::class);
+    }
+
+
+    function beatifications(){
+        return $this->hasMany(Beautification::class);
+    }
+
+    function deadAplications(){
+        return $this->hasMany(DeadApplication::class);
+    }
+
+    function funeralServices(){
+        return $this->hasMany(FuneralService::class);
+    }
+
+    function memorials(){
+        return $this->hasMany(Memorial::class);
+    }
+
+    function orderPorducts(){
+        return $this->hasMany(OrderProduct::class);
     }
 }

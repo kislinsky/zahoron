@@ -10,6 +10,11 @@ class Crematorium extends Model
     use HasFactory;
     protected $guarded =[];
 
+    public function views(){
+        return $this->hasMany(View::class, 'entity_id')->where('entity_type', 'crematorium');
+    }
+
+
     public function city(){
         return $this->belongsTo(City::class);
     }

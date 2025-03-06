@@ -14,6 +14,18 @@ class OrderService extends Model
         return $this->belongsTo(Burial::class);
     }
 
+    function user(){
+        return $this->belongsTo(User::class);
+    }
+
+    function worker(){
+        return $this->belongsTo(User::class,'worker_id');
+    }
+
+    function cemetery(){
+        return $this->belongsTo(Cemetery::class);
+    }
+
     function services(){
         return Service::whereIn('id',json_decode($this->services_id))->get();
     }
@@ -22,6 +34,8 @@ class OrderService extends Model
         $procent=get_acf(13,'procent');
         return $this->price-$this->burial->cemetery->price_burial_location-($this->price*$procent)/100;
     }
+
+    
 
 
 }

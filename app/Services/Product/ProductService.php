@@ -3,22 +3,23 @@
 namespace App\Services\Product;
 
 use App\Models\ActivityCategoryOrganization;
-use App\Models\Product;
-use App\Models\Cemetery;
-use App\Models\ImageProduct;
-use Illuminate\Http\Request;
-use App\Models\CommentProduct;
 use App\Models\AdditionProduct;
 use App\Models\CategoryProduct;
+use App\Models\Cemetery;
 use App\Models\City;
+use App\Models\CommentProduct;
 use App\Models\District;
+use App\Models\ImageProduct;
 use App\Models\MemorialMenu;
 use App\Models\Mortuary;
 use App\Models\Organization;
+use App\Models\Page;
+use App\Models\Product;
 use App\Models\ProductParameters;
 use App\Models\User;
 use Artesaos\SEOTools\Facades\SEOMeta;
 use Artesaos\SEOTools\Facades\SEOTools;
+use Illuminate\Http\Request;
 
 class ProductService
 {
@@ -27,6 +28,10 @@ class ProductService
         if($product==null || $product->view!=1){
             return redirect()->back();
         }
+
+        addView('product',$product->id,user()->id ?? null,'site');
+
+
         $id=$product->id;
         $organization=$product->organization;
         $agent=$organization->user;
@@ -103,6 +108,9 @@ class ProductService
 
 
     public static function marketplace($slug,$data){
+
+        addView('page',Page::where('title','marketplace')->first()->id,user()->id ?? null,'site');
+
         $cat_slug=CategoryProduct::where('slug',$slug)->first();
         $data['category']=categoryProductChoose()->id;
         if($cat_slug!=null){

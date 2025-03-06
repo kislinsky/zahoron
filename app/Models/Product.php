@@ -72,5 +72,8 @@ class Product extends Model
         ]);   
     }
 
+    public function views(){
+        return $this->hasMany(View::class, 'entity_id')->where('entity_type', 'product');
+    }
    
 }

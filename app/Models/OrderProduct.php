@@ -31,5 +31,8 @@ class OrderProduct extends Model
         return $this->belongsTo(Mortuary::class);
     }
 
+    function organization(){
+        return $this->belongsTo(Organization::class);
+    }
    
 }

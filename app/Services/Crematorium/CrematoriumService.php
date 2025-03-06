@@ -33,6 +33,7 @@ class CrematoriumService {
 
     public static function single($id){
         $crematorium=Crematorium::find($id);
+        addView('crematorium',$crematorium->id,user()->id ?? null,'site');
 
         SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$crematorium));
         SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$crematorium));

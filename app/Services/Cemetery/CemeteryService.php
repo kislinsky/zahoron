@@ -41,6 +41,8 @@ class CemeteryService {
 
     public static function singleCemetery($cemetery){
 
+        addView('cemetery',$cemetery->id,user()->id ?? null,'site');
+
         SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$cemetery));
         SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$cemetery));
         $title_h1=formatContent(getSeo('ritual-object','h1'),$cemetery);

@@ -12,6 +12,8 @@ class IndexBurial {
         if($product==null){
             return redirect()->back();
         }
+
+        addView('burial',$product->id,user()->id ?? null,'site');
         
         SEOTools::setTitle(formatContentBurial(getSeo('burial-single','title'),$product));
         SEOTools::setDescription(formatContentBurial(getSeo('burial-single','description'),$product));

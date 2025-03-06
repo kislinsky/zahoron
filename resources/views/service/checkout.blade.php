@@ -28,14 +28,14 @@
                         <?php $product=getBurial($cart_item[0]);
                             $services=servicesBurial($cart_item[1]);?>
                                 @foreach ($services as $service)
-                                <?php $total+=$service->getPriceForCemetery($product->cemetery->id)->price;?>
+                                <?php $total+=$service->getPriceForCemetery($product->cemetery->id);?>
                                     <tr>
                                         <td class='title_cart'><a href="{{ route('service.single',$service->id) }}">{{ $service->title }}</a></td>
                                         <td class='title_basket_burial'><a href='{{ $product->route() }}' class="title_cart decoration_on">{{ $product->surname }} {{ $product->name }} {{ $product->patronymic }}</a></td>
                                         <td class='title_cart title_basket_burial'>{{ $cart_item[2] }} </td>
                                         <td class='title_cart'>
                                             <div class='mobile_basket_burial'>{{ $cart_item[2] }}</div>
-                                            <div>{{ $service->getPriceForCemetery($product->cemetery->id)->price }} ₽</div>
+                                            <div>{{ $service->getPriceForCemetery($product->cemetery->id) }} ₽</div>
                                             <a href='{{ $product->route() }}' class="mobile_basket_burial decoration_on">{{ $product->surname }} {{ $product->name }} {{ $product->patronymic }}</a>
                                             <form class="mobile_basket_burial" method='get'action='{{ route('burial.service.delete') }}'>
                                                 @csrf 

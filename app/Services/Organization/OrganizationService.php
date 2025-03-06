@@ -11,14 +11,15 @@ use App\Models\ImageOrganization;
 use App\Models\LikeOrganization;
 use App\Models\News;
 use App\Models\Organization;
+use App\Models\Page;
 use App\Models\PriceListOrganization;
 use App\Models\Product;
 use App\Models\ReviewsOrganization;
 use App\Models\StockProduct;
 use App\Models\User;
 use Artesaos\SEOTools\Facades\SEOMeta;
-use Illuminate\Support\Facades\Auth;
 use Artesaos\SEOTools\Facades\SEOTools;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class OrganizationService 
@@ -54,6 +55,10 @@ class OrganizationService
         if($organization==null || $organization->status!=1){
             return redirect()->back();
         }
+
+        addView('organization',$organization->id,user()->id ?? null,'site');
+
+        
 
         SEOTools::setTitle(formatContent(getSeo('organization-single','title'),$organization));
         SEOTools::setDescription(formatContent(getSeo('organization-single','description'),$organization));
@@ -170,6 +175,9 @@ class OrganizationService
 
 
     public static function catalogOrganization($slug,$data){
+
+        addView('page',Page::where('title','catalog-organization')->first()->id,user()->id ?? null,'site');
+
 
         $category=CategoryProduct::where('slug',$slug)->first();
         if($category==null){

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\MortuaryResource\Pages;
 use App\Filament\Resources\MortuaryResource\RelationManagers;
+use App\Filament\Resources\MortuaryResource\RelationManagers\ViewsRelationManager;
 use App\Filament\Resources\MortuaryResource\RelationManagers\WorkingHoursRelationManager;
 use App\Models\Area;
 use App\Models\City;
@@ -415,6 +416,8 @@ class MortuaryResource extends Resource
     {
         return [
             WorkingHoursRelationManager::class,
+            ViewsRelationManager::class,
+
         ];
     }
 

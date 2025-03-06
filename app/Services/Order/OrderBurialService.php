@@ -19,8 +19,9 @@ class OrderBurialService
             $user=createUserWithPhone($data['phone'],$data['name']); 
         }
         if(isset($_COOKIE['add_to_cart_burial'])){
-            $cart_items = json_decode($_COOKIE['add_to_cart_burial']);            
-                $isset_orderds_burials=OrderBurial::whereIn('burial_id',$cart_items)->where($user->id)->get();
+            $cart_items = json_decode($_COOKIE['add_to_cart_burial']);     
+                $isset_orderds_burials=OrderBurial::whereIn('burial_id',$cart_items)->where('user_id',$user->id)->get();
+
                 if($isset_orderds_burials->count()==0){
                     foreach($cart_items as $cart_item){
                         $price=Burial::find($cart_item)->cemetery->price_burial_location;

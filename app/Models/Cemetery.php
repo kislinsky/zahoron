@@ -12,6 +12,9 @@ class Cemetery extends Model
     use HasFactory;
     protected $guarded =[];
 
+    public function views(){
+        return $this->hasMany(View::class, 'entity_id')->where('entity_type', 'cemetery');
+    }
 
     function burials(){
         return $this->hasMany(Burial::class);

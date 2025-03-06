@@ -19,9 +19,7 @@ return new class extends Migration
 
             // Внешний ключ (user_id) с каскадным удалением
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')
-                  ->references('id')->on('users')
-                  ->cascadeOnDelete(); // Удаляет связанные записи при удалении пользователя
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete(); // Удаляет связанные записи при удалении пользователя
         });
     }
 

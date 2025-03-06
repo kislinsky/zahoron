@@ -14,7 +14,7 @@ class DeadController extends Controller
          'mortuary_dead'=>['nullable','string'],
          'fio_dead'=>['required','string'],
          'name_dead'=>['required','string'],
-         'phone_dead'=>['required','integer'],
+         'phone_dead'=>['required'],
          'call_time'=>['nullable'],
          'call_tomorrow'=>['nullable'],
          'time_now'=>['required',]

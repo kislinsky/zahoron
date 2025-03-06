@@ -29,6 +29,7 @@ use App\Models\StageService;
 use App\Models\TypeService;
 use App\Models\User;
 use App\Models\UserRequestsCount;
+use App\Models\View;
 use App\Models\WorkingHoursCemetery;
 use App\Services\Auth\SmsService;
 use App\Services\YooMoneyService;
@@ -39,6 +40,7 @@ use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+
 
 
 
@@ -1799,6 +1801,10 @@ function getCemeteriesOptions($get)
     return Cemetery::whereIn('city_id', $citiesIds)->pluck('title', 'id')->toArray();
 }
 
+
+
+
+
 function generateUniqueSlug(string $title, string $modelClass, int $ignoreId = null): string
 {
     // Проверяем, является ли переданный класс допустимой моделью Laravel
@@ -1860,3 +1866,16 @@ function changeContent($content){
     $result=str_replace(["{city}"],[selectCity()->title],$content);
     return $result;
 }
+
+
+function addView($entityType, $entityId, $userId = null, $source = null)
+    {
+        View::create([
+            'entity_type' => $entityType,
+            'entity_id' => $entityId,
+            'user_id' => $userId,
+            'session_id' => request()->session()->getId(),
+            'source' => $source,
+            'ip_address' => request()->ip(),
+        ]);
+    }

@@ -3,6 +3,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CemeteryResource\Pages;
 use App\Filament\Resources\CemeteryResource\RelationManagers\PriceServiceRelationManager;
+use App\Filament\Resources\CemeteryResource\RelationManagers\ViewsRelationManager;
 use App\Filament\Resources\CemeteryResource\RelationManagers\WorkingHoursRelationManager;
 use App\Filament\Resources\CemeteryResource\RelationManagers\WorkingsHoursRelationManager;
 use App\Models\Area;
@@ -485,6 +486,8 @@ class CemeteryResource extends Resource
         return [
             WorkingHoursRelationManager::class,
             PriceServiceRelationManager::class,
+            ViewsRelationManager::class,
+
         ];
     }
 

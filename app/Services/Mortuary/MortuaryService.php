@@ -36,6 +36,7 @@ class MortuaryService {
 
     public static function single($id){
         $mortuary=Mortuary::find($id);
+        addView('mortuary',$mortuary->id,'site');
 
         SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$mortuary));
         SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$mortuary));
