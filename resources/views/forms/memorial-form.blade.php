@@ -106,6 +106,10 @@ if(Auth::check()){
                         <input required type="checkbox" name="aplication"  checked >
                         <p>Я согласен на обработку персональных данных в соответствии с Политикой конфиденциальности</p>
                     </label>
+                    <div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}"></div>
+                        @error('g-recaptcha-response')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
                     <div class="flex_btn block_call_time">
                         <div class="btn_bac_gray open_call_time">
                             Позвонить по времени<img src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>

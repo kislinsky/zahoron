@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\RecaptchaRule;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -45,10 +46,20 @@ class LoginController extends Controller
 
     }
 
+    protected function validateLogin(Request $request)
+    {
+        $request->validate([
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+            'g-recaptcha-response' => ['required', new RecaptchaRule], // Добавляем проверку reCAPTCHA
+        ]);
+    }
+
 
     public static function loginWithPhone(Request $request){
 
         $data=request()->validate([
+            'g-recaptcha-response' => ['required', new RecaptchaRule],
             'phone'=>['required','string'],
             'password_phone'=>['required','string'],
         ]);

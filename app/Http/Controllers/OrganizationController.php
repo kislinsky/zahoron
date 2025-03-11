@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\RecaptchaRule;
 use App\Services\Organization\OrganizationProviderService;
-use Illuminate\Http\Request;
 use App\Services\Organization\OrganizationService;
+use Illuminate\Http\Request;
 
 class OrganizationController extends Controller
 {
@@ -32,6 +33,7 @@ class OrganizationController extends Controller
 
     public static function addReview(Request $request){
         $data=request()->validate([
+            'g-recaptcha-response' => ['required', new RecaptchaRule],
             'organization_id'=>['required','integer'],
             'rating'=>['nullable','integer'],
             'content_review'=>['required','string'],

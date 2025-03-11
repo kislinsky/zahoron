@@ -58,7 +58,10 @@
                 <label for="password">Повторите пароль</label>
                 <input id="password-confirm" type="password"  name="password_confirmation" required autocomplete="Повторите пароль">
             </div> 
-
+            <div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}"></div>
+            @error('g-recaptcha-response')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
             <button type="submit" class="blue_btn">Зарегистрироваться</button>
     </form>
 
@@ -97,7 +100,10 @@
                 <div class='error-text'>{{ $message }}</div>
             @enderror
         </div> 
-
+        <div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}"></div>
+        @error('g-recaptcha-response')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
         <button type="submit" class="blue_btn">Зарегистрироваться</button>
         
 

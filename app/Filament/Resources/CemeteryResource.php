@@ -2,6 +2,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CemeteryResource\Pages;
+use App\Filament\Resources\CemeteryResource\RelationManagers\ImagesRelationManager;
 use App\Filament\Resources\CemeteryResource\RelationManagers\PriceServiceRelationManager;
 use App\Filament\Resources\CemeteryResource\RelationManagers\ViewsRelationManager;
 use App\Filament\Resources\CemeteryResource\RelationManagers\WorkingHoursRelationManager;
@@ -484,6 +485,7 @@ class CemeteryResource extends Resource
     public static function getRelations(): array
     {
         return [
+            ImagesRelationManager::class,
             WorkingHoursRelationManager::class,
             PriceServiceRelationManager::class,
             ViewsRelationManager::class,

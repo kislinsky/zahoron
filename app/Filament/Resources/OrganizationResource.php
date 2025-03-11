@@ -8,6 +8,7 @@ use App\Filament\Resources\OrganizationResource\RelationManagers\ActivityCategor
 use App\Filament\Resources\OrganizationResource\RelationManagers\BeatificationsRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\DeadAplicationsRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\FuneralServicesRelationManager;
+use App\Filament\Resources\OrganizationResource\RelationManagers\ImagesRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\MemorialsRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\OrderPorductsRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\OrganizationRequestCountRelationManager;
@@ -71,7 +72,7 @@ class OrganizationResource extends Resource
         // Поле для загрузки файла (отображается только если выбран вариант "Файл на сайте")
         FileUpload::make('img_file')
             ->label('Загрузить изображение')
-            ->directory('/uploads_mortuaries') // Директория для хранения файлов
+            ->directory('/uploads_organization') // Директория для хранения файлов
             ->image()
             ->maxSize(2048)
             ->reactive()
@@ -449,6 +450,7 @@ class OrganizationResource extends Resource
     public static function getRelations(): array
     {
         return [
+            ImagesRelationManager::class,
             ActivityCategoriesRelationManager::class,
             WorkingHoursRelationManager::class,
             OrganizationRequestCountRelationManager::class,

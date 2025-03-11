@@ -6,11 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\OtpCodes;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use App\Rules\RecaptchaRule;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
@@ -55,6 +56,7 @@ class RegisterController extends Controller
     {
         if ($data['role'] === 'user') {
             return Validator::make($data, [
+                'g-recaptcha-response' => ['required', new RecaptchaRule],
                 'role'     => ['required', 'string'],
                 'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'password' => ['required', 'string', 'min:8', 'confirmed'],
@@ -62,6 +64,7 @@ class RegisterController extends Controller
         }
     
         return Validator::make($data, [
+            'g-recaptcha-response' => ['required', new RecaptchaRule],
             'role'              => ['required', 'string'],
             'email'             => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password'          => ['required', 'string', 'min:8', 'confirmed'],
@@ -168,11 +171,13 @@ class RegisterController extends Controller
     public static function registerWithPhone(Request $request)
     {
         $baseRules = [
+            'g-recaptcha-response' => ['required', new RecaptchaRule],
             'role_phone' => ['required', 'string'],
             'phone' => ['required', 'string'],
         ];
 
         $organizationRules = [
+            'g-recaptcha-response' => ['required', new RecaptchaRule],
             'organization_form_phone' => ['required', 'string'],
             'inn_phone' => ['required', 'string'],
         ];

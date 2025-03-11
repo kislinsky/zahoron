@@ -64,6 +64,7 @@ return array(
     'SmsAero\\' => array($vendorDir . '/smsaero/smsaero_api/src'),
     'RyanChandler\\BladeCaptureDirective\\Database\\Factories\\' => array($vendorDir . '/ryangjchandler/blade-capture-directive/database/factories'),
     'RyanChandler\\BladeCaptureDirective\\' => array($vendorDir . '/ryangjchandler/blade-capture-directive/src'),
+    'ReCaptcha\\' => array($vendorDir . '/google/recaptcha/src/ReCaptcha'),
     'Rap2hpoutre\\FastExcel\\' => array($vendorDir . '/rap2hpoutre/fast-excel/src'),
     'Ramsey\\Uuid\\' => array($vendorDir . '/ramsey/uuid/src'),
     'Ramsey\\Collection\\' => array($vendorDir . '/ramsey/collection/src'),

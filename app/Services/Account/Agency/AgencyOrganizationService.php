@@ -7,6 +7,7 @@ use App\Models\Cemetery;
 use App\Models\CategoryProduct;
 use App\Models\City;
 use App\Models\CommentProduct;
+use App\Models\ImageOrganization;
 use App\Models\ImageProduct;
 use App\Models\MemorialMenu;
 use App\Models\Organization;
@@ -54,6 +55,11 @@ class AgencyOrganizationService {
             $data['cemetery_ids'] = implode(",", $data['cemetery_ids']) . ',';
         }
 
+
+        $filename=generateRandomString().".jpeg";
+        $data['img']->storeAs("uploads_organization", $filename, "public");
+        
+
         // Создаем организацию
         $organization = Organization::create([
             'title' => $data['title'],
@@ -63,6 +69,7 @@ class AgencyOrganizationService {
             'phone' => $data['phone'],
             'telegram' => $data['telegram'],
             'user_id'=>user()->id,
+            'img_file'=>'uploads_organization/'.$filename,
             'whatsapp' => $data['whatsapp'],
             'email' => $data['email'],
             'city_id' => $data['city_id'],
@@ -77,6 +84,8 @@ class AgencyOrganizationService {
             'state_compensation' => $data['state_compensation'] ?? false,
         ]);
 
+
+        
         // Создаем связи с категориями
         if (isset($data['categories_organization']) && isset($data['price_cats_organization'])) {
             foreach ($data['categories_organization'] as $key => $category_organization) {
@@ -116,7 +125,25 @@ class AgencyOrganizationService {
             }
         }
 
-        return redirect()->route('home')->with('message_cart', 'Организация успешно создана');
+
+        if(isset($data['images']) ){
+            if(count($data['images'])>0  && count($data['images'])<6){
+                foreach($data['images'] as $image){
+                    $filename=generateRandomString().".jpeg";
+                    $image->storeAs("uploads_organization", $filename, "public");
+                    ImageOrganization::create([
+                        'img_file'=>'uploads_organization/'.$filename,
+                        'href_img'=>0,
+                        'organization_id'=>$organization->id,
+                    ]);
+                }
+            }else{
+                return redirect()->back()->with('error','Превышено допустимое количество файлов');
+            }
+            
+        }
+
+        return redirect()->route('home')->with('message_cart', 'Организация отправлена на модерацию');
     }
 
 
@@ -439,7 +466,7 @@ class AgencyOrganizationService {
                     $filename=generateRandomString().".jpeg";
                     $image->storeAs("uploads_product", $filename, "public");
                     ImageProduct::create([
-                        'title'=>$filename,
+                        'title'=>'uploads_product/'.$filename,
                         'product_id'=>$product->id,
                     ]);
                 }

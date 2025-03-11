@@ -102,7 +102,8 @@
                 </div>  
 
                 {{view('product.components.single.additionals',compact('additionals'))}}
-
+                
+           
                 {{view('product.components.single.user-inputs')}}
 
                 @if(count($parameters)>0)

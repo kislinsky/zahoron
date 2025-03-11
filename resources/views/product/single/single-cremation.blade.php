@@ -67,6 +67,7 @@
             </div>
             <form method='post' action='{{ route('order.product.add.details') }}'class="sidebar">
                 @csrf
+                
                 <input type="hidden" name="category_id" value='{{ $product->category_id }}'>
                 <input type="hidden" name="product_id" value='{{ $product->id }}'>
                 <div class="cats_news product_sidebar_block">

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\MortuaryResource\Pages;
 use App\Filament\Resources\MortuaryResource\RelationManagers;
+use App\Filament\Resources\MortuaryResource\RelationManagers\ImagesRelationManager;
 use App\Filament\Resources\MortuaryResource\RelationManagers\ViewsRelationManager;
 use App\Filament\Resources\MortuaryResource\RelationManagers\WorkingHoursRelationManager;
 use App\Models\Area;
@@ -415,6 +416,7 @@ class MortuaryResource extends Resource
     public static function getRelations(): array
     {
         return [
+            ImagesRelationManager::class,
             WorkingHoursRelationManager::class,
             ViewsRelationManager::class,
 

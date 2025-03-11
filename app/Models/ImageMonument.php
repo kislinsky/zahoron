@@ -16,7 +16,10 @@ class ImageMonument extends Model
     }
 
     public function urlImg(){
-        return asset('storage/'.$this->title);
+        if($this->href_img==0){
+            return asset('storage/'.$this->img_file);
+        }
+        return asset($this->img_url);
     }
 
 }

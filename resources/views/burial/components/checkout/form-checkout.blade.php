@@ -45,5 +45,9 @@
         <div class='error-text'>{{ $message }}</div>
         @enderror
     </div>
+    <div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}"></div>
+    @error('g-recaptcha-response')
+        <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
     <button type='submit' class="blue_btn input_choose">Оформить заказ</button>
 </form>

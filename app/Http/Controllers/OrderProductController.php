@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Services\Order\OrderProductService;
 use App\Models\CategoryProduct;
+use App\Rules\RecaptchaRule;
+use App\Services\Order\OrderProductService;
+use Illuminate\Http\Request;
 
 class OrderProductController extends Controller
 {
@@ -24,6 +25,7 @@ class OrderProductController extends Controller
 
         if($category->slug=='organizacia-pohoron'){
             $data=request()->validate([
+                'g-recaptcha-response' => ['required', new RecaptchaRule],
                 'name'=>['required','string'],
                 'phone'=>['required','string'], 
                 'message'=>['string','nullable'],
@@ -38,6 +40,7 @@ class OrderProductController extends Controller
         }
         if($category->slug=='organizacia-kremacii'){
             $data=request()->validate([
+                'g-recaptcha-response' => ['required', new RecaptchaRule],
                 'name'=>['required','string'],
                 'phone'=>['required','string'], 
                 'message'=>['string','nullable'],
@@ -51,6 +54,7 @@ class OrderProductController extends Controller
         }
         if($category->slug=='otpravka-gruz-200'){
             $data=request()->validate([
+                'g-recaptcha-response' => ['required', new RecaptchaRule],
                 'city_from'=>['required','string'],
                 'city_to'=>['required','string'],
                 'name'=>['required','string'],
@@ -66,6 +70,7 @@ class OrderProductController extends Controller
         }
         if($category->slug=='kopka-mogil'){
             $data=request()->validate([
+                'g-recaptcha-response' => ['required', new RecaptchaRule],
                 'name'=>['required','string'],
                 'phone'=>['required','string'],
                 'message'=>['string','nullable'],
@@ -77,6 +82,7 @@ class OrderProductController extends Controller
             return OrderProductService::addOrderOne($data);
         }
         $data=request()->validate([
+            'g-recaptcha-response' => ['required', new RecaptchaRule],
             'name'=>['required','string'],
             'phone'=>['required','string'],
             'message'=>['string','nullable'],

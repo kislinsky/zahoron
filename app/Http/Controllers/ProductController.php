@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\CategoryProduct;
 use App\Models\Product;
-use Illuminate\Http\Request;
+use App\Rules\RecaptchaRule;
 use App\Services\Product\ProductService;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -95,6 +96,7 @@ class ProductController extends Controller
     
     public static function addReview(Request $request){
         $data=request()->validate([
+            'g-recaptcha-response' => ['required', new RecaptchaRule],
             'name'=>['string','required'],
            'surname'=>['string','required'],
             'product_id'=>['integer','required'],

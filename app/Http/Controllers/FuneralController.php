@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FuneralService;
+use App\Rules\RecaptchaRule;
 use App\Services\FuneralService\FuneralServiceService;
 use Illuminate\Http\Request;
 
@@ -11,6 +12,7 @@ class FuneralController extends Controller
     public static function funeralServiceAdd(Request $request){
         if($request['funeral_service']==1){
             $data=request()->validate([
+                'g-recaptcha-response' => ['required', new RecaptchaRule],
                 'funeral_service'=>['required','integer'],
                 'city_funeral_service'=>['required','string'],
                 'city_funeral_service_to'=>['nullable','integer'],
@@ -30,6 +32,7 @@ class FuneralController extends Controller
         }
         if($request['funeral_service']==2){
              $data=request()->validate([
+                'g-recaptcha-response' => ['required', new RecaptchaRule],
                 'funeral_service'=>['required','integer'],
                 'none_mortuary'=>['nullable'],
                 'city_funeral_service'=>['required','string'],
@@ -50,6 +53,7 @@ class FuneralController extends Controller
         }
         if($request['funeral_service']==3){
             $data=request()->validate([ 
+                'g-recaptcha-response' => ['required', new RecaptchaRule],
                 'funeral_service'=>['required','integer'],
                 'city_funeral_service'=>['required','string'],
                 'cemetery_funeral_service'=>['required','integer'],

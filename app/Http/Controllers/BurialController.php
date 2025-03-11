@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 
-use Illuminate\Http\Request;
+use App\Rules\RecaptchaRule;
+use App\Services\Burial\FavoriteBurial;
 use App\Services\Burial\IndexBurial;
 use App\Services\Burial\SearchBurialService;
-use App\Services\Burial\FavoriteBurial;
 use Artesaos\SEOTools\Facades\SEOTools;
+use Illuminate\Http\Request;
 
 class BurialController extends Controller
 {
@@ -49,6 +50,7 @@ class BurialController extends Controller
 
     public static function searchProductRequestAdd(Request $request){
         $data=request()->validate([
+            'g-recaptcha-response' => ['required', new RecaptchaRule],
             'surname'=>['required','string'],
             'name'=>['required','string'],
             'patronymic'=>['required','string'],

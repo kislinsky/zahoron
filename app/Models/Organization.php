@@ -15,6 +15,10 @@ class Organization extends Model
     }
 
 
+    function images(){
+        return $this->hasMany(ImageOrganization::class);
+    }
+
     function reviews(){
         return $this->hasMany(ReviewsOrganization::class)->orderBy('id','desc')->where('status',1);
     }

@@ -39,6 +39,14 @@ class AgencyOrganizationController extends Controller
             'price_cats_organization' => ['nullable', 'array'],
             'working_day' => ['nullable', 'array'],
             'holiday_day' => ['nullable', 'array'],
+            'cemetery_ids' => 'required|array', // Здесь вы ограничиваете количество изображений до 5
+            'img' => 'required|max:2048',
+            'images' => 'array|max:5', // Здесь вы ограничиваете количество изображений до 5
+            'images.0' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
+            'images.1' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
+            'images.2' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
+            'images.3' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
+            'images.4' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
         ]);
         return AgencyOrganizationService::create($data);
 
@@ -150,13 +158,12 @@ class AgencyOrganizationController extends Controller
             'width'=>['nullable','string'],
             'longitude'=>['nullable','string'],
             'menus'=>['nullable','string'],
-            "images" => ["required", "array"],
-            "images.*" => [
-                "required",
-                'image',
-                'mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif',
-                'max:2048'
-            ],
+            'images' => 'required|array|max:5', // Здесь вы ограничиваете количество изображений до 5
+            'images.0' => 'required|image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
+            'images.1' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
+            'images.2' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
+            'images.3' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
+            'images.4' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
             'cat'=>['required','integer'],
             'cat_children'=>['required','integer'],
         ]);

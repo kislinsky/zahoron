@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Rules\RecaptchaRule;
 use App\Services\Beautification\BeautificationService;
+use Illuminate\Http\Request;
 
 class BeautificationController extends Controller
 {
     public static function sendBeautification(Request $request){
         $data=request()->validate([
             'products_beautification'=>['required'],
+            'g-recaptcha-response' => ['required', new RecaptchaRule],
             'name_beautification'=>['required','string'],
             'phone_beautification'=>['required','string'],
             'city_beautification'=>['required','integer'],

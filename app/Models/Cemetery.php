@@ -16,6 +16,11 @@ class Cemetery extends Model
         return $this->hasMany(View::class, 'entity_id')->where('entity_type', 'cemetery');
     }
 
+
+    function images(){
+        return $this->hasMany(ImageCemetery::class);
+    }
+
     function burials(){
         return $this->hasMany(Burial::class);
     }

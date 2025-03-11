@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Rules\RecaptchaRule;
 use App\Services\Order\OrderServiceService;
+use Illuminate\Http\Request;
 
 class OrderServiceController extends Controller
 {
     public static function orderAdd(Request $request){
         $data=request()->validate([
+            'g-recaptcha-response' => ['required', new RecaptchaRule],
             'name'=>['required','string'],
             'surname'=>['required','string'],
             'phone'=>['required','string'],

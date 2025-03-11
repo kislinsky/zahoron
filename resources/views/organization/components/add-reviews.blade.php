@@ -37,6 +37,10 @@
             <input required type="checkbox" name="aplication"  checked >
             <p>Я согласен на обработку персональных данных в соответствии с Политикой конфиденциальности</p>
         </label>
+        <div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}"></div>
+                @error('g-recaptcha-response')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
         <button class="blue_btn" >Оставить отзыв</button>
     </div>
 </form>

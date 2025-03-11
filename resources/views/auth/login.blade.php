@@ -42,6 +42,10 @@ use Illuminate\Support\Facades\Route;
             @endif
 
             </div> 
+            <div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}"></div>
+                @error('g-recaptcha-response')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
             <button type="submit" class="blue_btn">Войти</button>
         
 
@@ -77,6 +81,10 @@ use Illuminate\Support\Facades\Route;
             @endif
 
             </div> 
+            <div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}"></div>
+                @error('g-recaptcha-response')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
             <button type="submit" class="blue_btn">Войти</button>
         
 

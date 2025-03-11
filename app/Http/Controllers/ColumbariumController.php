@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\RecaptchaRule;
 use App\Services\Columbarium\ColumbariumService;
 use Illuminate\Http\Request;
 
@@ -17,6 +18,7 @@ class ColumbariumController extends Controller
 
     public static function addReview(Request $request){
         $data=request()->validate([
+            'g-recaptcha-response' => ['required', new RecaptchaRule],
             'columbarium_id'=>['required','integer'],
             'rating'=>['nullable','integer'],
             'content_review'=>['required','string'],

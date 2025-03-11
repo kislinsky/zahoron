@@ -1,6 +1,6 @@
 <div class="block_input">
     <div class="text_middle_index">Фотографии</div>
-    <div class='text_gray'  for="">Добавьте изображения для галереи товара, не более 5 фото</div>
+    <div class='text_gray'  for="">Добавьте изображения для галереи , не более 5 фото</div>
     <div class="block_add_image_product_organization">
         <div class="input__wrapper">
             <input style='display:none;' name="file" type="file" id="input__file_3" class="input input_file_add_image">

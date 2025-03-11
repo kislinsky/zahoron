@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cemetery;
-use Illuminate\Http\Request;
+use App\Rules\RecaptchaRule;
 use App\Services\Cemetery\CemeteryService;
+use Illuminate\Http\Request;
 
 class CemeteriesController extends Controller
 {
@@ -26,6 +27,7 @@ class CemeteriesController extends Controller
     public static function addReview(Request $request){
         
         $data=request()->validate([
+            'g-recaptcha-response' => ['required', new RecaptchaRule],
             'cemetery_id'=>['required','integer'],
             'rating'=>['nullable','integer'],
             'content_review'=>['required','string'],

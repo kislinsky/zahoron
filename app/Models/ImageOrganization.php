@@ -12,9 +12,9 @@ class ImageOrganization extends Model
 
     public function urlImg(){
         if($this->href_img==0){
-            return asset('storage/uploads_organization/'.$this->title);
+            return asset('storage/'.$this->img_file);
         }
-        return $this->title;
+        return asset($this->img_url);
     }
 
 }

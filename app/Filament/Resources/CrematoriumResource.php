@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CrematoriumResource\Pages;
 use App\Filament\Resources\CrematoriumResource\RelationManagers;
+use App\Filament\Resources\CrematoriumResource\RelationManagers\ImagesRelationManager;
 use App\Filament\Resources\CrematoriumResource\RelationManagers\ViewsRelationManager;
 use App\Filament\Resources\CrematoriumResource\RelationManagers\WorkingHoursRelationManager;
 use App\Models\Area;
@@ -425,6 +426,7 @@ class CrematoriumResource extends Resource
     public static function getRelations(): array
     {
         return [
+            ImagesRelationManager::class,
             ViewsRelationManager::class,
             WorkingHoursRelationManager::class,
         ];
