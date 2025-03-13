@@ -25,12 +25,9 @@
     </div>
     <div class="block_input">
         <label for="">Город</label>
-        <div class="select">
-            <select name="city_id" id="">
-                @foreach($cities as $city)
-                    <option value="{{$city->id}}" <?php if($city->id==$organization->city_id){echo 'selected';}?>>{{$city->title}}</option>
-                @endforeach
-            </select>
+        <div class="block_ajax_input_search_cities">
+            <input class='input_search_cities' type="text" name="city_search" id="" value='{{ $organization->city->title }}'>
+            <input type="hidden" name="city_id" class='city_id_input'  value='{{ $organization->city_id }}' >
         </div>
     </div>
     <div class="block_input">

@@ -1879,3 +1879,89 @@ function addView($entityType, $entityId, $userId = null, $source = null)
             'ip_address' => request()->ip(),
         ]);
     }
+
+
+function addActiveCategory(string $input, array $excludeCategories = [],$organization)
+{
+    // Разделяем строку по запятым и удаляем лишние пробелы
+    $inputCategories = splitCategories($input);
+
+
+    foreach ($inputCategories as $category) {
+
+        $category_find=CategoryProduct::where('title',$category)->first();
+
+        // Проверяем, что категория допустима и не в списке исключений
+        if ($category_find!=null && !in_array($category, $excludeCategories)) {
+            
+            ActivityCategoryOrganization::create([
+                'organization_id'=>$organization->id,
+                'price'=>getPriceByCategory($category),
+                'category_children_id'=>$category_find->id,
+                'category_main_id'=>$category_find->parent_id,
+                'rating'=>$organization->rating,
+                'cemetery_ids'=>$organization->cemetery_ids,
+            ]);
+
+        }
+    }
+
+    return 'refew';
+}
+
+function splitCategories(string $input): array
+{
+    $input=str_replace("Прощальные залы", "Поминальные залы", $input);
+
+    // Разделяем строку по запятым и символу "/"
+    $categories = preg_split('/[,\/]/', $input);
+
+    // Удаляем лишние пробелы вокруг каждого элемента
+    $categories = array_map('trim', $categories);
+
+    // Убираем пустые элементы (если такие есть)
+    $categories = array_filter($categories);
+
+    return array_values($categories); // Возвращаем массив с переиндексацией
+}
+
+function getPriceByCategory(string $category): ?int
+{
+    // Условия для каждой категории
+    if ($category === "Организация похорон") {
+        return 50000;
+    }
+    if ($category === "Организация кремации") {
+        return 45000;
+    }
+    if ($category === "Подготовка отправки груз 200") {
+        return 60000;
+    }
+    if ($category === "Памятники") {
+        return 20000;
+    }
+    if ($category === "Оградки") {
+        return 1500;
+    }
+    if ($category === "Плитка") {
+        return 1500;
+    }
+    if ($category === "Кресты") {
+        return 800;
+    }
+    if ($category === "Венки") {
+        return 500;
+    }
+    if ($category === "Вазы") {
+        return 350;
+    }
+    if ($category === "Поминальные обед") {
+        return 1500;
+    }
+    if ($category === "Аренда поминального зала" || $category==='Поминальные залы' ) {
+        return 3000;
+    }
+
+    // Если категория не найдена, возвращаем null
+    return 1000;
+}

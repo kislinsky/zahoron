@@ -23,11 +23,14 @@ class ParserOrganizationService
         // Получение данных из первого листа
         $sheet = $spreadsheet->getActiveSheet();
         $organizations = array_slice($sheet->toArray(),1);
+
         foreach($organizations as $organization){
-            $city=createCity($organization[7],$organization[5]);
-            $distrcit=createDistrict($organization[6],$organization[7]);
+
+
+            $city=createArea($organization[8],$organization[7]);
+            $city=createCity($organization[9],$organization[7]);
             
-            if($city!=null){
+            if($city!=null || $organization[14]==null){
                 $ids_cemeteries=Cemetery::where('city_id',$city->id);
                 if($ids_cemeteries!=null){
                     $ids_cemeteries=$ids_cemeteries->pluck('id');
@@ -35,38 +38,48 @@ class ParserOrganizationService
                 $cemeteries='';
                 $organization_find=Organization::find(rtrim($organization[1], '!'));
                 if($organization_find==null){
-                    $timezone=getTimeByCoordinates($organization[2],$organization[3])['timezone'];
-                    $organization_create=Organization::create([
+                //$timezone=getTimeByCoordinates($organization[2],$organization[3])['timezone'];
+                $timezone='12';
+                $img_url=$organization[22];
+                if($img_url==null){
+                    $img_url='https://ams2-cdn.2gis.com/previews/1113196871553122307/62479f56-4baf-46f1-8439-e32a2f053ceb/3/656x340?api-version=2.0';
+                }
+                $organization_create=Organization::create([
                         'id'=>rtrim($organization[1], '!'),
-                        'title'=>$organization[9],
-                        'adres'=>$organization[8],
-                        'width'=>$organization[2],
-                        'longitude'=>$organization[3],
-                        'phone'=>phoneImport($organization[18]),
-                        'email'=>trim(trim($organization[11], '('),')'),
-                        'logo'=>$organization[20],
+                        'title'=>$organization[4],
+                        'adres'=>$organization[10],
+                        'nearby'=>$organization[11],
+                        'width'=>$organization[12],
+                        'longitude'=>$organization[13],
+                        'phone'=>phoneImport($organization[14]),
+                        'email'=>trim(trim($organization[17], '('),')'),
+                        'img_url'=>$img_url,
+                        'content'=>$organization[25],
                         'city_id'=>$city->id,
-                        'rating'=>$organization[15],
+                        'rating'=>$organization[3],
                         'href_img'=>1,
-                        'slug'=>slugOrganization($organization[9]),
+                        'slug'=>slugOrganization($organization[4]),
                         'cemetery_ids'=>$cemeteries,
-                        'name_type'=>$organization[10],
-                        'district_id'=>$distrcit,
+                        'name_type'=>$organization[5],
                         'time_difference'=>differencetHoursTimezone($timezone),
+                        'whatsapp'=>$organization[18],
+                        'telegram'=>$organization[19],
+                      
                     ]);
-                    if($organization[21]!=null){
-                        $imgs=preg_match_all('/\((.*?)\)/', $organization[21],$matches);
+
+                    if($organization[24]!=null){
+                        $imgs=preg_match_all('/\((.*?)\)/', $organization[24],$matches);
                         $urls_array = $matches[1];
                         foreach($urls_array as $img){
                             ImageOrganization::create([
-                                'title'=>$img,
+                                'img_url'=>$img,
                                 'href_img'=>1,
                                 'organization_id'=>$organization_create->id,
                             ]);
                         }
                     }
-                    if($organization[22]!=null){
-                        $worktime=explode(',',$organization[22]);
+                    if($organization[15]!=null){
+                        $worktime=explode(',',$organization[15]);
                         foreach($worktime as $days){
                             $days=parseWorkingHours($days);
         
@@ -86,7 +99,14 @@ class ParserOrganizationService
         
                         }
                     }
+
+                    if($organization[6]!=null){
+                        addActiveCategory($organization[6],['Кнопка могил'],$organization_create);
+                    }
+
+                   
                 }
+
             } 
         }
 

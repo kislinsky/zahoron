@@ -156,7 +156,6 @@ $( ".li_cat_children_marketplace" ).on( "click", function() {
         $('#label_select_2').show()
     }else{
         $( ".filter_block_organization select" ).removeClass('active_select_filter_organiaztion')
-        $('#cemetery_id').addClass('active_select_filter_organiaztion')
         $( ".filter_block_organization select" ).removeClass('active_select_filter_organiaztion_2')
         $('#cemetery_id').addClass('active_select_filter_organiaztion_2')
         $('#label_select_1').show()

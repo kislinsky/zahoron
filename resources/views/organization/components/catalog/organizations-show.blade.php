@@ -1,8 +1,14 @@
 
 @if($organizations_category!=null && $organizations_category->count()>0)
+
+    <?php $category=$organizations_category->first()->categoryProduct;?>
+
     @foreach ($organizations_category as $organization_category)
+
         <?php $organization=$organization_category->organization;?>
+    
         
+
         <div class="li_organization">
 
             <?php $category_organiaztion=$organization_category->categoryProduct;?>
@@ -64,7 +70,8 @@
 
 
     @endforeach
-    {{ $organizations_category->withPath(route('organizations'))->appends($_GET)->links() }}
+
+    {{ $organizations_category->withPath(route('organizations.category',$category->slug))->appends($_GET)->links() }}
 
 @endif
 
