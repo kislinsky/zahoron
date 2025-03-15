@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CategoryProduct;
 use App\Models\Faq;
-use App\Models\SEO;
-use App\Models\SeoObject;
+use App\Models\ImageOrganization;
+
 use App\Services\Burial\SearchBurialService;
 use App\Services\OurWork\OurWorkService;
 use App\Services\Page\IndexService;

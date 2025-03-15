@@ -150,7 +150,7 @@ class AgencyOrganizationService {
     public static function update($data){
         $organization=Organization::findOrFail($data['id']);
         $cemeteries='';
-        if(isset($data['cemetery_ids'])){
+        if(isset($data['cemetery_ids']) && $data['cemetery_ids']!=null){
             $cemeteries=implode(",", $data['cemetery_ids']).',';
 
         }
@@ -269,7 +269,7 @@ class AgencyOrganizationService {
 
 
         if (isset($data['images'])) {
-            if (count($data['images']) > 0 && count($data['images']) < 6) {
+            if (count($data['images']) > 0) {
                 // Удаляем старые изображения
                 foreach ($organization->images as $image) {
                     $image->delete();

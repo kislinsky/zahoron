@@ -17,6 +17,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 class ParserOrganizationService
 {
     public static function index($request){
+
+
         $spreadsheet = new Spreadsheet();
         $file = $request->file('file');
         $spreadsheet = IOFactory::load($file);
@@ -68,8 +70,10 @@ class ParserOrganizationService
                     ]);
 
                     if($organization[24]!=null){
-                        $imgs=preg_match_all('/\((.*?)\)/', $organization[24],$matches);
-                        $urls_array = $matches[1];
+                        // $imgs=preg_match_all('/\((.*?)\)/', $organization[24],$matches);
+
+                        $urls_array = explode(' ', $organization[24]);
+                        // $urls_array = $matches[1];
                         foreach($urls_array as $img){
                             ImageOrganization::create([
                                 'img_url'=>$img,

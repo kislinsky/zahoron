@@ -1965,3 +1965,40 @@ function getPriceByCategory(string $category): ?int
     // Если категория не найдена, возвращаем null
     return 1000;
 }
+
+function cleanUpOrganizationImages()
+{
+    // Получаем все организации
+    $organizations = Organization::all();
+
+    foreach ($organizations as $organization) {
+        // Получаем все изображения организации
+        $images = $organization->images;
+
+        // Массив для хранения уникальных названий изображений
+        $uniqueNames = [];
+
+        foreach ($images as $image) {
+            // Проверяем, является ли название пустым или пробелом
+            if (trim($image->img_url) === '') {
+                // Удаляем изображение с пустым названием
+                $image->delete();
+                continue;
+            }
+
+            // Нормализуем URL (удаляем параметры размера)
+            $normalizedUrl = preg_replace('/_\d+x\d+\.jpg$/', '.jpg', $image->img_url);
+
+            // Проверяем, есть ли уже такое название в массиве уникальных названий
+            if (in_array($normalizedUrl, $uniqueNames)) {
+                // Удаляем дубликат
+                $image->delete();
+            } else {
+                // Добавляем нормализованное название в массив уникальных названий
+                $uniqueNames[] = $normalizedUrl;
+            }
+        }
+    }
+
+    return "Очистка завершена.";
+}
