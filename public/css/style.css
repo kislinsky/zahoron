@@ -7297,3 +7297,55 @@ text-decoration-skip-ink: none;
 .accept_code_call_organization{
     display: none;
 }
+
+.flex_404_page{
+    min-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.page_404 .container{
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+}
+.page_404 a{
+    display: block;
+}
+
+.title_404{
+    font-family: EB Garamond;
+font-weight: 700;
+font-size: 128px;
+line-height: 120%;
+letter-spacing: 0%;
+color: #050505;
+}
+
+.title_404_middle{
+    font-family: EB Garamond;
+font-weight: 700;
+font-size: 44px;
+line-height: 120%;
+letter-spacing: 0%;
+color: #050505;
+
+
+}
+.page_404  img{
+    width: 100%;
+}
+.logo_org_setting{
+    width: 250px;
+}
+.input_file_setting_organization{
+    display: none;
+    margin-top: 20px ;
+    margin-bottom: 10px ;
+}
+.active_input_file_setting_organization{
+    display: block;
+}

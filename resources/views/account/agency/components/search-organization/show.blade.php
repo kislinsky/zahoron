@@ -1,5 +1,5 @@
 
-@if(count($organizations)>0)
+@if($organizations->total()>0)
     <div class="ul_search_add_organizations">
         @foreach($organizations as $organization)
             <div class="li_search_add_organization">

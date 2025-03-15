@@ -59,6 +59,14 @@ class AgencyOrganizationController extends Controller
 
     public static function update(Request $request){
         $data=request()->validate([
+            'images' => ['nullable'], // Поле может быть пустым
+            'images.*' => ['nullable', function ($attribute, $value, $fail) {
+                // Проверяем, является ли значение файлом или ссылкой
+                if (!is_string($value) && !($value instanceof \Illuminate\Http\UploadedFile)) {
+                    $fail('Поле ' . $attribute . ' должно быть файлом или ссылкой.');
+                }
+            }],
+            'img' => 'max:2048',
             'cemetery_ids.*'=>['nullable'],
             'id'=>['integer','required'],
             'title'=>['string','required'],
@@ -83,6 +91,7 @@ class AgencyOrganizationController extends Controller
             'state_compensation'=>['nullable'],
     
         ]);
+
         return AgencyOrganizationService::update($data);
     }
 

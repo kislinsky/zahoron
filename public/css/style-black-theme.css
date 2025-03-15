@@ -47,6 +47,10 @@
     border: none;
 }
 
+.black_theme .title_404,.black_theme .title_404_middle{
+    color: white;
+}
+
 .black_theme .text_single_product{
     border: 1px solid #4E4E4E;
 }

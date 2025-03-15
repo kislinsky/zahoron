@@ -170,6 +170,18 @@ class AgencyOrganizationService {
             'longitude'=>$data['longitude'],
         
         ]);
+
+        if(isset($data['img'])){
+            $filename=generateRandomString().".jpeg";
+            $data['img']->storeAs("uploads_organization", $filename, "public");
+            $organization->update([
+                'img_file'=>'uploads_organization/'.$filename,
+                'href_img'=>0,
+
+            ]);
+
+        }
+
         ActivityCategoryOrganization::where('organization_id',$organization->id)->delete();
         if(isset($data['categories_organization'])){
             foreach($data['categories_organization'] as $key=>$category_organization){
@@ -253,6 +265,53 @@ class AgencyOrganizationService {
             $organization->update([
                 'state_compensation'=>1
             ]);
+        }
+
+
+        if (isset($data['images'])) {
+            if (count($data['images']) > 0 && count($data['images']) < 6) {
+                // Удаляем старые изображения
+                foreach ($organization->images as $image) {
+                    $image->delete();
+                }
+        
+                foreach ($data['images'] as $image) {
+                    if ($image instanceof \Illuminate\Http\UploadedFile) {
+                        // Если это файл, сохраняем его на сервер
+                        $filename = uniqid() . '.' . $image->getClientOriginalExtension();
+                        $path = $image->storeAs('uploads_organization', $filename, 'public');
+        
+                        ImageOrganization::create([
+                            'img_file' => $path, // Путь к файлу
+                            'href_img' => 0, // 0 означает, что это файл
+                            'organization_id' => $data['id'], // ID организации
+                        ]);
+                    } elseif (str_starts_with($image, 'data:image')) {
+                        // Если это Base64, декодируем и сохраняем как файл
+                        $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $image));
+                        $filename = uniqid() . '.jpg'; // Предполагаем формат JPEG
+                        $path = 'uploads_organization/' . $filename;
+        
+                        // Сохраняем файл на сервер
+                        file_put_contents(public_path('storage/' . $path), $imageData);
+        
+                        ImageOrganization::create([
+                            'img_file' => $path, // Путь к файлу
+                            'href_img' => 0, // 0 означает, что это файл
+                            'organization_id' => $data['id'], // ID организации
+                        ]);
+                    } else {
+                        // Если это ссылка, сохраняем её в базу данных
+                        ImageOrganization::create([
+                            'img_url' => $image, // Сохраняем ссылку
+                            'href_img' => 1, // 1 означает, что это ссылка
+                            'organization_id' => $data['id'], // ID организации
+                        ]);
+                    }
+                }
+            } else {
+                return redirect()->back()->with('error', 'Превышено допустимое количество файлов');
+            }
         }
 
         return redirect()->back()->with('message_cart','Организация успешно обновлена');

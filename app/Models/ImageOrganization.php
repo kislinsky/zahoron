@@ -16,5 +16,9 @@ class ImageOrganization extends Model
         }
         return asset($this->img_url);
     }
-
+    
+    public function getAbsolutePath()
+    {
+        return storage_path('app/public/' . $this->img_file);
+    }
 }
