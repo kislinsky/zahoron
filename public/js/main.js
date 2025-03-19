@@ -105,6 +105,53 @@ let products_monuments_grave = new Swiper(".products_monuments_grave_swiper", {
 });
 
 
+let products_fence = new Swiper(".products_fence_swiper", {
+  spaceBetween: 20,
+
+  breakpoints: {
+
+    340: {
+      slidesPerView: 2,
+    },
+    1100: {
+      slidesPerView: 3,
+    },
+    1290: {
+      slidesPerView: 4,
+    },
+   
+  },
+  navigation: {
+    nextEl: ".swiper_button_next_products_fence",
+    prevEl: ".swiper_button_prev_products_fence",
+  },
+  
+});
+
+let products_tile = new Swiper(".products_tile_swiper", {
+  spaceBetween: 20,
+
+  breakpoints: {
+
+    340: {
+      slidesPerView: 2,
+    },
+    1100: {
+      slidesPerView: 3,
+    },
+    1290: {
+      slidesPerView: 4,
+    },
+   
+  },
+  navigation: {
+    nextEl: ".swiper_button_next_products_tile",
+    prevEl: ".swiper_button_prev_products_tile",
+  },
+  
+});
+
+
 let products_funeral_service = new Swiper(".products_funeral_service_swiper", {
   spaceBetween: 20,
 

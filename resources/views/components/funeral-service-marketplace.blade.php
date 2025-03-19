@@ -1,7 +1,9 @@
 <?php
 use App\Models\Product;
  $city=selectCity();
- $products_funeral_service=Product::where('city_id', $city->id)->where('view',1)->whereIn('category_id',[32,33,34,35])->get();
+ $products_funeral_service=Product::whereHas('organization', function ($query) use ($city) {
+    $query->where('city_id', $city->id);
+})->where('view',1)->whereIn('category_id',[32,33,34,35])->get();
 ?>
 
 @if(count($products_funeral_service)>0)

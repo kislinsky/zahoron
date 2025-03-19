@@ -4,7 +4,7 @@
     <div class="container order_page_search">
         <div class="content_order_page">
             <div class="index_title">Результаты поиска</div>    
-            <form method='get' action="{{route('search.burial')}}" class="search">
+            <form method='get' action="{{route('search.burial.result')}}" class="search">
                 @csrf
                 <input type="text" name='surname' placeholder='Фамилия'>
                 <input type="text" name='name' placeholder='Имя'>
@@ -72,7 +72,6 @@
             <div class="btn_border_blue"  data-bs-toggle="modal" data-bs-target="#beautification_form"><img src="{{asset('storage/uploads/Frame (20).svg')}}" alt="">Облагородить могилу</div>
             <div class="ul_news_sidebar">
                 @if (isset($news))                
-                    @if (isset($news))
                         @foreach ($news as $news_one )
                             <div class="li_news">
                                 <img src="{{asset('storage/'. $news_one->img )}}" alt="">
@@ -80,7 +79,6 @@
                                 <div class="text_li">{{ $news_one->created_at->format('d.m.Y') }}</div>
                             </div>
                         @endforeach                    
-                    @endif
                 @endif
             </div>
         </div>

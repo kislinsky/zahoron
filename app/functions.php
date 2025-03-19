@@ -554,8 +554,10 @@ function orgniaztionsFilters($data){
     }
     if(isset($data['cemetery_id']) && $data['cemetery_id']!=null && $data['cemetery_id']!='null'){
         $cemetery_id=$data['cemetery_id'];
-        $organizations_category=$organizations_category->where(function($item) use ($cemetery_id){
-            return $item->orWhere('cemetery_ids',"LIKE", "%,".$cemetery_id.",%")->orWhere('cemetery_ids',"LIKE", $cemetery_id.",%")->orWhere('cemetery_ids',"LIKE", "%,".$cemetery_id);
+        $organizations_category=$organizations_category->whereHas('organization', function ($query) use ($cemetery_id) {
+            $query->where(function($item) use ($cemetery_id){
+                return $item->orWhere('cemetery_ids',"LIKE", "%,".$cemetery_id.",%")->orWhere('cemetery_ids',"LIKE", $cemetery_id.",%")->orWhere('cemetery_ids',"LIKE", "%,".$cemetery_id);
+            });
         });
     }  
     if(isset($data['district_id']) && $data['district_id']!=null && $data['district_id']!='null'){
@@ -607,8 +609,10 @@ function organizationsPrices($data){
     });
     if (isset($data['cemetery_id']) && $data['cemetery_id']!=null && $data['cemetery_id']!='null' ){
         $cemetery_id=$data['cemetery_id'];
-        $organizations_prices=$organizations_prices->where(function($item) use ($cemetery_id){
-            return $item->orWhere('cemetery_ids',"LIKE", "%,".$cemetery_id.",%")->orWhere('cemetery_ids',"LIKE", $cemetery_id.",%")->orWhere('cemetery_ids',"LIKE", "%,".$cemetery_id);
+        $organizations_prices=$organizations_prices->whereHas('organization', function ($query) use ($cemetery_id) {
+            $query->where(function($item) use ($cemetery_id){
+                return $item->orWhere('cemetery_ids',"LIKE", "%,".$cemetery_id.",%")->orWhere('cemetery_ids',"LIKE", $cemetery_id.",%")->orWhere('cemetery_ids',"LIKE", "%,".$cemetery_id);
+            });
         });
     }
     if(isset($data['district_id']) && $data['district_id']!=null && $data['district_id']!='null'){

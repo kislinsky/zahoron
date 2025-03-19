@@ -2,14 +2,15 @@
 
 namespace App\Services\Burial;
 
+use App\Models\Burial;
 use App\Models\City;
 use App\Models\News;
-use App\Models\User;
-use App\Models\Burial;
 use App\Models\SearchBurial;
+use App\Models\Service;
+use App\Models\User;
+use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Artesaos\SEOTools\Facades\SEOTools;
 
 class SearchBurialService
 {
@@ -22,10 +23,10 @@ class SearchBurialService
 
         $news=News::orderBy('id', 'desc')->take(2)->get();
         $products=Burial::where('name',$data['name'])->where('surname',$data['surname'])->where('patronymic',$data['patronymic'])->where('who',$data['who'])->where('status',1)->get();
-        return view('burial.search-product',compact('products','news'));
+        return view('burial.search-burial-result',compact('products','news'));
     }
 
-    public static function searchProduct($data){
+    public static function searchBurialResult($data){
         $cemetery_ids = selectCity()->area->cities->flatMap(function($city) {
             return $city->cemeteries->pluck('id');
         });
@@ -47,15 +48,36 @@ class SearchBurialService
             $seo=$seo.' '.$data['patronymic'];
         }
         
+        if(isset($data['date_birth'])  ){
+            $products=$products->where('date_birth',$data['date_birth']);
+            $seo=$seo.' '.$data['date_birth'];
+        }
+        
+        if(isset($data['date_death'])  ){
+            $products=$products->where('date_death',$data['date_death']);
+            $seo=$seo.' '.$data['date_death'];
+        }
+
+
+
         SEOTools::setTitle($seo);
         SEOTools::setDescription($seo);
         $page=11;
         if($products->count()!==0){
             $products=$products->get();
         }
-        return view('burial.search-product',compact('products','news','page'));
+        return view('burial.search-burial-result',compact('products','news','page'));
     }
 
+
+
+    public static function searchBurial(){
+        $services = Service::orderBy('id', 'desc')->get();
+        $burials=Burial::where('date_death', 'LIKE', date('d.m').'%')->whereIn('cemetery_id',selectCity()->cemeteries->pluck('id'))->get();
+        $news=News::orderBy('id', 'desc')->take(2)->get();
+        return view('burial.search-burial',compact('news','services','burials'));
+    }
+    
     public static function searchProductRequestAdd($data){
         if(Auth::check()){
             SearchBurial::create([

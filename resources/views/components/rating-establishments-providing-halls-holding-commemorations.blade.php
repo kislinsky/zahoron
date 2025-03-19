@@ -4,7 +4,7 @@ use App\Models\Organization;
 $city=selectCity();
 $sorted_organizations=organizationratingEstablishmentsProvidingHallsHoldingCommemorations($city->id);?>
 
-@if($sorted_organizations->count()>0)
+@if($sorted_organizations->count()>0 && $sorted_organizations->first()!=null)
 
 <section class="raiting raiting_2">
     <div class="container">

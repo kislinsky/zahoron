@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Faq;
 use App\Models\ImageOrganization;
-
+use App\Models\Organization;
 use App\Services\Burial\SearchBurialService;
 use App\Services\OurWork\OurWorkService;
 use App\Services\Page\IndexService;
@@ -14,6 +14,8 @@ class MainController extends Controller
 {
 
     public static function index(){
+
+        
         return IndexService::index();
     }
 

@@ -24,13 +24,21 @@ class BurialController extends Controller
         return SearchBurialService::searchProductFilter($data);
     }
 
-    public static function searchProduct(Request $request){
+    public static function searchBurialResult(Request $request){
         $data=request()->validate([
             'name'=>['nullable','string'],
             'surname'=>['nullable','string'],
+            'date_birth'=>['nullable','string'],
+            'date_death'=>['nullable','string'],
+            'surname'=>['nullable','string'],
             'patronymic'=>['nullable','string'],
         ]);
-        return SearchBurialService::searchProduct($data);
+        return SearchBurialService::searchBurialResult($data);
+    }
+
+
+    public static function searchBurial(){
+        return SearchBurialService::searchBurial();
     }
 
     public static function singleProduct($slug){

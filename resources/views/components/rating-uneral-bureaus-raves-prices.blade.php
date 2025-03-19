@@ -4,7 +4,7 @@ use App\Models\ActivityCategoryOrganization;
 
 $city=selectCity();
 $organizations=organizationRatingUneralBureausRavesPrices($city->id);?>
-@if($organizations!=null && $organizations->count()>0)
+@if($organizations!=null && $organizations->count()>0 && $organizations->first()!=null)
 <section class="raiting raiting_2">
     <div class="container">
         <div class="title_our_works">Рейтинг ритуальных бюро по облагораживанию могил с самыми низкими ценами г. {{$city->title}}</div>

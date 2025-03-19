@@ -261,7 +261,8 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
 
 
 
-    Route::get('/search', [BurialController::class, 'searchProduct'])->name('search.burial');
+    Route::get('/result-search', [BurialController::class, 'searchBurialResult'])->name('search.burial.result');
+    Route::get('/search', [BurialController::class, 'searchBurial'])->name('search.burial');
 
 
 

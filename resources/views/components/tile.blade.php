@@ -3,15 +3,15 @@ use App\Models\Product;
  $city=selectCity();
  $products_monuments_grave=Product::whereHas('organization', function ($query) use ($city) {
     $query->where('city_id', $city->id);
-})->where('view',1)->where('category_id',29)->get();
+})->where('view',1)->where('category_id',39)->get();
 ?>
 
 @if(count($products_monuments_grave)>0)
 
 <section class='products_monuments_grave'>
     <div class="container">
-        <div class="title">Заказать памятники на могилу в г. {{$city->title}} на маркетплейсе.</div>
-            <div class="swiper products_monuments_grave_swiper">
+        <div class="title">Заказать плитку на могилу в г. {{$city->title}} на маркетплейсе.</div>
+            <div class="swiper products_tile_swiper">
                 <div class="swiper-wrapper">
                 @foreach($products_monuments_grave as $product_monuments_grave)
                     <div class="swiper-slide">
@@ -37,8 +37,8 @@ use App\Models\Product;
                 </div>
             </div>
 
-            <div class="swiper-button-next swiper_button_next_products_monuments_grave"><img src='{{asset('storage/uploads/Переключатель.svg')}}'></div>
-            <div class="swiper-button-prev swiper_button_prev_products_monuments_grave"><img src='{{asset('storage/uploads/Переключатель (1).svg')}}'></div>
+            <div class="swiper-button-next swiper_button_next_products_tile"><img src='{{asset('storage/uploads/Переключатель.svg')}}'></div>
+            <div class="swiper-button-prev swiper_button_prev_products_tile"><img src='{{asset('storage/uploads/Переключатель (1).svg')}}'></div>
     </div>
 </section>
 @endif

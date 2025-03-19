@@ -223,7 +223,7 @@
                                 <option value="200x250">200x250</option>
                             </select>
                             @if (isset($services))
-                                @if (count($services)>0)
+                                @if ($services->count()>0)
                                     @foreach ($services as $service)
                                         <label class='checkbox'>
                                             <input price={{$service->getPriceForCemetery($product->cemetery->id)  }} type="checkbox" name="service[]" value='{{ $service->id }}'>
