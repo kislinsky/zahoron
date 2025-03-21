@@ -52,7 +52,8 @@ class OrganizationResource extends Resource
     {
         return $form
         ->schema([
-            Radio::make('href_img')
+           
+            Radio::make('href_main_img')
             ->label('Выберите источник изображения')
             ->options([
                 0 => 'Файл на сайте',
@@ -61,9 +62,46 @@ class OrganizationResource extends Resource
             ->inline()
             ->live(), // Автоматически обновляет форму при изменении
 
+            
+        TextInput::make('img_main_url')
+            ->label('Ссылка на главное изображение')
+            ->placeholder('https://example.com/image.jpg')
+            ->reactive()
+            ->required(fn ($get) => intval($get('href_main_img')) === 1)
+            ->hidden(fn ($get) => intval($get('href_main_img')) === 0), // Скрыто, если выбрано "Файл"
+
+        // Поле для загрузки файла (отображается только если выбран вариант "Файл на сайте")
+        FileUpload::make('img_main_file')
+            ->label('Загрузить главное изображение')
+            ->directory('/uploads_organization') // Директория для хранения файлов
+            ->image()
+            ->maxSize(2048)
+            ->reactive()
+            ->required(fn ($get) => intval($get('href_main_img')) === 0)
+            ->hidden(fn ($get) => intval($get('href_main_img')) === 1), // Скрыто, если выбрано "Ссылка"
+
+            // Отображение текущего изображения (если запись уже существует)
+            View::make('image')
+            ->label('Текущий логотип')
+            ->view('filament.forms.custom-image-organization') // Указываем путь к Blade-шаблону
+            ->extraAttributes(['class' => 'custom-image-class'])
+            ->columnSpan('full')
+            ->hidden(fn ($get) => intval($get('href_main_img')) === 0), 
+           
+
+            Radio::make('href_img')
+            ->label('Выберите источник логотипа')
+            ->options([
+                0 => 'Файл на сайте',
+                1 => 'Ссылка (URL)'
+            ])
+            ->inline()
+            ->live(), // Автоматически обновляет форму при изменении
+
+
         // Поле для ссылки (отображается только если выбран вариант "Ссылка")
         TextInput::make('img_url')
-            ->label('Ссылка на изображение')
+            ->label('Ссылка на логотип')
             ->placeholder('https://example.com/image.jpg')
             ->reactive()
             ->required(fn ($get) => intval($get('href_img')) === 1)
@@ -71,7 +109,7 @@ class OrganizationResource extends Resource
 
         // Поле для загрузки файла (отображается только если выбран вариант "Файл на сайте")
         FileUpload::make('img_file')
-            ->label('Загрузить изображение')
+            ->label('Загрузить логоитип')
             ->directory('/uploads_organization') // Директория для хранения файлов
             ->image()
             ->maxSize(2048)
@@ -81,7 +119,7 @@ class OrganizationResource extends Resource
 
         // Отображение текущего изображения (если запись уже существует)
         View::make('image')
-            ->label('Текущее изображение')
+            ->label('Текущий логотип')
             ->view('filament.forms.components.custom-image') // Указываем путь к Blade-шаблону
             ->extraAttributes(['class' => 'custom-image-class'])
             ->columnSpan('full')

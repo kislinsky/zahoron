@@ -1,7 +1,7 @@
 <div class="block_content_organization_single">
     <div class="main_block_organization_single">
         <div class="logo_organization_single">
-            <img src="{{$organization->urlImg()}}" alt="">
+            <img src="{{$organization->urlImgMain()}}" alt="">
             <div class="blue_btn">{{$organization->title}}</div>
         </div>
         <div class="content_main_block_organization_single">

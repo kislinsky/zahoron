@@ -41,6 +41,7 @@ class AgencyOrganizationController extends Controller
             'holiday_day' => ['nullable', 'array'],
             'cemetery_ids' => 'required|array', // Здесь вы ограничиваете количество изображений до 5
             'img' => 'required|max:2048',
+            'img_main' => 'required|max:2048',
             'images' => 'array|max:5', // Здесь вы ограничиваете количество изображений до 5
             'images.0' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
             'images.1' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
@@ -67,6 +68,7 @@ class AgencyOrganizationController extends Controller
                 }
             }],
             'img' => 'max:2048',
+            'img_main' => 'max:2048',
             'cemetery_ids.*'=>['nullable'],
             'id'=>['integer','required'],
             'title'=>['string','required'],

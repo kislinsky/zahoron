@@ -19,6 +19,19 @@
         <div class="block_input">
             <div class="mb-3">
                 <label for="formFile" class="form-label">Измените изображение для организации</label>
+                <input class="form-control" type="file" name='img_main' >
+            </div>
+            @error('img_main')
+                <div class='error-text'>{{ $message }}</div>
+            @enderror
+            
+            <img class='logo_org_setting' src="{{ $organization->urlImgMain() }}" alt="">
+
+        </div>
+
+        <div class="block_input">
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Измените логотип для организации</label>
                 <input class="form-control" type="file" name='img' >
             </div>
             @error('img')

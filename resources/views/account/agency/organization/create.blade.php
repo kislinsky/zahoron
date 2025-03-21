@@ -16,9 +16,20 @@
             @enderror
         </div>
        
+
         <div class="block_input">
             <div class="mb-3">
                 <label for="formFile" class="form-label">Добавьте изображение для организации</label>
+                <input class="form-control" type="file" name='img_main' >
+            </div>
+            @error('img_main')
+            <div class='error-text'>{{ $message }}</div>
+        @enderror
+        </div>
+
+        <div class="block_input">
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Добавьте логотип для организации</label>
                 <input class="form-control" type="file" name='img' >
             </div>
             @error('img')

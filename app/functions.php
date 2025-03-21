@@ -1476,7 +1476,7 @@ function formatContentBurial($content,$model){
 function formatContentCategory($content,$category,$models){
     $city=selectCity()->title;
     $category=$category->title;
-    $count=$models->count();
+    $count=$models->total();
     $time=date('H:i');
     $date=date('Y-m-d');
     $year= date('Y');

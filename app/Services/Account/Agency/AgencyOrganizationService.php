@@ -59,6 +59,8 @@ class AgencyOrganizationService {
         $filename=generateRandomString().".jpeg";
         $data['img']->storeAs("uploads_organization", $filename, "public");
         
+        $filename_main=generateRandomString().".jpeg";
+        $data['img_main']->storeAs("uploads_organization", $filename, "public");
 
         // Создаем организацию
         $organization = Organization::create([
@@ -70,6 +72,7 @@ class AgencyOrganizationService {
             'telegram' => $data['telegram'],
             'user_id'=>user()->id,
             'img_file'=>'uploads_organization/'.$filename,
+            'img_main_file'=>'uploads_organization/'.$filename_main,
             'whatsapp' => $data['whatsapp'],
             'email' => $data['email'],
             'city_id' => $data['city_id'],
@@ -177,10 +180,20 @@ class AgencyOrganizationService {
             $organization->update([
                 'img_file'=>'uploads_organization/'.$filename,
                 'href_img'=>0,
+            ]);
+        }
+
+        if(isset($data['img_main'])){
+            $filename_main=generateRandomString().".jpeg";
+            $data['img']->storeAs("uploads_organization", $filename_main, "public");
+            $organization->update([
+                'img_main_file'=>'uploads_organization/'.$filename_main,
+                'href_main_img'=>0,
 
             ]);
 
         }
+
 
         ActivityCategoryOrganization::where('organization_id',$organization->id)->delete();
         if(isset($data['categories_organization'])){

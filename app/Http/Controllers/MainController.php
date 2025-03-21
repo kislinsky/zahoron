@@ -14,7 +14,7 @@ class MainController extends Controller
 {
 
     public static function index(){
-
+   
         return IndexService::index();
     }
 

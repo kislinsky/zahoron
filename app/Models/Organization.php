@@ -59,6 +59,14 @@ class Organization extends Model
         return $this->img_url;
     }
 
+
+    public function urlImgMain(){
+        if($this->href_main_img==0){
+            return asset('storage/'.$this->img_main_file);
+        }
+        return $this->img_main_url;
+    }
+
     public function timeEndWorkingNow(){
         $day=addHoursAndGetDay($this->time_difference);
         $get_hours=WorkingHoursOrganization::where('organization_id',$this->id)->where('day',$day)->first();

@@ -40,11 +40,14 @@ class ParserOrganizationService
                 $cemeteries='';
                 $organization_find=Organization::find(rtrim($organization[1], '!'));
                 if($organization_find==null){
-                //$timezone=getTimeByCoordinates($organization[2],$organization[3])['timezone'];
-                $timezone='12';
+                $time_difference=differencetHoursTimezone(getTimeByCoordinates($organization[12],$organization[13])['timezone']);
                 $img_url=$organization[22];
                 if($img_url==null){
                     $img_url='https://ams2-cdn.2gis.com/previews/1113196871553122307/62479f56-4baf-46f1-8439-e32a2f053ceb/3/656x340?api-version=2.0';
+                }
+                $img_main_url=$organization[23];
+                if($img_main_url==null){
+                    $img_main_url='https://ams2-cdn.2gis.com/previews/1113196871553122307/62479f56-4baf-46f1-8439-e32a2f053ceb/3/656x340?api-version=2.0';
                 }
                 $organization_create=Organization::create([
                         'id'=>rtrim($organization[1], '!'),
@@ -60,19 +63,32 @@ class ParserOrganizationService
                         'city_id'=>$city->id,
                         'rating'=>$organization[3],
                         'href_img'=>1,
+                        'href_main_img'=>1,
+                        'img_main_url'=>$img_main_url,
                         'slug'=>slugOrganization($organization[4]),
                         'cemetery_ids'=>$cemeteries,
                         'name_type'=>$organization[5],
-                        'time_difference'=>differencetHoursTimezone($timezone),
+                        'time_difference'=>$time_difference,
                         'whatsapp'=>$organization[18],
                         'telegram'=>$organization[19],
                       
                     ]);
+                    $area = $organization_create->city->area;
+
+                    if($area!=null){
+                        $cemeteries = implode(',',$area->cities->flatMap(function ($city) {
+                            return $city->cemeteries->pluck('id');
+                        })->unique()->toArray()).','; // Убираем дубликаты
+                        $organization_create->update([
+                            'cemetery_ids' => $cemeteries
+                        ]);
+                    }
+                    
 
                     if($organization[24]!=null){
                         // $imgs=preg_match_all('/\((.*?)\)/', $organization[24],$matches);
 
-                        $urls_array = explode(' ', $organization[24]);
+                        $urls_array = explode(', ', $organization[24]);
                         // $urls_array = $matches[1];
                         foreach($urls_array as $img){
                             ImageOrganization::create([
@@ -83,10 +99,9 @@ class ParserOrganizationService
                         }
                     }
                     if($organization[15]!=null){
-                        $worktime=explode(',',$organization[15]);
-                        foreach($worktime as $days){
+                        $days=$organization[15];
                             $days=parseWorkingHours($days);
-        
+
                             foreach($days as $day){
                                 $holiday=0;
                                 if($day['time_start_work']=='Выходной'){
@@ -101,7 +116,7 @@ class ParserOrganizationService
                                 ]);
                             }
         
-                        }
+                        
                     }
 
                     if($organization[6]!=null){
