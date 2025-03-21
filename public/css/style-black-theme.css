@@ -11,6 +11,9 @@
 .black_theme header{
     background: #050505;
 }
+.black_theme .block_border_gray .title_checkout_form{
+    color:white;
+}
 
 .black_theme .btn_bac_gray {
     background: #0F0F0F;

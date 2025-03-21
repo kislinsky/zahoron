@@ -1,6 +1,6 @@
-<div class="ul_product_market">
-    @if(isset($products))
-        @if($products->count()>0)
+@if(isset($products))
+    @if($products->total()>0)
+        <div class="ul_product_market">
             @foreach ($products as $product)
                 <div class="li_product_market">
                 <?php $images=$product->getImages;?>
@@ -24,11 +24,10 @@
                     </div>
                 </div>
             @endforeach
-        @endif
+        </div>
+        {{ $products->withPath(route('marketplace.category',$category->slug))->appends($_GET)->links() }}
     @endif
-</div>
-{{ $products->withPath(route('marketplace'))->appends($_GET)->links() }}
-
+@endif
 
 
 

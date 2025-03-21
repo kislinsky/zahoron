@@ -227,7 +227,7 @@ class OrganizationService
         if(isset($data['filter_work']) && $data['filter_work']=='on'){
             $filter_work='on';
         }
-        if($organizations_category->count()<3){
+        if($organizations_category->total()<3){
             SEOMeta::setRobots('noindex, nofollow');
         }
 

@@ -140,7 +140,7 @@ class ProductService
         $category=ajaxCatContent($data);
         $districts_all=$city->districts;
 
-        if($products->count()<3){
+        if($products->total()<3){
             SEOMeta::setRobots('noindex, nofollow');
         }
 

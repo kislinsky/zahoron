@@ -1,5 +1,5 @@
 @if(isset($products))
-        @if($products->count()>0)
+        @if($products->total()>0)
         <?php $category=$products->first()->category;?>
             <div class="ul_product_market">
                 @foreach ($products as $product)

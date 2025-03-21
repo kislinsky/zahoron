@@ -1,5 +1,5 @@
 
-@if($organizations_category!=null && $organizations_category->count()>0)
+@if($organizations_category!=null && $organizations_category->total()>0)
 
     <?php $category=$organizations_category->first()->categoryProduct;?>
 
@@ -17,7 +17,7 @@
             <div class="info_li_org_mobile li_org_mobile">
                 <img class='img_logo_organization'src="{{$organization->urlImg()}}" alt="">
                 <div class="info_li_organization">
-                    <a href='{{$organization->route()}}'class="title_li_organiaztion">Ритуальное агентство: {{$organization->title}}</a>
+                    <a href='{{$organization->route()}}'class="title_li_organiaztion">{{$organization->title}}</a>
                     <div class="text_gray">{{$organization->name_type}}</div>
                 </div>
             </div>
@@ -33,7 +33,7 @@
             </div>
 
             <div class="info_li_organization li_org_dekstop">
-                <a href='{{$organization->route()}}'class="title_li_organiaztion">Ритуальное агентство: {{$organization->title}}</a>
+                <a href='{{$organization->route()}}'class="title_li_organiaztion"> {{$organization->title}}</a>
                 <div class="text_gray">{{$organization->name_type}}</div>
                 <div class="text_black"><img src="{{ asset('storage/uploads/Frame 334.svg') }}" alt=""> {{countReviewsOrganization($organization)}} оценки - {{$organization->timeEndWorkingNow()}}</div>
             </div>

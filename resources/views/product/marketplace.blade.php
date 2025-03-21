@@ -27,13 +27,13 @@
                 <div class="html_products_wrap">
                     @if(isset($category) && $category!=null )
                         @if($category->parent_id==36)
-                            {{ view("product.components.catalog.products-show-beautification", compact("products")) }}
+                            {{ view("product.components.catalog.products-show-beautification", compact("products",'category')) }}
                         @endif
                         @if($category->parent_id==31)
-                            {{ view("product.components.catalog.products-show-funeral-service", compact("products")) }}
+                            {{ view("product.components.catalog.products-show-funeral-service", compact("products",'category')) }}
                         @endif
                         @if($category->parent_id==45)
-                            {{ view("product.components.catalog.products-show-organization-commemorations", compact("products")) }}
+                            {{ view("product.components.catalog.products-show-organization-commemorations", compact("products",'category')) }}
                         @endif
                     @endif
 

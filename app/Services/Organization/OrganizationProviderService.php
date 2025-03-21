@@ -57,7 +57,7 @@ class OrganizationProviderService
         $title_h1=formatContentCategory(getSeo($category->slug.'-catalog-organization','h1'),$category,$organizations_category);
 
 
-        if($organizations_category->count()<3){
+        if($organizations_category->total()<3){
             SEOMeta::setRobots('noindex, nofollow');
         }
         return view('organization.catalog.catalog-organization-provider',compact('title_h1','filter_work','oragnizations_rating','city_all','category_main','city','cats','organizations_category','price_min','price_middle','price_max','category','sort'));
