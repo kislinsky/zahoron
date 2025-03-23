@@ -18,6 +18,7 @@ use App\Http\Controllers\Account\DecoderController;
 use App\Http\Controllers\Account\HomeController;
 use App\Http\Controllers\Account\User\AccountController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 
@@ -109,7 +110,12 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
     
 
 
-
+    Route::post('/reset-password/phone', [ForgotPasswordController::class, 'resetPasswordWithPhone'])->name('reset-password.phone');
+    Route::get('/verificate-code/phone', [ForgotPasswordController::class, 'pageVerificateCode'])->name('reset-password.phone.verify.code');
+    Route::post('/verificate-code/phone/send', [ForgotPasswordController::class, 'verificateCode'])->name('reset-password.phone.verify.code.send');
+    Route::get('/new-password/phone', [ForgotPasswordController::class, 'passwordNewPhone'])->name('reset-password.phone.new');
+    Route::post('/accept-new-password/phone', [ForgotPasswordController::class, 'acceptPasswordNewPhone'])->name('reset-password.phone.new.accept');
+    
 
 
     Route::group(['prefix'=>'yoomoney'], function() {

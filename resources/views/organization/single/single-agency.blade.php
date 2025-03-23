@@ -11,7 +11,7 @@
     </div>
 </section>
 
-<img src="{{$organization->urlImg()}}" alt="" class="mobile_logo_organization">
+<img src="{{$organization->urlImgMain()}}" alt="" class="mobile_logo_organization">
 
 
 <section class="organization_single mobile_padding_top_0">

@@ -905,14 +905,13 @@ function allCemetery(){
 }
 
 
-function getCoordinatesCity($city){
+function getCoordinatesCity($city,$area){
     $apiKey='f85b1a2e01a144d496d767cb921c8b60';
     $client = new Client();
-    $response = $client->get("https://api.opencagedata.com/geocode/v1/json?q=Город в россии {$city}&key=f85b1a2e01a144d496d767cb921c8b60");
+    $response = $client->get("https://api.opencagedata.com/geocode/v1/json?q=Город в россии в {$area} - {$city}&key=f85b1a2e01a144d496d767cb921c8b60");
     return $data = json_decode($response->getBody(), true)['result'][0]['geometry'];
     
-}
-
+}  
 
 function randomProductsPlace($category=null){
     if($category!=null){

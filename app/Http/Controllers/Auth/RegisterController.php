@@ -206,7 +206,7 @@ class RegisterController extends Controller
             if(env('API_WORK')=='true'){
                 $send_sms=sendSms($data['phone'],$code);
                 if($send_sms!=true){
-                    redirect()->back()->with('error','Ошибка отправки сообщения');
+                    return redirect()->back()->with('error','Ошибка отправки сообщения');
                 }
             }
             return redirect()->route('register.verify.code')->with('token', $token);
@@ -276,7 +276,7 @@ class RegisterController extends Controller
         if(env('API_WORK')=='true'){
             $send_sms=sendSms($data['phone'],$code);
             if($send_sms!=true){
-                redirect()->back()->with('error','Ошибка отправки сообщения');
+                return redirect()->back()->with('error','Ошибка отправки сообщения');
             }
         }
 

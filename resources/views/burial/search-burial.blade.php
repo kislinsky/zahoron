@@ -69,7 +69,7 @@
                 <img src="{{ asset('storage/uploads/Icon_search (3).svg') }}" alt="">
                 <div class="title_checkout_form">Маркетплейст</div>
             </a>
-            <a href='{{ route('search.burial.result') }}'class="block_border_gray">
+            <a href='{{ route('page.search.burial.request') }}'class="block_border_gray">
                 <img src="{{ asset('storage/uploads/Icon_search (4).svg') }}" alt="">
                 <div class="title_checkout_form">Запрос на поиск</div>
             </a>

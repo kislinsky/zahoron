@@ -1143,7 +1143,22 @@ text-align: left;
 .text_news_block{
     padding-top: 40px;
 }
+.li_org_dekstop .text_gray{
+    max-width: 227px;
+}
+#backButton {
+    margin-bottom: 10px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
+#backButton:hover {
+    background-color: #5a6268;
+}
 .content_order_page_2{
     max-width: 100%;
 }
@@ -2551,6 +2566,8 @@ text-align: left;
     margin: 0px;
 }
 .ul_location{
+    transition: all 0.3s ease;
+
     position: relative;
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -7398,3 +7415,6 @@ color: #050505;
 }
 
 
+.password_reset .blue_btn{
+    max-width: 100%;
+}
