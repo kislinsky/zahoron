@@ -14,6 +14,7 @@ class AdminOrganizationController extends Controller
 
     public static function import(Request $request){
         $request->validate([
+            'import_type'=>'required',
             'file' => 'required|mimes:xlsx,xls,csv'
         ]);
         return AdminOrganizationIndexService::import($request);

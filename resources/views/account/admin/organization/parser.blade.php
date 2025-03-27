@@ -13,10 +13,18 @@
                 <label for="formFile" class="form-label">Выберите файл</label>
                 <input class="form-control" type="file" name='file' id="formFile">
             </div>
+
+            <div class="block_input">
+                <label >Выберите тип загрузки</label>
+                <select name="import_type" id="">
+                    <option value="new">Создать новые организации</option>
+                    <option value="update">Обновить организации</option>
+                </select>  
+          </div>
             @error('file')
                 <div class='error-text'>{{ $message }}</div>
             @enderror
-            <div class="col-auto">
+            <div class="col-auto margin_top_20">
                 <button type="submit" class="btn btn-primary mb-3">Начать импорт</button>
             </div>   
         </form>
