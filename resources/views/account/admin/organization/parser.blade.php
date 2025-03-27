@@ -11,7 +11,7 @@
             @csrf
             <div class="mb-3">
                 <label for="formFile" class="form-label">Выберите файл</label>
-                <input class="form-control" type="file" name='file' id="formFile">
+                <input class="form-control" type="file" multiple name='files[]' id="formFile">
             </div>
 
             <div class="block_input">
@@ -20,7 +20,30 @@
                     <option value="new">Создать новые организации</option>
                     <option value="update">Обновить организации</option>
                 </select>  
-          </div>
+            </div>
+            <div class="block_input">
+                <label >Вкл/выкл</label>
+                <select name="import_with_user" id="">
+                    <option value="0">Нет</option>
+                    <option value="1">Да</option>
+                </select>  
+            </div>
+            <div class="block_input">
+                <label >Выбор полей для обновления данных</label>
+                <select name="columns_to_update[]" id="" multiple>
+                    <option value="title">Название организации</option>
+                    <option value="address">Адрес</option>
+                    <option value="coordinates">Координаты</option>
+                    <option value="phone">телефон</option>
+                    <option value="logo">Логотип</option>
+                    <option value="main_photo">Главное фото</option>
+                    <option value="working_hours">Режим работы</option>
+                    <option value="gallery">Галлерея</option>
+                    <option value="services">Виды услуг</option>
+
+                </select>  
+            </div>
+                  
             @error('file')
                 <div class='error-text'>{{ $message }}</div>
             @enderror

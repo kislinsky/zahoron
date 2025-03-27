@@ -98,7 +98,6 @@ class AgencyOrganizationService {
                     'category_main_id' => $cat->parent_id,
                     'category_children_id' => $cat->id,
                     'rating' => $organization->rating,
-                    'cemetery_ids' => $data['cemetery_ids'],
                     'price' => $data['price_cats_organization'][$key],
                 ]);
             }
@@ -204,7 +203,6 @@ class AgencyOrganizationService {
                     'category_main_id'=>$cat->parent_id,
                     'category_children_id'=>$cat->id,
                     'rating'=>$organization->rating,
-                    'cemetery_ids'=>$cemeteries,
                     'price'=>$data['price_cats_organization'][$key],
                 ]);
             }

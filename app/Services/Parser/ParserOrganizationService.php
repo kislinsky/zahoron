@@ -18,298 +18,345 @@ class ParserOrganizationService
 {
     public static function index($request) {
         $spreadsheet = new Spreadsheet();
-        $file = $request->file('file');
+        $files = $request->file('files'); // Получаем массив файлов
         $importType = $request->input('import_type'); // 'new' или 'update'
-        $spreadsheet = IOFactory::load($file);
-        $sheet = $spreadsheet->getActiveSheet();
-    
-        $titles = $sheet->toArray()[0];
-        $organizations = array_slice($sheet->toArray(), 1);
-    
-        // Создаем массив для быстрого доступа к индексам колонок по их названиям
-        $columns = array_flip($titles);
-    
-        foreach($organizations as $organization) {
-            // Получаем значения по названиям колонок
-            $orgId = rtrim($organization[$columns['ID']] ?? '', '!');
-            $orgTitle = $organization[$columns['Название организации']] ?? null;
-            $address = $organization[$columns['Адрес']] ?? null;
-            $latitude = $organization[$columns['Latitude']] ?? null;
-            $longitude = $organization[$columns['Longitude']] ?? null;
-            $phones = $organization[$columns['Телефоны']] ?? null;
-            $workHours = $organization[$columns['Режим работы']] ?? null;
-            $logoUrl = $organization[$columns['Логотип']] ?? null;
-            $mainPhotoUrl = $organization[$columns['Главное фото']] ?? null;
-            $photos = $organization[$columns['Фотографии']] ?? null;
-            $categories = $organization[$columns['Виды услуг']] ?? null;
-            $region = $organization[$columns['Регион']] ?? null;
-            $cityName = $organization[$columns['city']] ?? null;
-    
-            // Пропускаем если нет ID
-            if(empty($orgId)) continue;
-    
-            // Ищем организацию в базе
-            $existingOrg = Organization::find($orgId);
-    
-            // Режим "Обновление"
-            if($importType == 'update') {
-                // Если организация не существует или у нее status == 0 - пропускаем
-                if(!$existingOrg || $existingOrg->status == 0) continue;
-    
-                // Подготовка данных для обновления
-                $updateData = [];
-                if($orgTitle) $updateData['title'] = $orgTitle;
-                if($orgTitle) $updateData['slug'] = slugOrganization($orgTitle);
-                if($address) $updateData['adres'] = $address;
-                if($latitude) $updateData['width'] = $latitude;
-                if($longitude) $updateData['longitude'] = $longitude;
-                if($phones) $updateData['phone'] = phoneImport($phones);
-                
-                // Обновляем изображения если они есть
-                if($logoUrl) {
-                    $updateData['img_url'] = $logoUrl;
-                    $updateData['href_img'] = 1;
-                }
-                if($mainPhotoUrl) {
-                    $updateData['img_main_url'] = $mainPhotoUrl;
-                    $updateData['href_main_img'] = 1;
-                }
-    
-                // Применяем обновления если есть что обновлять
-                if(!empty($updateData)) {
-                    $existingOrg->update($updateData);
-                }
-    
-                // Обновляем рабочие часы если они есть
-                if($workHours) {
-                    // Удаляем старые часы работы
-                    WorkingHoursOrganization::where('organization_id', $existingOrg->id)->delete();
-                    
-                    // Добавляем новые
-                    $days = parseWorkingHours($workHours);
-                    foreach($days as $day) {
-                        $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
-                        WorkingHoursOrganization::create([
-                            'day' => $day['day'],
-                            'time_start_work' => $day['time_start_work'],
-                            'time_end_work' => $day['time_end_work'],
-                            'holiday' => $holiday,
-                            'organization_id' => $existingOrg->id,
-                        ]);
-                    }
-                }
-    
-                // Обновляем галерею если есть новые фото
-                if($photos) {
-                    // Удаляем старые фото
-                    ImageOrganization::where('organization_id', $existingOrg->id)->delete();
-                    
-                    // Добавляем новые
-                    $urls_array = explode(', ', $photos);
-                    foreach($urls_array as $img) {
-                        ImageOrganization::create([
-                            'img_url' => $img,
-                            'href_img' => 1,
-                            'organization_id' => $existingOrg->id,
-                        ]);
-                    }
-                }
-    
-                // // Обновляем категории и подкатегории если они есть
-                // if($categories) {
-                //     $categoriesArray = array_map('trim', explode(',', $categories));
-                    
-                //     // Здесь должен быть код для обновления категорий
-                //     // Например: updateCategories($existingOrg, $categoriesArray, $subcategoriesArray);
-                //     addActiveCategory($categoriesArray, $subcategoriesArray, $existingOrg);
-                // }
+        $importWithUser = $request->input('import_with_user', 0); // 0 или 1
+        $columnsToUpdate = $request->input('columns_to_update', []); // Массив колонок для обновления
+        
+
+        foreach ($files as $file) {
+            if (!$file->isValid()) {
+                continue;
             }
-            // Режим "Новый импорт"
-            else {
-                // Если организация уже существует - обновляем ее (если status != 0)
-                if($existingOrg) {
-                    if($existingOrg->status == 0) continue;
-                    $district = $organization[$columns['Район']] ?? null;
-                    $services = $organization[$columns['Виды услуг']] ?? null;
-                    $nearby = $organization[$columns['Рядом']] ?? null;
-                    $email = trim(trim($organization[$columns['E-mail']] ?? '', '('), ')');
-                    $whatsapp = $organization[$columns['WhatsApp']] ?? null;
-                    $telegram = $organization[$columns['Telegram']] ?? null;
-                    $description = $organization[$columns['SEO Описание']] ?? null;
-                    $rating = $organization[$columns['Рейтинг']] ?? null;
 
-                    $area = createArea($district, $region);
-                    $city = createCity($cityName, $region);
-                 
-                    if($city == null || $phones == null) continue;
-    
-                    $time_difference = 12;
+            $spreadsheet = IOFactory::load($file);
+            $sheet = $spreadsheet->getActiveSheet();
+        
+            $titles = $sheet->toArray()[0];
+            $organizations = array_slice($sheet->toArray(), 1);
+        
+            // Создаем массив для быстрого доступа к индексам колонок по их названиям
+            $columns = array_flip($titles);
+        
+            foreach($organizations as $organization) {
+                // Получаем значения по названиям колонок
+                $orgId = rtrim($organization[$columns['ID']] ?? '', '!');
+                $orgTitle = $organization[$columns['Название организации']] ?? null;
+                $address = $organization[$columns['Адрес']] ?? null;
+                $latitude = $organization[$columns['Latitude']] ?? null;
+                $longitude = $organization[$columns['Longitude']] ?? null;
+                $phones = $organization[$columns['Телефоны']] ?? null;
+                $workHours = $organization[$columns['Режим работы']] ?? null;
+                $logoUrl = $organization[$columns['Логотип']] ?? null;
+                $mainPhotoUrl = $organization[$columns['Главное фото']] ?? null;
+                $photos = $organization[$columns['Фотографии']] ?? null;
+                $services = $organization[$columns['Виды услуг']] ?? null;
+                $region = $organization[$columns['Регион']] ?? null;
+                $cityName = $organization[$columns['city']] ?? null;
+                $nameType = $organization[$columns['Вид деятельности']] ?? null;
+        
+                // Пропускаем если нет ID
+                if(empty($orgId)) continue;
+        
+                // Ищем организацию в базе
+                $existingOrg = Organization::find($orgId);
+        
+                // Проверяем условие import_with_user
+                $skipByUserCondition = ($importWithUser == 0 && $existingOrg && $existingOrg->user_id != null) || 
+                                    ($importWithUser == 1 && $existingOrg && $existingOrg->user_id == null);
+                
+                if($skipByUserCondition) continue;
+        
+                // Режим "Обновление"
+                if($importType == 'update') {
+                    // Если организация не существует - пропускаем
+                    if(!$existingOrg) continue;
+        
                     // Подготовка данных для обновления
-                    $updateData = [
-                        'title' => $orgTitle,
-                        'slug'=>slugOrganization($orgTitle),
-                        'adres' => $address,
-                        'width' => $latitude,
-                        'longitude' => $longitude,
-                        'phone' => phoneImport($phones),
-                        'img_url' => $logoUrl ?: $existingOrg->img_url,
-                        'img_main_url' => $mainPhotoUrl ?: $existingOrg->img_main_url,
-                        'href_img' => $logoUrl ? 1 : $existingOrg->href_img,
-                        'href_main_img' => $mainPhotoUrl ? 1 : $existingOrg->href_main_img,
-                        'email' => $email,
-                        'nearby' => $nearby,
-                        'content' => $description,
-                        'city_id' => $city->id,
-                        'rating' => $rating,
-                        'time_difference' => $time_difference,
-                        'whatsapp' => $whatsapp,
-                        'telegram' => $telegram,
-
-                    ];
-
-                    // Обновляем организацию
-                    $existingOrg->update($updateData);
-    
-                    $area = $existingOrg->city->area;
-                    if($area != null) {
-                        $cemeteries = implode(',', $area->cities->flatMap(function ($city) {
-                            return $city->cemeteries->pluck('id');
-                        })->unique()->toArray()) . ',';
-                        $existingOrg->update(['cemetery_ids' => $cemeteries]);
-                    }
-
-                    // Обновляем рабочие часы
-                    if($workHours) {
-                        WorkingHoursOrganization::where('organization_id', $existingOrg->id)->delete();
-                        $days = parseWorkingHours($workHours);
-                        foreach($days as $day) {
-                            $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
-                            WorkingHoursOrganization::create([
-                                'day' => $day['day'],
-                                'time_start_work' => $day['time_start_work'],
-                                'time_end_work' => $day['time_end_work'],
-                                'holiday' => $holiday,
-                                'organization_id' => $existingOrg->id,
-                            ]);
-                        }
-                    }
-    
-                    // Обновляем галерею
-                    if($photos) {
-                        ImageOrganization::where('organization_id', $existingOrg->id)->delete();
-                        $urls_array = explode(', ', $photos);
-                        foreach($urls_array as $img) {
-                            ImageOrganization::create([
-                                'img_url' => $img,
-                                'href_img' => 1,
-                                'organization_id' => $existingOrg->id,
-                            ]);
+                    $updateData = [];
+                    
+                    // Обновляем только выбранные колонки
+                    if(in_array('title', $columnsToUpdate) && isset($columns['Название организации'])) {
+                        if($orgTitle) {
+                            $updateData['title'] = $orgTitle;
+                            $updateData['slug'] = slugOrganization($orgTitle);
                         }
                     }
                     
-                    // // Обновляем категории
-                    // if($categories) {
-                    //     $categoriesArray = array_map('trim', explode(',', $categories));
-                    //     addActiveCategory($categoriesArray, [], $existingOrg);
-                    // }
+                    if(in_array('address', $columnsToUpdate) && isset($columns['Адрес'])) {
+                        if($address) $updateData['adres'] = $address;
+                    }
+                    
+                    if(in_array('coordinates', $columnsToUpdate)) {
+                        if(isset($columns['Latitude']) && $latitude) $updateData['width'] = $latitude;
+                        if(isset($columns['Longitude']) && $longitude) $updateData['longitude'] = $longitude;
+                    }
+                    
+                    if(in_array('phone', $columnsToUpdate) && isset($columns['Телефоны'])) {
+                        if($phones) $updateData['phone'] = phoneImport($phones);
+                    }
+                    
+                    if(in_array('logo', $columnsToUpdate) && isset($columns['Логотип'])) {
+                        if($logoUrl) {
+                            $updateData['img_url'] = $logoUrl;
+                            $updateData['href_img'] = 1;
+                        }
+                    }
+                    
+                    if(in_array('main_photo', $columnsToUpdate) && isset($columns['Главное фото'])) {
+                        if($mainPhotoUrl) {
+                            $updateData['img_main_url'] = $mainPhotoUrl;
+                            $updateData['href_main_img'] = 1;
+                        }
+                    }
+        
+                    if(in_array('name_type', $columnsToUpdate) && isset($columns['Вид деятельности'])) {
+                        if($nameType) $updateData['name_type'] = $nameType;
+                    }
+        
+                    // Применяем обновления если есть что обновлять
+                    if(!empty($updateData)) {
+                        $existingOrg->update($updateData);
+                    }
+        
+                    // Обновляем рабочие часы если они есть и выбраны для обновления
+                    if(in_array('working_hours', $columnsToUpdate) && isset($columns['Режим работы'])) {
+                        if($workHours) {
+                            WorkingHoursOrganization::where('organization_id', $existingOrg->id)->delete();
+                            
+                            $days = parseWorkingHours($workHours);
+                            foreach($days as $day) {
+                                $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
+                                WorkingHoursOrganization::create([
+                                    'day' => $day['day'],
+                                    'time_start_work' => $day['time_start_work'],
+                                    'time_end_work' => $day['time_end_work'],
+                                    'holiday' => $holiday,
+                                    'organization_id' => $existingOrg->id,
+                                ]);
+                            }
+                        }
+                    }
+        
+                    // Обновляем галерею если есть новые фото и выбрано для обновления
+                    if(in_array('gallery', $columnsToUpdate) && isset($columns['Фотографии'])) {
+                        if($photos) {
+                            ImageOrganization::where('organization_id', $existingOrg->id)->delete();
+                            
+                            $urls_array = explode(', ', $photos);
+                            foreach($urls_array as $img) {
+                                ImageOrganization::create([
+                                    'img_url' => $img,
+                                    'href_img' => 1,
+                                    'organization_id' => $existingOrg->id,
+                                ]);
+                            }
+                        }
+                    }
+        
+                    // Обновляем категории если выбрано для обновления
+                    if(in_array('services', $columnsToUpdate) && isset($columns['Виды услуг'])) {
+                        if($services) {
+                            addActiveCategory($services, [], $existingOrg);
+                        }
+                    }
                 }
-                // Если организации нет - создаем новую
+                // Режим "Новый импорт"
                 else {
-                    // Получаем дополнительные данные для создания
-                    $district = $organization[$columns['Район']] ?? null;
-                    $services = $organization[$columns['Виды услуг']] ?? null;
-                    $nearby = $organization[$columns['Рядом']] ?? null;
-                    $email = trim(trim($organization[$columns['E-mail']] ?? '', '('), ')');
-                    $whatsapp = $organization[$columns['WhatsApp']] ?? null;
-                    $telegram = $organization[$columns['Telegram']] ?? null;
-                    $description = $organization[$columns['SEO Описание']] ?? null;
-                    $rating = $organization[$columns['Рейтинг']] ?? null;
-    
-                    // Создаем город и район
-                    $area = createArea($district, $region);
-                    $city = createCity($cityName, $region);
-                    if($city == null || $phones == null) continue;
-    
-                    $time_difference = 12;
+                    // Если организация уже существует - обновляем ее
+                    if($existingOrg) {
+                        $district = $organization[$columns['Район']] ?? null;
+                        $services = $organization[$columns['Виды услуг']] ?? null;
+                        $nearby = $organization[$columns['Рядом']] ?? null;
+                        $email = trim(trim($organization[$columns['E-mail']] ?? '', '('), ')');
+                        $whatsapp = $organization[$columns['WhatsApp']] ?? null;
+                        $telegram = $organization[$columns['Telegram']] ?? null;
+                        $description = $organization[$columns['SEO Описание']] ?? $organization[$columns['SEO Описание']] ?? null;
+                        $rating = $organization[$columns['Рейтинг']] ?? null;
+                        $nameType = $organization[$columns['Вид деятельности']] ?? null;
+
+                        $area = createArea($district, $region);
+                        $city = createCity($cityName, $region);
                     
-                    // Устанавливаем дефолтные изображения если не указаны
-                    $logoUrl = $logoUrl ?: 'https://default-logo-url.com';
-                    $mainPhotoUrl = $mainPhotoUrl ?: 'https://default-main-photo-url.com';
-    
-                    $organization_create = Organization::create([
-                        'id' => $orgId,
-                        'title' => $orgTitle,
-                        'adres' => $address,
-                        'nearby' => $nearby,
-                        'width' => $latitude,
-                        'longitude' => $longitude,
-                        'phone' => phoneImport($phones),
-                        'email' => $email,
-                        'img_url' => $logoUrl,
-                        'content' => $description,
-                        'city_id' => $city->id,
-                        'rating' => $rating,
-                        'href_img' => 1,
-                        'href_main_img' => 1,
-                        'img_main_url' => $mainPhotoUrl,
-                        'slug' => slugOrganization($orgTitle),
-                        'cemetery_ids' => '',
-                        'time_difference' => $time_difference,
-                        'whatsapp' => $whatsapp,
-                        'telegram' => $telegram,
-                        'status' => 1 // Новые организации по умолчанию включены
-                    ]);
-    
-                    // Обновляем cemetery_ids
-                    $area = $organization_create->city->area;
-                    if($area != null) {
-                        $cemeteries = implode(',', $area->cities->flatMap(function ($city) {
-                            return $city->cemeteries->pluck('id');
-                        })->unique()->toArray()) . ',';
-                        $organization_create->update(['cemetery_ids' => $cemeteries]);
-                    }
-    
-                    // Добавляем фотографии
-                    if($photos) {
-                        $urls_array = explode(', ', $photos);
-                        foreach($urls_array as $img) {
-                            ImageOrganization::create([
-                                'img_url' => $img,
-                                'href_img' => 1,
-                                'organization_id' => $organization_create->id,
-                            ]);
+                        if($city == null || $phones == null) continue;
+        
+                        $time_difference = 12;
+                        // Подготовка данных для обновления
+                        $updateData = [
+                            'title' => $orgTitle,
+                            'slug'=> slugOrganization($orgTitle),
+                            'adres' => $address,
+                            'width' => $latitude,
+                            'longitude' => $longitude,
+                            'phone' => phoneImport($phones),
+                            'img_url' => $logoUrl ?: $existingOrg->img_url,
+                            'img_main_url' => $mainPhotoUrl ?: $existingOrg->img_main_url,
+                            'href_img' => $logoUrl ? 1 : $existingOrg->href_img,
+                            'href_main_img' => $mainPhotoUrl ? 1 : $existingOrg->href_main_img,
+                            'email' => $email,
+                            'nearby' => $nearby,
+                            'content' => $description,
+                            'city_id' => $city->id,
+                            'rating' => $rating,
+                            'time_difference' => $time_difference,
+                            'whatsapp' => $whatsapp,
+                            'name_type'=> $nameType,
+                            'telegram' => $telegram,
+                        ];
+
+                        // Обновляем организацию
+                        $existingOrg->update($updateData);
+        
+                        $area = $existingOrg->city->area;
+                        if($area != null) {
+                            $cemeteries = implode(',', $area->cities->flatMap(function ($city) {
+                                return $city->cemeteries->pluck('id');
+                            })->unique()->toArray()) . ',';
+                            $existingOrg->update(['cemetery_ids' => $cemeteries]);
+                        }
+
+                        // Обновляем рабочие часы
+                        if($workHours) {
+                            WorkingHoursOrganization::where('organization_id', $existingOrg->id)->delete();
+                            $days = parseWorkingHours($workHours);
+                            foreach($days as $day) {
+                                $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
+                                WorkingHoursOrganization::create([
+                                    'day' => $day['day'],
+                                    'time_start_work' => $day['time_start_work'],
+                                    'time_end_work' => $day['time_end_work'],
+                                    'holiday' => $holiday,
+                                    'organization_id' => $existingOrg->id,
+                                ]);
+                            }
+                        }
+        
+                        // Обновляем галерею
+                        if($photos) {
+                            ImageOrganization::where('organization_id', $existingOrg->id)->delete();
+                            $urls_array = explode(', ', $photos);
+                            foreach($urls_array as $img) {
+                                ImageOrganization::create([
+                                    'img_url' => $img,
+                                    'href_img' => 1,
+                                    'organization_id' => $existingOrg->id,
+                                ]);
+                            }
+                        }
+                        
+                        if($services) {
+                            addActiveCategory($services, [], $existingOrg);
                         }
                     }
-    
-                    // Добавляем рабочие часы
-                    if($workHours) {
-                        $days = parseWorkingHours($workHours);
-                        foreach($days as $day) {
-                            $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
-                            WorkingHoursOrganization::create([
-                                'day' => $day['day'],
-                                'time_start_work' => $day['time_start_work'],
-                                'time_end_work' => $day['time_end_work'],
-                                'holiday' => $holiday,
-                                'organization_id' => $organization_create->id,
-                            ]);
+                    // Если организации нет - создаем новую
+                    else {
+                        // Получаем дополнительные данные для создания
+                        $district = $organization[$columns['Район']] ?? null;
+                        $services = $organization[$columns['Виды услуг']] ?? null;
+                        $nearby = $organization[$columns['Рядом']] ?? null;
+                        $email = trim(trim($organization[$columns['E-mail']] ?? '', '('), ')');
+                        $whatsapp = $organization[$columns['WhatsApp']] ?? null;
+                        $telegram = $organization[$columns['Telegram']] ?? null;
+                        $description = $organization[$columns['SEO Описание']] ?? null;
+                        $rating = $organization[$columns['Рейтинг']] ?? null;
+                        $nameType = $organization[$columns['Вид деятельности']] ?? null;
+
+                        // Создаем город и район
+                        $area = createArea($district, $region);
+                        $city = createCity($cityName, $region);
+                        if($city == null || $phones == null) continue;
+        
+                        $time_difference = 12;
+                        
+                        // Устанавливаем дефолтные изображения если не указаны
+                        $logoUrl = $logoUrl ?: 'https://default-logo-url.com';
+                        $mainPhotoUrl = $mainPhotoUrl ?: 'https://default-main-photo-url.com';
+        
+                        $organization_create = Organization::create([
+                            'id' => $orgId,
+                            'title' => $orgTitle,
+                            'adres' => $address,
+                            'nearby' => $nearby,
+                            'width' => $latitude,
+                            'longitude' => $longitude,
+                            'phone' => phoneImport($phones),
+                            'email' => $email,
+                            'img_url' => $logoUrl,
+                            'content' => $description,
+                            'city_id' => $city->id,
+                            'rating' => $rating,
+                            'href_img' => 1,
+                            'href_main_img' => 1,
+                            'img_main_url' => $mainPhotoUrl,
+                            'slug' => slugOrganization($orgTitle),
+                            'cemetery_ids' => '',
+                            'time_difference' => $time_difference,
+                            'whatsapp' => $whatsapp,
+                            'telegram' => $telegram,
+                            'name_type'=> $nameType,
+                        ]);
+        
+                        // Обновляем cemetery_ids
+                        $area = $organization_create->city->area;
+                        if($area != null) {
+                            $cemeteries = implode(',', $area->cities->flatMap(function ($city) {
+                                return $city->cemeteries->pluck('id');
+                            })->unique()->toArray()) . ',';
+                            $organization_create->update(['cemetery_ids' => $cemeteries]);
                         }
-                    }
-    
-                    // Добавляем категории и подкатегории
-                    if($services) {
-                        addActiveCategory($services, [], $organization_create);
+        
+                        // Добавляем фотографии
+                        if($photos) {
+                            $urls_array = explode(', ', $photos);
+                            foreach($urls_array as $img) {
+                                ImageOrganization::create([
+                                    'img_url' => $img,
+                                    'href_img' => 1,
+                                    'organization_id' => $organization_create->id,
+                                ]);
+                            }
+                        }
+        
+                        // Добавляем рабочие часы
+                        if($workHours) {
+                            $days = parseWorkingHours($workHours);
+                            foreach($days as $day) {
+                                $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
+                                WorkingHoursOrganization::create([
+                                    'day' => $day['day'],
+                                    'time_start_work' => $day['time_start_work'],
+                                    'time_end_work' => $day['time_end_work'],
+                                    'holiday' => $holiday,
+                                    'organization_id' => $organization_create->id,
+                                ]);
+                            }
+                        }
+        
+                        // Добавляем категории и подкатегории
+                        if($services) {
+                            addActiveCategory($services, [], $organization_create);
+                        }
                     }
                 }
             }
         }
-    
         $message = $importType == 'update' 
             ? 'Данные организаций успешно обновлены' 
             : 'Организации успешно импортированы';
         
         return redirect()->back()->with("message_cart", $message);
     }
+
+
+
+
+
+
+
+
+
+
+
 
     public static function importReviews($request){
         $spreadsheet = new Spreadsheet();

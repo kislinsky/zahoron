@@ -1889,6 +1889,7 @@ function addActiveCategory(string $input, array $excludeCategories = [],$organiz
     // Разделяем строку по запятым и удаляем лишние пробелы
     $inputCategories = splitCategories($input);
 
+    ActivityCategoryOrganization::where('organization_id',$organization->id)->delete();
 
     foreach ($inputCategories as $category) {
 
@@ -1903,7 +1904,6 @@ function addActiveCategory(string $input, array $excludeCategories = [],$organiz
                 'category_children_id'=>$category_find->id,
                 'category_main_id'=>$category_find->parent_id,
                 'rating'=>$organization->rating,
-                'cemetery_ids'=>$organization->cemetery_ids,
             ]);
 
         }
@@ -1911,6 +1911,12 @@ function addActiveCategory(string $input, array $excludeCategories = [],$organiz
 
     return 'refew';
 }
+
+
+
+
+
+
 
 function splitCategories(string $input): array
 {
