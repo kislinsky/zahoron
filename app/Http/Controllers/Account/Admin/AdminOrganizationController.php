@@ -34,7 +34,9 @@ class AdminOrganizationController extends Controller
 
     public static function importPrices(Request $request){
         $request->validate([
-            'file_prices' => 'required|mimes:xlsx,xls,csv'
+            'files_prices.*' => 'required|mimes:xlsx,xls,csv',
+            'import_with_user_prices' => 'sometimes|in:0,1',
+            'update_empty_to_ask' => 'sometimes|in:0,1'
         ]);
         return AdminOrganizationIndexService::importPrices($request);
     }

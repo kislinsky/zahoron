@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Edge;
 use Illuminate\Http\Request;
 use YooKassa\Client;
+use YooKassa\Model\Notification\NotificationEventType;
 
 class YooMoneyController extends Controller
 {
@@ -17,7 +18,7 @@ class YooMoneyController extends Controller
 
     public function createPayment(Request $request)
     {
-        
+
         // Параметры платежа
         $payment = $this->client->createPayment(
             [

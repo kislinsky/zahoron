@@ -390,41 +390,101 @@ class ParserOrganizationService
     }
 
 
-    public static function importPrices($request){
-        $spreadsheet = new Spreadsheet();
-        $file = $request->file('file_prices');
-        $spreadsheet = IOFactory::load($file);
-        // Получение данных из первого листа
-        $sheet = $spreadsheet->getActiveSheet();
-        $prices = array_slice($sheet->toArray(),1);
-        foreach($prices as $price){
-                $city=City::where('title',$price[8])->first();
-                if($city!=null){
-                    $organization=Organization::where('title',$price[3])->where('city_id',$city->id)->first();
-                    $category_product=CategoryProduct::where('title',$price[5])->first();
-                    if($organization!=null && $category_product!=null){
-                        $active_category=ActivityCategoryOrganization::where('organization_id',$organization->id)->where('category_children_id',$category_product->id)->where('category_main_id',$category_product->parent_id)->first();
-                        if( $organization!=null && $category_product!=null){
-                            if($active_category==null){
-                                ActivityCategoryOrganization::create([
-                                    'rating'=>$price[6],
-                                    'category_children_id'=>$category_product->id,
-                                    'category_main_id'=>$category_product->parent_id,
-                                    'organization_id'=>$organization->id,
-                                    'city_id'=>$organization->city->id,
-                                    'role'=>'organization',
-                                    'cemetery_ids'=>$organization->cemetery_ids,
-                                    'price'=>0,
-                                    'rating'=>$organization->rating,
-                                ]);
-                            }
-                        }
+    public static function importPrices($request) {
+        $files = $request->file('files_prices'); // Массив файлов
+        $importWithUser = $request->input('import_with_user_prices', 0); // 0 или 1
+        $updateEmptyToAsk = $request->input('update_empty_to_ask', 0); // 0 или 1
+        
+        $processedFiles = 0;
+        $updatedPrices = 0;
+        $removedCategories = 0;
+    
+        foreach ($files as $file) {
+            if (!$file->isValid()) {
+                continue;
+            }
+    
+            $spreadsheet = IOFactory::load($file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+            $titles = $sheet->toArray()[0];
+            $prices = array_slice($sheet->toArray(), 1);
+            
+            // Создаем массив для быстрого доступа к индексам колонок по их названиям
+            $columns = array_flip($titles);
+            
+            foreach ($prices as $price) {
+                $orgId = rtrim($price[$columns['ID']] ?? '', '!');
+                $categoryTitle = $price[$columns['Категория']] ?? null;
+                $priceValue = $price[$columns['Цена']] ?? null;
+    
+                // Пропускаем если нет обязательных данных
+                if ( empty($categoryTitle)) {
+                    continue;
+                }
+            
+    
+                $organization = Organization::find($orgId);
+                
+                if (!$organization) continue;
+    
+                // Проверяем условие import_with_user
+                if (($importWithUser == 0 && $organization->user_id != null) || 
+                    ($importWithUser == 1 && $organization->user_id == null)) {
+                    continue;
+                }
+    
+                $categoryProduct = CategoryProduct::where('title', $categoryTitle)->first();
+                if (!$categoryProduct) continue;
+    
+                $activeCategory = ActivityCategoryOrganization::where('organization_id', $organization->id)
+                    ->where('category_children_id', $categoryProduct->id)
+                    ->where('category_main_id', $categoryProduct->parent_id)
+                    ->first();
+    
+                // Обработка случая "Нет" - удаляем из категории
+                if (strtolower($priceValue) == 'Нет') {
+                    if ($activeCategory) {
+                        $activeCategory->delete();
+                        $removedCategories++;
                     }
-                   
-                }            
+                    continue;
+                }
+    
+                // Обработка пустой цены
+                if (empty($priceValue)) {
+                    if ($updateEmptyToAsk) {
+                        $priceValue = 0;
+                    } else {
+                        continue; // Пропускаем если не нужно обновлять
+                    }
+                }
+    
+                // Обновляем или создаем запись
+                if ($activeCategory) {
+                    $activeCategory->update([
+                        'price' => is_numeric($priceValue) ? (float)$priceValue : $priceValue,
+                    ]);
+                } else {
+                    ActivityCategoryOrganization::create([
+                        'price' => is_numeric($priceValue) ? (float)$priceValue : $priceValue,
+                        'category_children_id' => $categoryProduct->id,
+                        'category_main_id' => $categoryProduct->parent_id,
+                        'organization_id' => $organization->id,
+                    ]);
+                }
+                
+                $updatedPrices++;
+            }
+            
+            $processedFiles++;
         }
-        return redirect()->back()->with("message_cart", 'Цены успешно добавлены');
-
+    
+        $message = "Цены успешно обновлены. " .
+                   "Файлов обработано: $processedFiles, " .
+                   "Обновлено цен: $updatedPrices, " .
+                   "Удалено категорий: $removedCategories";
+    
+        return redirect()->back()->with("message_cart", $message);
     }
 
 }

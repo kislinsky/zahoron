@@ -189,7 +189,7 @@ class OrganizationService
         $news_video=News::orderBy('id', 'desc')->where('type',2)->get();
         $news=News::orderBy('id', 'desc')->take(3)->get();
         $cats=CategoryProduct::orderBy('id','desc')->where('parent_id',null)->get();
-        $organizations_category=orgniaztionsFilters($data);
+        $organizations_category=orgniaztionsFilters($data,$category);
 
        
         $cemeteries=Cemetery::where('city_id',$city->id)->get();

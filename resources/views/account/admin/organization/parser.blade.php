@@ -70,23 +70,40 @@
         </form>
     </div>       
     
-    
-    <div class="">
-        <div class="title_middle">Добавить новые цены для организаций из файла</div>  
-        <form class='default_admin_form' method="post" enctype="multipart/form-data" action="{{route('account.admin.parsing.organization.prices')}}">
-            @csrf
+  
+    <div class="title_middle">Добавить новые отзывы о организациях из файла</div>  
+
+    <form class='default_admin_form' action="{{ route('account.admin.parsing.organization.prices') }}" method="POST" enctype="multipart/form-data">
+        
+        @csrf      
             <div class="mb-3">
-                <label for="formFile_3" class="form-label">Выберите файл</label>
-                <input class="form-control" type="file" name='file_prices' id="formFile_3">
+                <label for="formFile_2" class="form-label">Выберите файл</label>
+                <input type="file" name="files_prices[]" id="files" multiple class="form-control" accept=".xlsx,.xls,.csv" required>
             </div>
-            @error('file_prices')
+            @error('files')
                 <div class='error-text'>{{ $message }}</div>
             @enderror
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary mb-3">Начать импорт</button>
-            </div>   
+            
+           
+            <div class="block_input">
+                <label >Вкл/выкл</label>
+                <select name="import_with_user_prices" id="">
+                    <option value="0">Нет</option>
+                    <option value="1">Да</option>
+                </select>  
+            </div>
+
+            <div class="block_input">
+                <label >Заменять пустые цены на "уточняйте"</label>
+                <select name="update_empty_to_ask" id="">
+                    <option value="0">Нет</option>
+                    <option value="1">Да</option>
+                </select>  
+            </div>
+            <button type="submit" class="btn btn-primary margin_top_20">Импортировать цены</button>
+
         </form>
-    </div>       
+    
 @endsection
 
 

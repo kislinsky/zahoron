@@ -540,18 +540,13 @@ function countReviewsOrganization($organization){
     return null;
 }
 
-function orgniaztionsFilters($data){
+function orgniaztionsFilters($data,$category){
     $city=selectCity();
-    if(isset($data['category_id'])){
 
-        $organizations_category=ActivityCategoryOrganization::where('category_children_id',$data['category_id'])->whereHas('organization', function ($query) use ($city) {
-            $query->where('city_id', $city->id)->where('role','organization');
-        });
-    }else{
-        $organizations_category=ActivityCategoryOrganization::where('category_children_id',categoryProductChoose()->id)->whereHas('organization', function ($query) use ($city) {
-            $query->where('city_id', $city->id)->where('role','organization');
-        });
-    }
+    $organizations_category=ActivityCategoryOrganization::where('category_children_id',$category->id)->whereHas('organization', function ($query) use ($city) {
+        $query->where('city_id', $city->id)->where('role','organization');
+    });
+  
     if(isset($data['cemetery_id']) && $data['cemetery_id']!=null && $data['cemetery_id']!='null'){
         $cemetery_id=$data['cemetery_id'];
         $organizations_category=$organizations_category->whereHas('organization', function ($query) use ($cemetery_id) {
@@ -2011,3 +2006,5 @@ function cleanUpOrganizationImages()
 
     return "Очистка завершена.";
 }
+
+

@@ -29,6 +29,12 @@ class ActivityCategoryOrganization extends Model
         return $this->belongsTo(City::class);
     }
 
+    function priceHtml(){
+        if($this->price==null || $this->price==0){
+            return 'Уточняйте';
+        }
+        return 'от '. $this->price . ' ₽';
+    }
     
 }
 

@@ -478,8 +478,7 @@ function mobilePagesAccountAdmin(){
             ['Организации',''],
             
             [
-                ['Список',route('account.admin.cemetery')],
-                ['Импортировать',route('account.admin.parser.cemetery')],
+                ['Импортировать',route('account.admin.parser.organization')],
                 // ['Добавить кладбища','account.admin.create.cemetery']
             ],
             

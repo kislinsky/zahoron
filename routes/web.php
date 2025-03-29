@@ -99,6 +99,7 @@ if($city!='livewire'){
     }
 }
 
+
 // Route::group(['prefix' => '{city}', 'middleware' => 'check.city'], function () {
 //     Route::get('/', [CityController::class, 'index'])->name('city.index');
 //     Route::get('/change-city/{selectedCity}', [CityController::class, 'changeCity'])->name('city.change');
@@ -382,7 +383,7 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
                         
                         Route::get('/services', [AccountController::class, 'services'])->name('account.user.services.index');       
                         Route::get('/service/{order}/pay', [AccountController::class, 'payService'])->name('account.user.service.pay');       
-                        Route::get('/burial-request/{order}/callback', [AccountController::class, 'callbackPayService'])->name('account.user.burial-request.callback');            
+                        Route::get('/burial-service/{order}/callback', [AccountController::class, 'callbackPayService'])->name('account.user.service-request.callback');            
 
                         Route::get('/burials', [AccountController::class, 'burials'])->name('account.user.burial');
 

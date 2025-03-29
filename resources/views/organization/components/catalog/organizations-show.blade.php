@@ -44,7 +44,7 @@
                 <div class='info_li_organization'>
                     <div class="text_black_bold">{{$category_organiaztion->title}}</div>
                     <div class="text_gray">Сумма</div>
-                    <div class="text_black_bold">от <span class='title_blue'>{{$organization_category->price}} ₽</span></div>
+                    <div class="text_black_bold"> <span class='title_blue'>{{$organization_category->priceHtml()}} </span></div>
                 </div>
                 <div class="li_flex_icon_organization">
                     <a href="{{route('organization.like.add',$organization->id)}}"><img src="{{asset('storage/uploads/Vector (9).svg')}}" alt=""></a>
@@ -54,7 +54,7 @@
 
             <div class="li_price_category_organization li_org_dekstop">
                 <div class="text_gray">{{$category_organiaztion->title}}</div>
-                <div class="title_blue">от {{$organization_category->price}} ₽</div>
+                <div class="title_blue"> {{$organization_category->priceHtml()}} </div>
             </div>
 
             <div class="li_flex_btn_organization">
