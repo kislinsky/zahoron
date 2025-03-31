@@ -51,7 +51,7 @@
         <div class="block_info_place">
             <div class="title_middle">Информация о крематориях в г. {{$city->title}}</div>
             <div class="text_black">
-                {!!str_replace('city',$city->title,$city->content_mortuary)!!}
+                {!!str_replace('{city}',$city->title,get_acf(4,'content_1'))!!}
             </div>
         </div>
     </div>

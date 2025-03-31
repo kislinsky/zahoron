@@ -242,7 +242,8 @@ class OrganizationService
     
 
     public static function ajaxFilterCatalog($data){
-        $organizations_category=orgniaztionsFilters($data);
+        $category=CategoryProduct::find($data['category_id']);
+        $organizations_category=orgniaztionsFilters($data,$category);
         return  view('organization.components.catalog.organizations-show',compact('organizations_category'));
     }
 
@@ -278,8 +279,7 @@ class OrganizationService
         // }
 
         $city=selectCity();
-
-        $organizations_category=orgniaztionsFilters($data);
+        $organizations_category=orgniaztionsFilters($data,$category);
         $title_h1=formatContentCategory(getSeo($category->slug.'-catalog-organization','h1'),$category,$organizations_category);
 
         return  view('organization.components.catalog.title-page',compact('title_h1'));
@@ -288,7 +288,7 @@ class OrganizationService
     public static function ajaxMapOrganizations($data){
         $category=CategoryProduct::find($data['category_id']);
         $city=selectCity();
-        $organizations_category=orgniaztionsFilters($data);
+        $organizations_category=orgniaztionsFilters($data,$category);
         return view('organization.components.catalog.map-cats',compact('category','organizations_category','city'));
     }
     

@@ -1376,6 +1376,7 @@ function convertToCarbon($dateString)
 function minPriceCategoryProductOrganization($slug){
     $city=selectCity();
     $cat=CategoryProduct::where('slug',$slug)->first();
+    if($cat==null){return 0;}
     $price=ActivityCategoryOrganization::whereHas('organization', function ($query) use ($city) {
         $query->where('city_id', $city->id);
     })->where('category_children_id',$cat->id)->min('price');
@@ -1395,7 +1396,9 @@ function mainCategoryPriceList(){
 }
 
 function getSeo($page,$column){
-    return $content = SEO::where('page',$page)->where('name',$column)->first()->content;
+    return $content = SEO::where('name',$column)->whereHas('seoObject', function ($query) use ($page) {
+        $query->where('title', $page);
+    })->first()->content;
 }
 
 function formatContent($content,$model){

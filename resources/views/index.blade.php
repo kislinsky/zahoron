@@ -40,7 +40,7 @@
                     <img class='img_black_theme'src="{{asset('storage/uploads/airplane 1_black.svg')}}" alt="" class="img_index_service">
                 </div>
                 <div class="grid_btn">
-                    <div class="blue_btn open_shipping_200 border_radius_btn" >Стоимость от {{minPriceCategoryProductOrganization('otpravka-gruz-200')}} руб.</div>
+                    <div class="blue_btn open_shipping_200 border_radius_btn" >Стоимость от {{minPriceCategoryProductOrganization('podgotovka-otpravki-gruza-200')}} руб.</div>
                     <a href='{{route('organizations')}}'class="gray_btn">Каталог</A>
                 </div>
             </div>
@@ -178,7 +178,7 @@
                     <img src="{{asset('storage/uploads/airplane 1.svg')}}" alt="" class="img_index_service">
                 </div>
                 <div class="grid_btn">
-                    <div class="blue_btn open_shipping_200 border_radius_btn" >Стоимость от {{minPriceCategoryProductOrganization('otpravka-gruz-200')}} руб.</div>
+                    <div class="blue_btn open_shipping_200 border_radius_btn" >Стоимость от {{minPriceCategoryProductOrganization('podgotovka-otpravki-gruza-200')}} руб.</div>
                     <a href='{{route('organizations')}}'class="gray_btn">Каталог</A>
                 </div>
             </div>

@@ -52,7 +52,7 @@
             <div class="block_info_place">
                 <div class="title_middle">Информация о кладбищах в г. {{$city->title}}</div>
                 <div class="text_black">
-                    {!!str_replace('city',$city->title,$city->content_mortuary)!!}
+                    {!!str_replace('{city}',$city->title,get_acf(2,'content_1'))!!}
                 </div>
             </div>
         </div>
