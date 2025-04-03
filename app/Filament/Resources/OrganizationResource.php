@@ -83,7 +83,7 @@ class OrganizationResource extends Resource
             // Отображение текущего изображения (если запись уже существует)
             View::make('image')
             ->label('Текущий логотип')
-            ->view('filament.forms.custom-image-organization') // Указываем путь к Blade-шаблону
+            ->view('filament.forms.components.custom-image-organization') // Указываем путь к Blade-шаблону
             ->extraAttributes(['class' => 'custom-image-class'])
             ->columnSpan('full')
             ->hidden(fn ($get) => intval($get('href_main_img')) === 0), 

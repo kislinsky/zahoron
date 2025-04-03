@@ -96,7 +96,6 @@ class RegisterController extends Controller
         if(env('API_WORK')=='true'){
             $organization_ddata=checkOrganizationInn($data['inn']);
         }
-        $organization_ddata=checkOrganizationInn($data['inn']);
         if($organization_ddata!=null && $organization_ddata['state']['status']=='ACTIVE'){
 
             return redirect()->route('confirm.inn.information.email')->with([

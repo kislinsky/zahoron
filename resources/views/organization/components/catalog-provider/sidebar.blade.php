@@ -7,7 +7,7 @@
             @foreach ($cats as $cat)
                 <div class="main_cat">
 
-                    <div id_category={{ $cat->id }} class="li_cat_main_marketplace"><img class='icon_black'src="{{ asset('storage/uploads_cats_product/'.$cat->icon) }}" alt=""> <img class='icon_white'src="{{ asset('storage/uploads_cats_product/'.$cat->icon_white) }}" alt="">{{ $cat->title }}</div>
+                    <div id_category={{ $cat->id }} class="li_cat_main_marketplace"><img class='icon_black'src="{{ asset('storage/'.$cat->icon) }}" alt=""> <img class='icon_white'src="{{ asset('storage/'.$cat->icon_white) }}" alt="">{{ $cat->title }}</div>
                     <?php $cats_children=childrenCategoryProductsProvider($cat);?>
                     @if (count($cats_children)>0)
                         <ul class="ul_childern_cats_marketplace">

@@ -4,12 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -141,8 +142,6 @@ class User extends Authenticatable
         return $this->hasMany(SearchBurial::class);
     }
 
-
-
     function edge(){
         return $this->belongsTo(Edge::class);
     }
@@ -151,8 +150,14 @@ class User extends Authenticatable
         return $this->belongsTo(City::class);
     }
 
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
 
-  
-
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
      
 }
