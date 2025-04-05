@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
+
 class AuthController extends Controller
 {
     public function register(Request $request)
@@ -26,6 +27,14 @@ class AuthController extends Controller
             return response()->json(['error' => $validator->errors()], 400);
         }
 
+
+        $phone_check=User::where('phone',normalizePhone($request->phone))->first();
+        $inn_check=User::where('inn',$request->inn)->first();
+
+        if($phone_check!=null || $inn_check!=null){
+            return response()->json(['error' => 'Пользователь с таким номером телефона или инн уже существует.'], 404);
+        }
+
         // Здесь должна быть проверка ИНН через внешний сервис
         $innInfo=null;
         if(env('API_WORK')=='true'){
@@ -39,7 +48,7 @@ class AuthController extends Controller
             RegistrationSession::create([
                 'id' => $regId,
                 'inn' => $request->inn,
-                'phone' => $request->phone,
+                'phone' => normalizePhone($request->phone),
                 'agent_name' => $innInfo['name']['short_with_opf'],
                 'status' => $innInfo['state']['status'],
                 'okved' => $innInfo['okved'],
@@ -134,7 +143,7 @@ class AuthController extends Controller
             return response()->json(['error' => $validator->errors()], 400);
         }
 
-        $account = User::where('phone', $request->phone)->first();
+        $account = User::where('phone', normalizePhone($request->phone))->first();
         $authId = Str::uuid();
         $code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
 

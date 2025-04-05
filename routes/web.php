@@ -75,7 +75,7 @@ use Illuminate\Support\Facades\Route;
 #убирать die когда нужно использовать artisan 
 $city = request()->segment(1); // Более безопасный и понятный способ получить первый сегмент URL
 
-if($city!='livewire'){
+if($city!='livewire' && $city!='api' ){
     if (!request()->is('storage/*') && !request()->is('css/*') && !request()->is('js/*') && !request()->is('admin/*') && !request()->is('filament*') && $city!='admin' ) {    
         if(city_by_slug($city) == null){
             setcookie('city', '', -1, '/');
@@ -97,6 +97,9 @@ if($city!='livewire'){
             }
         }
     }
+}
+if (request()->is('docs*')) {
+    return $city='';
 }
 
 

@@ -1694,24 +1694,24 @@ function edges(){
 
 
 function normalizePhone($phone) {
-    // Удаляем все символы, кроме цифр
-    $phone = preg_replace('/[^0-9]/', '', $phone);
+    $digits = preg_replace('/[^\d]/', '', $phone);
 
-    // Если номер начинается с 8, заменяем на 7
-    if (strlen($phone) === 11 && $phone[0] === '8') {
-        $phone = '7' . substr($phone, 1);
+    // Если номер начинается с 8 (российский код без +7)
+    if (strlen($digits) === 11 && str_starts_with($digits, '8')) {
+        return '+7' . substr($digits, 1);
     }
 
-    // Если номер начинается с +7, убираем +
-    if (strlen($phone) === 12 && strpos($phone, '+7') === 0) {
-        $phone = '7' . substr($phone, 2);
+    // Если номер без кода страны (10 цифр)
+    if (strlen($digits) === 10) {
+        return '+7' . $digits;
     }
 
-    // Если номер короче 11 цифр, возвращаем null (некорректный номер)
-    if (strlen($phone) < 11) {
-        return null;
+    // Если уже в формате +7 (11 цифр, начинается с 7)
+    if (strlen($digits) === 11 && str_starts_with($digits, '7')) {
+        return '+' . $digits;
     }
 
+    // Если ничего не подошло — возвращаем исходное значение
     return $phone;
 }
 

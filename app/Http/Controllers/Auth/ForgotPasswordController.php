@@ -35,7 +35,7 @@ class ForgotPasswordController extends Controller
         
         OtpCodes::create([
             'code' => $code,
-            'phone' => $data['phone'],
+            'phone' => normalizePhone($data['phone']),
             'token' => $token,
             'role'=>'user'
         ]);

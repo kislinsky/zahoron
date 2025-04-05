@@ -93,7 +93,7 @@ class ParserOrganizationService
                     }
                     
                     if(in_array('phone', $columnsToUpdate) && isset($columns['Телефоны'])) {
-                        if($phones) $updateData['phone'] = phoneImport($phones);
+                        if($phones) $updateData['phone'] = normalizePhone(phoneImport($phones));
                     }
                     
                     if(in_array('logo', $columnsToUpdate) && isset($columns['Логотип'])) {
@@ -188,7 +188,7 @@ class ParserOrganizationService
                             'adres' => $address,
                             'width' => $latitude,
                             'longitude' => $longitude,
-                            'phone' => phoneImport($phones),
+                            'phone' => normalizePhone(phoneImport($phones)),
                             'img_url' => $logoUrl ?: $existingOrg->img_url,
                             'img_main_url' => $mainPhotoUrl ?: $existingOrg->img_main_url,
                             'href_img' => $logoUrl ? 1 : $existingOrg->href_img,
@@ -279,7 +279,7 @@ class ParserOrganizationService
                             'nearby' => $nearby,
                             'width' => $latitude,
                             'longitude' => $longitude,
-                            'phone' => phoneImport($phones),
+                            'phone' => normalizePhone(phoneImport($phones)),
                             'email' => $email,
                             'img_url' => $logoUrl,
                             'content' => $description,

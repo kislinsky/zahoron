@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Account\AgencyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -14,6 +15,13 @@ Route::prefix('v1')->group(function () {
     Route::post('/auth', [AuthController::class, 'authInit']);
     Route::post('/auth/confirm', [AuthController::class, 'authConfirm']);
     
+    
+    Route::group(['prefix'=>'account'], function() {
+        Route::group(['prefix'=>'agency'], function() {
+            Route::get('/products', [AgencyController::class, 'products']);
+        });
+    });
+
     // Защищенные маршруты
     Route::middleware('auth:api')->group(function () {
         // Здесь будут маршруты для работы с данными

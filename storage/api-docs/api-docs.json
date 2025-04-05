@@ -1,0 +1,657 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API documentation",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "API server"
+        }
+    ],
+    "paths": {
+        "/v1/account/agency/products": {
+            "get": {
+                "tags": [
+                    "Продукты организции"
+                ],
+                "summary": "Получение списка продуктов агентства",
+                "description": "Возвращает отфильтрованный список продуктов организации с пагинацией",
+                "operationId": "getAgencyProducts",
+                "parameters": [
+                    {
+                        "name": "organization_id",
+                        "in": "query",
+                        "description": "ID организации",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "Фильтр по категории",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "subcategory",
+                        "in": "query",
+                        "description": "Фильтр по подкатегории",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "search_text",
+                        "in": "query",
+                        "description": "Текст для поиска по названию продукта",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Количество элементов на странице (1-100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Номер страницы",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "current_category": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "current_subcategory": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "products": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Название продукта"
+                                                            },
+                                                            "price": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 99.99
+                                                            },
+                                                            "discount": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 0
+                                                            },
+                                                            "features": {
+                                                                "properties": {
+                                                                    "size": {
+                                                                        "type": "string",
+                                                                        "example": "M"
+                                                                    },
+                                                                    "material": {
+                                                                        "type": "string",
+                                                                        "example": "Хлопок"
+                                                                    },
+                                                                    "color": {
+                                                                        "type": "string",
+                                                                        "example": "Синий"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "stars": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 4.5
+                                                            },
+                                                            "reviews_count": {
+                                                                "type": "integer",
+                                                                "example": 10
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "pagination": {
+                                                    "properties": {
+                                                        "total": {
+                                                            "type": "integer",
+                                                            "example": 100
+                                                        },
+                                                        "per_page": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        },
+                                                        "current_page": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "last_page": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибки валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation errors"
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "organization_id": [
+                                                    "The organization id field is required."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Организация не найдена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Organization not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/register": {
+            "post": {
+                "tags": [
+                    "Авториция/регистрация"
+                ],
+                "summary": "Регистрация нового пользователя",
+                "operationId": "8d19ebf27aad77f03d818b41eb43fbf1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "type",
+                                    "inn",
+                                    "phone",
+                                    "form"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Ритуальное агенство",
+                                            "Частный агент",
+                                            "Другое"
+                                        ],
+                                        "example": "Ритуальное агенство"
+                                    },
+                                    "inn": {
+                                        "type": "string",
+                                        "maxLength": 12,
+                                        "example": "123456789012"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "maxLength": 15,
+                                        "example": "+79991234567"
+                                    },
+                                    "form": {
+                                        "type": "string",
+                                        "enum": [
+                                            "ООО",
+                                            "ИП",
+                                            "ФЛ"
+                                        ],
+                                        "example": "ООО"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешная регистрация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "reg_id": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                                        },
+                                        "agent_name": {
+                                            "type": "string",
+                                            "example": "ООО Ромашка"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ACTIVE"
+                                        },
+                                        "okved": {
+                                            "type": "string",
+                                            "example": "62.01"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "object",
+                                            "example": {
+                                                "type": [
+                                                    "Поле type обязательно для заполнения."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь уже существует или ИНН не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Пользователь с таким номером телефона или инн уже существует."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/confirm-info": {
+            "post": {
+                "tags": [
+                    "Авториция/регистрация"
+                ],
+                "summary": "Подтверждение информации и отправка SMS кода",
+                "operationId": "f94239264f53850c346ce518aa311d57",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reg_id"
+                                ],
+                                "properties": {
+                                    "reg_id": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "SMS отправлен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "SMS отправлен"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "object",
+                                            "example": {
+                                                "reg_id": [
+                                                    "Поле reg_id обязательно для заполнения."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/confirm-phone": {
+            "post": {
+                "tags": [
+                    "Авториция/регистрация"
+                ],
+                "summary": "Подтверждение телефона по коду из SMS",
+                "operationId": "ca93c0130fc835d807edf9a8a35c857a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reg_id",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "reg_id": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "maxLength": 6,
+                                        "minLength": 6,
+                                        "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешное подтверждение",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "jwt": {
+                                            "type": "string",
+                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный код или код истек",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Неверный код"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth-init": {
+            "post": {
+                "tags": [
+                    "Авториция/регистрация"
+                ],
+                "summary": "Инициализация авторизации",
+                "operationId": "2a81a21f70ce4cf081d39afe4facbc63",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+79991234567"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "SMS отправлен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "reg_id": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "object",
+                                            "example": {
+                                                "phone": [
+                                                    "Поле phone обязательно для заполнения."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth-confirm": {
+            "post": {
+                "tags": [
+                    "Авториция/регистрация"
+                ],
+                "summary": "Подтверждение авторизации по коду из SMS",
+                "operationId": "b54cf9f516f1765919e4081a3a10dc6f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reg_id",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "reg_id": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "maxLength": 6,
+                                        "minLength": 6,
+                                        "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешная авторизация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "jwt": {
+                                            "type": "string",
+                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный код или код истек",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Неверный код"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Продукты организции",
+            "description": "Продукты организции"
+        },
+        {
+            "name": "Авториция/регистрация",
+            "description": "Авториция/регистрация"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Введите токен без префикса Bearer"
+            }
+        }
+    },
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ]
+}

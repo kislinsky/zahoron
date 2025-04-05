@@ -187,7 +187,7 @@ class RegisterController extends Controller
                 : array_merge($baseRules, $organizationRules)
         );
 
-        if (User::where('phone', $data['phone'])->exists()) {
+        if (User::where('phone', normalizePhone($data['phone']))->exists()) {
             return redirect()->back()->with('error', 'Пользователь с таким номером телефона уже существует, войдите в аккаунт.');
         }
 

@@ -23,7 +23,7 @@ class SmsService
     {
         $response = Http::get('https://sms.ru/sms/send', [
             'api_id' => $this->apiKey,
-            'to' => $to, // Номер телефона в формате 79876543210
+            'to' => normalizePhone($to), // Номер телефона в формате 79876543210
             'msg' => $message, // Сообщение
             'json' => 1, // Ответ в формате JSON
         ]);

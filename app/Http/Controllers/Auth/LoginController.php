@@ -64,7 +64,7 @@ class LoginController extends Controller
             'password_phone'=>['required','string'],
         ]);
 
-        $users=User::where('phone',$data['phone'])->get();
+        $users=User::where('phone',normalizePhone($data['phone']))->get();
         if(isset($users[0])){
             if (Hash::check($data['password_phone'], $users->first()->password)){
                 Auth::login($users->first());

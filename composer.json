@@ -13,6 +13,7 @@
         "artesaos/seotools": "^1.3",
         "ausi/slug-generator": "^1.1",
         "dadata/apiclient": "^2.0",
+        "darkaonline/l5-swagger": "^8.6",
         "filament/actions": "^3.2",
         "filament/filament": "^3.2",
         "filament/forms": "^3.2",
@@ -53,6 +54,7 @@
     "autoload": {
         "files": [
             "app/functions.php",
+            "app/helpers-api.php",
             "app/pages.php"
         ],
         "psr-4": {

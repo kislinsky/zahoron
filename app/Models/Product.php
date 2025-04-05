@@ -18,6 +18,7 @@ class Product extends Model
 
     protected $guarded =[];
 
+
     public function getImages(){
         return $this->hasMany(ImageProduct::class)->orderBy('selected','desc');
     }
@@ -35,7 +36,6 @@ class Product extends Model
     }
     
     
-
     public function district(){
         return $this->belongsTo(District::class);
     }
@@ -57,6 +57,10 @@ class Product extends Model
     }
 
     public function reviews(){
+        return $this->hasMany(CommentProduct::class);
+    }
+
+    public function reviewsAccept(){
         return  CommentProduct::where('product_id',$this->id)->where('status',1)->get();
     }
 

@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
+        'api/*',
         'elizovo/yoomoney/callback' // Все URL, которые принимают webhook
     ];
 }

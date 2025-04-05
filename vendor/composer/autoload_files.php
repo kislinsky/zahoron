@@ -41,6 +41,7 @@ return array(
     '3bd81c9b8fcc150b69d8b63b4d2ccf23' => $vendorDir . '/spatie/flare-client-php/src/helpers.php',
     '6124b4c8570aa390c21fafd04a26c69f' => $vendorDir . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
     '801c31d8ed748cfa537fa45402288c95' => $vendorDir . '/psy/psysh/src/functions.php',
+    'ac0aa5b57142c92aeadc397fa46b9d39' => $vendorDir . '/darkaonline/l5-swagger/src/helpers.php',
     '89e9938b64b06cc502d7ceca69a380fe' => $vendorDir . '/filament/filament/src/global_helpers.php',
     'ebb446bb6d02e998480945fbbb73dc64' => $vendorDir . '/filament/filament/src/helpers.php',
     'c72349b1fe8d0deeedd3a52e8aa814d8' => $vendorDir . '/mockery/mockery/library/helpers.php',
@@ -50,5 +51,6 @@ return array(
     'c379e2a4ec3735f6c4915556c8c81813' => $vendorDir . '/rap2hpoutre/fast-excel/src/functions/fastexcel.php',
     '320163ac6b93aebe3dc25b60a0533d56' => $vendorDir . '/spatie/laravel-ignition/src/helpers.php',
     '3adb193d4261a019502ea897e056f4fe' => $baseDir . '/app/functions.php',
+    'c28eb0805a9e151eff28bdf5c412a6e2' => $baseDir . '/app/helpers-api.php',
     '911eb329818fee27968ca43c14598c00' => $baseDir . '/app/pages.php',
 );
