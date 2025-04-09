@@ -1,6 +1,6 @@
 <x-filament::page>
     <form wire:submit.prevent="submit">
-        {{ $this->form }}
+        {{ $this->form }}<br>
 
         <x-filament::button type="submit">
             Загрузить и отправить

@@ -1,71 +1,139 @@
 <?php 
 namespace App\Filament\Pages;
 
-use Filament\Forms\Form;
-use Filament\Pages\Page;
+use App\Services\Parser\ParserOrganizationService;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
 use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Http;
+use Filament\Pages\Page;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Http;
 
 class Import extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text'; // Иконка в меню
-    protected static string $view = 'filament.pages.import'; // Шаблон страницы
-    protected static ?string $navigationLabel = 'Импорт файла'; // Название в меню
-
-    // Свойство для хранения файла
-    public ?UploadedFile $file = null;
-
+    protected static ?string $navigationIcon = 'heroicon-o-document-arrow-up';
+    
+    protected static string $view = 'filament.pages.import';
+    
+    protected static ?string $navigationLabel = 'Импорт организаций';
+    
+    protected static ?string $title = 'Импорт организаций из файла';
+    
+    protected static ?int $navigationSort = 3;
+    
+    public ?array $data = [];
+    
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-                FileUpload::make('file')
-                    ->label('Загрузите файл')
+                FileUpload::make('files')
+                    ->label('Выберите файл')
+                    ->multiple()
                     ->required()
-                    ->acceptedFileTypes(['text/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) // Разрешенные типы файлов
-                    ->maxSize(1024) // Максимальный размер файла в килобайтах
-                    ->preserveFilenames(), // Сохранять оригинальные имена файлов
-            ]);
+                    ->preserveFilenames()
+                    ->acceptedFileTypes(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv']),
+                
+                Select::make('import_type')
+                    ->label('Выберите тип загрузки')
+                    ->options([
+                        'new' => 'Создать новые организации',
+                        'update' => 'Обновить организации',
+                    ])
+                    ->default('new')
+                    ->required()
+                    ->live(),
+                
+                Select::make('import_with_user')
+                    ->label('Вкл/Выкл')
+                    ->options([
+                        0 => 'Нет',
+                        1 => 'Да',
+                    ])
+                    ->default(0)
+                    ->required(),
+                
+                Select::make('columns_to_update')
+                    ->label('Выбор полей для обновления данных')
+                    ->multiple()
+                    ->options([
+                        'title' => 'Название организации',
+                        'address' => 'Адрес',
+                        'coordinates' => 'Координаты',
+                        'phone' => 'Телефон',
+                        'logo' => 'Логотип',
+                        'main_photo' => 'Главное фото',
+                        'working_hours' => 'Режим работы',
+                        'gallery' => 'Галерея',
+                        'services' => 'Виды услуг',
+                    ])
+                    ->visible(fn (callable $get) => $get('import_type') === 'update'),
+            ])
+            ->statePath('data');
     }
-
-    public function submit(): void
+    
+    public function submit()
     {
-        // Получаем данные формы
         $data = $this->form->getState();
-
-        // Получаем загруженный файл
-        $this->file = $data['file'];
-
-        // Отправляем файл на кастомный маршрут
-        $response = $this->sendFileToCustomRoute($this->file);
-
-        // Уведомление об успешной отправке
-        if ($response->successful()) {
+        
+        try {
+            // Проверяем, что files содержит массив объектов UploadedFile
+            if (!isset($data['files']) || !is_array($data['files'])) {
+                throw new \Exception('Неверный формат файлов для импорта');
+            }
+            
+            // Фильтруем только объекты UploadedFile
+            $files = array_filter($data['files'], function ($file) {
+                return $file instanceof \Illuminate\Http\UploadedFile;
+            });
+            
+            if (empty($files)) {
+                throw new \Exception('Не найдено файлов для импорта');
+            }
+            
+            $result = app(ParserOrganizationService::class)->index([
+                'files' => $files, // Теперь точно массив UploadedFile объектов
+                'import_type' => $data['import_type'],
+                'import_with_user' => $data['import_with_user'],
+                'columns_to_update' => $data['columns_to_update'] ?? []
+            ]);
+            
             Notification::make()
-                ->title('Файл успешно отправлен на обработку')
+                ->title('Успешно')
+                ->body($result['message'])
                 ->success()
                 ->send();
-        } else {
+                
+        } catch (\Exception $e) {
             Notification::make()
-                ->title('Ошибка при отправке файла')
+                ->title('Ошибка')
+                ->body($e->getMessage())
                 ->danger()
                 ->send();
         }
     }
-
-    protected function sendFileToCustomRoute(UploadedFile $file)
+    
+    protected function getFormActions(): array
     {
-        // Используем HTTP-клиент для отправки файла на кастомный маршрут
-        return Http::attach(
-            'file', // Имя поля для файла
-            file_get_contents($file->getRealPath()), // Содержимое файла
-            $file->getClientOriginalName() // Имя файла
-        )->post(route('custom.import.file'));
+        return [
+            Action::make('submit')
+                ->label('Начать импорт')
+                ->submit('submit'),
+        ];
+    }
+    
+    public static function getRoutes(): array
+    {
+        return [
+            Route::get('/', static::class)
+                ->name(static::getSlug()),
+        ];
     }
 }

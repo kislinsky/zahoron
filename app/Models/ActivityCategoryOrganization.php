@@ -15,6 +15,10 @@ class ActivityCategoryOrganization extends Model
     public function organization(){
         return $this->belongsTo(Organization::class);
     }
+      
+    public function categoryMain(){
+        return $this->belongsTo(CategoryProduct::class, 'category_main_id');
+    }
 
     public function categoryProduct(){
         return $this->belongsTo(CategoryProduct::class, 'category_children_id');

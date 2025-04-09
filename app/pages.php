@@ -3,14 +3,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 function adminPages(){
-    $seo_pages=DB::table('s_e_o_s')->select('page', 'title')->distinct('page')->get();
     $seo=[
         ['Настройки','account.admin.seo.settings']
     ];
 
-    foreach($seo_pages as $seo_page){
-        $seo[]=[$seo_page->title,'account.admin.seo.object', $seo_page->page];
-    }
+   
 
     $pages=[
 
@@ -417,11 +414,8 @@ function mobilePagesAccountDecoder(){
 
 
 function mobilePagesAccountAdmin(){
-    $seo_pages=DB::table('s_e_o_s')->select('page', 'title')->distinct('page')->get();
     $seo=[['Настройки',route('account.admin.seo.settings')]];
-    foreach($seo_pages as $seo_page){
-        $seo[]=[$seo_page->title,route('account.admin.seo.object', $seo_page->page)];
-    }
+    
     return [
         
         [

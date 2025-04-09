@@ -32,6 +32,7 @@
                 <label >Выбор полей для обновления данных</label>
                 <select name="columns_to_update[]" id="" multiple>
                     <option value="title">Название организации</option>
+                    <option value="link_website">Сайт организации</option>
                     <option value="address">Адрес</option>
                     <option value="coordinates">Координаты</option>
                     <option value="phone">телефон</option>
@@ -43,6 +44,37 @@
 
                 </select>  
             </div>
+            <div class="block_input">
+                <label >Регион (Край/Область)</label>
+                <select name="filter_region" id="filter_region" class="form-select">
+                    <option value="">-- Не выбран --</option>
+                    @foreach ($edges as $edge)
+                        <option value="{{ $edge->title }}">{{ $edge->title }}</option>
+                    @endforeach
+                    {{-- Добавьте остальные регионы по вашему усмотрению --}}
+                </select>
+            </div>
+            <div class="block_input">
+                <label >Район/Округ</label>
+                <select name="filter_district" id="filter_district" class="form-select">
+                    <option value="">-- Не выбран --</option>
+                    @foreach ($areas as $area)
+                        <option value="{{ $area->title }}">{{ $area->title }}</option>
+                    @endforeach
+                    {{-- Другие округа / районы --}}
+                </select>
+            </div>
+            <div class="block_input">
+                <label >Город</label>
+                    <select name="filter_city" id="filter_city" class="form-select">
+                        <option value="">-- Не выбран --</option>
+                        @foreach ($cities as $city)
+                            <option value="{{ $city->title }}">{{ $city->title }}</option>
+                        @endforeach
+                        {{-- Добавьте нужные города --}}
+                    </select>
+            </div>
+        
                   
             @error('file')
                 <div class='error-text'>{{ $message }}</div>
@@ -71,7 +103,7 @@
     </div>       
     
   
-    <div class="title_middle">Добавить новые отзывы о организациях из файла</div>  
+    <div class="title_middle">Добавить новые цены для организаций из файла</div>  
 
     <form class='default_admin_form' action="{{ route('account.admin.parsing.organization.prices') }}" method="POST" enctype="multipart/form-data">
         

@@ -18,28 +18,30 @@ class ParserOrganizationService
 {
     public static function index($request) {
         $spreadsheet = new Spreadsheet();
-        $files = $request->file('files'); // Получаем массив файлов
+        $files = $request->file('files');
         $importType = $request->input('import_type'); // 'new' или 'update'
-        $importWithUser = $request->input('import_with_user', 0); // 0 или 1
-        $columnsToUpdate = $request->input('columns_to_update', []); // Массив колонок для обновления
+        $importWithUser = $request->input('import_with_user', 0);
+        $columnsToUpdate = $request->input('columns_to_update', []);
         
-
+        // Параметры фильтрации
+        $filterRegion = $request->input('filter_region');
+        $filterDistrict = $request->input('filter_district');
+        $filterCity = $request->input('filter_city');
+    
         foreach ($files as $file) {
             if (!$file->isValid()) {
                 continue;
             }
-
+    
             $spreadsheet = IOFactory::load($file);
             $sheet = $spreadsheet->getActiveSheet();
         
             $titles = $sheet->toArray()[0];
             $organizations = array_slice($sheet->toArray(), 1);
         
-            // Создаем массив для быстрого доступа к индексам колонок по их названиям
             $columns = array_flip($titles);
         
             foreach($organizations as $organization) {
-                // Получаем значения по названиям колонок
                 $orgId = rtrim($organization[$columns['ID']] ?? '', '!');
                 $orgTitle = $organization[$columns['Название организации']] ?? null;
                 $address = $organization[$columns['Адрес']] ?? null;
@@ -53,13 +55,37 @@ class ParserOrganizationService
                 $services = $organization[$columns['Виды услуг']] ?? null;
                 $region = $organization[$columns['Регион']] ?? null;
                 $cityName = $organization[$columns['city']] ?? null;
+                $district = $organization[$columns['Район']] ?? null;
                 $nameType = $organization[$columns['Вид деятельности']] ?? null;
-        
+                $urlSite = $organization[$columns['Сайт']] ?? null;
+    
                 // Пропускаем если нет ID
                 if(empty($orgId)) continue;
         
-                // Ищем организацию в базе
-                $existingOrg = Organization::find($orgId);
+                // Ищем организацию в базе с загрузкой связанных данных
+                $existingOrg = Organization::with(['city', 'city.area'])->find($orgId);
+                
+                // Применяем фильтры по местоположению
+                if ($filterRegion || $filterDistrict || $filterCity) {
+                    $locationMatch = true;
+                    
+                    if ($filterRegion && (!$existingOrg || !$existingOrg->city || !$existingOrg->city->area || 
+                        $existingOrg->city->area->name != $filterRegion)) {
+                        $locationMatch = false;
+                    }
+                    
+                    if ($locationMatch && $filterDistrict && (!$existingOrg || !$existingOrg->city || 
+                        $existingOrg->city->district != $filterDistrict)) {
+                        $locationMatch = false;
+                    }
+                    
+                    if ($locationMatch && $filterCity && (!$existingOrg || !$existingOrg->city || 
+                        $existingOrg->city->name != $filterCity)) {
+                        $locationMatch = false;
+                    }
+                    
+                    if (!$locationMatch) continue;
+                }
         
                 // Проверяем условие import_with_user
                 $skipByUserCondition = ($importWithUser == 0 && $existingOrg && $existingOrg->user_id != null) || 
@@ -69,10 +95,8 @@ class ParserOrganizationService
         
                 // Режим "Обновление"
                 if($importType == 'update') {
-                    // Если организация не существует - пропускаем
                     if(!$existingOrg) continue;
         
-                    // Подготовка данных для обновления
                     $updateData = [];
                     
                     // Обновляем только выбранные колонки
@@ -110,16 +134,19 @@ class ParserOrganizationService
                         }
                     }
         
+                    if(in_array('link_website', $columnsToUpdate) && isset($columns['Сайт'])) {
+                        if($urlSite) $updateData['link_website'] = $urlSite;
+                    }
+    
                     if(in_array('name_type', $columnsToUpdate) && isset($columns['Вид деятельности'])) {
                         if($nameType) $updateData['name_type'] = $nameType;
                     }
         
-                    // Применяем обновления если есть что обновлять
                     if(!empty($updateData)) {
                         $existingOrg->update($updateData);
                     }
         
-                    // Обновляем рабочие часы если они есть и выбраны для обновления
+                    // Обновляем рабочие часы
                     if(in_array('working_hours', $columnsToUpdate) && isset($columns['Режим работы'])) {
                         if($workHours) {
                             WorkingHoursOrganization::where('organization_id', $existingOrg->id)->delete();
@@ -138,7 +165,7 @@ class ParserOrganizationService
                         }
                     }
         
-                    // Обновляем галерею если есть новые фото и выбрано для обновления
+                    // Обновляем галерею
                     if(in_array('gallery', $columnsToUpdate) && isset($columns['Фотографии'])) {
                         if($photos) {
                             ImageOrganization::where('organization_id', $existingOrg->id)->delete();
@@ -154,7 +181,7 @@ class ParserOrganizationService
                         }
                     }
         
-                    // Обновляем категории если выбрано для обновления
+                    // Обновляем категории
                     if(in_array('services', $columnsToUpdate) && isset($columns['Виды услуг'])) {
                         if($services) {
                             addActiveCategory($services, [], $existingOrg);
@@ -174,20 +201,21 @@ class ParserOrganizationService
                         $description = $organization[$columns['SEO Описание']] ?? $organization[$columns['SEO Описание']] ?? null;
                         $rating = $organization[$columns['Рейтинг']] ?? null;
                         $nameType = $organization[$columns['Вид деятельности']] ?? null;
-
+    
                         $area = createArea($district, $region);
                         $city = createCity($cityName, $region);
                     
                         if($city == null || $phones == null) continue;
         
                         $time_difference = 12;
-                        // Подготовка данных для обновления
+                        
                         $updateData = [
                             'title' => $orgTitle,
                             'slug'=> slugOrganization($orgTitle),
                             'adres' => $address,
                             'width' => $latitude,
                             'longitude' => $longitude,
+                            'link_website' => $urlSite ?: $existingOrg->link_website,
                             'phone' => normalizePhone(phoneImport($phones)),
                             'img_url' => $logoUrl ?: $existingOrg->img_url,
                             'img_main_url' => $mainPhotoUrl ?: $existingOrg->img_main_url,
@@ -203,8 +231,7 @@ class ParserOrganizationService
                             'name_type'=> $nameType,
                             'telegram' => $telegram,
                         ];
-
-                        // Обновляем организацию
+    
                         $existingOrg->update($updateData);
         
                         $area = $existingOrg->city->area;
@@ -214,7 +241,7 @@ class ParserOrganizationService
                             })->unique()->toArray()) . ',';
                             $existingOrg->update(['cemetery_ids' => $cemeteries]);
                         }
-
+    
                         // Обновляем рабочие часы
                         if($workHours) {
                             WorkingHoursOrganization::where('organization_id', $existingOrg->id)->delete();
@@ -250,7 +277,6 @@ class ParserOrganizationService
                     }
                     // Если организации нет - создаем новую
                     else {
-                        // Получаем дополнительные данные для создания
                         $district = $organization[$columns['Район']] ?? null;
                         $services = $organization[$columns['Виды услуг']] ?? null;
                         $nearby = $organization[$columns['Рядом']] ?? null;
@@ -260,15 +286,13 @@ class ParserOrganizationService
                         $description = $organization[$columns['SEO Описание']] ?? null;
                         $rating = $organization[$columns['Рейтинг']] ?? null;
                         $nameType = $organization[$columns['Вид деятельности']] ?? null;
-
-                        // Создаем город и район
+    
                         $area = createArea($district, $region);
                         $city = createCity($cityName, $region);
                         if($city == null || $phones == null) continue;
         
                         $time_difference = 12;
                         
-                        // Устанавливаем дефолтные изображения если не указаны
                         $logoUrl = $logoUrl ?: 'https://default-logo-url.com';
                         $mainPhotoUrl = $mainPhotoUrl ?: 'https://default-main-photo-url.com';
         
@@ -285,6 +309,7 @@ class ParserOrganizationService
                             'content' => $description,
                             'city_id' => $city->id,
                             'rating' => $rating,
+                            'link_website' => $urlSite,
                             'href_img' => 1,
                             'href_main_img' => 1,
                             'img_main_url' => $mainPhotoUrl,
@@ -332,7 +357,7 @@ class ParserOrganizationService
                             }
                         }
         
-                        // Добавляем категории и подкатегории
+                        // Добавляем категории
                         if($services) {
                             addActiveCategory($services, [], $organization_create);
                         }
@@ -340,6 +365,7 @@ class ParserOrganizationService
                 }
             }
         }
+        
         $message = $importType == 'update' 
             ? 'Данные организаций успешно обновлены' 
             : 'Организации успешно импортированы';
