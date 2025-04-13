@@ -42,7 +42,7 @@ class AuthController extends Controller
         }
 
         
-
+        
         if($innInfo!=null && $innInfo['state']['status']=='ACTIVE'){
             $regId = Str::uuid();
             RegistrationSession::create([

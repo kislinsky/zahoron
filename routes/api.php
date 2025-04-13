@@ -18,7 +18,12 @@ Route::prefix('v1')->group(function () {
     
     Route::group(['prefix'=>'account'], function() {
         Route::group(['prefix'=>'agency'], function() {
-            Route::get('/products', [AgencyController::class, 'products']);
+            Route::prefix('products')->group(function () {
+                Route::get('/', [AgencyController::class, 'products']);
+                Route::post('/', [AgencyController::class, 'addProduct']);
+                Route::post('/{product}/update', [AgencyController::class, 'updateProduct']);
+                Route::delete('/{product}', [AgencyController::class, 'deleteProduct']);
+            });
         });
     });
 

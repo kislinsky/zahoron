@@ -155,7 +155,10 @@ function insert_city_into_url($url, $kzn){
     $path = $url_parts['path'];
     // Use a regular expression to replace the first path segment
     $path = preg_replace('/^\/[^\/]+/', '/' . $kzn, $path, 1);
-
+    
+    if(env('API_WORK')=='true'){
+        return $url_parts['scheme'] . '://' . $url_parts['host'] .  $path;
+    }
     // Reconstruct the URL with the modified path
     return $url_parts['scheme'] . '://' . $url_parts['host'] . ':'.$url_parts['port']  . $path;
 }
@@ -1295,6 +1298,7 @@ function filtersProductsOrganizations($data){
 
 
 function slugCheckProduct($slug){
+    $slug=slug($slug);
     $products=Product::where('slug','like','%'.$slug.'%')->get();
     if($products->count()>0){
         return $slug.'-'.$products->count()+1;
@@ -1409,8 +1413,8 @@ function formatContent($content,$model){
     if($model!=null){
         $title=$model->title;
         $adres=$model->adres;
-        if($model->organization!=null){
-            $organization=$model->organization->title;
+        if($model->city!=null){
+            $city=$model->city->title;
         }
     }
     
@@ -1419,7 +1423,6 @@ function formatContent($content,$model){
     $year= date('Y');
  
     $result=str_replace(["{title}","{city}","{adres}","{time}","{date}","{Year}","{organization}"],[$title,$city,$adres,$time,$date,$year,$organization],$content);
-    
     return $result;
 
 }
@@ -1433,8 +1436,8 @@ function formatContentCategoryProduct($content,$model){
     if($model!=null){
         $title=$model->title;
         $adres=$model->adres;
-        if($model->organization!=null){
-            $organization=$model->organization->title;
+        if($model->city!=null){
+            $city=$model->city->title;
         }
     }
     
@@ -1477,7 +1480,9 @@ function formatContentCategory($content,$category,$models){
     $time=date('H:i');
     $date=date('Y-m-d');
     $year= date('Y');
-
+    if($models->count()>0){
+        $city=$models->first()->organization->city->title;
+    }
     $price_min=$models->min('price');
     $price_middle=round($models->avg('price'));
     $price_max=$models->max('price');
@@ -1891,7 +1896,7 @@ function addActiveCategory(string $input, array $excludeCategories = [],$organiz
 
     foreach ($inputCategories as $category) {
 
-        $category_find=CategoryProduct::where('title',$category)->first();
+        $category_find=CategoryProduct::where('title','LIKE','%'.$category.'%')->first();
 
         // Проверяем, что категория допустима и не в списке исключений
         if ($category_find!=null && !in_array($category, $excludeCategories)) {
@@ -1935,37 +1940,37 @@ function splitCategories(string $input): array
 function getPriceByCategory(string $category): ?int
 {
     // Условия для каждой категории
-    if ($category === "Организация похорон") {
+    if ($category == "Организация похорон") {
         return 50000;
     }
-    if ($category === "Организация кремации") {
+    if ($category == "Организация кремации") {
         return 45000;
     }
-    if ($category === "Подготовка отправки груз 200") {
+    if ($category == "Подготовка отправки груза 200") {
         return 60000;
     }
-    if ($category === "Памятники") {
+    if ($category == "Памятники") {
         return 20000;
     }
-    if ($category === "Оградки") {
+    if ($category == "Оградки") {
         return 1500;
     }
-    if ($category === "Плитка") {
+    if ($category == "Плитка на могилу") {
         return 1500;
     }
-    if ($category === "Кресты") {
+    if ($category == "Кресты на могилу") {
         return 800;
     }
-    if ($category === "Венки") {
+    if ($category == "Венки") {
         return 500;
     }
-    if ($category === "Вазы") {
+    if ($category == "Вазы на могилу") {
         return 350;
     }
-    if ($category === "Поминальные обед") {
+    if ($category == "Поминальные обед") {
         return 1500;
     }
-    if ($category === "Аренда поминального зала" || $category==='Поминальные залы' ) {
+    if ($category == "Аренда поминального зала" || $category=='Поминальные залы' ) {
         return 3000;
     }
 

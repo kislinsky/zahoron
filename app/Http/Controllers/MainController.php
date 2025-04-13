@@ -16,6 +16,8 @@ class MainController extends Controller
 {
 
     public static function index(){
+        $existingOrg=Organization::find(2252328094666654);
+        addActiveCategory('Организация похорон, Организация кремации, Подготовка отправки груза 200, Памятники, Оградки, Плитка на могилу, Венки траурные, Кресты на могилу, Вазы на могилу,', [], $existingOrg);
         return IndexService::index();
     }
 

@@ -52,7 +52,7 @@ class ParserOrganizationService
                 $logoUrl = $organization[$columns['Логотип']] ?? null;
                 $mainPhotoUrl = $organization[$columns['Главное фото']] ?? null;
                 $photos = $organization[$columns['Фотографии']] ?? null;
-                $services = $organization[$columns['Виды услуг']] ?? null;
+                $services = $organization[$columns['Подраздел']] ?? null;
                 $region = $organization[$columns['Регион']] ?? null;
                 $cityName = $organization[$columns['city']] ?? null;
                 $district = $organization[$columns['Район']] ?? null;
@@ -182,7 +182,7 @@ class ParserOrganizationService
                     }
         
                     // Обновляем категории
-                    if(in_array('services', $columnsToUpdate) && isset($columns['Виды услуг'])) {
+                    if(in_array('services', $columnsToUpdate) && isset($columns['Подраздел'])) {
                         if($services) {
                             addActiveCategory($services, [], $existingOrg);
                         }
@@ -193,12 +193,15 @@ class ParserOrganizationService
                     // Если организация уже существует - обновляем ее
                     if($existingOrg) {
                         $district = $organization[$columns['Район']] ?? null;
-                        $services = $organization[$columns['Виды услуг']] ?? null;
+                        $services = $organization[$columns['Подраздел']] ?? null;
                         $nearby = $organization[$columns['Рядом']] ?? null;
                         $email = trim(trim($organization[$columns['E-mail']] ?? '', '('), ')');
                         $whatsapp = $organization[$columns['WhatsApp']] ?? null;
                         $telegram = $organization[$columns['Telegram']] ?? null;
-                        $description = $organization[$columns['SEO Описание']] ?? $organization[$columns['SEO Описание']] ?? null;
+                        $description = $organization[$columns['Описание']] ?? null;
+                        if(isset($columns['SEO Описание'])){
+                            $description = $organization[$columns['SEO Описание']] ?? null;
+                        }                        
                         $rating = $organization[$columns['Рейтинг']] ?? null;
                         $nameType = $organization[$columns['Вид деятельности']] ?? null;
     
@@ -208,6 +211,9 @@ class ParserOrganizationService
                         if($city == null || $phones == null) continue;
         
                         $time_difference = 12;
+                        if(env('API_WORK')=='true'){
+                            $time_difference=differencetHoursTimezone(getTimeByCoordinates($latitude,$longitude)['timezone']);
+                        }
                         
                         $updateData = [
                             'title' => $orgTitle,
@@ -278,12 +284,15 @@ class ParserOrganizationService
                     // Если организации нет - создаем новую
                     else {
                         $district = $organization[$columns['Район']] ?? null;
-                        $services = $organization[$columns['Виды услуг']] ?? null;
+                        $services = $organization[$columns['Подраздел']] ?? null;
                         $nearby = $organization[$columns['Рядом']] ?? null;
                         $email = trim(trim($organization[$columns['E-mail']] ?? '', '('), ')');
                         $whatsapp = $organization[$columns['WhatsApp']] ?? null;
                         $telegram = $organization[$columns['Telegram']] ?? null;
-                        $description = $organization[$columns['SEO Описание']] ?? null;
+                        $description = $organization[$columns['Описание']] ?? null;
+                        if(isset($columns['SEO Описание'])){
+                            $description = $organization[$columns['SEO Описание']] ?? null;
+                        }
                         $rating = $organization[$columns['Рейтинг']] ?? null;
                         $nameType = $organization[$columns['Вид деятельности']] ?? null;
     
@@ -292,6 +301,9 @@ class ParserOrganizationService
                         if($city == null || $phones == null) continue;
         
                         $time_difference = 12;
+                        if(env('API_WORK')=='true'){
+                            $time_difference=differencetHoursTimezone(getTimeByCoordinates($latitude,$longitude)['timezone']);
+                        }
                         
                         $logoUrl = $logoUrl ?: 'https://default-logo-url.com';
                         $mainPhotoUrl = $mainPhotoUrl ?: 'https://default-main-photo-url.com';

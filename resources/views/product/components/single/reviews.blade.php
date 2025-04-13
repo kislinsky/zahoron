@@ -3,7 +3,7 @@
     <div class="title_news">Отзывы клиентов</div>
     <div class="blue_btn" data-bs-toggle="modal" data-bs-target="#add_review_form">Оставить отзыв</div>
     @if (isset($comments))
-        @if (count($comments)>0)
+        @if ($comments->count()>0)
             @foreach ($comments as $comment)
                 <div class="comment">
                     <div class="flex_comment">

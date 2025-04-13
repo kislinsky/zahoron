@@ -126,7 +126,7 @@ use OpenApi\Attributes as OA;
  
      /**
       * @OA\Post(
-      *     path="/v1/auth-init",
+      *     path="/v1/auth",
       *     summary="Инициализация авторизации",
       *     tags={"Авториция/регистрация"},
       *     @OA\RequestBody(
@@ -159,7 +159,7 @@ use OpenApi\Attributes as OA;
  
      /**
       * @OA\Post(
-      *     path="/v1/auth-confirm",
+      *     path="/v1/auth/confirm",
       *     summary="Подтверждение авторизации по коду из SMS",
       *     tags={"Авториция/регистрация"},
       *     @OA\RequestBody(

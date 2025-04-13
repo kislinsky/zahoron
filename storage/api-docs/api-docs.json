@@ -14,7 +14,7 @@
         "/v1/account/agency/products": {
             "get": {
                 "tags": [
-                    "Продукты организции"
+                    "Продукты организации"
                 ],
                 "summary": "Получение списка продуктов агентства",
                 "description": "Возвращает отфильтрованный список продуктов организации с пагинацией",
@@ -217,6 +217,508 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Organization not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Продукты организации"
+                ],
+                "summary": "Добавить новый товар",
+                "operationId": "523497b31b3dfa455dc7d7f5c093fb1a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "organization_id",
+                                    "title",
+                                    "price",
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "organization_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Кепка Adidas"
+                                    },
+                                    "content": {
+                                        "type": "string",
+                                        "example": "Удобная кепка"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 1999.99
+                                    },
+                                    "price_sale": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 10
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "size": {
+                                        "type": "string",
+                                        "example": "L"
+                                    },
+                                    "material": {
+                                        "type": "string",
+                                        "example": "Хлопок"
+                                    },
+                                    "color": {
+                                        "type": "string",
+                                        "example": "Красный"
+                                    },
+                                    "images[]": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product added successfully"
+                    },
+                    "400": {
+                        "description": "Validation errors"
+                    }
+                }
+            }
+        },
+        "/v1/account/agency/products/{productId}/update": {
+            "post": {
+                "tags": [
+                    "Продукты организации"
+                ],
+                "summary": "Обновление товара",
+                "description": "Обновляет информацию о товаре. Требуется ID организации для проверки владельца. Все поля, кроме organization_id, являются необязательными.",
+                "operationId": "1541dff4275c4b5d618c6dac1cee2524",
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "path",
+                        "description": "ID товара",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Данные для обновления товара",
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "organization_id"
+                                ],
+                                "properties": {
+                                    "organization_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Новая кепка",
+                                        "nullable": true
+                                    },
+                                    "content": {
+                                        "type": "string",
+                                        "example": "Описание товара",
+                                        "nullable": true
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "example": 1999.99,
+                                        "nullable": true
+                                    },
+                                    "price_sale": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "maximum": 100,
+                                        "minimum": 0,
+                                        "example": 1499.99,
+                                        "nullable": true
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 2,
+                                        "nullable": true
+                                    },
+                                    "size": {
+                                        "type": "string",
+                                        "example": "XL",
+                                        "nullable": true
+                                    },
+                                    "material": {
+                                        "type": "string",
+                                        "example": "Хлопок",
+                                        "nullable": true
+                                    },
+                                    "color": {
+                                        "type": "string",
+                                        "example": "Красный",
+                                        "nullable": true
+                                    },
+                                    "images[]": {
+                                        "description": "До 5 изображений (jpeg,png,jpg,gif), макс. размер 2MB",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        },
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Товар успешно обновлен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product updated successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "organization_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Новая кепка"
+                                                },
+                                                "slug": {
+                                                    "type": "string",
+                                                    "example": "novaya-kepka"
+                                                },
+                                                "content": {
+                                                    "type": "string",
+                                                    "example": "Описание товара",
+                                                    "nullable": true
+                                                },
+                                                "price": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 1999.99
+                                                },
+                                                "price_sale": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 1499.99,
+                                                    "nullable": true
+                                                },
+                                                "total_price": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 1499.99
+                                                },
+                                                "category_id": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "size": {
+                                                    "type": "string",
+                                                    "example": "XL",
+                                                    "nullable": true
+                                                },
+                                                "material": {
+                                                    "type": "string",
+                                                    "example": "Хлопок",
+                                                    "nullable": true
+                                                },
+                                                "color": {
+                                                    "type": "string",
+                                                    "example": "Красный",
+                                                    "nullable": true
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "active"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2023-01-01T00:00:00Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2023-01-01T00:00:00Z"
+                                                },
+                                                "images": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "uploads/product/image1.jpg"
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2023-01-01T00:00:00Z"
+                                                            },
+                                                            "updated_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2023-01-01T00:00:00Z"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибки валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation errors"
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "organization_id": [
+                                                    "Поле organization_id обязательно для заполнения."
+                                                ],
+                                                "price": [
+                                                    "Поле price должно быть числом."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product doesn't belong to this organization"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Товар не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/account/agency/products/{productId}": {
+            "delete": {
+                "tags": [
+                    "Продукты организации"
+                ],
+                "summary": "Удалить товар",
+                "operationId": "9714bbe4d916f42b085b07ea21895165",
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "path",
+                        "description": "ID товара",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "organization_id"
+                                ],
+                                "properties": {
+                                    "organization_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation errors"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product does not belong to this organization"
                                         }
                                     },
                                     "type": "object"
@@ -491,13 +993,13 @@
                 }
             }
         },
-        "/v1/auth-init": {
+        "/v1/auth": {
             "post": {
                 "tags": [
                     "Авториция/регистрация"
                 ],
                 "summary": "Инициализация авторизации",
-                "operationId": "2a81a21f70ce4cf081d39afe4facbc63",
+                "operationId": "dc43034ebd4bec1ae90f0cd3170d4ae8",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -558,13 +1060,13 @@
                 }
             }
         },
-        "/v1/auth-confirm": {
+        "/v1/auth/confirm": {
             "post": {
                 "tags": [
                     "Авториция/регистрация"
                 ],
                 "summary": "Подтверждение авторизации по коду из SMS",
-                "operationId": "b54cf9f516f1765919e4081a3a10dc6f",
+                "operationId": "b0234f3c6cc251de3831557bc9f03317",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -631,8 +1133,8 @@
     },
     "tags": [
         {
-            "name": "Продукты организции",
-            "description": "Продукты организции"
+            "name": "Продукты организации",
+            "description": "Продукты организации"
         },
         {
             "name": "Авториция/регистрация",
