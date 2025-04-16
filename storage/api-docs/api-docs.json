@@ -236,7 +236,7 @@
                     "Продукты организации"
                 ],
                 "summary": "Добавить новый товар",
-                "operationId": "523497b31b3dfa455dc7d7f5c093fb1a",
+                "operationId": "5bdc37e6b774986b24f0fe66cc4e1a19",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -317,7 +317,7 @@
                 ],
                 "summary": "Обновление товара",
                 "description": "Обновляет информацию о товаре. Требуется ID организации для проверки владельца. Все поля, кроме organization_id, являются необязательными.",
-                "operationId": "1541dff4275c4b5d618c6dac1cee2524",
+                "operationId": "58baa61fb9e12060577911b1453dbb7f",
                 "parameters": [
                     {
                         "name": "productId",
@@ -611,7 +611,7 @@
                     "Продукты организации"
                 ],
                 "summary": "Удалить товар",
-                "operationId": "9714bbe4d916f42b085b07ea21895165",
+                "operationId": "f4540ac5b06227a113b6d264e41164c7",
                 "parameters": [
                     {
                         "name": "productId",
@@ -734,10 +734,85 @@
                 ]
             }
         },
+        "/v1/account/agency/settings/update": {
+            "post": {
+                "tags": [
+                    "Профиль организации"
+                ],
+                "summary": "Обновление настроек организации/ИП",
+                "description": "Обновляет профиль организации или индивидуального предпринимателя",
+                "operationId": "3b88dfa27debe90c9d79fa4d70360183",
+                "requestBody": {
+                    "description": "Данные для обновления профиля",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "$ref": "#/components/schemas/IndividualEntrepreneurUpdateRequest"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/OrganizationUpdateRequest"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешное обновление профиля",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserProfileResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибки валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1/register": {
             "post": {
                 "tags": [
-                    "Авториция/регистрация"
+                    "Авторизация/регистрация"
                 ],
                 "summary": "Регистрация нового пользователя",
                 "operationId": "8d19ebf27aad77f03d818b41eb43fbf1",
@@ -859,7 +934,7 @@
         "/v1/confirm-info": {
             "post": {
                 "tags": [
-                    "Авториция/регистрация"
+                    "Авторизация/регистрация"
                 ],
                 "summary": "Подтверждение информации и отправка SMS кода",
                 "operationId": "f94239264f53850c346ce518aa311d57",
@@ -926,7 +1001,7 @@
         "/v1/confirm-phone": {
             "post": {
                 "tags": [
-                    "Авториция/регистрация"
+                    "Авторизация/регистрация"
                 ],
                 "summary": "Подтверждение телефона по коду из SMS",
                 "operationId": "ca93c0130fc835d807edf9a8a35c857a",
@@ -996,7 +1071,7 @@
         "/v1/auth": {
             "post": {
                 "tags": [
-                    "Авториция/регистрация"
+                    "Авторизация/регистрация"
                 ],
                 "summary": "Инициализация авторизации",
                 "operationId": "dc43034ebd4bec1ae90f0cd3170d4ae8",
@@ -1063,7 +1138,7 @@
         "/v1/auth/confirm": {
             "post": {
                 "tags": [
-                    "Авториция/регистрация"
+                    "Авторизация/регистрация"
                 ],
                 "summary": "Подтверждение авторизации по коду из SMS",
                 "operationId": "b0234f3c6cc251de3831557bc9f03317",
@@ -1131,17 +1206,373 @@
             }
         }
     },
-    "tags": [
-        {
-            "name": "Продукты организации",
-            "description": "Продукты организации"
-        },
-        {
-            "name": "Авториция/регистрация",
-            "description": "Авториция/регистрация"
-        }
-    ],
     "components": {
+        "schemas": {
+            "IndividualEntrepreneurUpdateRequest": {
+                "required": [
+                    "user_id",
+                    "phone",
+                    "inn",
+                    "city_id",
+                    "edge_id"
+                ],
+                "properties": {
+                    "user_id": {
+                        "description": "ID пользователя",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Иван"
+                    },
+                    "surname": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Иванов"
+                    },
+                    "patronymic": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Иванович"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "pattern": "^\\+\\d{11,15}$",
+                        "example": "+79991234567"
+                    },
+                    "address": {
+                        "type": "string",
+                        "maxLength": 500,
+                        "example": "ул. Ленина, 1"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255,
+                        "example": "org@example.com"
+                    },
+                    "whatsapp": {
+                        "type": "string",
+                        "maxLength": 20,
+                        "example": "79991234567"
+                    },
+                    "telegram": {
+                        "type": "string",
+                        "maxLength": 50,
+                        "example": "@username"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "minLength": 8,
+                        "example": "oldPassword123"
+                    },
+                    "password_new": {
+                        "type": "string",
+                        "format": "password",
+                        "minLength": 8,
+                        "example": "newPassword123"
+                    },
+                    "password_new_2": {
+                        "type": "string",
+                        "format": "password",
+                        "minLength": 8,
+                        "example": "newPassword123"
+                    },
+                    "email_notifications": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "sms_notifications": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "language": {
+                        "type": "integer",
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "example": 1
+                    },
+                    "theme": {
+                        "type": "string",
+                        "enum": [
+                            "light",
+                            "dark"
+                        ],
+                        "example": "light"
+                    },
+                    "inn": {
+                        "type": "string",
+                        "pattern": "^\\d{10,12}$",
+                        "example": "123456789012"
+                    },
+                    "name_organization": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "ИП Иванов"
+                    },
+                    "ogrn": {
+                        "type": "string",
+                        "pattern": "^\\d{13}$",
+                        "example": "1234567890123"
+                    },
+                    "city_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "edge_id": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "OrganizationUpdateRequest": {
+                "required": [
+                    "phone",
+                    "inn",
+                    "city_id",
+                    "edge_id",
+                    "in_face",
+                    "regulation"
+                ],
+                "properties": {
+                    "organizational_form": {
+                        "type": "string",
+                        "enum": [
+                            "organization"
+                        ],
+                        "example": "organization"
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Иван"
+                    },
+                    "surname": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Иванов"
+                    },
+                    "patronymic": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Иванович"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "pattern": "^\\+\\d{11,15}$",
+                        "example": "+79991234567"
+                    },
+                    "address": {
+                        "type": "string",
+                        "maxLength": 500,
+                        "example": "ул. Ленина, 1"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255,
+                        "example": "org@example.com"
+                    },
+                    "whatsapp": {
+                        "type": "string",
+                        "maxLength": 20,
+                        "example": "79991234567"
+                    },
+                    "telegram": {
+                        "type": "string",
+                        "maxLength": 50,
+                        "example": "@username"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "minLength": 8,
+                        "example": "oldPassword123"
+                    },
+                    "password_new": {
+                        "type": "string",
+                        "format": "password",
+                        "minLength": 8,
+                        "example": "newPassword123"
+                    },
+                    "password_new_2": {
+                        "type": "string",
+                        "format": "password",
+                        "minLength": 8,
+                        "example": "newPassword123"
+                    },
+                    "email_notifications": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "sms_notifications": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "language": {
+                        "type": "integer",
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "example": 1
+                    },
+                    "theme": {
+                        "type": "string",
+                        "enum": [
+                            "light",
+                            "dark"
+                        ],
+                        "example": "light"
+                    },
+                    "inn": {
+                        "type": "string",
+                        "pattern": "^\\d{10}$",
+                        "example": "123456789012"
+                    },
+                    "name_organization": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "ООО Ромашка"
+                    },
+                    "city_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "edge_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "in_face": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Генеральный директор"
+                    },
+                    "regulation": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Устава"
+                    },
+                    "kpp": {
+                        "type": "string",
+                        "pattern": "^\\d{9}$",
+                        "example": "123456789"
+                    }
+                },
+                "type": "object"
+            },
+            "UserProfileResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Настройки успешно обновлены"
+                    },
+                    "data": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "Иван"
+                            },
+                            "surname": {
+                                "type": "string",
+                                "example": "Иванов"
+                            },
+                            "email": {
+                                "type": "string",
+                                "example": "user@example.com"
+                            },
+                            "phone": {
+                                "type": "string",
+                                "example": "+79991234567"
+                            },
+                            "organizational_form": {
+                                "type": "string",
+                                "example": "ep"
+                            },
+                            "inn": {
+                                "type": "string",
+                                "example": "123456789012"
+                            },
+                            "email_notifications": {
+                                "type": "boolean",
+                                "example": true
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationErrorResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Validation errors"
+                    },
+                    "errors": {
+                        "properties": {
+                            "phone": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "example": "Номер телефона уже занят"
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "UnauthorizedResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Unauthenticated"
+                    }
+                },
+                "type": "object"
+            },
+            "ServerErrorResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Ошибка при обновлении настроек"
+                    }
+                },
+                "type": "object"
+            }
+        },
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
@@ -1151,6 +1582,20 @@
             }
         }
     },
+    "tags": [
+        {
+            "name": "Продукты организации",
+            "description": "Продукты организации"
+        },
+        {
+            "name": "Профиль организации",
+            "description": "Профиль организации"
+        },
+        {
+            "name": "Авторизация/регистрация",
+            "description": "Авторизация/регистрация"
+        }
+    ],
     "security": [
         {
             "bearerAuth": []

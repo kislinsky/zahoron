@@ -19,7 +19,7 @@
                 <div class="info_li_organization">
                     <a href='{{$organization->route()}}'class="title_li_organiaztion">{{$organization->title}}</a>
                     <div class="text_gray">{{$organization->name_type}}</div>
-                    <div class="text_gray">Адрес: {{$organization->adres}}</div>
+                    <div class="text_gray"> {{$organization->adres}}</div>
                 </div>
             </div>
 
@@ -36,7 +36,7 @@
             <div class="info_li_organization li_org_dekstop">
                 <a href='{{$organization->route()}}'class="title_li_organiaztion"> {{$organization->title}}</a>
                 <div class="text_gray">{{$organization->name_type}}</div>
-                <div class="text_gray">Адрес: {{$organization->adres}}</div>
+                <div class="text_gray"> {{$organization->adres}}</div>
                 <div class="text_black"><img src="{{ asset('storage/uploads/Frame 334.svg') }}" alt=""> {{countReviewsOrganization($organization)}} оценки - {{$organization->timeEndWorkingNow()}}</div>
             </div>
 

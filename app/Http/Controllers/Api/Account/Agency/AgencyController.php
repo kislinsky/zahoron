@@ -1,13 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Api\Account;
+namespace App\Http\Controllers\Api\Account\Agency;
 
 use App\Http\Controllers\Controller;
 use App\Models\CategoryProduct;
 use App\Models\ImageProduct;
 use App\Models\Organization;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AgencyController extends Controller
@@ -288,5 +291,183 @@ class AgencyController extends Controller
             'success' => true,
             'message' => 'Product deleted successfully'
         ]);
+    }
+
+    public static function getLinksOrganization(){
+
+    }
+
+
+    public static function settingsUserUpdate(Request $request)
+    {
+        
+        // Общие правила валидации
+        $commonRules = [
+            'user_id'=>'required|integer',
+            'phone' => 'required|string',
+            'address' => 'string|nullable',
+            'email' => 'email|nullable',
+            'whatsapp' => 'string|nullable',
+            'telegram' => 'string|nullable',
+            'password' => 'nullable|string|min:8',
+            'password_new' => 'nullable|string|min:8',
+            'password_new_2' => 'nullable|string|min:8',
+            'email_notifications' => 'nullable|boolean',
+            'sms_notifications' => 'nullable|boolean',
+            'language' => 'nullable|integer',
+            'theme' => 'nullable|string',
+            'inn' => 'required|string',
+            'name_organization' => 'nullable|string',
+            'city_id' => 'required|integer',
+            'edge_id' => 'required|integer',
+        ];
+
+        // Правила для ИП
+        $epRules = [
+            'name' => 'string|nullable',
+            'surname' => 'string|nullable',
+            'patronymic' => 'string|nullable',
+            'ogrn' => 'nullable|string',
+        ];
+
+        // Правила для организаций
+        $orgRules = [
+            'in_face' => 'required|string',
+            'regulation' => 'required|string',
+        ];
+
+        $user=null;
+        if($request->user_id!=null){
+            $user = User::find($request->user_id);
+            if ($user==null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Несуществующий или недействующий пользователь'
+                ], 400);
+            }
+            if ($user->organizational_form==null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Пользователь не является организацией'
+                ], 400);
+            }
+        }
+       
+        // Объединяем правила в зависимости от типа организации
+        $validationRules = $user->organizational_form == 'ep' 
+            ? array_merge($commonRules, $epRules) 
+            : array_merge($commonRules, $orgRules);
+
+        $validator = Validator::make($request->all(), $validationRules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $data = $validator->validated();
+
+
+       
+
+        // Проверка организации через API, если включено
+        if (env('API_WORK') == 'true') {
+            $organizationData = checkOrganizationInn($data['inn']);
+            
+            if (!$organizationData || $organizationData['state']['status'] != 'ACTIVE') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Несуществующий или недействующий ИНН'
+                ], 400);
+            }
+
+            // Обновляем данные из API
+            $data['name'] = $organizationData['fio']['name'] ?? $data['name'] ?? null;
+            $data['surname'] = $organizationData['fio']['surname'] ?? $data['surname'] ?? null;
+            $data['patronymic'] = $organizationData['fio']['patronymic'] ?? $data['patronymic'] ?? null;
+            $data['ogrn'] = $organizationData['ogrn'] ?? $data['ogrn'] ?? null;
+        }
+
+        // Проверка уникальности email и телефона
+        $emailExists = User::where('email', $data['email'])
+            ->where('id', '!=', $user->id)
+            ->exists();
+
+        $phoneExists = User::where('phone', $data['phone'])
+            ->where('id', '!=', $user->id)
+            ->exists();
+
+        if ($emailExists || $phoneExists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Такой телефон или email уже существует'
+            ], 400);
+        }
+
+        // Подготовка данных для обновления
+        $updateData = [
+            'phone' => $data['phone'],
+            'address' => $data['address'] ?? null,
+            'email' => $data['email'],
+            'whatsapp' => $data['whatsapp'] ?? null,
+            'telegram' => $data['telegram'] ?? null,
+            'language' => $data['language'] ?? null,
+            'theme' => $data['theme'] ?? null,
+            'inn' => $data['inn'],
+            'name_organization' => $data['name_organization'] ?? null,
+            'city_id' => $data['city_id'],
+            'edge_id' => $data['edge_id'],
+            'email_notifications' => $data['email_notifications'] ?? false,
+            'sms_notifications' => $data['sms_notifications'] ?? false,
+        ];
+
+        // Добавляем специфичные поля для ИП
+        if ($user->organizational_form == 'ep') {
+            $updateData['name'] = $data['name'] ?? null;
+            $updateData['surname'] = $data['surname'] ?? null;
+            $updateData['patronymic'] = $data['patronymic'] ?? null;
+            $updateData['ogrn'] = $data['ogrn'] ?? null;
+        } else {
+            $updateData['in_face'] = $data['in_face'];
+            $updateData['regulation'] = $data['regulation'];
+        }
+
+        // Обновление пароля
+        if (!empty($data['password']) && !empty($data['password_new'])) {
+            if (!Hash::check($data['password'], $user->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Неверный текущий пароль'
+                ], 400);
+            }
+
+            if ($data['password_new'] !== $data['password_new_2']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Новые пароли не совпадают'
+                ], 400);
+            }
+
+            $updateData['password'] = Hash::make($data['password_new']);
+        }
+
+        // Обновление пользователя
+        try {
+            $user->update($updateData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Настройки успешно обновлены',
+                'data' => $user
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при обновлении настроек: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

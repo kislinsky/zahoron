@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\Account\AgencyController;
+use App\Http\Controllers\Api\Account\Agency\AgencyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -18,6 +18,9 @@ Route::prefix('v1')->group(function () {
     
     Route::group(['prefix'=>'account'], function() {
         Route::group(['prefix'=>'agency'], function() {
+
+            Route::post('/settings/update', [AgencyController::class, 'settingsUserUpdate']);
+
             Route::prefix('products')->group(function () {
                 Route::get('/', [AgencyController::class, 'products']);
                 Route::post('/', [AgencyController::class, 'addProduct']);

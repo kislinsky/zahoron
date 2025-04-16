@@ -1,5 +1,5 @@
 
-@if($organizations!=null && $organizations->total()>0)
+@if($organizations!=null && $organizations->count()>0)
     @foreach ($organizations as $organization)
         <div class="li_organization_provider">
             <div class="li_provider_flex">

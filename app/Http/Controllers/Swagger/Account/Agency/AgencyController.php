@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Swagger\Account;
+namespace App\Http\Controllers\Swagger\Account\Agency;
 
 use App\Http\Controllers\Controller;
 
@@ -359,5 +359,146 @@ class AgencyController extends Controller
  * )
  */
   public function deleteProduct(Request $request, $productId){}
+
+/**
+ * @OA\Post(
+ *     path="/v1/account/agency/settings/update",
+ *     summary="Обновление настроек организации/ИП",
+ *     description="Обновляет профиль организации или индивидуального предпринимателя",
+ *     tags={"Профиль организации"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         description="Данные для обновления профиля",
+ *         @OA\JsonContent(
+ *             oneOf={
+ *                 @OA\Schema(ref="#/components/schemas/IndividualEntrepreneurUpdateRequest"),
+ *                 @OA\Schema(ref="#/components/schemas/OrganizationUpdateRequest")
+ *             }
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешное обновление профиля",
+ *         @OA\JsonContent(ref="#/components/schemas/UserProfileResponse")
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Ошибки валидации",
+ *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Не авторизован",
+ *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Ошибка сервера",
+ *         @OA\JsonContent(ref="#/components/schemas/ServerErrorResponse")
+ *     )
+ * )
+ * @OA\Schema(
+ *     schema="IndividualEntrepreneurUpdateRequest",
+ *     type="object",
+ *     required={"user_id", "phone", "inn", "city_id", "edge_id"},
+ *     @OA\Property(property="user_id", type="integer", example=1, description="ID пользователя"),
+ *     @OA\Property(property="name", type="string", example="Иван", maxLength=255),
+ *     @OA\Property(property="surname", type="string", example="Иванов", maxLength=255),
+ *     @OA\Property(property="patronymic", type="string", example="Иванович", maxLength=255),
+ *     @OA\Property(property="phone", type="string", example="+79991234567", pattern="^\+\d{11,15}$"),
+ *     @OA\Property(property="address", type="string", example="ул. Ленина, 1", maxLength=500),
+ *     @OA\Property(property="email", type="string", format="email", example="org@example.com", maxLength=255),
+ *     @OA\Property(property="whatsapp", type="string", example="79991234567", maxLength=20),
+ *     @OA\Property(property="telegram", type="string", example="@username", maxLength=50),
+ *     @OA\Property(property="password", type="string", format="password", example="oldPassword123", minLength=8),
+ *     @OA\Property(property="password_new", type="string", format="password", example="newPassword123", minLength=8),
+ *     @OA\Property(property="password_new_2", type="string", format="password", example="newPassword123", minLength=8),
+ *     @OA\Property(property="email_notifications", type="boolean", example=true),
+ *     @OA\Property(property="sms_notifications", type="boolean", example=false),
+ *     @OA\Property(property="language", type="integer", example=1, enum={1, 2}),
+ *     @OA\Property(property="theme", type="string", example="light", enum={"light", "dark"}),
+ *     @OA\Property(property="inn", type="string", example="123456789012", pattern="^\d{10,12}$"),
+ *     @OA\Property(property="name_organization", type="string", example="ИП Иванов", maxLength=255),
+ *     @OA\Property(property="ogrn", type="string", example="1234567890123", pattern="^\d{13}$"),
+ *     @OA\Property(property="city_id", type="integer", example=1),
+ *     @OA\Property(property="edge_id", type="integer", example=1)
+ * )
+ * @OA\Schema(
+ *     schema="OrganizationUpdateRequest",
+ *     type="object",
+ *     required={"phone", "inn", "city_id", "edge_id", "in_face", "regulation"},
+ *     @OA\Property(property="organizational_form", type="string", enum={"organization"}, example="organization"),
+ *     @OA\Property(property="name", type="string", example="Иван", maxLength=255),
+ *     @OA\Property(property="surname", type="string", example="Иванов", maxLength=255),
+ *     @OA\Property(property="patronymic", type="string", example="Иванович", maxLength=255),
+ *     @OA\Property(property="phone", type="string", example="+79991234567", pattern="^\+\d{11,15}$"),
+ *     @OA\Property(property="address", type="string", example="ул. Ленина, 1", maxLength=500),
+ *     @OA\Property(property="email", type="string", format="email", example="org@example.com", maxLength=255),
+ *     @OA\Property(property="whatsapp", type="string", example="79991234567", maxLength=20),
+ *     @OA\Property(property="telegram", type="string", example="@username", maxLength=50),
+ *     @OA\Property(property="password", type="string", format="password", example="oldPassword123", minLength=8),
+ *     @OA\Property(property="password_new", type="string", format="password", example="newPassword123", minLength=8),
+ *     @OA\Property(property="password_new_2", type="string", format="password", example="newPassword123", minLength=8),
+ *     @OA\Property(property="email_notifications", type="boolean", example=true),
+ *     @OA\Property(property="sms_notifications", type="boolean", example=false),
+ *     @OA\Property(property="language", type="integer", example=1, enum={1, 2}),
+ *     @OA\Property(property="theme", type="string", example="light", enum={"light", "dark"}),
+ *     @OA\Property(property="inn", type="string", example="123456789012", pattern="^\d{10}$"),
+ *     @OA\Property(property="name_organization", type="string", example="ООО Ромашка", maxLength=255),
+ *     @OA\Property(property="city_id", type="integer", example=1),
+ *     @OA\Property(property="edge_id", type="integer", example=1),
+ *     @OA\Property(property="in_face", type="string", example="Генеральный директор", maxLength=255),
+ *     @OA\Property(property="regulation", type="string", example="Устава", maxLength=255),
+ *     @OA\Property(property="kpp", type="string", example="123456789", pattern="^\d{9}$")
+ * )
+ * @OA\Schema(
+ *     schema="UserProfileResponse",
+ *     type="object",
+ *     @OA\Property(property="success", type="boolean", example=true),
+ *     @OA\Property(property="message", type="string", example="Настройки успешно обновлены"),
+ *     @OA\Property(
+ *         property="data",
+ *         type="object",
+ *         @OA\Property(property="id", type="integer", example=1),
+ *         @OA\Property(property="name", type="string", example="Иван"),
+ *         @OA\Property(property="surname", type="string", example="Иванов"),
+ *         @OA\Property(property="email", type="string", example="user@example.com"),
+ *         @OA\Property(property="phone", type="string", example="+79991234567"),
+ *         @OA\Property(property="organizational_form", type="string", example="ep"),
+ *         @OA\Property(property="inn", type="string", example="123456789012"),
+ *         @OA\Property(property="email_notifications", type="boolean", example=true),
+ *         @OA\Property(property="updated_at", type="string", format="date-time")
+ *     )
+ * )
+ * @OA\Schema(
+ *     schema="ValidationErrorResponse",
+ *     type="object",
+ *     @OA\Property(property="success", type="boolean", example=false),
+ *     @OA\Property(property="message", type="string", example="Validation errors"),
+ *     @OA\Property(
+ *         property="errors",
+ *         type="object",
+ *         @OA\Property(
+ *             property="phone",
+ *             type="array",
+ *             @OA\Items(type="string", example="Номер телефона уже занят")
+ *         )
+ *     )
+ * )
+ * @OA\Schema(
+ *     schema="UnauthorizedResponse",
+ *     type="object",
+ *     @OA\Property(property="success", type="boolean", example=false),
+ *     @OA\Property(property="message", type="string", example="Unauthenticated")
+ * )
+ * @OA\Schema(
+ *     schema="ServerErrorResponse",
+ *     type="object",
+ *     @OA\Property(property="success", type="boolean", example=false),
+ *     @OA\Property(property="message", type="string", example="Ошибка при обновлении настроек")
+ * )
+ */
+public static function settingsUserUpdate(Request $request){}
 
 }

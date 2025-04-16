@@ -725,7 +725,10 @@ function orgniaztionsProviderFilters($data){
         }  
     }
 
-    return $organizations_category->where('status',1)->paginate(getSeo('organizations-catalog','count'));
+    return $organizations_category->with('organization')
+        ->whereHas('organization', function($query) {
+            $query->where('status', '1');
+        })->paginate(getSeo('organizations-catalog','count'));
 }
 
 
@@ -779,11 +782,23 @@ function searchOrganization($name){
 }
 
 
-function cityWithOrganizationProvider(){
-    $ids_city=ActivityCategoryOrganization::whereHas('organization', function ($query)  {
-        $query->where('role','organization-provider');
-    })->pluck('city_id');
-    $cities=City::whereIn('id',$ids_city)->get();
+function cityWithOrganizationProvider()
+{
+    // Получаем ID городов из связанных организаций
+    $cityIds = ActivityCategoryOrganization::with('organization')
+        ->whereHas('organization', function($query) {
+            $query->where('role', 'organization-provider');
+        })
+        ->get()
+        ->pluck('organization.city_id') // Берем city_id из связанной организации
+        ->unique() // Убираем дубликаты
+        ->filter() // Удаляем null значения
+        ->values() // Сбрасываем ключи
+        ->toArray();
+
+    // Получаем города по найденным ID
+    $cities = City::whereIn('id', $cityIds)->get();
+
     return $cities;
 }
 
@@ -1400,9 +1415,13 @@ function mainCategoryPriceList(){
 }
 
 function getSeo($page,$column){
-    return $content = SEO::where('name',$column)->whereHas('seoObject', function ($query) use ($page) {
+    $content = SEO::where('name',$column)->whereHas('seoObject', function ($query) use ($page) {
         $query->where('title', $page);
-    })->first()->content;
+    })->first();
+    if($content!=null){
+        return $content->content;
+    }
+    return null;
 }
 
 function formatContent($content,$model){

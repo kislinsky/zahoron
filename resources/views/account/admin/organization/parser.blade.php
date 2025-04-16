@@ -22,13 +22,13 @@
                 </select>  
             </div>
             <div class="block_input">
-                <label >Вкл/выкл</label>
+                <label >Прикрепленные организации импортировать</label>
                 <select name="import_with_user" id="">
                     <option value="0">Нет</option>
                     <option value="1">Да</option>
                 </select>  
             </div>
-            <div class="block_input">
+            <div class="block_input filter_update_organization">
                 <label >Выбор полей для обновления данных</label>
                 <select name="columns_to_update[]" id="" multiple>
                     <option value="title">Название организации</option>
@@ -44,7 +44,7 @@
 
                 </select>  
             </div>
-            <div class="block_input">
+            <div class="block_input filter_update_organization">
                 <label >Регион (Край/Область)</label>
                 <select name="filter_region" id="filter_region" class="form-select">
                     <option value="">-- Не выбран --</option>
@@ -54,7 +54,7 @@
                     {{-- Добавьте остальные регионы по вашему усмотрению --}}
                 </select>
             </div>
-            <div class="block_input">
+            <div class="block_input filter_update_organization">
                 <label >Район/Округ</label>
                 <select name="filter_district" id="filter_district" class="form-select">
                     <option value="">-- Не выбран --</option>
@@ -64,7 +64,7 @@
                     {{-- Другие округа / районы --}}
                 </select>
             </div>
-            <div class="block_input">
+            <div class="block_input filter_update_organization">
                 <label >Город</label>
                     <select name="filter_city" id="filter_city" class="form-select">
                         <option value="">-- Не выбран --</option>
@@ -118,7 +118,7 @@
             
            
             <div class="block_input">
-                <label >Вкл/выкл</label>
+                <label >Прикрепленные организации импортировать</label>
                 <select name="import_with_user_prices" id="">
                     <option value="0">Нет</option>
                     <option value="1">Да</option>
@@ -135,7 +135,18 @@
             <button type="submit" class="btn btn-primary margin_top_20">Импортировать цены</button>
 
         </form>
-    
+
+<script>
+    $('select[name="import_type"]').on( "change", function() {
+        val=$(this).children('option:checked').val()
+        if(val=='update'){
+            $( ".filter_update_organization" ).show()
+        }else{
+            $( ".filter_update_organization" ).hide()
+        }
+    })
+</script>
+
 @endsection
 
 

@@ -7418,3 +7418,7 @@ color: #050505;
 .password_reset .blue_btn{
     max-width: 100%;
 }
+
+.filter_update_organization{
+    display: none;
+}

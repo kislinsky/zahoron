@@ -30,8 +30,15 @@ class OrganizationProviderService
             $category=CategoryProductProvider::find($data['category_id']);
             $category_main=CategoryProductProvider::find($category->parent_id);
         }
-       
-        $oragnizations_rating=ActivityCategoryOrganization::where('role','organization-provider')->where('category_children_id', $category->id)->orderBy('price','asc')->where('city_id',$city->id)->get();
+     
+       $organizations_rating = ActivityCategoryOrganization::with('organization')
+    ->whereHas('organization', function($query) use ($city) {  // Добавлен use ($city)
+        $query->where('role', 'organization-provider')
+              ->where('city_id', $city->id);
+    })
+    ->where('category_children_id', $category->id)
+    ->orderBy('price', 'asc')
+    ->get();
 
         $organizations_prices=organizationsProviderPrices($data);
         $price_min=null;
@@ -60,7 +67,28 @@ class OrganizationProviderService
         if($organizations_category->total()<3){
             SEOMeta::setRobots('noindex, nofollow');
         }
-        return view('organization.catalog.catalog-organization-provider',compact('title_h1','filter_work','oragnizations_rating','city_all','category_main','city','cats','organizations_category','price_min','price_middle','price_max','category','sort'));
+        
+
+        $city=selectCity();
+       
+
+        if(isset($data['city_id']) && $data['city_id']!=null){
+            $city=City::find($data['city_id']);
+        }
+        $category=categoryProductProviderChoose();
+        if(isset($data['category_id']) && $data['category_id']!=null){
+            $category=CategoryProductProvider::find($data['category_id']);
+        }
+        
+        $organizations_rating = ActivityCategoryOrganization::with('organization')
+            ->whereHas('organization', function($query) use ($city) {  // Добавлен use ($city)
+                $query->where('role', 'organization-provider')
+                      ->where('city_id', $city->id);
+            })
+            ->where('category_children_id', $category->id)
+            ->orderBy('price', 'asc')
+            ->get();        
+        return view('organization.catalog.catalog-organization-provider',compact('title_h1','filter_work','organizations_rating','city_all','category_main','city','cats','organizations_category','price_min','price_middle','price_max','category','sort'));
    
     }
 
@@ -93,16 +121,16 @@ class OrganizationProviderService
 
     public static function ajaxTitlePage($data){
         $category=CategoryProductProvider::find($data['category_id']);
-
+        $category_main=$category->parent();
         $city=selectCity();
         if(isset($data['city_id']) && $data['city_id']!=null){
             $city=City::find($data['city_id']);
         }
         
-        $organizations_category=orgniaztionsFilters($data);
+        $organizations_category=orgniaztionsProviderFilters($data);
         $title_h1=formatContentCategory(getSeo($category->slug.'-catalog-organization','h1'),$category,$organizations_category);
 
-        return  view('organization.components.catalog-provider.title-page',compact('city','category','category_main'));
+        return  view('organization.components.catalog-provider.title-page',compact('city','category','category_main','title_h1'));
     }
 
 
@@ -126,8 +154,15 @@ class OrganizationProviderService
         if(isset($data['category_id']) && $data['category_id']!=null){
             $category=CategoryProductProvider::find($data['category_id']);
         }
-        $oragnizations_rating=ActivityCategoryOrganization::where('role','organization-provider')->where('category_children_id', $category->id)->orderBy('price','asc')->where('city_id',$city->id)->get();
-        return view('organization.components.catalog-provider.rating-price-organizations',compact('oragnizations_rating','category','city'));
+        $organizations_rating = ActivityCategoryOrganization::with('organization')
+            ->whereHas('organization', function($query) use ($city) {  // Добавлен use ($city)
+                $query->where('role', 'organization-provider')
+                      ->where('city_id', $city->id);
+            })
+            ->where('category_children_id', $category->id)
+            ->orderBy('price', 'asc')
+            ->get();
+        return view('organization.components.catalog-provider.rating-price-organizations',compact('organizations_rating','category','city'));
 
 
     }

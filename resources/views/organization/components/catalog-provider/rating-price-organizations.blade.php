@@ -1,5 +1,5 @@
 
-@if(count($oragnizations_rating)>0)
+@if($organizations_rating->count()>0)
 
     <section class="raiting raiting_2">
         <div class="container">
@@ -13,8 +13,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                        @foreach($oragnizations_rating as $oragnization_rating)
-                        <?php $organization=$oragnization_rating->organization;?>
+                        @foreach($organizations_rating as $organization_rating)
+                        <?php $organization=$organization_rating->organization;?>
                             <tr>
                                 <td class='name_organization'>
                                     <img src="{{$organization->urlImg()}}" alt="">
@@ -22,7 +22,7 @@
                                         "{{$organization->title}}"
                                     </a>
                                 </td>
-                                <td><div class="text_black">от {{$oragnization_rating->price}} р</div></td>
+                                <td><div class="text_black">от {{$organization_rating->price}} р</div></td>
                             </tr>
                         @endforeach
                 </tbody>

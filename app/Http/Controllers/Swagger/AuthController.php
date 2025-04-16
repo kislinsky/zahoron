@@ -15,7 +15,7 @@ use OpenApi\Attributes as OA;
       * @OA\Post(
       *     path="/v1/register",
       *     summary="Регистрация нового пользователя",
-      *     tags={"Авториция/регистрация"},
+      *     tags={"Авторизация/регистрация"},
       *     @OA\RequestBody(
       *         required=true,
       *         @OA\JsonContent(
@@ -61,7 +61,7 @@ use OpenApi\Attributes as OA;
       * @OA\Post(
       *     path="/v1/confirm-info",
       *     summary="Подтверждение информации и отправка SMS кода",
-      *     tags={"Авториция/регистрация"},
+      *     tags={"Авторизация/регистрация"},
       *     @OA\RequestBody(
       *         required=true,
       *         @OA\JsonContent(
@@ -94,7 +94,7 @@ use OpenApi\Attributes as OA;
       * @OA\Post(
       *     path="/v1/confirm-phone",
       *     summary="Подтверждение телефона по коду из SMS",
-      *     tags={"Авториция/регистрация"},
+      *     tags={"Авторизация/регистрация"},
       *     @OA\RequestBody(
       *         required=true,
       *         @OA\JsonContent(
@@ -128,7 +128,7 @@ use OpenApi\Attributes as OA;
       * @OA\Post(
       *     path="/v1/auth",
       *     summary="Инициализация авторизации",
-      *     tags={"Авториция/регистрация"},
+      *     tags={"Авторизация/регистрация"},
       *     @OA\RequestBody(
       *         required=true,
       *         @OA\JsonContent(
@@ -161,7 +161,7 @@ use OpenApi\Attributes as OA;
       * @OA\Post(
       *     path="/v1/auth/confirm",
       *     summary="Подтверждение авторизации по коду из SMS",
-      *     tags={"Авториция/регистрация"},
+      *     tags={"Авторизация/регистрация"},
       *     @OA\RequestBody(
       *         required=true,
       *         @OA\JsonContent(
