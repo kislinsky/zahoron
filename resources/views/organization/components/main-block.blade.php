@@ -1,7 +1,12 @@
 <div class="block_content_organization_single">
     <div class="main_block_organization_single">
         <div class="logo_organization_single">
-            <img src="{{$organization->urlImgMain()}}" alt="">
+            @if($organization->urlImgMain()=='default')
+                <img class='white_img_org' src="{{$organization->defaultMainImg()[0]}}" alt="">   
+                <img class='black_img_org' src="{{$organization->defaultMainImg()[1]}}" alt="">   
+            @else
+                <img src="{{$organization->urlImgMain()}}" alt="">   
+            @endif
             <div class="blue_btn">{{$organization->title}}</div>
         </div>
         <div class="content_main_block_organization_single">

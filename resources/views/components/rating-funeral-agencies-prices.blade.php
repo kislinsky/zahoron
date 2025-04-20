@@ -33,7 +33,12 @@ $organizations=organizationRatingFuneralAgenciesPrices($city->id);
                             ?>
                             <tr>
                                 <td class='name_organization'>
-                                    <img src="{{$organization->urlImg()}}" alt="">
+                                    @if($organization->urlImg()=='default')
+                                        <img class='white_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[0]}}" alt="">   
+                                        <img class='black_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[1]}}" alt="">   
+                                    @else
+                                        <img  src="{{$organization->urlImg()}}" alt="">   
+                                    @endif
                                     <a href='{{$organization->route()}}'class="title_organization">Ритуальное агентство 
                                         "{{$organization->title}}"</a>
                                 </td>

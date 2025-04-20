@@ -122,15 +122,19 @@ class ParserOrganizationService
                     
                     if(in_array('logo', $columnsToUpdate) && isset($columns['Логотип'])) {
                         if($logoUrl) {
-                            $updateData['img_url'] = $logoUrl;
-                            $updateData['href_img'] = 1;
+                            if(!isBrokenLink($logoUrl)){
+                                $updateData['img_url'] = $logoUrl;
+                                $updateData['href_img'] = 1;
+                            }
                         }
                     }
                     
                     if(in_array('main_photo', $columnsToUpdate) && isset($columns['Главное фото'])) {
                         if($mainPhotoUrl) {
-                            $updateData['img_main_url'] = $mainPhotoUrl;
-                            $updateData['href_main_img'] = 1;
+                            if(!isBrokenLink($mainPhotoUrl)){
+                                $updateData['img_main_url'] = $mainPhotoUrl;
+                                $updateData['href_main_img'] = 1;
+                            }
                         }
                     }
         
@@ -172,11 +176,13 @@ class ParserOrganizationService
                             
                             $urls_array = explode(', ', $photos);
                             foreach($urls_array as $img) {
-                                ImageOrganization::create([
-                                    'img_url' => $img,
-                                    'href_img' => 1,
-                                    'organization_id' => $existingOrg->id,
-                                ]);
+                                if(!isBrokenLink($img)){
+                                    ImageOrganization::create([
+                                        'img_url' => $img,
+                                        'href_img' => 1,
+                                        'organization_id' => $existingOrg->id,
+                                    ]);
+                                }
                             }
                         }
                     }
@@ -269,11 +275,13 @@ class ParserOrganizationService
                             ImageOrganization::where('organization_id', $existingOrg->id)->delete();
                             $urls_array = explode(', ', $photos);
                             foreach($urls_array as $img) {
-                                ImageOrganization::create([
-                                    'img_url' => $img,
-                                    'href_img' => 1,
-                                    'organization_id' => $existingOrg->id,
-                                ]);
+                                if(!isBrokenLink($img)){
+                                    ImageOrganization::create([
+                                        'img_url' => $img,
+                                        'href_img' => 1,
+                                        'organization_id' => $existingOrg->id,
+                                    ]);
+                                }
                             }
                         }
                         
@@ -305,8 +313,18 @@ class ParserOrganizationService
                             $time_difference=differencetHoursTimezone(getTimeByCoordinates($latitude,$longitude)['timezone']);
                         }
                         
-                        $logoUrl = $logoUrl ?: 'https://default-logo-url.com';
-                        $mainPhotoUrl = $mainPhotoUrl ?: 'https://default-main-photo-url.com';
+                        if($logoUrl!=null && !isBrokenLink($logoUrl)){
+                            $logoUrl = $logoUrl ;
+                        }else{
+                            $logoUrl = 'default';
+                        }
+
+
+                        if($mainPhotoUrl!=null && !isBrokenLink($mainPhotoUrl)){
+                            $mainPhotoUrl = $mainPhotoUrl ;
+                        }else{
+                            $mainPhotoUrl = 'default';
+                        }
         
                         $organization_create = Organization::create([
                             'id' => $orgId,
@@ -346,11 +364,14 @@ class ParserOrganizationService
                         if($photos) {
                             $urls_array = explode(', ', $photos);
                             foreach($urls_array as $img) {
-                                ImageOrganization::create([
-                                    'img_url' => $img,
-                                    'href_img' => 1,
-                                    'organization_id' => $organization_create->id,
-                                ]);
+                                if(!isBrokenLink($img)){
+                                    ImageOrganization::create([
+                                        'img_url' => $img,
+                                        'href_img' => 1,
+                                        'organization_id' => $organization_create->id,
+                                    ]);
+                                }
+                                
                             }
                         }
         

@@ -299,17 +299,17 @@ galerey_swiper= new Swiper(".galerey_swiper", {
     },
    
   },
-  navigation: {
-    nextEl: ".swiper-button-next-galerey",
-    prevEl: ".swiper-button-prev-galerey",
-  },
+  slidesPerView: 'auto',
+  spaceBetween: 10,
+  centeredSlides: true,
+  loop: false,
   pagination: {
-    el: ".swiper_pagination_galerey",
+      el: '.swiper-pagination',
+      clickable: true,
   },
-  spaceBetween: 30,
-  autoplay: {
-    delay: 1500,
-    disableOnInteraction: false,
+  navigation: {
+      nextEl: '.swiper-button-next-galerey',
+      prevEl: '.swiper-button-prev-galerey',
   },
 });
 
@@ -845,19 +845,6 @@ function timeWork(time_start,time_end){
 
 
 
-function showWelcomeMessage() {
-  // Проверяем, есть ли уже установленный флаг
-  if (!sessionStorage.getItem('hasVisited')) {
-      // Если нет, показываем уведомление
-      $('.city_question').css('display','flex');
-
-      // Устанавливаем флаг, что пользователь уже посещал сайт в этой сессии
-      sessionStorage.setItem('hasVisited', 'true');
-  }
-}
-// Вызываем функцию при загрузке страницы
-window.onload = showWelcomeMessage;
-
 $(".open_choose_city").click(function() {
   $('#city_form').modal('show')
 });
@@ -1058,3 +1045,13 @@ $('.open_form_call_organization').on( "click", function() {
   $('#call_organization').modal('show')
   $('#call_organization input[name="organization_id_call"]').val($(this).attr('id_organization'))
 });
+
+const gallery = document.getElementById("lightgallery");
+if (gallery) {
+    lightGallery(gallery, {
+        selector: 'a',
+        plugins: [lgZoom, lgThumbnail],
+        speed: 500,
+        download: false
+    });
+}

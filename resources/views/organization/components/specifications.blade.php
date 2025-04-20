@@ -42,7 +42,7 @@ use App\Models\ActivityCategoryOrganization;
                     <div class="item_memorial_menu text_black"> 
                         @php $categories_children=CategoryProduct::whereIn('id',ActivityCategoryOrganization::where('organization_id',$organization->id)->where('category_main_id',$category_organization->id)->pluck('category_children_id'))->get();@endphp
                         @foreach($categories_children as $category_children)
-                           {{$category_children->title}},
+                           <a href="{{ $category_children->routeCatalog() }}">{{$category_children->title}},</a>
                         @endforeach
                     </div>
                 </div>

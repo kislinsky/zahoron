@@ -347,7 +347,22 @@
 
 
 
+<script>
+    
+function showWelcomeMessage() {
+  // Проверяем, есть ли уже установленный флаг
+  if (!sessionStorage.getItem('hasVisited')) {
+      // Если нет, показываем уведомление
+      $('.city_question').css('display','flex');
 
+      // Устанавливаем флаг, что пользователь уже посещал сайт в этой сессии
+      sessionStorage.setItem('hasVisited', 'true');
+  }
+}
+// Вызываем функцию при загрузке страницы
+window.onload = showWelcomeMessage;
+
+</script>
 
 @include('footer.footer') 
 

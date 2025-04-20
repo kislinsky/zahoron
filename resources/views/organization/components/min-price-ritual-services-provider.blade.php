@@ -21,10 +21,10 @@
                                 @php 
                                     $price_category=$category_children->priceCategoryOrganization($organization);
                                 @endphp
-                                    @if($price_category!=null)
+                                    @if($price_category!=null ?? $price_category!=0)
                                         <td class='title_blue'>от {{$price_category}} ₽</td>
                                     @else
-                                        <td class='title_blue'></td>
+                                        <td class='title_blue'>Уточняйте</td>
                                     @endif 
                                 @endforeach
                             </tr>

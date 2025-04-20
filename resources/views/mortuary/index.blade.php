@@ -82,8 +82,7 @@ function init() {
     @foreach($mortuaries_map as $mortuary)
     myMap.geoObjects
         .add(new ymaps.Placemark(['{{$mortuary->width}}', '{{$mortuary->longitude}}'], {
-            balloonContent: '{!!$mortuary->title.'<br> <img src="'.asset('storage/uploads/Frame 334.svg').'" alt="">  '.$mortuary->rating.'<br>'.$mortuary->countReviews().' отзывов' !!}',
-            iconCaption: '{{$mortuary->title}}'
+            balloonContent: '{!! "<a style=\"color:#1A1A1A !important; text-decoration:none;\" href=\"{$mortuary->route()}\">{$mortuary->title}</a><br> <img src=\"".asset('storage/uploads/Frame 334.svg')."\" alt=\"\">  {$mortuary->rating}<br>{$mortuary->countReviews()} отзывов" !!}',            iconCaption: '{{$mortuary->title}}'
         },{
             iconLayout: 'default#image',
             iconImageHref: "{{asset('storage/uploads/game-icons_morgue-feet (2).svg')}}",

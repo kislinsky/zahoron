@@ -11,7 +11,12 @@
     </div>
 </section>
 
-<img src="{{$organization->urlImgMain()}}" alt="" class="mobile_logo_organization">
+@if($organization->urlImgMain()=='default')
+    <img class='white_img_org mobile_logo_organization' src="{{$organization->defaultMainImg()[0]}}" alt="">   
+    <img class='black_img_org mobile_logo_organization' src="{{$organization->defaultMainImg()[1]}}" alt="">   
+@else
+    <img class='mobile_logo_organization' src="{{$organization->urlImgMain()}}" alt="">   
+@endif
 
 
 <section class="organization_single mobile_padding_top_0">
@@ -67,23 +72,20 @@
 
                     {{view('organization.components.map',compact('organization'))}}
 
-
-                    <div class="block_content_organization_single info_about_organization">
-                        <div class="title_li title_li_organization_single">ООО “{{ $organization->title }}”</div>
-                        <div class="text_black">Юридический адрес 
-                            @if($organization->user!=null)
-                                {{$organization->user->adres }} 
-                            @endif
+                    @if($organization->user!=null)
+                        <div class="block_content_organization_single info_about_organization">
+                            <div class="title_li title_li_organization_single">ООО “{{ $organization->title }}”</div>
+                            <div class="text_black">Юридический адрес 
+                                    {{$organization->user->adres }} 
+                            </div>
+                            <div class="text_black">ИНН: 
+                                    {{$organization->user->inn }} 
+                            </div>
+                            <div class="text_black">Свидетельство регистрации от 17.07.2015</div>
+                            <div class="text_black">Регистрирующий орган: Нзвание органа</div>
+                            <div class="text_black">Зарегистрирован в Реестре бытовых услуг 28.11.2017, номер 0000000737722</div>
                         </div>
-                        <div class="text_black">ИНН: 
-                            @if($organization->user!=null)
-                                {{$organization->user->inn }} 
-                            @endif
-                        </div>
-                        <div class="text_black">Свидетельство регистрации от 17.07.2015</div>
-                        <div class="text_black">Регистрирующий орган: Нзвание органа</div>
-                        <div class="text_black">Зарегистрирован в Реестре бытовых услуг 28.11.2017, номер 0000000737722</div>
-                    </div>
+                    @endif
 
                     {{view('organization.components.similar-organizations',compact('similar_organizations'))}}
 

@@ -88,8 +88,7 @@ function init() {
     @foreach($columbariums_map as $columbarium)
       myMap.geoObjects
         .add(new ymaps.Placemark(['{{$columbarium->width}}', '{{$columbarium->longitude}}'], {
-            balloonContent: '{!!$columbarium->title.'<br> <img src="'.asset('storage/uploads/Frame 334.svg').'" alt="">  '.$columbarium->rating.'<br>'.$columbarium->countReviews().' отзывов' !!}',
-
+            balloonContent: '{!! "<a style=\"color:#1A1A1A !important; text-decoration:none;\" href=\"{$columbarium->route()}\">{$columbarium->title}</a><br> <img src=\"".asset('storage/uploads/Frame 334.svg')."\" alt=\"\">  {$columbarium->rating}<br>{$columbarium->countReviews()} отзывов" !!}',
             iconCaption: '{{$columbarium->title}}'
         },{
             iconLayout: 'default#image',

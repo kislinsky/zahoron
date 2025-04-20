@@ -82,8 +82,7 @@ function init() {
     @foreach($crematoriums_map as $crematorium)
       myMap.geoObjects
         .add(new ymaps.Placemark(['{{$crematorium->width}}', '{{$crematorium->longitude}}'], {
-            balloonContent: '{!!$crematorium->title.'<br> <img src="'.asset('storage/uploads/Frame 334.svg').'" alt="">  '.$crematorium->rating.'<br>'.$crematorium->countReviews().' отзывов' !!}',
-            iconCaption: '{{$crematorium->title}}'
+            balloonContent: '{!! "<a style=\"color:#1A1A1A !important; text-decoration:none;\" href=\"{$crematorium->route()}\">{$crematorium->title}</a><br> <img src=\"".asset('storage/uploads/Frame 334.svg')."\" alt=\"\">  {$crematorium->rating}<br>{$crematorium->countReviews()} отзывов" !!}',            iconCaption: '{{$crematorium->title}}'
         },{
             iconLayout: 'default#image',
             iconImageHref: "{{asset('storage/uploads/emojione-monotone_funeral-urn.svg')}}",

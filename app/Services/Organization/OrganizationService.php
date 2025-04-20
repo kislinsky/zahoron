@@ -189,10 +189,13 @@ class OrganizationService
         $news_video=News::orderBy('id', 'desc')->where('type',2)->get();
         $news=News::orderBy('id', 'desc')->take(3)->get();
         $cats=CategoryProduct::orderBy('id','desc')->where('parent_id',null)->get();
+        $organizations_category=orgniaztionsFilters($data,$category);
 
        
-        $cemeteries=Cemetery::where('city_id',$city->id)->get();
-
+        $cemeteries = Cemetery::whereHas('city.area', function($query) use ($city) {
+            $query->where('id', $city->area_id);  
+        })
+        ->get();
         // $category=categoryProductChoose();
         // $category_main=CategoryProduct::find($category->parent_id);
         // if(isset($data['category_id'])){
@@ -209,7 +212,15 @@ class OrganizationService
             $district_choose=District::find($data['district_id']);
         }
         $districts=District::where('city_id',$city->id)->get();
-        $organizations_prices=$organizations_category->orderBy('price','asc');
+        $organizations_prices=organizationsPrices($data);
+        $price_min=null;
+        $price_middle=null;
+        $price_max=null;
+        if($organizations_prices!=null){
+            $price_min=$organizations_prices[0];
+            $price_middle=$organizations_prices[1];
+            $price_max=$organizations_prices[2];     
+        }
         $sort=null;
         if(isset($data['sort']) && $data['sort']!=null && $data['sort']!=''){
             $sort=$data['sort'];

@@ -50,7 +50,7 @@ class CrematoriumService {
         $images=$crematorium->images;
         $similar_crematoriums=Crematorium::where('city_id',$crematorium->city_id)->where('id','!=',$crematorium->id)->get();
         
-        $pages_navigation=[['Главная',route('index')],['Крематории',route('crematorium')],[$crematorium->title]];
+        $pages_navigation=[['Главная',route('index')],['Крематории',route('crematoriums')],[$crematorium->title]];
 
         return view('crematorium.single',compact('pages_navigation','title_h1','organizations_our','images','similar_crematoriums','crematorium','reviews','reviews_main','services','city','faqs','crematorium_all','characteristics'));
     }

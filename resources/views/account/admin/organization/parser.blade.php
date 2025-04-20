@@ -128,8 +128,8 @@
             <div class="block_input">
                 <label >Заменять пустые цены на "уточняйте"</label>
                 <select name="update_empty_to_ask" id="">
-                    <option value="0">Нет</option>
                     <option value="1">Да</option>
+                    <option value="0">Нет</option>
                 </select>  
             </div>
             <button type="submit" class="btn btn-primary margin_top_20">Импортировать цены</button>

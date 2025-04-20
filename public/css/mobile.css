@@ -628,6 +628,16 @@
 }
 
 @media(max-width:560px){
+    .title_404_middle{
+        font-size: 30px;
+    }
+    .page_404 a{
+        width: 100%;
+        min-width: 100%;
+    }
+    .flex_404_page{
+        min-width: 100%;
+    }
 
     .ul_variants{
         grid-template-columns:   1fr;
@@ -1138,6 +1148,18 @@
         width: 100%;
         height: 180px;
         object-fit: cover;
+    }
+    .black_theme .mobile_logo_organization.white_img_org{
+        display: none;
+    }
+    .black_theme .mobile_logo_organization.black_img_org{
+        display: block ;
+    }
+    .mobile_logo_organization.white_img_org{
+        display: block;
+    }
+    .mobile_logo_organization.black_img_org{
+        display: none;
     }
     .mobile_padding_top_0{
         padding-top: 0px;

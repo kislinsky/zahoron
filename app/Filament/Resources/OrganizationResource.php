@@ -15,6 +15,7 @@ use App\Filament\Resources\OrganizationResource\RelationManagers\OrganizationReq
 use App\Filament\Resources\OrganizationResource\RelationManagers\ProductsRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\ViewsRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\WorkingHoursRelationManager;
+use App\Models\CategoryProduct;
 use App\Models\Cemetery;
 use App\Models\City;
 use App\Models\Organization;
@@ -137,7 +138,9 @@ class OrganizationResource extends Resource
                     $set('slug', generateUniqueSlug($state, Organization::class, $get('id')));
                 }
             }),
-        
+
+
+            
         TextInput::make('slug')
             ->required()
             ->label('Slug')
@@ -213,6 +216,11 @@ class OrganizationResource extends Resource
                 ->maxLength(255),
 
 
+            Forms\Components\TextInput::make('link_website')
+                ->label('Ссылка на сайт организации')
+                ->maxLength(255),
+
+
             RichEditor::make('content') // Поле для редактирования HTML-контента
                 ->label('Описание') // Соответствующая подпись
                 ->toolbarButtons([
@@ -274,6 +282,9 @@ class OrganizationResource extends Resource
                 ->preload()
                 ->dehydrateStateUsing(fn ($state) => implode(',', (array) $state).','), // Преобразуем в строку перед сохранением
 
+                Forms\Components\Textarea::make('comment_admin')
+                ->label('Комментарий админа')
+                ->required(),
             ]);
     }
 
@@ -282,20 +293,69 @@ class OrganizationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                ->label('id')
+                ->label('ID')
                 ->searchable()
                 ->sortable(),
-                Tables\Columns\TextColumn::make('title')
+            
+            Tables\Columns\TextColumn::make('title')
                 ->label('Название')
                 ->searchable()
                 ->sortable(),
+            
+            // Край (через город->округ->край)
+            Tables\Columns\TextColumn::make('city.area.edge.title')
+                ->label('Край')
+                ->searchable()
+                ->sortable(),
+            
+            // Округ (через город->округ)
+            Tables\Columns\TextColumn::make('city.area.title')
+                ->label('Округ')
+                ->searchable()
+                ->sortable(),
+            
             Tables\Columns\TextColumn::make('city.title')
                 ->label('Город')
                 ->searchable()
                 ->sortable(),
+            
+            // Кликабельный телефон
+            Tables\Columns\TextColumn::make('phone')
+                ->label('Телефон')
+                ->searchable()
+                ->url(function ($record) {
+                    return $record->phone ? 'tel:'.preg_replace('/[^0-9+]/', '', $record->phone) : null;
+                })
+                ->icon('heroicon-o-phone')
+                ->color('primary'),
             ])
             ->filters([
-                
+                SelectFilter::make('main_category_id')
+        ->label('Основная категория')
+        ->options(CategoryProduct::whereNull('parent_id')->pluck('title', 'id'))
+        ->searchable()
+        ->preload()
+        ->query(function ($query, $state) {
+            if (!empty($state['value'])) {
+                $query->whereHas('activityCategories', function($q) use ($state) {
+                    $q->where('category_main_id', $state['value']);
+                });
+            }
+        }),
+
+    // Фильтр по подкатегории
+    SelectFilter::make('subcategory_id')
+        ->label('Подкатегория')
+        ->options(CategoryProduct::whereNotNull('parent_id')->pluck('title', 'id'))
+        ->searchable()
+        ->preload()
+        ->query(function ($query, $state) {
+            if (!empty($state['value'])) {
+                $query->whereHas('activityCategories', function($q) use ($state) {
+                    $q->where('category_children_id', $state['value']);
+                });
+            }
+        }),
                 SelectFilter::make('edge_id')
                         ->label('Край')
                         ->relationship('city.area.edge', 'title') // Вложенное отношение

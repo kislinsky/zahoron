@@ -508,3 +508,27 @@ color: white;
 .black_theme .mobile_header a:hover{
     color: #0080D7;
 }
+
+.black_theme .logo_organization_single .black_img_org{
+    display: block;
+}
+.black_theme .logo_organization_single .white_img_org{
+    display: none;
+}
+
+
+.name_organization .logo_organization_single .black_img_org{
+    display: block;
+}
+.name_organization .logo_organization_single .white_img_org{
+    display: none;
+}
+
+
+
+.black_theme .img_logo_organization.white_img_org{
+    display: none;
+}
+.black_theme .img_logo_organization.black_img_org{
+    display: block ;
+}

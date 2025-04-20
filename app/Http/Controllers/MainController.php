@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityCategoryOrganization;
+use App\Models\CategoryProduct;
 use App\Models\Faq;
 use App\Models\ImageOrganization;
 use App\Models\Organization;
@@ -15,9 +17,7 @@ use App\Services\Page\IndexService;
 class MainController extends Controller
 {
 
-    public static function index(){
-        $existingOrg=Organization::find(2252328094666654);
-        addActiveCategory('Организация похорон, Организация кремации, Подготовка отправки груза 200, Памятники, Оградки, Плитка на могилу, Венки траурные, Кресты на могилу, Вазы на могилу,', [], $existingOrg);
+    public static function index(){      
         return IndexService::index();
     }
 

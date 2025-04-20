@@ -90,8 +90,7 @@ function init() {
     @foreach($cemeteries_map as $cemetery)
       myMap.geoObjects
         .add(new ymaps.Placemark(['{{$cemetery->width}}', '{{$cemetery->longitude}}'], {
-            balloonContent: '{!!$cemetery->title.'<br> <img src="'.asset('storage/uploads/Frame 334.svg').'" alt="">  '.$cemetery->rating.'<br>'.$cemetery->countReviews().' отзывов' !!}',
-            iconCaption: '{{$cemetery->title}}'
+            balloonContent: '{!! "<a style=\"color:#1A1A1A !important; text-decoration:none;\" href=\"{$cemetery->route()}\">{$cemetery->title}</a><br> <img src=\"".asset('storage/uploads/Frame 334.svg')."\" alt=\"\">  {$cemetery->rating}<br>{$cemetery->countReviews()} отзывов" !!}',            iconCaption: '{{$cemetery->title}}'
          }, {
             iconLayout: 'default#image',
             iconImageHref: "{{asset('storage/uploads/mdi_grave-stone (1).svg')}}",

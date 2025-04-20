@@ -38,8 +38,15 @@ use Ausi\SlugGenerator\SlugGenerator;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+
+
+
+
 
 
 
@@ -633,8 +640,8 @@ function organizationsPrices($data){
     }
     $organizations_prices=$organizations_prices->get();
     if($organizations_prices!=null && $organizations_prices->count()>0){
-        $price_min=$organizations_prices->min('price');
-        $price_middle=round($organizations_prices->avg('price'));
+        $price_min = $organizations_prices->where('price', '>', 0)->min('price');
+        $price_middle=round($organizations_prices->where('price','>',0)->avg('price'));
         $price_max=$organizations_prices->max('price');
         return  [$price_min,$price_middle,$price_max];
     }
@@ -763,8 +770,8 @@ function organizationsProviderPrices($data){
 
     $organizations_prices=$organizations_prices->get();
     if($organizations_prices!=null && $organizations_prices->count()>0){
-        $price_min=$organizations_prices->min('price');
-        $price_middle=round($organizations_prices->avg('price'));
+        $price_min = $organizations_prices->where('price', '>', 0)->min('price');
+        $price_middle=round($organizations_prices->where('price','>',0)->avg('price'));
         $price_max=$organizations_prices->max('price');
         return  [$price_min,$price_middle,$price_max];
     }
@@ -1398,7 +1405,7 @@ function minPriceCategoryProductOrganization($slug){
     if($cat==null){return 0;}
     $price=ActivityCategoryOrganization::whereHas('organization', function ($query) use ($city) {
         $query->where('city_id', $city->id);
-    })->where('category_children_id',$cat->id)->min('price');
+    })->where('category_children_id',$cat->id)->where('price','>',0)->min('price');
     if($price!=null){
         return $price;
     }
@@ -1502,8 +1509,8 @@ function formatContentCategory($content,$category,$models){
     if($models->count()>0){
         $city=$models->first()->organization->city->title;
     }
-    $price_min=$models->min('price');
-    $price_middle=round($models->avg('price'));
+    $price_min=$models->where('price','>',0)->min('price');
+    $price_middle=round($models->where('price','>',0)->avg('price'));
     $price_max=$models->max('price');
 
     $result=str_replace(["{category}","{city}","{count}","{time}","{date}","{Year}","{price_min}","{price_avg}","{price_max}",],[$category,$city,$count,$time,$date,$year,$price_min,$price_middle,$price_max],$content);
@@ -2035,3 +2042,49 @@ function cleanUpOrganizationImages()
 }
 
 
+function isBrokenLink(string $url, int $timeout = 5, int $cacheMinutes = 60): bool
+{
+    $cacheKey = 'link_status:' . md5($url);
+
+    return Cache::remember($cacheKey, now()->addMinutes($cacheMinutes), function () use ($url, $timeout) {
+        try {
+            // Сначала пробуем HEAD запрос
+            $response = Http::withOptions([
+                    'verify' => false,
+                    'allow_redirects' => [
+                        'max' => 5,
+                        'strict' => true,
+                        'referer' => true,
+                        'protocols' => ['http', 'https'],
+                        'track_redirects' => true
+                    ]
+                ])
+                ->timeout($timeout)
+                ->withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                    'Accept' => 'image/webp,image/apng,image/*,*/*;q=0.8',
+                ])
+                ->head($url);
+
+            if ($response->successful()) {
+                return false;
+            }
+
+            // Если HEAD не сработал, пробуем GET но без загрузки тела
+            $response = Http::withOptions(['verify' => false])
+                ->timeout($timeout)
+                ->withHeaders([
+                    'Range' => 'bytes=0-0', // Запрашиваем только первый байт
+                ])
+                ->get($url);
+
+            return $response->failed();
+            
+        } catch (RequestException $e) {
+            // Логируем ошибку для отладки
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    });
+}

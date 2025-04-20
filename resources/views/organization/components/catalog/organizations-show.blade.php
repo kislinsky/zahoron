@@ -15,7 +15,14 @@
 
 
             <div class="info_li_org_mobile li_org_mobile">
-                <img class='img_logo_organization'src="{{$organization->urlImg()}}" alt="">
+                
+                @if($organization->urlImgMain()=='default')
+                    <img class='white_img_org img_logo_organization' src="{{$organization->defaultMainImg()[0]}}" alt="">   
+                    <img class='black_img_org img_logo_organization' src="{{$organization->defaultMainImg()[1]}}" alt="">   
+                @else
+                    <img class='img_logo_organization' src="{{$organization->urlImgMain()}}" alt="">   
+                @endif
+
                 <div class="info_li_organization">
                     <a href='{{$organization->route()}}'class="title_li_organiaztion">{{$organization->title}}</a>
                     <div class="text_gray">{{$organization->name_type}}</div>
@@ -27,7 +34,12 @@
 
 
             <div class="li_logo_organization li_org_dekstop">
-                <img class='img_logo_organization'src="{{$organization->urlImg()}}" alt="">
+                @if($organization->urlImg()=='default')
+                    <img class='white_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[0]}}" alt="">   
+                    <img class='black_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[1]}}" alt="">   
+                @else
+                    <img class='img_logo_organization' src="{{$organization->urlImg()}}" alt="">   
+                @endif
                 <div class="flex_stars">
                     <img src="{{asset('storage/uploads/Frame 334.svg')}}" alt=""> <div class="text_black">{{$organization->rating}}</div>
                 </div>

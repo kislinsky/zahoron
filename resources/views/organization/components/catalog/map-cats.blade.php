@@ -22,8 +22,8 @@
          @php $organization= $organization->organization; @endphp
            myMap.geoObjects
              .add(new ymaps.Placemark(['{{$organization->width}}', '{{$organization->longitude}}'], {
-                 balloonContent: '{!!$organization->title.'<br> <img src="'.asset('storage/uploads/Frame 334.svg').'" alt="">  '.$organization->rating.'<br>'.$organization->countReviews().' отзывов' !!}',
-                 iconCaption: '{{$organization->title}}'
+                balloonContent: '{!! '<a style="color:#1A1A1A !important; text-decoration:none;" href="'.$organization->route().'">'.$organization->title.'</a><br> <img src="'.asset('storage/uploads/Frame 334.svg').'" alt="">  '.$organization->rating.'<br>'.$organization->countReviews().' отзывов' !!}',
+                iconCaption: '{{$organization->title}}'
              },{
                  iconLayout: 'default#image',
                  iconImageHref: "{{asset('storage/'.$category->icon_map)}}",

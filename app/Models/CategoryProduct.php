@@ -25,6 +25,10 @@ class CategoryProduct extends Model
     public function children(){
         return $this->hasMany(CategoryProduct::class, 'parent_id');
     }
+
+    public  function routeCatalog(){
+        return route('organizations.category', $this->slug);
+    }
     
 
 }
