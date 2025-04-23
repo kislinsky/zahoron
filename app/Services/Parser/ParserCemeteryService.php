@@ -36,7 +36,7 @@ class ParserCemeteryService
     //                 'adres'=>$cemetery[10],
     //                 'width'=>$cemetery[12],
     //                 'longitude'=>$cemetery[13],
-    //                 'phone'=>phoneImport($cemetery[15]),
+    //                 'phone'=>normalizePhone($cemetery[15]),
     //                 'email'=>$cemetery[19],
     //                 'img'=>$cemetery[34],
     //                 'city_id'=>$city->id,
@@ -95,74 +95,119 @@ class ParserCemeteryService
 
 
 
-    public static function index($request){
-        $spreadsheet = new Spreadsheet();
-        $file = $request->file('file');
-        $spreadsheet = IOFactory::load($file);
-        // Получение данных из первого листа
-        $sheet = $spreadsheet->getActiveSheet();
-        $cemeteries = array_slice($sheet->toArray(),1);
-        foreach($cemeteries as $cemetery){
-            $city=createCity($cemetery[5],$cemetery[3]);
-            $area=createArea($cemetery[4],$cemetery[3]);
-            if($city!=null && $area!=null && $cemetery[6]!=null && $cemetery[7]!=null){
-                // $timezone=getTimeByCoordinates($cemetery[10],$cemetery[11])['timezone'];                
-                $cemetery_create=Cemetery::create([
-                    'title'=>$cemetery[1],
-                    'adres'=>$cemetery[5],
-                    'width'=>$cemetery[6],
-                    'longitude'=>$cemetery[7],
-                    'img'=>'https://api.selcdn.ru/v1/SEL_266534/Images/main/Petropavlovsk-Kamchatsky/Cemeteries/70000001057067323!/Funeral-Services.jpg',
-                    'city_id'=>$city->id,
-                    'href_img'=>1,
-                    'phone'=>phoneImport($cemetery[8]),
-                    'area_id'=>$area->id,
-                    // 'time_difference'=>differencetHoursTimezone($timezone),
-                    'time_difference'=>10,
-                    'square'=>$cemetery[15],
-                    'responsible'=>$cemetery[16],
-                    'cadastral_number'=>$cemetery[17],
-                ]);
+    public static function index($request) {
+        $files = $request->file('files');
+        $price = $request->input('price_geo');
+        $importAction = $request->input('import_type', 'create');
+        $updateFields = $request->input('columns_to_update', []);
+        
+        $processedFiles = 0;
+        $createdCemeteries = 0;
+        $updatedCemeteries = 0;
+        $skippedRows = 0;
+    
+        foreach ($files as $file) {
+            if (!$file->isValid()) {
+                continue;
+            }
+            $spreadsheet = IOFactory::load($file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+            $titles = $sheet->toArray()[0];
+            $cemeteriesData = array_slice($sheet->toArray(), 1);
+            
+            $columns = array_flip($titles);
 
-
-                $days=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                foreach($days as $day){
-                    WorkingHoursCemetery::create([
-                        'day'=>$day,
-                        'time_start_work'=>'00:00',
-                        'time_end_work'=>'24:00',
-                        'holiday'=>0,
-                        'cemetery_id'=>$cemetery_create->id,
-                    ]);
+            foreach ($cemeteriesData as $cemeteryRow) {
+                
+                // Проверка обязательных полей
+                if (empty($cemeteryRow[$columns['Наименование кладбища'] ?? null]) || 
+                    empty($cemeteryRow[$columns['Latitude'] ?? null]) || 
+                    empty($cemeteryRow[$columns['Longitude'] ?? null])) {
+                    $skippedRows++;
+                    continue;
                 }
 
-                
-                    PriceService::create([
-                        'cemetery_id'=>$cemetery_create->id,
-                        'price'=>8900,
-                        'service_id'=>5
-                    ]);
-                    PriceService::create([
-                        'cemetery_id'=>$cemetery_create->id,
-                        'price'=>10900,
-                        'service_id'=>6
-                    ]);
-                    PriceService::create([
-                        'cemetery_id'=>$cemetery_create->id,
-                        'price'=>4900,
-                        'service_id'=>7
-                    ]);
-                    PriceService::create([
-                        'cemetery_id'=>$cemetery_create->id,
-                        'price'=>3900,
-                        'service_id'=>8
-                    ]);
 
+                $objects=linkRegionDistrictCity($cemeteryRow[$columns['Край/Область'] ?? null],$cemeteryRow[$columns['Муниципального округа'] ?? null],$cemeteryRow[$columns['Населенный пункт'] ?? null],);
+
+
+                $area = $objects['district'];
+                $city =  $objects['city'];
+
+    
+                if (!$city || !$area) {
+
+                    $skippedRows++;
+                    continue;
+                }
+
+                $status=1;
+                if($cemeteryRow[$columns['Статус кладбища']]=='Открыто'){
+                    $status=1;
+                }else{
+                    $status=0;
+                }
+                $cemeteryData = [
+                    'title' => $cemeteryRow[$columns['Наименование кладбища']],
+                    'adres' => $cemeteryRow[$columns['Ориентир'] ?? null],
+                    'width' => $cemeteryRow[$columns['Latitude']],
+                    'longitude' => $cemeteryRow[$columns['Longitude']],
+                    'city_id' => $city->id,
+                    'area_id' => $area->id,
+                    'phone' => normalizePhone($cemeteryRow[$columns['Тел. Ответственного'] ?? null]),
+                    'square' => $cemeteryRow[$columns['Общая площадь (га)'] ?? null],
+                    'responsible' => $cemeteryRow[$columns['Ответственный'] ?? null],
+                    'cadastral_number' => $cemeteryRow[$columns['кадастровый номер'] ?? null],
+                    'status' => $status,
+                    // Дефолтные значения
+                    'img_url' => 'https://api.selcdn.ru/v1/SEL_266534/Images/main/Petropavlovsk-Kamchatsky/Cemeteries/70000001057067323!/Funeral-Services.jpg',
+                    'href_img' => 1,
+                    'price_burial_location'=>$price ?? null,
+                    'time_difference' => 10,
+                ];
+    
+                if ($importAction === 'create') {
+
+                    $cemetery = Cemetery::create($cemeteryData);
+
+                    $createdCemeteries++;
+                } elseif ($importAction === 'update') {
+                    $identifier =  $cemeteryData['title'];
+                    
+                    $cemetery = Cemetery::where('title', $identifier)
+                        ->first();
+                    
+                    if ($cemetery) {
+                        $updateData = [];
+                        foreach ($updateFields as $field) {
+                            if (isset($cemeteryData[$field])) {
+                                $updateData[$field] = $cemeteryData[$field];
+                            }
+                        }
+                        
+                        if (!empty($updateData)) {
+                            $cemetery->update($updateData);
+                            $updatedCemeteries++;
+                        }
+                    } else {
+                        $skippedRows++;
+                    }
+                }
             }
+            
+            $processedFiles++;
         }
-        return redirect()->back()->with("message_cart", 'Кладбища успешно добавлены');
-       
+    
+        $message = "Импорт кладбищ завершен. " .
+                   "Файлов обработано: $processedFiles, " .
+                   "Создано кладбищ: $createdCemeteries, " .
+                   "Обновлено кладбищ: $updatedCemeteries, " .
+                   "Пропущено строк: $skippedRows";
+    
+        return redirect()->back()->with("message_cart", $message);
     }
+    
+  
 
 
     public static function importReviews($request){

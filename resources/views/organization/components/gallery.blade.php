@@ -15,7 +15,7 @@ use App\Models\ImageProduct;
         <div class="swiper-wrapper">
             @foreach($images as $image)
                 <div class="swiper-slide">
-                    <a class='open_gallerey'href="{{ $image->urlImg() }}">
+                    <a class='open_gallerey'href="{{ $image->urlImg() }}"  data-src="{{ $image->urlImg() }}">
                         <img class='img_market_product' src="{{ $image->urlImg() }}" alt="">  
                     </a>
                 </div>

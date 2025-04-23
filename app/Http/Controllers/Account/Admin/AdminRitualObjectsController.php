@@ -25,9 +25,6 @@ class AdminRitualObjectsController extends Controller
     }
 
     public static function cemeteryImport(Request $request){
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv'
-        ]);
         return AdminCemeteryService::import($request);
     }
 

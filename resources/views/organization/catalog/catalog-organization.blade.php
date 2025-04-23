@@ -313,7 +313,6 @@ $( ".filter_block_organization select" ).on( "change", function() {
         'sort': $('.name_sort').attr('val'),
         "category_id": $('.active_category').attr('id_category'),
     };
-    console.log(filters)
     $.ajax({
         type: 'GET',
         url: '{{route('organizations.ajax.filters')}}',
@@ -412,7 +411,6 @@ $( ".filter_sort .li_sort" ).on( "click", function() {
             'sort':$(this).attr('val'),
             "category_id": $('.active_category').attr('id_category'),
         };
-        console.log(filters)
         $.ajax({
             type: 'GET',
             url: '{{route('organizations.ajax.filters')}}',
@@ -424,7 +422,7 @@ $( ".filter_sort .li_sort" ).on( "click", function() {
                     strings.push(key+"="+value)
                 }
                 let st = strings.join("&")
-                window.history.pushState('organizations', 'Title', '/{{$city->slug}}/organizations'+$('.active_category').attr('slug')+'?'+st);
+                window.history.pushState('organizations', 'Title', '/{{$city->slug}}/organizations/'+$('.active_category').attr('slug')+'?'+st);
                 $('.bac_loader').fadeOut()
                 $('.load_block').fadeOut()
 
@@ -491,7 +489,7 @@ $( "#filter_work" ).on( "change", function() {
                 strings.push(key+"="+value)
             }
             let st = strings.join("&")
-            window.history.pushState('organizations', 'Title', '/{{$city->slug}}/organizations'+$('.active_category').attr('slug')+'?'+st);
+            window.history.pushState('organizations', 'Title', '/{{$city->slug}}/organizations/'+$('.active_category').attr('slug')+'?'+st);
             $('.bac_loader').fadeOut()
             $('.load_block').fadeOut()
 

@@ -49,8 +49,8 @@ class ParserOrganizationService
                 $longitude = $organization[$columns['Longitude']] ?? null;
                 $phones = $organization[$columns['Телефоны']] ?? null;
                 $workHours = $organization[$columns['Режим работы']] ?? null;
-                $logoUrl = $organization[$columns['Логотип']] ?? null;
-                $mainPhotoUrl = $organization[$columns['Главное фото']] ?? null;
+                $logoUrl = $organization[$columns['Логотип']] ?? 'default';
+                $mainPhotoUrl = $organization[$columns['Главное фото']] ?? 'default';
                 $photos = $organization[$columns['Фотографии']] ?? null;
                 $services = $organization[$columns['Подраздел']] ?? null;
                 $region = $organization[$columns['Регион']] ?? null;
@@ -59,6 +59,11 @@ class ParserOrganizationService
                 $nameType = $organization[$columns['Вид деятельности']] ?? null;
                 $urlSite = $organization[$columns['Сайт']] ?? null;
     
+                $objects=linkRegionDistrictCity($region,$district,$cityName);
+
+                $area = $objects['district'];
+                $city =  $objects['city'];
+
                 // Пропускаем если нет ID
                 if(empty($orgId)) continue;
         
@@ -304,8 +309,10 @@ class ParserOrganizationService
                         $rating = $organization[$columns['Рейтинг']] ?? null;
                         $nameType = $organization[$columns['Вид деятельности']] ?? null;
     
-                        $area = createArea($district, $region);
-                        $city = createCity($cityName, $region);
+                        $objects=linkRegionDistrictCity($region,$district,$cityName);
+                        $area = $objects['district'];
+                        $city =  $objects['city'];
+                            
                         if($city == null || $phones == null) continue;
         
                         $time_difference = 12;

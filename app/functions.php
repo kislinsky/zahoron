@@ -929,7 +929,10 @@ function getCoordinatesCity($city,$area){
     $apiKey='f85b1a2e01a144d496d767cb921c8b60';
     $client = new Client();
     $response = $client->get("https://api.opencagedata.com/geocode/v1/json?q=Город в россии в {$area} - {$city}&key=f85b1a2e01a144d496d767cb921c8b60");
-    return $data = json_decode($response->getBody(), true)['result'][0]['geometry'];
+    if(isset(json_decode($response->getBody(), true)['results'][0]['geometry'])){
+        return $data = json_decode($response->getBody(), true)['results'][0]['geometry'];
+    }
+    return null;
     
 }  
 
@@ -2087,4 +2090,56 @@ function isBrokenLink(string $url, int $timeout = 5, int $cacheMinutes = 60): bo
             return false;
         }
     });
+}
+
+
+
+
+function linkRegionDistrictCity($regionName, $districtName, $cityName)
+{
+
+    // Находим или создаем край
+
+    $region = Edge::firstOrCreate(['title' => $regionName]);
+
+    // Находим или создаем округ (с привязкой к краю)
+
+    $district = Area::firstOrCreate([
+
+        'title' => $districtName,
+        'edge_id' => $region->id,
+
+    ]);
+
+
+    $city = City::firstOrCreate([
+
+        'title' => $cityName,
+
+        'edge_id'=>$district->edge->id,
+
+        'slug'=>slug($cityName),
+
+        'area_id' => $district->id,
+
+    ]);
+    if(env('API_WORK')=='true'){
+        $coord=getCoordinatesCity($cityName,$district->title);
+
+        if($coord!=null){
+
+            $city ->update([
+                'width'=>$coord['lat'],
+                'longitude'=>$coord['lng'],
+            ]);
+        }
+    }
+
+    return [
+        'region' => $region,
+        'district' => $district,
+        'city' => $city,
+
+    ];
+
 }
