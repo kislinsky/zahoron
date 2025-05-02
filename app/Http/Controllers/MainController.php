@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivityCategoryOrganization;
+use App\Models\Area;
 use App\Models\CategoryProduct;
+use App\Models\Cemetery;
+use App\Models\City;
 use App\Models\Faq;
 use App\Models\ImageOrganization;
 use App\Models\Organization;
@@ -12,12 +15,13 @@ use App\Models\User;
 use App\Services\Burial\SearchBurialService;
 use App\Services\OurWork\OurWorkService;
 use App\Services\Page\IndexService;
+use Illuminate\Support\Facades\DB;
 
 
 class MainController extends Controller
 {
 
-    public static function index(){      
+    public static function index(){ 
         return IndexService::index();
     }
 

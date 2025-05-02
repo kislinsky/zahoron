@@ -991,7 +991,12 @@ $(".phone").mask("+7 (999) 999-9999");
 
 
 $(".open_mobile_header").click(function() {
-  $('.mobile_header').toggleClass('mobile_header_active')
+
+  $('.mobile_header').slideToggle()
+});
+
+$('.close_mobile_header').click(function() {
+  $('.mobile_header').slideToggle()
 });
 
 

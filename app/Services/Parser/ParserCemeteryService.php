@@ -94,8 +94,16 @@ class ParserCemeteryService
 
 
 
-
     public static function index($request) {
+        // Валидация входных данных
+        $validated = $request->validate([
+            'files' => 'required|array',
+            'files.*' => 'file|mimes:xlsx,xls',
+            'price_geo' => 'nullable|numeric',
+            'import_type' => 'required|in:create,update',
+            'columns_to_update' => 'nullable|array',
+        ]);
+    
         $files = $request->file('files');
         $price = $request->input('price_geo');
         $importAction = $request->input('import_type', 'create');
@@ -105,97 +113,126 @@ class ParserCemeteryService
         $createdCemeteries = 0;
         $updatedCemeteries = 0;
         $skippedRows = 0;
+        $errors = [];
     
         foreach ($files as $file) {
             if (!$file->isValid()) {
+                $errors[] = "Файл {$file->getClientOriginalName()} не валиден";
                 continue;
             }
-            $spreadsheet = IOFactory::load($file->getRealPath());
-            $sheet = $spreadsheet->getActiveSheet();
-            $titles = $sheet->toArray()[0];
-            $cemeteriesData = array_slice($sheet->toArray(), 1);
-            
-            $columns = array_flip($titles);
-
-            foreach ($cemeteriesData as $cemeteryRow) {
+    
+            try {
+                $spreadsheet = IOFactory::load($file->getRealPath());
+                $sheet = $spreadsheet->getActiveSheet();
+                $titles = $sheet->toArray()[0];
+                $cemeteriesData = array_slice($sheet->toArray(), 1);
                 
-                // Проверка обязательных полей
-                if (empty($cemeteryRow[$columns['Наименование кладбища'] ?? null]) || 
-                    empty($cemeteryRow[$columns['Latitude'] ?? null]) || 
-                    empty($cemeteryRow[$columns['Longitude'] ?? null])) {
-                    $skippedRows++;
-                    continue;
-                }
-
-
-                $objects=linkRegionDistrictCity($cemeteryRow[$columns['Край/Область'] ?? null],$cemeteryRow[$columns['Муниципального округа'] ?? null],$cemeteryRow[$columns['Населенный пункт'] ?? null],);
-
-
-                $area = $objects['district'];
-                $city =  $objects['city'];
-
+                $columns = array_flip($titles);
     
-                if (!$city || !$area) {
-
-                    $skippedRows++;
-                    continue;
+                // Проверка наличия обязательных колонок
+                $requiredColumns = ['Наименование кладбища', 'Latitude', 'Longitude', 'кадастровый номер'];
+                foreach ($requiredColumns as $col) {
+                    if (!isset($columns[$col])) {
+                        continue 2;
+                    }
                 }
-
-                $status=1;
-                if($cemeteryRow[$columns['Статус кладбища']]=='Открыто'){
-                    $status=1;
-                }else{
-                    $status=0;
-                }
-                $cemeteryData = [
-                    'title' => $cemeteryRow[$columns['Наименование кладбища']],
-                    'adres' => $cemeteryRow[$columns['Ориентир'] ?? null],
-                    'width' => $cemeteryRow[$columns['Latitude']],
-                    'longitude' => $cemeteryRow[$columns['Longitude']],
-                    'city_id' => $city->id,
-                    'area_id' => $area->id,
-                    'phone' => normalizePhone($cemeteryRow[$columns['Тел. Ответственного'] ?? null]),
-                    'square' => $cemeteryRow[$columns['Общая площадь (га)'] ?? null],
-                    'responsible' => $cemeteryRow[$columns['Ответственный'] ?? null],
-                    'cadastral_number' => $cemeteryRow[$columns['кадастровый номер'] ?? null],
-                    'status' => $status,
-                    // Дефолтные значения
-                    'img_url' => 'https://api.selcdn.ru/v1/SEL_266534/Images/main/Petropavlovsk-Kamchatsky/Cemeteries/70000001057067323!/Funeral-Services.jpg',
-                    'href_img' => 1,
-                    'price_burial_location'=>$price ?? null,
-                    'time_difference' => 10,
-                ];
     
-                if ($importAction === 'create') {
-
-                    $cemetery = Cemetery::create($cemeteryData);
-
-                    $createdCemeteries++;
-                } elseif ($importAction === 'update') {
-                    $identifier =  $cemeteryData['title'];
-                    
-                    $cemetery = Cemetery::where('title', $identifier)
-                        ->first();
-                    
-                    if ($cemetery) {
-                        $updateData = [];
-                        foreach ($updateFields as $field) {
-                            if (isset($cemeteryData[$field])) {
-                                $updateData[$field] = $cemeteryData[$field];
+                foreach ($cemeteriesData as $rowIndex => $cemeteryRow) {
+                    try {
+                        // Проверка обязательных полей
+                        if (empty($cemeteryRow[$columns['Наименование кладбища']])) {
+                            $skippedRows++;
+                            continue;
+                        }
+    
+                        $cadastralNumber = $cemeteryRow[$columns['кадастровый номер']];
+                        if (empty($cadastralNumber)) {
+                            $skippedRows++;
+                            continue;
+                        }
+    
+                        // Проверка координат
+                        if (empty($cemeteryRow[$columns['Latitude']])) {
+                            $skippedRows++;
+                            continue;
+                        }
+    
+                        if (empty($cemeteryRow[$columns['Longitude']])) {
+                            $skippedRows++;
+                            continue;
+                        }
+    
+                        $objects = linkRegionDistrictCity(
+                            $cemeteryRow[$columns['Край/Область'] ?? null],
+                            $cemeteryRow[$columns['Муниципального округа'] ?? null],
+                            $cemeteryRow[$columns['Населенный пункт'] ?? null]
+                        );
+    
+                        $area = $objects['district'] ?? null;
+                        $city = $objects['city'] ?? null;
+    
+                        if (!$city || !$area) {
+                            $skippedRows++;
+                            continue;
+                        }
+    
+                        $status = $cemeteryRow[$columns['Статус кладбища']] == 'Открыто' ? 1 : 0;
+                        
+                        $cemeteryData = [
+                            'title' => $cemeteryRow[$columns['Наименование кладбища']],
+                            'adres' => $cemeteryRow[$columns['Ориентир'] ?? null],
+                            'width' => $cemeteryRow[$columns['Latitude']],
+                            'longitude' => $cemeteryRow[$columns['Longitude']],
+                            'city_id' => $city->id,
+                            'area_id' => $area->id,
+                            'phone' => normalizePhone($cemeteryRow[$columns['Тел. Ответственного'] ?? null]),
+                            'square' => $cemeteryRow[$columns['Общая площадь (га)'] ?? null],
+                            'responsible' => $cemeteryRow[$columns['Ответственный'] ?? null],
+                            'cadastral_number' => $cadastralNumber, // Сохраняем оригинальный кадастровый номер
+                            'status' => $status,
+                            'img_url' => 'default',
+                            'href_img' => 1,
+                            'price_burial_location' => $price ?? 0,
+                            'time_difference' => 10,
+                        ];
+    
+                        if ($importAction === 'create') {
+                            // Проверяем существование по кадастровому номеру
+                            $existing = Cemetery::where('cadastral_number', $cadastralNumber)->first();
+                            if ($existing) {
+                                $skippedRows++;
+                                continue;
+                            }
+                            Cemetery::create($cemeteryData);
+                            $createdCemeteries++;
+                        } elseif ($importAction === 'update') {
+                            // Ищем по кадастровому номеру
+                            $cemetery = Cemetery::where('cadastral_number', $cadastralNumber)->first();
+                            
+                            if ($cemetery) {
+                                $updateData = [];
+                                foreach ($updateFields as $field) {
+                                    if (isset($cemeteryData[$field])) {
+                                        $updateData[$field] = $cemeteryData[$field];
+                                    }
+                                }
+                                
+                                if (!empty($updateData)) {
+                                    $cemetery->update($updateData);
+                                    $updatedCemeteries++;
+                                }
+                            } else {
+                                $skippedRows++;
                             }
                         }
-                        
-                        if (!empty($updateData)) {
-                            $cemetery->update($updateData);
-                            $updatedCemeteries++;
-                        }
-                    } else {
+                    } catch (\Exception $e) {
                         $skippedRows++;
                     }
                 }
+                
+                $processedFiles++;
+            } catch (\Exception $e) {
             }
-            
-            $processedFiles++;
         }
     
         $message = "Импорт кладбищ завершен. " .
@@ -204,10 +241,12 @@ class ParserCemeteryService
                    "Обновлено кладбищ: $updatedCemeteries, " .
                    "Пропущено строк: $skippedRows";
     
-        return redirect()->back()->with("message_cart", $message);
-    }
+        
     
-  
+        return redirect()->back()
+            ->with("message_cart", $message)
+            ->withErrors($errors);
+    }
 
 
     public static function importReviews($request){

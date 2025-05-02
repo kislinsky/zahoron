@@ -133,7 +133,11 @@
                     </div>
                 </div>
                 <div class="flex_btn_li_product">
-                    <a href='{{ route('burial.add',$product->id) }}'class="blue_btn">Получить координаты</a>
+                    @if($product->cemetery->price_burial_location==0 || $product->cemetery->price_burial_location==null)
+                        <div adres='{{ $product->width }},{{ $product->longitude }}'class="blue_btn copy_adres">Скопировать</div>
+                    @else
+                        <a href='{{ route('burial.add',$product->id) }}'class="blue_btn">Получить координаты</a>
+                    @endif
                     <a  href='{{ route('favorite.add',$product->id) }}' class="btn_border_blue img_mini_star"><img src="{{ asset('storage/uploads/Star 1 (1).svg')}}" alt=""></A>
                 </div>
                 

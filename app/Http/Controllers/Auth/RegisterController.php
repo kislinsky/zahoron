@@ -68,7 +68,7 @@ class RegisterController extends Controller
             'role'              => ['required', 'string'],
             'email'             => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password'          => ['required', 'string', 'min:8', 'confirmed'],
-            'inn'               => ['required', 'string'],
+            'inn'               => ['required', 'string','unique:users'],
             'organization_form' => ['required', 'string'],
         ]);
     }
@@ -91,11 +91,18 @@ class RegisterController extends Controller
             Auth::login($user);
             return redirect()->route('home'); // Замените на маршрут после входа
         }
+        $inn_user=User::where('inn',$data['inn'])->get();
+        if($inn_user->count()>0){
+            return redirect()->back()->with('error','Пользователь с таким инн уже существует.');
+        }
 
         $organization_ddata=null;
         if(env('API_WORK')=='true'){
             $organization_ddata=checkOrganizationInn($data['inn']);
         }
+
+
+
         if($organization_ddata!=null && $organization_ddata['state']['status']=='ACTIVE'){
 
             return redirect()->route('confirm.inn.information.email')->with([
@@ -211,6 +218,10 @@ class RegisterController extends Controller
             return redirect()->route('register.verify.code')->with('token', $token);
         } else {
             $inn =$data['inn_phone'];
+            $inn_user=User::where('inn',$data['inn'])->get();
+            if($inn_user->count()>0){
+                return redirect()->back()->with('error','Пользователь с таким инн уже существует.');
+            }
             $status = 'Действующий';
             $contragent = '3edqwe';
             $okved='';

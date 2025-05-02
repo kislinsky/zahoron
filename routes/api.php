@@ -19,6 +19,12 @@ Route::prefix('v1')->group(function () {
     Route::group(['prefix'=>'account'], function() {
         Route::group(['prefix'=>'agency'], function() {
 
+            Route::group(['prefix'=>'organization'], function() {
+                Route::post('/create', [AgencyController::class, 'createOrganization']);
+                Route::post('/update', [AgencyController::class, 'updateOrganization']);
+            });
+
+
             Route::post('/settings/update', [AgencyController::class, 'settingsUserUpdate']);
 
             Route::prefix('products')->group(function () {

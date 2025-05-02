@@ -46,6 +46,7 @@ $cities=mainCities();
             url: '{{route('city.ajax')}}',
             data: filters,
             success: function (result) {
+                $('.abs_cities').remove()
                $('#city_form .ul_location').append(result)
             },
             error: function () {

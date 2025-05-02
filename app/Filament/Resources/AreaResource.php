@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -56,7 +57,11 @@ class AreaResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('edge_id')
+                ->label('Край')
+                ->relationship('edge', 'title') // Используем отношение и поле для отображения
+                ->searchable() // Добавляем поиск
+                ->preload(), // Предзагрузка данных 
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

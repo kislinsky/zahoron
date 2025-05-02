@@ -18,7 +18,6 @@ $organizations=organizationRatingFuneralAgenciesPrices($city->id);
                     <th>Агентство</th>
                     <th>Похороны</th>
                     <th>Кремация</th>
-                    <th>Копка могил</th>
                     <th>Отправка груз 200</th>
                 </tr>
             </thead>
@@ -29,7 +28,6 @@ $organizations=organizationRatingFuneralAgenciesPrices($city->id);
                                 $price_1=ActivityCategoryOrganization::where('category_children_id',32)->where('organization_id',$organization->id)->get()->first()->price;
                                 $price_2=ActivityCategoryOrganization::where('category_children_id',33)->where('organization_id',$organization->id)->get()->first()->price;
                                 $price_3=ActivityCategoryOrganization::where('category_children_id',34)->where('organization_id',$organization->id)->get()->first()->price;
-                                $price_4=ActivityCategoryOrganization::where('category_children_id',35)->where('organization_id',$organization->id)->get()->first()->price;
                             ?>
                             <tr>
                                 <td class='name_organization'>
@@ -45,7 +43,6 @@ $organizations=organizationRatingFuneralAgenciesPrices($city->id);
                                 <td><div class="text_black">от {{$price_1}} р</div></td>
                                 <td><div class="text_black">от {{$price_2}} р</div></td>
                                 <td><div class="text_black">от {{$price_3}} р</div></td>
-                                <td><div class="text_black">от {{$price_4}} р</div></td>
                             </tr>
                         @endif
                     @endforeach

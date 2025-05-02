@@ -23,7 +23,7 @@
                 <a href='{{route('account.agency.choose.organization',$organization->id)}}' class="li_agency_organization text_block">{{$organization->title}} <div class="blue_btn">выбрать</div></a>   
             @endforeach
         @else
-            <div class="li_agency_organization text_block">Добавьте организацию  </div>   
+            <a href='{{ route('account.agency.add.organization') }}' class="li_agency_organization text_block">Добавьте организацию  </a>   
         @endif
         </div>
 </div>

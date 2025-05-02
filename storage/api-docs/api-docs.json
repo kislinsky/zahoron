@@ -809,6 +809,826 @@
                 ]
             }
         },
+        "/v1/account/agency/organization/create": {
+            "post": {
+                "tags": [
+                    "Организация"
+                ],
+                "summary": "Создание новой организации",
+                "description": "Создает новую организацию с категориями, рабочими часами и изображениями",
+                "operationId": "createOrganization",
+                "requestBody": {
+                    "description": "Данные организации с файлами",
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "city_id",
+                                    "adres",
+                                    "width",
+                                    "longitude",
+                                    "cemetery_ids[]",
+                                    "img",
+                                    "img_main",
+                                    "user_id"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Ритуальные услуги"
+                                    },
+                                    "content": {
+                                        "type": "string",
+                                        "example": "Профессиональные ритуальные услуги с 1990 года",
+                                        "nullable": true
+                                    },
+                                    "cemetery_ids[]": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "maxLength": 20,
+                                        "example": "+79001234567",
+                                        "nullable": true
+                                    },
+                                    "telegram": {
+                                        "type": "string",
+                                        "maxLength": 50,
+                                        "example": "@username",
+                                        "nullable": true
+                                    },
+                                    "whatsapp": {
+                                        "type": "string",
+                                        "maxLength": 20,
+                                        "example": "+79001234567",
+                                        "nullable": true
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "maxLength": 255,
+                                        "example": "info@ritual.ru",
+                                        "nullable": true
+                                    },
+                                    "city_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "next_to": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Рядом с центральным парком",
+                                        "nullable": true
+                                    },
+                                    "underground": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Центральная",
+                                        "nullable": true
+                                    },
+                                    "adres": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "ул. Центральная, д. 1"
+                                    },
+                                    "width": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 55.7558
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 37.6173
+                                    },
+                                    "available_installments": {
+                                        "description": "0 - false, 1 - true",
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ],
+                                        "example": 1
+                                    },
+                                    "found_cheaper": {
+                                        "description": "0 - false, 1 - true",
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ],
+                                        "example": 0
+                                    },
+                                    "сonclusion_contract": {
+                                        "description": "0 - false, 1 - true",
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ],
+                                        "example": 1
+                                    },
+                                    "state_compensation": {
+                                        "description": "0 - false, 1 - true",
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ],
+                                        "example": 0
+                                    },
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "categories_organization[]": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 29
+                                        }
+                                    },
+                                    "price_cats_organization[]": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 100
+                                        }
+                                    },
+                                    "working_day[]": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "09:00 - 18:00"
+                                        },
+                                        "maxItems": 7,
+                                        "minItems": 7
+                                    },
+                                    "holiday_day[]": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Monday",
+                                                "Tuesday",
+                                                "Wednesday",
+                                                "Thursday",
+                                                "Friday",
+                                                "Saturday",
+                                                "Sunday"
+                                            ],
+                                            "example": "Sunday"
+                                        }
+                                    },
+                                    "img": {
+                                        "description": "Основное изображение организации (jpeg, jpg, png, max 5MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "img_main": {
+                                        "description": "Дополнительное изображение организации (jpeg, jpg, png, max 5MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "images[]": {
+                                        "type": "array",
+                                        "items": {
+                                            "description": "Дополнительные изображения (jpeg, jpg, png, max 5MB каждая)",
+                                            "type": "string",
+                                            "format": "binary"
+                                        },
+                                        "maxItems": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Организация создана",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Организация отправлена на модерацию"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Ритуальные услуги"
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "example": 0
+                                                },
+                                                "content": {
+                                                    "type": "string",
+                                                    "example": "Профессиональные ритуальные услуги с 1990 года"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "+79001234567"
+                                                },
+                                                "telegram": {
+                                                    "type": "string",
+                                                    "example": "@username"
+                                                },
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "img_file": {
+                                                    "type": "string",
+                                                    "example": "uploads_organization/abc123.jpg"
+                                                },
+                                                "img_main_file": {
+                                                    "type": "string",
+                                                    "example": "uploads_organization/def456.jpg"
+                                                },
+                                                "whatsapp": {
+                                                    "type": "string",
+                                                    "example": "+79001234567"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "info@ritual.ru"
+                                                },
+                                                "city_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "slug": {
+                                                    "type": "string",
+                                                    "example": "ritualnye-uslugi"
+                                                },
+                                                "next_to": {
+                                                    "type": "string",
+                                                    "example": "Рядом с центральным парком"
+                                                },
+                                                "underground": {
+                                                    "type": "string",
+                                                    "example": "Центральная"
+                                                },
+                                                "adres": {
+                                                    "type": "string",
+                                                    "example": "ул. Центральная, д. 1"
+                                                },
+                                                "width": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 55.7558
+                                                },
+                                                "longitude": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 37.6173
+                                                },
+                                                "available_installments": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "found_cheaper": {
+                                                    "type": "integer",
+                                                    "example": 0
+                                                },
+                                                "state_compensation": {
+                                                    "type": "integer",
+                                                    "example": 0
+                                                },
+                                                "сonclusion_contract": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "cemetery_ids": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "activityCategories": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "category_id": {
+                                                                "type": "integer",
+                                                                "example": 29
+                                                            },
+                                                            "price": {
+                                                                "type": "number",
+                                                                "example": 100
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "working_hours": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "day": {
+                                                                "type": "string",
+                                                                "example": "Monday"
+                                                            },
+                                                            "time_start_work": {
+                                                                "type": "string",
+                                                                "example": "09:00"
+                                                            },
+                                                            "time_end_work": {
+                                                                "type": "string",
+                                                                "example": "18:00"
+                                                            },
+                                                            "holiday": {
+                                                                "type": "integer",
+                                                                "example": 0
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "images": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "img_file": {
+                                                                "type": "string",
+                                                                "example": "uploads_organization/ghi789.jpg"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибки валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибки валидации"
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "title": [
+                                                    "Поле title обязательно для заполнения"
+                                                ],
+                                                "cemetery_ids": [
+                                                    "Необходимо выбрать хотя бы одно кладбище"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибка при создании организации"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Детали ошибки"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/account/agency/organization/update": {
+            "post": {
+                "tags": [
+                    "Организация"
+                ],
+                "summary": "Обновление данных организации",
+                "operationId": "c605a550b7a63242c2d9aaccd0fedf91",
+                "requestBody": {
+                    "description": "Данные для обновления организации",
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "id"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "description": "ID организации (обязательное поле)",
+                                        "type": "integer"
+                                    },
+                                    "title": {
+                                        "description": "Название организации",
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "content": {
+                                        "description": "Описание организации",
+                                        "type": "string"
+                                    },
+                                    "phone": {
+                                        "description": "Телефон организации",
+                                        "type": "string",
+                                        "maxLength": 20
+                                    },
+                                    "telegram": {
+                                        "description": "Телеграм контакт",
+                                        "type": "string",
+                                        "maxLength": 50
+                                    },
+                                    "whatsapp": {
+                                        "description": "Whatsapp контакт",
+                                        "type": "string",
+                                        "maxLength": 20
+                                    },
+                                    "email": {
+                                        "description": "Email организации",
+                                        "type": "string",
+                                        "format": "email",
+                                        "maxLength": 255
+                                    },
+                                    "city_id": {
+                                        "description": "ID города",
+                                        "type": "integer"
+                                    },
+                                    "next_to": {
+                                        "description": "Рядом с",
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "underground": {
+                                        "description": "Ближайшее метро",
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "adres": {
+                                        "description": "Адрес организации",
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "width": {
+                                        "description": "Широта",
+                                        "type": "string",
+                                        "maxLength": 50
+                                    },
+                                    "longitude": {
+                                        "description": "Долгота",
+                                        "type": "string",
+                                        "maxLength": 50
+                                    },
+                                    "img": {
+                                        "description": "Основное изображение (макс. 2MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "img_main": {
+                                        "description": "Главное изображение (макс. 2MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "cemetery_ids[]": {
+                                        "description": "Массив ID кладбищ",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "images[]": {
+                                        "description": "Массив изображений (файлы, URL или base64)",
+                                        "type": "array",
+                                        "items": {
+                                            "oneOf": [
+                                                {
+                                                    "type": "string",
+                                                    "format": "binary"
+                                                },
+                                                {
+                                                    "description": "URL изображения",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "description": "Base64 изображения",
+                                                    "type": "string"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "categories_organization[]": {
+                                        "description": "Массив ID категорий",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "price_cats_organization[]": {
+                                        "description": "Массив цен для категорий",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "number",
+                                            "format": "float"
+                                        }
+                                    },
+                                    "working_day[]": {
+                                        "description": "Рабочие часы по дням недели",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "09:00 - 18:00"
+                                        }
+                                    },
+                                    "holiday_day[]": {
+                                        "description": "Выходные дни",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Monday",
+                                                "Tuesday",
+                                                "Wednesday",
+                                                "Thursday",
+                                                "Friday",
+                                                "Saturday",
+                                                "Sunday"
+                                            ]
+                                        }
+                                    },
+                                    "available_installments": {
+                                        "description": "Доступна рассрочка: 0 - нет, 1 - да",
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "found_cheaper": {
+                                        "description": "Нашли дешевле: 0 - нет, 1 - да",
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "conclusion_contract": {
+                                        "description": "Заключение договора: 0 - нет, 1 - да",
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "state_compensation": {
+                                        "description": "Государственная компенсация: 0 - нет, 1 - да",
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешное обновление",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Организация успешно обновлена"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "title": {
+                                                    "type": "string"
+                                                },
+                                                "content": {
+                                                    "type": "string"
+                                                },
+                                                "phone": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string"
+                                                },
+                                                "city_id": {
+                                                    "type": "integer"
+                                                },
+                                                "adres": {
+                                                    "type": "string"
+                                                },
+                                                "width": {
+                                                    "type": "string"
+                                                },
+                                                "longitude": {
+                                                    "type": "string"
+                                                },
+                                                "img_file": {
+                                                    "type": "string"
+                                                },
+                                                "img_main_file": {
+                                                    "type": "string"
+                                                },
+                                                "images": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "img_file": {
+                                                                "type": "string"
+                                                            },
+                                                            "img_url": {
+                                                                "type": "string"
+                                                            },
+                                                            "href_img": {
+                                                                "type": "integer"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "workingHours": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "day": {
+                                                                "type": "string"
+                                                            },
+                                                            "time_start_work": {
+                                                                "type": "string"
+                                                            },
+                                                            "time_end_work": {
+                                                                "type": "string"
+                                                            },
+                                                            "holiday": {
+                                                                "type": "integer"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "activityCategories": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "category_main_id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "category_children_id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "price": {
+                                                                "type": "number"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибка валидации"
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "additionalProperties": [
+                                                {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "property": null
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибка сервера"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1/register": {
             "post": {
                 "tags": [
@@ -1590,6 +2410,10 @@
         {
             "name": "Профиль организации",
             "description": "Профиль организации"
+        },
+        {
+            "name": "Организация",
+            "description": "Организация"
         },
         {
             "name": "Авторизация/регистрация",

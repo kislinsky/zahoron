@@ -501,4 +501,548 @@ class AgencyController extends Controller
  */
 public static function settingsUserUpdate(Request $request){}
 
+
+/**
+ * @OA\Post(
+ *     path="/v1/account/agency/organization/create",
+ *     tags={"Организация"},
+ *     summary="Создание новой организации",
+ *     description="Создает новую организацию с категориями, рабочими часами и изображениями",
+ *     operationId="createOrganization",
+ *     security={{"bearerAuth": {}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         description="Данные организации с файлами",
+ *         @OA\MediaType(
+ *             mediaType="multipart/form-data",
+ *             @OA\Schema(
+ *                 required={"title", "city_id", "adres", "width", "longitude", "cemetery_ids[]", "img", "img_main", "user_id"},
+ *                 @OA\Property(
+ *                     property="title",
+ *                     type="string",
+ *                     maxLength=255,
+ *                     example="Ритуальные услуги"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="content",
+ *                     type="string",
+ *                     nullable=true,
+ *                     example="Профессиональные ритуальные услуги с 1990 года"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="cemetery_ids[]",
+ *                     type="array",
+ *                     @OA\Items(
+ *                         type="integer",
+ *                         example=1
+ *                     )
+ *                 ),
+ *                 @OA\Property(
+ *                     property="phone",
+ *                     type="string",
+ *                     maxLength=20,
+ *                     nullable=true,
+ *                     example="+79001234567"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="telegram",
+ *                     type="string",
+ *                     maxLength=50,
+ *                     nullable=true,
+ *                     example="@username"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="whatsapp",
+ *                     type="string",
+ *                     maxLength=20,
+ *                     nullable=true,
+ *                     example="+79001234567"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="email",
+ *                     type="string",
+ *                     format="email",
+ *                     maxLength=255,
+ *                     nullable=true,
+ *                     example="info@ritual.ru"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="city_id",
+ *                     type="integer",
+ *                     example=1
+ *                 ),
+ *                 @OA\Property(
+ *                     property="next_to",
+ *                     type="string",
+ *                     maxLength=255,
+ *                     nullable=true,
+ *                     example="Рядом с центральным парком"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="underground",
+ *                     type="string",
+ *                     maxLength=255,
+ *                     nullable=true,
+ *                     example="Центральная"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="adres",
+ *                     type="string",
+ *                     maxLength=255,
+ *                     example="ул. Центральная, д. 1"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="width",
+ *                     type="number",
+ *                     format="float",
+ *                     example=55.7558
+ *                 ),
+ *                 @OA\Property(
+ *                     property="longitude",
+ *                     type="number",
+ *                     format="float",
+ *                     example=37.6173
+ *                 ),
+ *                 @OA\Property(
+ *                     property="available_installments",
+ *                     type="integer",
+ *                     enum={0, 1},
+ *                     example=1,
+ *                     description="0 - false, 1 - true"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="found_cheaper",
+ *                     type="integer",
+ *                     enum={0, 1},
+ *                     example=0,
+ *                     description="0 - false, 1 - true"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="сonclusion_contract",
+ *                     type="integer",
+ *                     enum={0, 1},
+ *                     example=1,
+ *                     description="0 - false, 1 - true"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="state_compensation",
+ *                     type="integer",
+ *                     enum={0, 1},
+ *                     example=0,
+ *                     description="0 - false, 1 - true"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="user_id",
+ *                     type="integer",
+ *                     example=1
+ *                 ),
+ *                 @OA\Property(
+ *                     property="categories_organization[]",
+ *                     type="array",
+ *                     @OA\Items(
+ *                         type="integer",
+ *                         example=29
+ *                     )
+ *                 ),
+ *                 @OA\Property(
+ *                     property="price_cats_organization[]",
+ *                     type="array",
+ *                     @OA\Items(
+ *                         type="number",
+ *                         format="float",
+ *                         example=100
+ *                     )
+ *                 ),
+ *                 @OA\Property(
+ *                     property="working_day[]",
+ *                     type="array",
+ *                     minItems=7,
+ *                     maxItems=7,
+ *                     @OA\Items(
+ *                         type="string",
+ *                         example="09:00 - 18:00"
+ *                     )
+ *                 ),
+ *                 @OA\Property(
+ *                     property="holiday_day[]",
+ *                     type="array",
+ *                     @OA\Items(
+ *                         type="string",
+ *                         enum={"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"},
+ *                         example="Sunday"
+ *                     )
+ *                 ),
+ *                 @OA\Property(
+ *                     property="img",
+ *                     type="string",
+ *                     format="binary",
+ *                     description="Основное изображение организации (jpeg, jpg, png, max 5MB)"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="img_main",
+ *                     type="string",
+ *                     format="binary",
+ *                     description="Дополнительное изображение организации (jpeg, jpg, png, max 5MB)"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="images[]",
+ *                     type="array",
+ *                     maxItems=5,
+ *                     @OA\Items(
+ *                         type="string",
+ *                         format="binary",
+ *                         description="Дополнительные изображения (jpeg, jpg, png, max 5MB каждая)"
+ *                     )
+ *                 )
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="Организация создана",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Организация отправлена на модерацию"),
+ *             @OA\Property(
+ *                 property="data",
+ *                 type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="title", type="string", example="Ритуальные услуги"),
+ *                 @OA\Property(property="status", type="integer", example=0),
+ *                 @OA\Property(property="content", type="string", example="Профессиональные ритуальные услуги с 1990 года"),
+ *                 @OA\Property(property="phone", type="string", example="+79001234567"),
+ *                 @OA\Property(property="telegram", type="string", example="@username"),
+ *                 @OA\Property(property="user_id", type="integer", example=1),
+ *                 @OA\Property(property="img_file", type="string", example="uploads_organization/abc123.jpg"),
+ *                 @OA\Property(property="img_main_file", type="string", example="uploads_organization/def456.jpg"),
+ *                 @OA\Property(property="whatsapp", type="string", example="+79001234567"),
+ *                 @OA\Property(property="email", type="string", example="info@ritual.ru"),
+ *                 @OA\Property(property="city_id", type="integer", example=1),
+ *                 @OA\Property(property="slug", type="string", example="ritualnye-uslugi"),
+ *                 @OA\Property(property="next_to", type="string", example="Рядом с центральным парком"),
+ *                 @OA\Property(property="underground", type="string", example="Центральная"),
+ *                 @OA\Property(property="adres", type="string", example="ул. Центральная, д. 1"),
+ *                 @OA\Property(property="width", type="number", format="float", example=55.7558),
+ *                 @OA\Property(property="longitude", type="number", format="float", example=37.6173),
+ *                 @OA\Property(property="available_installments", type="integer", example=1),
+ *                 @OA\Property(property="found_cheaper", type="integer", example=0),
+ *                 @OA\Property(property="state_compensation", type="integer", example=0),
+ *                 @OA\Property(property="сonclusion_contract", type="integer", example=1),
+ *                 @OA\Property(
+ *                     property="cemetery_ids",
+ *                     type="array",
+ *                     @OA\Items(
+ *                         type="integer",
+ *                         example=1
+ *                     )
+ *                 ),
+ *                 @OA\Property(
+ *                     property="activityCategories",
+ *                     type="array",
+ *                     @OA\Items(
+ *                         type="object",
+ *                         @OA\Property(property="id", type="integer", example=1),
+ *                         @OA\Property(property="category_id", type="integer", example=29),
+ *                         @OA\Property(property="price", type="number", example=100)
+ *                     )
+ *                 ),
+ *                 @OA\Property(
+ *                     property="working_hours",
+ *                     type="array",
+ *                     @OA\Items(
+ *                         type="object",
+ *                         @OA\Property(property="day", type="string", example="Monday"),
+ *                         @OA\Property(property="time_start_work", type="string", example="09:00"),
+ *                         @OA\Property(property="time_end_work", type="string", example="18:00"),
+ *                         @OA\Property(property="holiday", type="integer", example=0)
+ *                     )
+ *                 ),
+ *                 @OA\Property(
+ *                     property="images",
+ *                     type="array",
+ *                     @OA\Items(
+ *                         type="object",
+ *                         @OA\Property(property="id", type="integer", example=1),
+ *                         @OA\Property(property="img_file", type="string", example="uploads_organization/ghi789.jpg")
+ *                     )
+ *                 )
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Ошибки валидации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Ошибки валидации"),
+ *             @OA\Property(
+ *                 property="errors",
+ *                 type="object",
+ *                 example={
+ *                     "title": {"Поле title обязательно для заполнения"},
+ *                     "cemetery_ids": {"Необходимо выбрать хотя бы одно кладбище"}
+ *                 }
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Ошибка сервера",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Ошибка при создании организации"),
+ *             @OA\Property(property="error", type="string", example="Детали ошибки")
+ *         )
+ *     )
+ * )
+ */
+public static function createOrganization(Request $request) {}
+
+
+/**
+ * @OA\Post(
+ *     path="/v1/account/agency/organization/update",
+ *     summary="Обновление данных организации",
+ *     tags={"Организация"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         description="Данные для обновления организации",
+ *         @OA\MediaType(
+ *             mediaType="multipart/form-data",
+ *             @OA\Schema(
+ *                 required={"id"},
+ *                 @OA\Property(property="id", type="integer", description="ID организации (обязательное поле)"),
+ *                 @OA\Property(
+ *                     property="title",
+ *                     type="string",
+ *                     maxLength=255,
+ *                     description="Название организации"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="content",
+ *                     type="string",
+ *                     description="Описание организации"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="phone",
+ *                     type="string",
+ *                     maxLength=20,
+ *                     description="Телефон организации"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="telegram",
+ *                     type="string",
+ *                     maxLength=50,
+ *                     description="Телеграм контакт"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="whatsapp",
+ *                     type="string",
+ *                     maxLength=20,
+ *                     description="Whatsapp контакт"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="email",
+ *                     type="string",
+ *                     format="email",
+ *                     maxLength=255,
+ *                     description="Email организации"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="city_id",
+ *                     type="integer",
+ *                     description="ID города"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="next_to",
+ *                     type="string",
+ *                     maxLength=255,
+ *                     description="Рядом с"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="underground",
+ *                     type="string",
+ *                     maxLength=255,
+ *                     description="Ближайшее метро"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="adres",
+ *                     type="string",
+ *                     maxLength=255,
+ *                     description="Адрес организации"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="width",
+ *                     type="string",
+ *                     maxLength=50,
+ *                     description="Широта"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="longitude",
+ *                     type="string",
+ *                     maxLength=50,
+ *                     description="Долгота"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="img",
+ *                     type="string",
+ *                     format="binary",
+ *                     description="Основное изображение (макс. 2MB)"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="img_main",
+ *                     type="string",
+ *                     format="binary",
+ *                     description="Главное изображение (макс. 2MB)"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="cemetery_ids[]",
+ *                     type="array",
+ *                     @OA\Items(type="integer"),
+ *                     description="Массив ID кладбищ"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="images[]",
+ *                     type="array",
+ *                     @OA\Items(
+ *                         oneOf={
+ *                             @OA\Schema(type="string", format="binary"),
+ *                             @OA\Schema(type="string", description="URL изображения"),
+ *                             @OA\Schema(type="string", description="Base64 изображения")
+ *                         }
+ *                     ),
+ *                     description="Массив изображений (файлы, URL или base64)"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="categories_organization[]",
+ *                     type="array",
+ *                     @OA\Items(type="integer"),
+ *                     description="Массив ID категорий"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="price_cats_organization[]",
+ *                     type="array",
+ *                     @OA\Items(type="number", format="float"),
+ *                     description="Массив цен для категорий"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="working_day[]",
+ *                     type="array",
+ *                     @OA\Items(type="string", example="09:00 - 18:00"),
+ *                     description="Рабочие часы по дням недели"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="holiday_day[]",
+ *                     type="array",
+ *                     @OA\Items(type="string", enum={"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}),
+ *                     description="Выходные дни"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="available_installments",
+ *                     type="integer",
+ *                     enum={0, 1},
+ *                     description="Доступна рассрочка: 0 - нет, 1 - да"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="found_cheaper",
+ *                     type="integer",
+ *                     enum={0, 1},
+ *                     description="Нашли дешевле: 0 - нет, 1 - да"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="conclusion_contract",
+ *                     type="integer",
+ *                     enum={0, 1},
+ *                     description="Заключение договора: 0 - нет, 1 - да"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="state_compensation",
+ *                     type="integer",
+ *                     enum={0, 1},
+ *                     description="Государственная компенсация: 0 - нет, 1 - да"
+ *                 )
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешное обновление",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Организация успешно обновлена"),
+ *             @OA\Property(
+ *                 property="data",
+ *                 type="object",
+ *                 @OA\Property(property="id", type="integer"),
+ *                 @OA\Property(property="title", type="string"),
+ *                 @OA\Property(property="content", type="string"),
+ *                 @OA\Property(property="phone", type="string"),
+ *                 @OA\Property(property="email", type="string"),
+ *                 @OA\Property(property="city_id", type="integer"),
+ *                 @OA\Property(property="adres", type="string"),
+ *                 @OA\Property(property="width", type="string"),
+ *                 @OA\Property(property="longitude", type="string"),
+ *                 @OA\Property(property="img_file", type="string"),
+ *                 @OA\Property(property="img_main_file", type="string"),
+ *                 @OA\Property(
+ *                     property="images",
+ *                     type="array",
+ *                     @OA\Items(
+ *                         @OA\Property(property="id", type="integer"),
+ *                         @OA\Property(property="img_file", type="string"),
+ *                         @OA\Property(property="img_url", type="string"),
+ *                         @OA\Property(property="href_img", type="integer")
+ *                     )
+ *                 ),
+ *                 @OA\Property(
+ *                     property="workingHours",
+ *                     type="array",
+ *                     @OA\Items(
+ *                         @OA\Property(property="day", type="string"),
+ *                         @OA\Property(property="time_start_work", type="string"),
+ *                         @OA\Property(property="time_end_work", type="string"),
+ *                         @OA\Property(property="holiday", type="integer")
+ *                     )
+ *                 ),
+ *                 @OA\Property(
+ *                     property="activityCategories",
+ *                     type="array",
+ *                     @OA\Items(
+ *                         @OA\Property(property="category_main_id", type="integer"),
+ *                         @OA\Property(property="category_children_id", type="integer"),
+ *                         @OA\Property(property="price", type="number")
+ *                     )
+ *                 )
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Ошибка валидации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Ошибка валидации"),
+ *             @OA\Property(
+ *                 property="errors",
+ *                 type="object",
+ *                 additionalProperties={
+ *                     @OA\Property(type="array", @OA\Items(type="string"))
+ *                 }
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Ошибка сервера",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Ошибка сервера")
+ *         )
+ *     )
+ * )
+ */
+public static function update(Request $request) {}
+
 }
+

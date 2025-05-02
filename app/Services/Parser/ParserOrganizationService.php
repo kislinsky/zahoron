@@ -195,7 +195,7 @@ class ParserOrganizationService
                     // Обновляем категории
                     if(in_array('services', $columnsToUpdate) && isset($columns['Подраздел'])) {
                         if($services) {
-                            addActiveCategory($services, [], $existingOrg);
+                            addActiveCategory($services, [], $existingOrg,0);
                         }
                     }
                 }
@@ -291,7 +291,7 @@ class ParserOrganizationService
                         }
                         
                         if($services) {
-                            addActiveCategory($services, [], $existingOrg);
+                            addActiveCategory($services, [], $existingOrg,0);
                         }
                     }
                     // Если организации нет - создаем новую
@@ -399,7 +399,7 @@ class ParserOrganizationService
         
                         // Добавляем категории
                         if($services) {
-                            addActiveCategory($services, [], $organization_create);
+                            addActiveCategory($services, [], $organization_create,0);
                         }
                     }
                 }

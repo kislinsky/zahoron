@@ -89,7 +89,7 @@ header{
     width: 100%;
     left: 0;
     z-index: 110;
-    padding:20px 0px;
+    padding:9px 0px;
     background: white;
 }
 .header_decoder{
@@ -7165,16 +7165,16 @@ text-decoration-skip-ink: none;
 }
 
 .mobile_header{
-    min-width: 210px;
     position: fixed;
-    z-index: 101;
+    z-index: 111;
+    width: 100%;
     display: none;
     flex-direction: column;
     gap: 10px;
     background: white;
-    top: 160px;
-    right: 10px;
-    box-shadow: 0px 1px 8px 0px rgba(34, 60, 80, 0.2);
+    top: 0px;
+    height: 100%;
+    right: 0px;
     padding: 20px;
 }
 
@@ -7187,8 +7187,6 @@ text-decoration-skip-ink: none;
     flex-direction: column;
     gap: 10px;
     padding: 0px;
-    max-height: 230px;
-    overflow-y: scroll;
 }
 
 .form_admin_delete button{
@@ -7207,6 +7205,7 @@ text-decoration-skip-ink: none;
     color: #1A1A1A;
     line-height: 24px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
     text-decoration: none;
     gap: 10px;
@@ -7216,6 +7215,22 @@ text-decoration-skip-ink: none;
     transition: all ease-in-out 0.2s;
 }
 
+.close_mobile_header{
+    position: absolute;
+    z-index: 2;
+    cursor: pointer;
+    top: 20px;
+    right: 20px;
+
+}
+.close_mobile_header img{
+    width: 35px;
+}
+
+.mobile_header .city_selected{
+    justify-content: start;
+    margin-bottom: 20px;
+}
 .mobile_header  a:hover{
     color: #0069B0;
 }
@@ -7237,7 +7252,7 @@ text-decoration-skip-ink: none;
     width: 100%;
     gap: 20px;
     justify-content: space-between;
-    top: 88px;
+    top: 69px;
     background: white;
     border-top: 1px solid #E9E8EA;
     left: 0px;

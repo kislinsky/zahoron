@@ -524,7 +524,9 @@ color: white;
     display: none;
 }
 
-
+.black_theme .item_memorial_menu a{
+    color: white;
+}
 
 .black_theme .img_logo_organization.white_img_org{
     display: none;

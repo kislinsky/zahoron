@@ -386,16 +386,15 @@ function ddata(){
 
 
 function organizationRatingFuneralAgenciesPrices($city){
-    $sorted_organizations_ids=ActivityCategoryOrganization::whereIn('category_children_id',[32,33,34,35])->where('price','!=',null)->whereHas('organization', function ($query) use ($city) {
+    $sorted_organizations_ids=ActivityCategoryOrganization::whereIn('category_children_id',[32,33,34])->where('price','!=',null)->where('price','>',0)->whereHas('organization', function ($query) use ($city) {
         $query->where('city_id', $city)->where('status',1);
     })->pluck('organization_id');
     $orgainizations=Organization::whereIn('id',$sorted_organizations_ids)->get()->map(function ($organization) {
         $price_1=ActivityCategoryOrganization::where('category_children_id',32)->where('organization_id',$organization->id)->get();
         $price_2=ActivityCategoryOrganization::where('category_children_id',33)->where('organization_id',$organization->id)->get();
         $price_3=ActivityCategoryOrganization::where('category_children_id',34)->where('organization_id',$organization->id)->get();
-        $price_4=ActivityCategoryOrganization::where('category_children_id',35)->where('organization_id',$organization->id)->get();
-        if(count($price_1)>0 && count($price_2)>0 && count($price_3)>0 && count($price_4)>0 ){
-            $organization->all_price=$price_1->first()->price+$price_2->first()->price+$price_3->first()->price+$price_4->first()->price;
+        if(count($price_1)>0 && count($price_2)>0 && count($price_3)>0  ){
+            $organization->all_price=$price_1->first()->price+$price_2->first()->price+$price_3->first()->price;
             return $organization;
         }
 
@@ -414,7 +413,7 @@ function organizationRatingFuneralAgenciesPrices($city){
 
 function organizationRatingUneralBureausRavesPrices($city){
 
-    $sorted_organizations_ids=ActivityCategoryOrganization::whereIn('category_children_id',[29,30,39])->where('price','!=',null)->whereHas('organization', function ($query) use ($city) {
+    $sorted_organizations_ids=ActivityCategoryOrganization::whereIn('category_children_id',[29,30,39])->where('price','!=',null)->where('price','>',0)->whereHas('organization', function ($query) use ($city) {
         $query->where('city_id', $city)->where('status',1);
     })->pluck('organization_id');
     $orgainizations=Organization::whereIn('id',$sorted_organizations_ids)->get()->map(function ($organization) {
@@ -437,7 +436,7 @@ function organizationRatingUneralBureausRavesPrices($city){
 
 
 function organizationratingEstablishmentsProvidingHallsHoldingCommemorations($city){
-    $sorted_organizations=ActivityCategoryOrganization::where('category_children_id',46)->where('price','!=',null)->orderBy('price','asc')->whereHas('organization', function ($query) use ($city) {
+    $sorted_organizations=ActivityCategoryOrganization::where('category_children_id',46)->where('price','!=',null)->where('price','>',0)->orderBy('price','asc')->whereHas('organization', function ($query) use ($city) {
         $query->where('city_id', $city);
     })->get();
     return $sorted_organizations->take(10);
@@ -1916,7 +1915,7 @@ function addView($entityType, $entityId, $userId = null, $source = null)
     }
 
 
-function addActiveCategory(string $input, array $excludeCategories = [],$organization)
+function addActiveCategory(string $input, array $excludeCategories = [],$organization,$price=null)
 {
     // Разделяем строку по запятым и удаляем лишние пробелы
     $inputCategories = splitCategories($input);
@@ -1929,10 +1928,12 @@ function addActiveCategory(string $input, array $excludeCategories = [],$organiz
 
         // Проверяем, что категория допустима и не в списке исключений
         if ($category_find!=null && !in_array($category, $excludeCategories)) {
-            
+            if($price==null){
+                $price=getPriceByCategory($category);
+            }
             ActivityCategoryOrganization::create([
                 'organization_id'=>$organization->id,
-                'price'=>getPriceByCategory($category),
+                'price'=>$price,
                 'category_children_id'=>$category_find->id,
                 'category_main_id'=>$category_find->parent_id,
                 'rating'=>$organization->rating,
