@@ -1,7 +1,7 @@
 <?php 
-$edges=edges();
+//$edges=edges();
 ?>
-<div class="modal fade" id="cemetery_choose_form"  tabindex="-1" aria-labelledby="cemetery_choose_form" aria-hidden="true">
+{{-- <div class="modal fade" id="cemetery_choose_form"  tabindex="-1" aria-labelledby="cemetery_choose_form" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body message">
@@ -48,4 +48,4 @@ $edges=edges();
     </div>
 </div>
 
-
+ --}}

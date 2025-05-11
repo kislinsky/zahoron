@@ -4,7 +4,6 @@
 use Illuminate\Support\Facades\Auth;
 use App\Models\City;
 
-$cities_dead=City::orderBy('title','asc')->get();
 $mortuaries=selectCity()->mortuaries;
 $user=null;
 if(Auth::check()){

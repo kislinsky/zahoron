@@ -534,3 +534,11 @@ color: white;
 .black_theme .img_logo_organization.black_img_org{
     display: block ;
 }
+
+
+.black_theme .logo_organization_similar.black_img_org{
+    display: block;
+}
+.black_theme .logo_organization_similar.white_img_org{
+    display: none;
+}

@@ -5575,7 +5575,7 @@ background: #F7F7F8;
     padding-right: 0px !important;
 }
 .active_big_header{
-    top: 88px;
+    top: 58px;
 }
 .ul_pages_header_big{
     display: flex;
@@ -7467,4 +7467,13 @@ color: #050505;
 }
 .img_logo_organization.black_img_org{
     display: none;
+}
+
+
+
+.logo_organization_similar.black_img_org{
+    display: none;
+}
+ .logo_organization_similar.white_img_org{
+    display: block;
 }

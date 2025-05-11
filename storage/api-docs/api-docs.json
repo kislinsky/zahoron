@@ -1629,6 +1629,80 @@
                 ]
             }
         },
+        "/v1/account/agency/organization-provider/create-requests-cost": {
+            "post": {
+                "tags": [
+                    "Заявки"
+                ],
+                "summary": "Создание заявки на расчет стоимости",
+                "operationId": "3f13742a4a13a1324be2ef19891598b9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "organization_id",
+                                    "user_id",
+                                    "products",
+                                    "count"
+                                ],
+                                "properties": {
+                                    "organization_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "products": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    },
+                                    "count": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    },
+                                    "lcs": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "1"
+                                        },
+                                        "nullable": true
+                                    },
+                                    "all_lcs": {
+                                        "type": "boolean",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Успешно создано"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1/register": {
             "post": {
                 "tags": [
@@ -2414,6 +2488,10 @@
         {
             "name": "Организация",
             "description": "Организация"
+        },
+        {
+            "name": "Заявки",
+            "description": "Заявки"
         },
         {
             "name": "Авторизация/регистрация",

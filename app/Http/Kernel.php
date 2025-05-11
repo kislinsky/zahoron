@@ -2,14 +2,15 @@
 
 namespace App\Http;
 
-use App\Http\Middleware\CheckCity;
-use App\Http\Middleware\UserMiddleware;
 use App\Http\Middleware\AdminMiddleware;
-use App\Http\Middleware\AgentMiddleware;
-use App\Http\Middleware\CheckUserStatus;
 use App\Http\Middleware\AgencyMiddleware;
-use App\Http\Middleware\DecoderMiddleware;
+use App\Http\Middleware\AgentMiddleware;
 use App\Http\Middleware\CatalogProviderMiddleware;
+use App\Http\Middleware\CheckCity;
+use App\Http\Middleware\CheckRoleAccessMiddleware;
+use App\Http\Middleware\CheckUserStatus;
+use App\Http\Middleware\DecoderMiddleware;
+use App\Http\Middleware\UserMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -80,6 +81,7 @@ class Kernel extends HttpKernel
         'catalog.provider'=>CatalogProviderMiddleware::class,
         'user.role.check'=>CheckUserStatus::class,
         'check.city' => CheckCity::class,
+        'admin.check'=>CheckRoleAccessMiddleware::class,
 
     ];
 }

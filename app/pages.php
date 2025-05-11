@@ -54,6 +54,14 @@ function adminPages(){
             ],
         ],
 
+        ['География','storage/uploads/mdi_grave-stone (2).svg',
+            [
+                ['Импортировать','account.admin.parser.geo'],
+            ],
+        ],
+
+
+       
 
         ['SEO','storage/uploads/mdi_grave-stone (2).svg',
             $seo

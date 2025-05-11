@@ -97,4 +97,14 @@ class TypeServiceResource extends Resource
             'edit' => Pages\EditTypeService::route('/{record}/edit'),
         ];
     }
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' ;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Organization extends Model
 {
@@ -192,4 +193,24 @@ class Organization extends Model
         $url_black_theme=asset('storage/uploads/Theme=Black (1).svg');
         return [$url_white_theme,$url_black_theme];
     }
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($organization) {
+            // Удаляем связанные изображения
+            foreach ($organization->images as $image) {
+                // Если вы храните файлы изображений в хранилище
+                if ($image->path && Storage::exists($image->path)) {
+                    Storage::delete($image->path);
+                }
+
+                // Удалить запись из базы данных
+                $image->delete();
+            }
+        });
+    }
+    
 }

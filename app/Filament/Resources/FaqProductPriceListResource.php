@@ -79,4 +79,14 @@ class FaqProductPriceListResource extends Resource
             'edit' => Pages\EditFaqProductPriceList::route('/{record}/edit'),
         ];
     }
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' ;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
+    }
 }

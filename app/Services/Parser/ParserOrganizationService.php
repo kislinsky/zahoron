@@ -23,6 +23,8 @@ class ParserOrganizationService
         $importWithUser = $request->input('import_with_user', 0);
         $columnsToUpdate = $request->input('columns_to_update', []);
         
+        $importedFiles = []; 
+
         // Параметры фильтрации
         $filterRegion = $request->input('filter_region');
         $filterDistrict = $request->input('filter_district');
@@ -33,6 +35,9 @@ class ParserOrganizationService
                 continue;
             }
     
+            $fileName = $file->getClientOriginalName(); // Получаем имя файла
+            $importedFiles[] = $fileName; // Добавляем в массив
+
             $spreadsheet = IOFactory::load($file);
             $sheet = $spreadsheet->getActiveSheet();
         
@@ -221,10 +226,10 @@ class ParserOrganizationService
                     
                         if($city == null || $phones == null) continue;
         
-                        $time_difference = 12;
-                        if(env('API_WORK')=='true'){
-                            $time_difference=differencetHoursTimezone(getTimeByCoordinates($latitude,$longitude)['timezone']);
-                        }
+                        $time_difference = $city->utc_offset ?? 0;
+                        // if(env('API_WORK')=='true'){
+                        //     $time_difference=differencetHoursTimezone(getTimeByCoordinates($latitude,$longitude)['timezone']);
+                        // }
                         
                         $updateData = [
                             'title' => $orgTitle,
@@ -315,10 +320,10 @@ class ParserOrganizationService
                             
                         if($city == null || $phones == null) continue;
         
-                        $time_difference = 12;
-                        if(env('API_WORK')=='true'){
-                            $time_difference=differencetHoursTimezone(getTimeByCoordinates($latitude,$longitude)['timezone']);
-                        }
+                        $time_difference = $city->utc_offset ?? 0;
+                        // if(env('API_WORK')=='true'){
+                        //     $time_difference=differencetHoursTimezone(getTimeByCoordinates($latitude,$longitude)['timezone']);
+                        // }
                         
                         if($logoUrl!=null && !isBrokenLink($logoUrl)){
                             $logoUrl = $logoUrl ;
@@ -409,7 +414,12 @@ class ParserOrganizationService
         $message = $importType == 'update' 
             ? 'Данные организаций успешно обновлены' 
             : 'Организации успешно импортированы';
-        
+         // Добавляем информацию о файлах в сообщение
+   
+        if (!empty($importedFiles)) {
+            $filesList = implode(', ', $importedFiles);
+            $message .= " (файлы: " . $filesList . ")";
+        }
         return redirect()->back()->with("message_cart", $message);
     }
 

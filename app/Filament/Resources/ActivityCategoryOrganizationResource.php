@@ -32,10 +32,29 @@ class ActivityCategoryOrganizationResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('organization_id')
-                    ->label('ID Организации')
-                    ->required()
-                    ->numeric(),
+                Select::make('organization_id')
+                    ->label('Организация')
+                    ->searchable()
+                    ->getSearchResultsUsing(function (string $search) {
+                        return \App\Models\Organization::query()
+                            ->where(function ($query) use ($search) {
+                                if (is_numeric($search)) {
+                                    $query->where('id', $search);
+                                }
+
+                                $query->orWhere('title', 'like', "%{$search}%");
+                            })
+                            ->limit(20)
+                            ->get()
+                            ->mapWithKeys(function ($org) {
+                                return [$org->id => "{$org->id} — {$org->title}"];
+                            });
+                    })
+                    ->getOptionLabelUsing(function ($value) {
+                        $org = \App\Models\Organization::find($value);
+                        return $org ? "{$org->id} — {$org->title}" : null;
+                    })
+                ->required(),
 
                 Select::make('category_main_id')
                     ->label('Категория')
@@ -298,4 +317,16 @@ class ActivityCategoryOrganizationResource extends Resource
             'edit' => Pages\EditActivityCategoryOrganization::route('/{record}/edit'),
         ];
     }
+
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' ;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
+    }
+   
 }

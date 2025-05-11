@@ -108,4 +108,14 @@ class PriceAplicationResource extends Resource
             'edit' => Pages\EditPriceAplication::route('/{record}/edit'),
         ];
     }
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' || auth()->user()->role === 'deputy-admin' ;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
+    }
 }

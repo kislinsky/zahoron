@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers\OrganizationsRelationManager;
+use App\Models\City;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -51,6 +52,23 @@ class UserResource extends Resource
                 ->default(1), // Значение по умолчанию
 
 
+                Select::make('city_ids')
+                ->label('Города к которым привязан пользователь(менджер,зам-админ)')
+                ->multiple() // множественный выбор
+                ->options(function () {
+                    return City::all()->pluck('title', 'id')->toArray();
+                })
+                ->searchable()
+                ->preload()
+                ->default(fn ($record) => is_array($record?->city_ids) ? $record->city_ids : [])
+                ->dehydrateStateUsing(function ($state) {
+                    return json_encode($state ?? []);
+                })
+                ->afterStateHydrated(function (Select $component, $state) {
+                    $decoded = is_string($state) ? json_decode($state, true) : $state;
+                    $component->state(is_array($decoded) ? $decoded : []);
+                })
+                ->columnSpan('full'),
                 
 
                 Forms\Components\TextInput::make('phone')
@@ -66,6 +84,9 @@ class UserResource extends Resource
                     'organization-provider' => 'Организация-поставщик', 
                     'user' => 'Пользователь', 
                     'agent' => 'Работник', 
+                    'deputy-admin' => 'Зам. админ', 
+                    'manager' => 'Менеджер', 
+                    'seo-specialist' => 'Seo-специалист', 
             ])->default('user'),
                 Forms\Components\TextInput::make('name')
                 ->label('Имя')
@@ -186,6 +207,9 @@ class UserResource extends Resource
                         'organization-provider' => 'Организация-поставщик', 
                         'user' => 'Пользователь', 
                         'agent' => 'Работник', 
+                        'deputy-admin' => 'Зам. админ', 
+                        'manager' => 'Менеджер', 
+                        'seo-specialist' => 'Seo-специалист', 
                         default => 'Неизвестно',
                     }),
             ])
@@ -199,6 +223,9 @@ class UserResource extends Resource
                         'organization-provider' => 'Организация-поставщик', 
                         'user' => 'Пользователь', 
                         'agent' => 'Работник', 
+                        'deputy-admin' => 'Зам. админ', 
+                        'manager' => 'Менеджер', 
+                        'seo-specialist' => 'Seo-специалист', 
                 ]),
                 SelectFilter::make('city_id')
                 ->label('Город')
@@ -233,5 +260,15 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' ;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
     }
 }

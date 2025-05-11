@@ -386,8 +386,11 @@ function ddata(){
 
 
 function organizationRatingFuneralAgenciesPrices($city){
+    $city=City::find($city);
     $sorted_organizations_ids=ActivityCategoryOrganization::whereIn('category_children_id',[32,33,34])->where('price','!=',null)->where('price','>',0)->whereHas('organization', function ($query) use ($city) {
-        $query->where('city_id', $city)->where('status',1);
+        $query->whereHas('city', function ($q) use ($city) {
+            $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
+        })->where('role', 'organization')->where('status',1);
     })->pluck('organization_id');
     $orgainizations=Organization::whereIn('id',$sorted_organizations_ids)->get()->map(function ($organization) {
         $price_1=ActivityCategoryOrganization::where('category_children_id',32)->where('organization_id',$organization->id)->get();
@@ -412,9 +415,12 @@ function organizationRatingFuneralAgenciesPrices($city){
 
 
 function organizationRatingUneralBureausRavesPrices($city){
+    $city=City::find($city);
 
     $sorted_organizations_ids=ActivityCategoryOrganization::whereIn('category_children_id',[29,30,39])->where('price','!=',null)->where('price','>',0)->whereHas('organization', function ($query) use ($city) {
-        $query->where('city_id', $city)->where('status',1);
+        $query->whereHas('city', function ($q) use ($city) {
+            $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
+        })->where('role', 'organization')->where('status',1);
     })->pluck('organization_id');
     $orgainizations=Organization::whereIn('id',$sorted_organizations_ids)->get()->map(function ($organization) {
         $price_1=ActivityCategoryOrganization::where('category_children_id',29)->where('organization_id',$organization->id)->get();
@@ -436,8 +442,12 @@ function organizationRatingUneralBureausRavesPrices($city){
 
 
 function organizationratingEstablishmentsProvidingHallsHoldingCommemorations($city){
+    $city=City::find($city);
+
     $sorted_organizations=ActivityCategoryOrganization::where('category_children_id',46)->where('price','!=',null)->where('price','>',0)->orderBy('price','asc')->whereHas('organization', function ($query) use ($city) {
-        $query->where('city_id', $city);
+        $query->whereHas('city', function ($q) use ($city) {
+            $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
+        })->where('role', 'organization')->where('status',1);
     })->get();
     return $sorted_organizations->take(10);
 }
@@ -446,7 +456,9 @@ function organizationratingEstablishmentsProvidingHallsHoldingCommemorations($ci
 function savingsPrice($id){
     $city=selectCity();
     $orgainizations=ActivityCategoryOrganization::where('category_children_id',$id)->where('price','!=',null)->orderBy('price','asc')->whereHas('organization', function ($query) use ($city) {
-        $query->where('city_id', $city->id);
+        $query->whereHas('city', function ($q) use ($city) {
+            $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
+        })->where('role', 'organization')->where('status',1);
     })->get();
 
     if(count($orgainizations)>0){
@@ -552,9 +564,15 @@ function countReviewsOrganization($organization){
 function orgniaztionsFilters($data,$category){
     $city=selectCity();
 
-    $organizations_category=ActivityCategoryOrganization::where('category_children_id',$category->id)->whereHas('organization', function ($query) use ($city) {
-        $query->where('city_id', $city->id)->where('role','organization');
+    $organizations_category = ActivityCategoryOrganization::where('category_children_id', $category->id)
+    ->whereHas('organization', function ($query) use ($city) {
+        $query->whereHas('city', function ($q) use ($city) {
+            $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
+        })
+        ->where('role', 'organization')
+        ->where('status', 1);
     });
+
   
     if(isset($data['cemetery_id']) && $data['cemetery_id']!=null && $data['cemetery_id']!='null'){
         $cemetery_id=$data['cemetery_id'];
@@ -608,8 +626,13 @@ function organizationsPrices($data){
     if(isset($data['category_id'])){
         $category_id=$data['category_id'];
     }
-    $organizations_prices=ActivityCategoryOrganization::where('category_children_id',$category_id)->whereHas('organization', function ($query) use ($city) {
-        $query->where('city_id', $city->id)->where('role','organization')->where('status',1);
+    $organizations_prices = ActivityCategoryOrganization::where('category_children_id', $category_id)
+    ->whereHas('organization', function ($query) use ($city) {
+        $query->whereHas('city', function ($q) use ($city) {
+            $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
+        })
+        ->where('role', 'organization')
+        ->where('status', 1);
     });
     if (isset($data['cemetery_id']) && $data['cemetery_id']!=null && $data['cemetery_id']!='null' ){
         $cemetery_id=$data['cemetery_id'];
@@ -691,13 +714,24 @@ function orgniaztionsProviderFilters($data){
     }
 
     if(isset($data['category_id']) && $data['category_id']!=null){
-        $organizations_category=ActivityCategoryOrganization::where('category_children_id',$data['category_id'])->whereHas('organization', function ($query) use ($city) {
-            $query->where('city_id', $city->id)->where('role','organization-provider');
+        $organizations_category = ActivityCategoryOrganization::where('category_children_id', $data['category_id'])
+        ->whereHas('organization', function ($query) use ($city) {
+            $query->whereHas('city', function ($q) use ($city) {
+                $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
+            })
+            ->where('role', 'organization-provider')
+            ->where('status', 1);
         });
     }else{
-        $organizations_category=ActivityCategoryOrganization::where('category_children_id',categoryProductProviderChoose()->id)->whereHas('organization', function ($query) use ($city) {
-            $query->where('city_id', $city->id)->where('role','organization-provider');
+        $organizations_category = ActivityCategoryOrganization::where('category_children_id', categoryProductProviderChoose()->id)
+        ->whereHas('organization', function ($query) use ($city) {
+            $query->whereHas('city', function ($q) use ($city) {
+                $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
+            })
+            ->where('role', 'organization-provider')
+            ->where('status', 1);
         });
+       
     }
      
     
@@ -750,9 +784,15 @@ function organizationsProviderPrices($data){
         $category_id=$data['category_id'];
     }
     
-    $organizations_prices=ActivityCategoryOrganization::where('category_children_id',$category_id)->whereHas('organization', function ($query) use ($city) {
-        $query->where('city_id', $city->id)->where('role','organization-provider')->where('status',1);
+    $organizations_prices = ActivityCategoryOrganization::where('category_children_id', $category_id)
+    ->whereHas('organization', function ($query) use ($city) {
+        $query->whereHas('city', function ($q) use ($city) {
+            $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
+        })
+        ->where('role', 'organization-provider')
+        ->where('status', 1);
     });
+
    
     if(isset($data['filter_work']) && $data['filter_work']!=null){
         if($data['filter_work']=='on'){
@@ -1405,9 +1445,16 @@ function minPriceCategoryProductOrganization($slug){
     $city=selectCity();
     $cat=CategoryProduct::where('slug',$slug)->first();
     if($cat==null){return 0;}
-    $price=ActivityCategoryOrganization::whereHas('organization', function ($query) use ($city) {
-        $query->where('city_id', $city->id);
+
+    $price = ActivityCategoryOrganization::whereHas('organization', function ($query) use ($city) {
+        $query->whereHas('city', function ($q) use ($city) {
+            $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
+        })
+        ->where('role', 'organization-provider')
+        ->where('status', 1);
     })->where('category_children_id',$cat->id)->where('price','>',0)->min('price');
+
+   
     if($price!=null){
         return $price;
     }

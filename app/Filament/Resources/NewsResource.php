@@ -2,22 +2,23 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use App\Models\News;
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\RichEditor;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\Placeholder;
 use App\Filament\Resources\NewsResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\NewsResource\RelationManagers;
+use App\Models\News;
+use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class NewsResource extends Resource
 {
@@ -31,10 +32,24 @@ class NewsResource extends Resource
         return $form
             ->schema([
                 
-                TextInput::make('title') // 'name' is the database field
-                    ->label('Название') // Display label in Russian
-                    ->required() // Mark this field as required
-                    ->maxLength(255), // Optional: Set a maximum length
+                TextInput::make('title')
+                ->label('Название')
+                ->required()
+                ->live(debounce: 1000) // Задержка автообновления
+                ->afterStateUpdated(function ($state, $set, $get) {
+                    // Проверяем, если длина title больше 3 символов, обновляем slug
+                    if (!empty($state) && strlen($state) > 3) {
+                        $set('slug', generateUniqueSlug($state, News::class, $get('id')));
+                    }
+                }),
+
+                    TextInput::make('slug')
+                    ->required()
+                    ->label('Slug')
+                    ->maxLength(255)
+                    ->unique(ignoreRecord: true) // Проверка уникальности
+                    ->formatStateUsing(fn ($state) => slug($state)) // Форматируем slug
+                    ->dehydrateStateUsing(fn ($state, $get) => generateUniqueSlug($state, News::class, $get('id'))),
 
                 RichEditor::make('content') // Поле для редактирования HTML-контента
                     ->label('Контент') // Соответствующая подпись
@@ -55,7 +70,11 @@ class NewsResource extends Resource
                     ->required() // Опционально: сделать поле обязательным
                     ->disableLabel(false) // Показывать метку
                     ->placeholder('Введите HTML-контент здесь...'),
-
+                    
+                    Select::make('category_id')
+                    ->label('Категория')
+                    ->relationship('category', 'title')
+                    ->required(),
 
                     
                     FileUpload::make('img')
@@ -119,5 +138,15 @@ class NewsResource extends Resource
             'create' => Pages\CreateNews::route('/create'),
             'edit' => Pages\EditNews::route('/{record}/edit'),
         ];
+    }
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' ;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
     }
 }

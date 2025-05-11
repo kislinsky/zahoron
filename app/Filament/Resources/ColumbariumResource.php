@@ -171,7 +171,6 @@ class ColumbariumResource extends Resource
                         'codeBlock', // блок кода
                         'undo', 'redo', // отмена/возврат действия
                     ])
-                    ->required() // Опционально: сделать поле обязательным
                     ->disableLabel(false) // Показывать метку
                     ->placeholder('Введите HTML-контент здесь...'),
 
@@ -439,5 +438,15 @@ class ColumbariumResource extends Resource
             'create' => Pages\CreateColumbarium::route('/create'),
             'edit' => Pages\EditColumbarium::route('/{record}/edit'),
         ];
+    }
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' ;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
     }
 }

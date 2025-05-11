@@ -47,8 +47,20 @@ class OrganizationResource extends Resource
     protected static ?string $model = Organization::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Список'; // Название в меню
-    protected static ?string $navigationGroup = 'Организации'; // Указываем группу
+    protected static ?string $navigationLabel = 'Список';
+    protected static ?string $navigationGroup = 'Организации';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        if (auth()->user()->role === 'deputy-admin' || auth()->user()->role === 'manager' ) {
+            $userCityIds = json_decode(auth()->user()->city_ids);
+            $query->whereIn('city_id', $userCityIds);
+        }
+        
+        return $query;
+    }
 
     public static function form(Form $form): Form
     {
@@ -62,30 +74,27 @@ class OrganizationResource extends Resource
                 1 => 'Ссылка (URL)'
             ])
             ->inline()
-            ->live(), // Автоматически обновляет форму при изменении
+            ->live(),
 
-            
         TextInput::make('img_main_url')
             ->label('Ссылка на главное изображение')
             ->placeholder('https://example.com/image.jpg')
             ->reactive()
             ->required(fn ($get) => intval($get('href_main_img')) === 1)
-            ->hidden(fn ($get) => intval($get('href_main_img')) === 0), // Скрыто, если выбрано "Файл"
+            ->hidden(fn ($get) => intval($get('href_main_img')) === 0),
 
-        // Поле для загрузки файла (отображается только если выбран вариант "Файл на сайте")
         FileUpload::make('img_main_file')
             ->label('Загрузить главное изображение')
-            ->directory('/uploads_organization') // Директория для хранения файлов
+            ->directory('/uploads_organization')
             ->image()
             ->maxSize(2048)
             ->reactive()
             ->required(fn ($get) => intval($get('href_main_img')) === 0)
-            ->hidden(fn ($get) => intval($get('href_main_img')) === 1), // Скрыто, если выбрано "Ссылка"
+            ->hidden(fn ($get) => intval($get('href_main_img')) === 1),
 
-            // Отображение текущего изображения (если запись уже существует)
             View::make('image')
             ->label('Текущий логотип')
-            ->view('filament.forms.components.custom-image-organization') // Указываем путь к Blade-шаблону
+            ->view('filament.forms.components.custom-image-organization')
             ->extraAttributes(['class' => 'custom-image-class'])
             ->columnSpan('full')
             ->hidden(fn ($get) => intval($get('href_main_img')) === 0), 
@@ -98,56 +107,61 @@ class OrganizationResource extends Resource
                 1 => 'Ссылка (URL)'
             ])
             ->inline()
-            ->live(), // Автоматически обновляет форму при изменении
+            ->live(),
 
-
-        // Поле для ссылки (отображается только если выбран вариант "Ссылка")
         TextInput::make('img_url')
             ->label('Ссылка на логотип')
             ->placeholder('https://example.com/image.jpg')
             ->reactive()
             ->required(fn ($get) => intval($get('href_img')) === 1)
-            ->hidden(fn ($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
+            ->hidden(fn ($get) => intval($get('href_img')) === 0),
 
-        // Поле для загрузки файла (отображается только если выбран вариант "Файл на сайте")
         FileUpload::make('img_file')
             ->label('Загрузить логоитип')
-            ->directory('/uploads_organization') // Директория для хранения файлов
+            ->directory('/uploads_organization')
             ->image()
             ->maxSize(2048)
             ->reactive()
             ->required(fn ($get) => intval($get('href_img')) === 0)
-            ->hidden(fn ($get) => intval($get('href_img')) === 1), // Скрыто, если выбрано "Ссылка"
+            ->hidden(fn ($get) => intval($get('href_img')) === 1),
 
-        // Отображение текущего изображения (если запись уже существует)
         View::make('image')
             ->label('Текущий логотип')
-            ->view('filament.forms.components.custom-image') // Указываем путь к Blade-шаблону
+            ->view('filament.forms.components.custom-image')
             ->extraAttributes(['class' => 'custom-image-class'])
             ->columnSpan('full')
             ->hidden(fn ($get) => intval($get('href_img')) === 0), 
 
-
             TextInput::make('title')
             ->label('Название фирмы')
             ->required()
-            ->live(debounce: 1000) // Задержка автообновления
+            ->live(debounce: 1000)
             ->afterStateUpdated(function ($state, $set, $get) {
-                // Проверяем, если длина title больше 3 символов, обновляем slug
                 if (!empty($state) && strlen($state) > 3) {
                     $set('slug', generateUniqueSlug($state, Organization::class, $get('id')));
                 }
             }),
 
-
-            
         TextInput::make('slug')
             ->required()
             ->label('Slug')
             ->maxLength(255)
-            ->unique(ignoreRecord: true) // Проверка уникальности
-            ->formatStateUsing(fn ($state) => slug($state)) // Форматируем slug
+            ->unique(ignoreRecord: true)
+            ->formatStateUsing(fn ($state) => slug($state))
             ->dehydrateStateUsing(fn ($state, $get) => generateUniqueSlug($state, Organization::class, $get('id'))),
+
+            TextInput::make('route')
+    ->label('Ссылка на организацию')
+    ->disabled()
+    ->suffixAction(
+        Action::make('open_page')
+            ->label('Открыть страницу')
+            ->icon('heroicon-s-map')
+            ->button()
+            ->url(fn ($state, $livewire) => route('organization.single', $livewire->getRecord()->slug))
+            ->openUrlInNewTab()
+            ->visible(fn ($state, $livewire) => filled($livewire->getRecord()?->slug))
+    ),
 
             Radio::make('status')
             ->label('Отображение организации')
@@ -159,13 +173,19 @@ class OrganizationResource extends Resource
 
             Forms\Components\Select::make('city_id')
                 ->label('Город')
-                ->relationship('city', 'title')
+                ->options(function () {
+                    if (auth()->user()->role === 'admin') {
+                        return City::pluck('title', 'id');
+                    } else {
+                        $userCityIds = json_decode(auth()->user()->city_ids);
+                        return City::whereIn('id', $userCityIds)->pluck('title', 'id');
+                    }
+                })
                 ->required()
                 ->searchable()
                 ->preload()
-                ->live(), // Позволяет обновлять зависимые поля при изменении
+                ->live(),
 
-               
             Forms\Components\TextInput::make('width')
                 ->label('Ширина')
                 ->required()
@@ -176,8 +196,6 @@ class OrganizationResource extends Resource
                 ->required()
                 ->maxLength(255),
 
-         
-
             Forms\Components\TextInput::make('underground')
                 ->label('Метро')
                 ->maxLength(255),
@@ -185,8 +203,6 @@ class OrganizationResource extends Resource
             Forms\Components\TextInput::make('next_to')
                 ->label('Рядом с')
                 ->maxLength(255),
-
-         
 
             Forms\Components\TextInput::make('email')
                 ->label('email')
@@ -204,9 +220,6 @@ class OrganizationResource extends Resource
                 ->label('Тип организации')
                 ->maxLength(255),
 
-            
-
-
             Forms\Components\TextInput::make('whatsapp')
                 ->label('whatsapp')
                 ->maxLength(255),
@@ -215,47 +228,40 @@ class OrganizationResource extends Resource
                 ->label('telegram')
                 ->maxLength(255),
 
-
             Forms\Components\TextInput::make('link_website')
                 ->label('Ссылка на сайт организации')
                 ->maxLength(255),
 
-
-            RichEditor::make('content') // Поле для редактирования HTML-контента
-                ->label('Описание') // Соответствующая подпись
+            RichEditor::make('content')
+                ->label('Описание')
                 ->toolbarButtons([
-                    'attachFiles', // возможность прикрепить файлы
-                    'bold', // жирный текст
-                    'italic', // курсив
-                    'underline', // подчеркивание
-                    'strike', // зачеркнутый текст
-                    'link', // вставка ссылок
-                    'orderedList', // нумерованный список
-                    'bulletList', // маркированный список
-                    'blockquote', // цитата
-                    'h2', 'h3', 'h4', // заголовки второго, третьего и четвертого уровня
-                    'codeBlock', // блок кода
-                    'undo', 'redo', // отмена/возврат действия
+                    'attachFiles',
+                    'bold',
+                    'italic',
+                    'underline',
+                    'strike',
+                    'link',
+                    'orderedList',
+                    'bulletList',
+                    'blockquote',
+                    'h2', 'h3', 'h4',
+                    'codeBlock',
+                    'undo', 'redo',
                 ])
-                ->required() // Опционально: сделать поле обязательным
-                ->disableLabel(false) // Показывать метку
+                ->required()
+                ->disableLabel(false)
                 ->placeholder('Введите HTML-контент здесь...'),
-
-                
-      
 
                 TextInput::make('map_link')
                 ->label('Страница пользователя')
                 ->disabled()
                 ->suffixAction(
                     Action::make('open_map')
-                        ->button() // Отобразить как кнопку
+                        ->button()
                         ->label('Страница пользователя')
-                        ->icon('heroicon-s-eye') // Иконка глаза
-                        // Текст кнопки
+                        ->icon('heroicon-s-eye')
                         ->url(function ($record) {
-                            // Используем $record для получения текущего продукта
-                            return '/'.selectCity()->slug.'/admin/users/'.$record->user_id.'/edit'; // Возвращаем URL продукта
+                            return '/'.selectCity()->slug.'/admin/users/'.$record->user_id.'/edit';
                         })
                         ->openUrlInNewTab()
                     )->hidden(fn (?Organization $record) => is_null($record)),
@@ -272,25 +278,30 @@ class OrganizationResource extends Resource
                 Select::make('cemetery_ids')
                 ->label('Кладбища, на которых работает организация')
                 ->options(fn ($get) => getCemeteriesOptions($get))
-                ->multiple() // Разрешаем выбор нескольких значений
-                ->searchable() // Добавляем поиск
-                ->required() // Обязательное поле
+                ->multiple()
+                ->searchable()
+                ->required()
                 ->formatStateUsing(function ($state) {
-                    // Если данные уже есть (например, загружены из базы), преобразуем их в массив
                     return $state ? array_map('intval', explode(',', trim($state, ','))) : [];
                 })
                 ->preload()
-                ->dehydrateStateUsing(fn ($state) => implode(',', (array) $state).','), // Преобразуем в строку перед сохранением
+                ->dehydrateStateUsing(fn ($state) => implode(',', (array) $state).','),
 
                 Forms\Components\Textarea::make('comment_admin')
-                ->label('Комментарий админа')
-                ->required(),
+                ->label('Комментарий админа'),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                if (auth()->user()->role === 'deputy-admin'|| auth()->user()->role === 'manager') {
+                    $userCityIds = json_decode(auth()->user()->city_ids);
+                    $query->whereIn('city_id', $userCityIds);
+                }
+                return $query;
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                 ->label('ID')
@@ -302,13 +313,11 @@ class OrganizationResource extends Resource
                 ->searchable()
                 ->sortable(),
             
-            // Край (через город->округ->край)
             Tables\Columns\TextColumn::make('city.area.edge.title')
                 ->label('Край')
                 ->searchable()
                 ->sortable(),
             
-            // Округ (через город->округ)
             Tables\Columns\TextColumn::make('city.area.title')
                 ->label('Округ')
                 ->searchable()
@@ -319,7 +328,6 @@ class OrganizationResource extends Resource
                 ->searchable()
                 ->sortable(),
             
-            // Кликабельный телефон
             Tables\Columns\TextColumn::make('phone')
                 ->label('Телефон')
                 ->searchable()
@@ -331,178 +339,138 @@ class OrganizationResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('main_category_id')
-        ->label('Основная категория')
-        ->options(CategoryProduct::whereNull('parent_id')->pluck('title', 'id'))
-        ->searchable()
-        ->preload()
-        ->query(function ($query, $state) {
-            if (!empty($state['value'])) {
-                $query->whereHas('activityCategories', function($q) use ($state) {
-                    $q->where('category_main_id', $state['value']);
-                });
-            }
-        }),
+                    ->label('Основная категория')
+                    ->options(CategoryProduct::whereNull('parent_id')->pluck('title', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->query(function ($query, $state) {
+                        if (!empty($state['value'])) {
+                            $query->whereHas('activityCategories', function($q) use ($state) {
+                                $q->where('category_main_id', $state['value']);
+                            });
+                        }
+                    }),
 
-    // Фильтр по подкатегории
-    SelectFilter::make('subcategory_id')
-        ->label('Подкатегория')
-        ->options(CategoryProduct::whereNotNull('parent_id')->pluck('title', 'id'))
-        ->searchable()
-        ->preload()
-        ->query(function ($query, $state) {
-            if (!empty($state['value'])) {
-                $query->whereHas('activityCategories', function($q) use ($state) {
-                    $q->where('category_children_id', $state['value']);
-                });
-            }
-        }),
+                SelectFilter::make('subcategory_id')
+                    ->label('Подкатегория')
+                    ->options(CategoryProduct::whereNotNull('parent_id')->pluck('title', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->query(function ($query, $state) {
+                        if (!empty($state['value'])) {
+                            $query->whereHas('activityCategories', function($q) use ($state) {
+                                $q->where('category_children_id', $state['value']);
+                            });
+                        }
+                    }),
+                
                 SelectFilter::make('edge_id')
-                        ->label('Край')
-                        ->relationship('city.area.edge', 'title') // Вложенное отношение
-                        ->searchable()
-                        ->preload(),
+                    ->label('Край')
+                    ->relationship('city.area.edge', 'title')
+                    ->searchable()
+                    ->preload(),
 
+                SelectFilter::make('area_id')
+                    ->label('Округ')
+                    ->relationship('city.area', 'title')
+                    ->searchable()
+                    ->preload(),
 
-                     // Фильтр по округу
-                    SelectFilter::make('area_id')
-                        ->label('Округ')
-                        ->relationship('city.area', 'title') // Вложенное отношение
-                        ->searchable()
-                        ->preload(),
+                SelectFilter::make('city_id')
+                    ->label('Город')
+                    ->relationship('city', 'title')
+                    ->searchable()
+                    ->preload(),
 
-                    SelectFilter::make('city_id')
-                        ->label('Город')
-                        ->relationship('city', 'title') // Вложенное отношение
-                        ->searchable()
-                        ->preload(),
-
-                        SelectFilter::make('cemetery_id')
-                        ->label('Работает на кладбище')
-                        ->options(Cemetery::pluck('title', 'id'))
-                        ->searchable()
-                        ->query(function ($query, $state) {
-                            if ($state['value']!=null) {
-                                $query->whereRaw("FIND_IN_SET(?, cemetery_ids)", [$state]);
-                            }
-                        }),
-                        
-                        SelectFilter::make('user_id')
-                            ->label('Получен доступ')
-                            ->options([
-                                'yes' => 'Да',
-                                'no' => 'Нет',
-                            ])
-                            ->query(function ($query, $state) {
-                                if ($state['value'] === 'yes') {
-                                    $query->whereNotNull('user_id');
-                                } elseif ($state['value'] === 'no') {
-                                    $query->whereNull('user_id');
-                                }
-                            }),
-
+                SelectFilter::make('cemetery_id')
+                    ->label('Работает на кладбище')
+                    ->options(Cemetery::pluck('title', 'id'))
+                    ->searchable()
+                    ->query(function ($query, $state) {
+                        if ($state['value']!=null) {
+                            $query->whereRaw("FIND_IN_SET(?, cemetery_ids)", [$state]);
+                        }
+                    }),
+                
+                SelectFilter::make('user_id')
+                    ->label('Получен доступ')
+                    ->options([
+                        'yes' => 'Да',
+                        'no' => 'Нет',
+                    ])
+                    ->query(function ($query, $state) {
+                        if ($state['value'] === 'yes') {
+                            $query->whereNotNull('user_id');
+                        } elseif ($state['value'] === 'no') {
+                            $query->whereNull('user_id');
+                        }
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(), // Удалить продукт
-
-            ])->headerActions([
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->headerActions([
                 \Filament\Tables\Actions\Action::make('export')
-                ->label('Экспорт в Excel')
-                ->action(function (HasTable $livewire) {
-                    // Получаем текущий запрос таблицы
-                    $query = Organization::query();
-            
-                    // Применяем фильтры таблицы, если они есть
-                    if (property_exists($livewire, 'tableFilters') && !empty($livewire->tableFilters)) {
-                        foreach ($livewire->tableFilters as $filterName => $filterValue) {
-                            if (!empty($filterValue['value'])) {
-                                $filterValue = $filterValue['value'];
-            
-                                // Простая фильтрация по значению
-                                switch ($filterName) {
-                                    case 'city_id':
-                                        // Фильтрация по city_id через отношение city
-                                        $query->whereHas('city', function ($q) use ($filterValue) {
-                                            $q->where('id', $filterValue);
-                                        });
-                                        break;
-                                    case 'area_id':
-                                        // Фильтрация по area_id через отношение city.area
-                                        $query->whereHas('city.area', function ($q) use ($filterValue) {
-                                            $q->where('id', $filterValue);
-                                        });
-                                        break;
-                                    case 'edge_id':
-                                        // Фильтрация по edge_id через отношение city.area.edge
-                                        $query->whereHas('city.area.edge', function ($q) use ($filterValue) {
-                                            $q->where('id', $filterValue);
-                                        });
-                                        break;
-                                    case 'cemetery_id':
-                                        // Фильтрация по cemetery_id через поле cemetery_ids
-                                        $query->whereRaw("FIND_IN_SET(?, cemetery_ids)", [$filterValue]);
-                                        break;
-                                    case 'user_id':
-                                        if ($filterValue === 'yes') {
-                                            $query->whereNotNull('user_id');
-                                        } elseif ($filterValue === 'no') {
-                                            $query->whereNull('user_id');
-                                        }
-                                        break;
-                                    default:
-                                        if (!empty($filterValue)) {
-                                            $query->where($filterName, $filterValue);
-                                        }
-                                        break;
+                    ->label('Экспорт в Excel')
+                    ->action(function (HasTable $livewire) {
+                        $query = Organization::query();
+                
+                        if (auth()->user()->role === 'deputy-admin'|| auth()->user()->role === 'manager') {
+                            $userCityIds = json_decode(auth()->user()->city_ids);
+                            $query->whereIn('city_id', $userCityIds);
+                        }
+                
+                        if (property_exists($livewire, 'tableFilters') && !empty($livewire->tableFilters)) {
+                            foreach ($livewire->tableFilters as $filterName => $filterValue) {
+                                if (!empty($filterValue['value'])) {
+                                    $filterValue = $filterValue['value'];
+                
+                                    switch ($filterName) {
+                                        case 'city_id':
+                                            $query->whereHas('city', function ($q) use ($filterValue) {
+                                                $q->where('id', $filterValue);
+                                            });
+                                            break;
+                                        case 'area_id':
+                                            $query->whereHas('city.area', function ($q) use ($filterValue) {
+                                                $q->where('id', $filterValue);
+                                            });
+                                            break;
+                                        case 'edge_id':
+                                            $query->whereHas('city.area.edge', function ($q) use ($filterValue) {
+                                                $q->where('id', $filterValue);
+                                            });
+                                            break;
+                                        case 'cemetery_id':
+                                            $query->whereRaw("FIND_IN_SET(?, cemetery_ids)", [$filterValue]);
+                                            break;
+                                        case 'user_id':
+                                            if ($filterValue === 'yes') {
+                                                $query->whereNotNull('user_id');
+                                            } elseif ($filterValue === 'no') {
+                                                $query->whereNull('user_id');
+                                            }
+                                            break;
+                                        default:
+                                            if (!empty($filterValue)) {
+                                                $query->where($filterName, $filterValue);
+                                            }
+                                            break;
+                                    }
                                 }
                             }
                         }
-                    }
-            
-                    // Применяем сортировку таблицы, если она есть
-                    if (property_exists($livewire, 'tableSortColumn') && $livewire->tableSortColumn) {
-                        $query->orderBy($livewire->tableSortColumn, $livewire->tableSortDirection ?? 'asc');
-                    }
-            
-                    // Получаем данные с учётом фильтров и сортировки
-                    $organizations = $query->with(['city.area.edge', 'user'])
-                        ->get()
-                        ->map(function ($organization) {
-                            return [
-                                'ID' => (string)$organization->id, // Явное приведение к строке
-                                'Название' => $organization->title,
-                                'Город' => $organization->city->title ?? 'Не указано',
-                                'Край' => $organization->city->area->edge->title ?? 'Не указано',
-                                'Округ' => $organization->city->area->title ?? 'Не указано',
-                                'Кладбища' => $organization->cemetery_ids,
-                                'Широта' => $organization->width,
-                                'Долгота' => $organization->longitude,
-                                'Метро' => $organization->underground,
-                                'Рядом с' => $organization->next_to,
-                                'Email' => $organization->email,
-                                'Телефон' => $organization->phone,
-                                'Адрес' => $organization->adres,
-                                'Тип организации' => $organization->name_type,
-                                'Slug' => $organization->slug,
-                                'WhatsApp' => $organization->whatsapp,
-                                'Telegram' => $organization->telegram,
-                                'Краткое описание' => $organization->mini_content,
-                                'Описание' => $organization->content,
-                                'ID пользователя' => $organization->user_id,
-                                'Дата создания' => $organization->created_at?->format('d.m.Y H:i:s'),
-                                'Рейтинг' => $organization->rating,
-                            ];
-                        });
-            
-                    // Если данные пустые, возвращаем все организации
-                    if ($organizations->isEmpty()) {
-                        $organizations = Organization::query()
-                            ->with(['city.area.edge', 'user'])
-                            ->orderBy('title')
+                
+                        if (property_exists($livewire, 'tableSortColumn') && $livewire->tableSortColumn) {
+                            $query->orderBy($livewire->tableSortColumn, $livewire->tableSortDirection ?? 'asc');
+                        }
+                
+                        $organizations = $query->with(['city.area.edge', 'user'])
                             ->get()
                             ->map(function ($organization) {
                                 return [
-                                    'ID' => (string)$organization->id, // Явное приведение к строке
+                                    'ID' => (string)$organization->id,
                                     'Название' => $organization->title,
                                     'Город' => $organization->city->title ?? 'Не указано',
                                     'Край' => $organization->city->area->edge->title ?? 'Не указано',
@@ -526,21 +494,52 @@ class OrganizationResource extends Resource
                                     'Рейтинг' => $organization->rating,
                                 ];
                             });
-                    }
-            
-                    // Экспорт в Excel
-                    return (new FastExcel($organizations))->download('organizations.xlsx');
-    })
+                
+                        if ($organizations->isEmpty()) {
+                            $organizations = Organization::query()
+                                ->when(auth()->user()->role === 'deputy-admin' ?? auth()->user()->role === 'manager', function ($query) {
+                                    $userCityIds = json_decode(auth()->user()->city_ids);
+                                    $query->whereIn('city_id', $userCityIds);
+                                })
+                                ->with(['city.area.edge', 'user'])
+                                ->orderBy('title')
+                                ->get()
+                                ->map(function ($organization) {
+                                    return [
+                                        'ID' => (string)$organization->id,
+                                        'Название' => $organization->title,
+                                        'Город' => $organization->city->title ?? 'Не указано',
+                                        'Край' => $organization->city->area->edge->title ?? 'Не указано',
+                                        'Округ' => $organization->city->area->title ?? 'Не указано',
+                                        'Кладбища' => $organization->cemetery_ids,
+                                        'Широта' => $organization->width,
+                                        'Долгота' => $organization->longitude,
+                                        'Метро' => $organization->underground,
+                                        'Рядом с' => $organization->next_to,
+                                        'Email' => $organization->email,
+                                        'Телефон' => $organization->phone,
+                                        'Адрес' => $organization->adres,
+                                        'Тип организации' => $organization->name_type,
+                                        'Slug' => $organization->slug,
+                                        'WhatsApp' => $organization->whatsapp,
+                                        'Telegram' => $organization->telegram,
+                                        'Краткое описание' => $organization->mini_content,
+                                        'Описание' => $organization->content,
+                                        'ID пользователя' => $organization->user_id,
+                                        'Дата создания' => $organization->created_at?->format('d.m.Y H:i:s'),
+                                        'Рейтинг' => $organization->rating,
+                                    ];
+                                });
+                        }
+                
+                        return (new FastExcel($organizations))->download('organizations.xlsx');
+                    })
             ])
-            
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-
-
-            
     }
 
     public static function getRelations(): array
@@ -550,7 +549,7 @@ class OrganizationResource extends Resource
             ActivityCategoriesRelationManager::class,
             WorkingHoursRelationManager::class,
             OrganizationRequestCountRelationManager::class,
-            ProductsRelationManager::class, // Добавляем RelationManager
+            ProductsRelationManager::class,
             ViewsRelationManager::class,
             BeatificationsRelationManager::class,
             DeadAplicationsRelationManager::class,
@@ -567,5 +566,41 @@ class OrganizationResource extends Resource
             'create' => Pages\CreateOrganization::route('/create'),
             'edit' => Pages\EditOrganization::route('/{record}/edit'),
         ];
+    }
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' || auth()->user()->role === 'deputy-admin' || auth()->user()->role === 'manager';
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->role === 'admin' || 
+              ((auth()->user()->role === 'deputy-admin' || auth()->user()->role === 'manager') && !empty(json_decode(auth()->user()->city_ids)));
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        if (auth()->user()->role === 'admin') {
+            return true;
+        }
+        
+        if (auth()->user()->role === 'deputy-admin' || auth()->user()->role === 'manager') {
+            $userCityIds = json_decode(auth()->user()->city_ids);
+            return in_array($record->city_id, $userCityIds);
+        }
+        
+        return false;
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->role === 'admin' || 
+              ((auth()->user()->role === 'deputy-admin' || auth()->user()->role === 'manager') && !empty(json_decode(auth()->user()->city_ids)));
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::canEdit($record);
     }
 }

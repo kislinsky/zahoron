@@ -125,4 +125,14 @@ class ViewResource extends Resource
             'edit' => Pages\EditView::route('/{record}/edit'),
         ];
     }
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' || auth()->user()->role === 'manager' || auth()->user()->role === 'deputy-admin' ;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
+    }
 }

@@ -49,7 +49,7 @@
 
 
 <div class="rating_block">
-    {{view('organization.components.catalog-provider.rating-price-organizations',compact('oragnizations_rating','category','city'))}}
+    {{view('organization.components.catalog-provider.rating-price-organizations',compact('organizations_rating','category','city'))}}
 </div>
 
 

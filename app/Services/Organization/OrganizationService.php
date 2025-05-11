@@ -136,7 +136,7 @@ class OrganizationService
                 'organization_id'=>$id,
                 'user_id'=>Auth::user()->id,
             ]);
-            return redirect()->back()->with('message_words_memory','Организация успешно добавлена.');
+            return redirect()->back()->with('message_cart','Организация успешно добавлена.');
         }
         return redirect()->back()->with('error','Организация уже добавлена.');
     }
@@ -189,6 +189,7 @@ class OrganizationService
         $news_video=News::orderBy('id', 'desc')->where('type',2)->get();
         $news=News::orderBy('id', 'desc')->take(3)->get();
         $cats=CategoryProduct::orderBy('id','desc')->where('parent_id',null)->get();
+        
         $organizations_category=orgniaztionsFilters($data,$category);
 
        

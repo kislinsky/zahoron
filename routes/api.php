@@ -24,6 +24,10 @@ Route::prefix('v1')->group(function () {
                 Route::post('/update', [AgencyController::class, 'updateOrganization']);
             });
 
+            Route::group(['prefix'=>'organization-provider'], function() {
+                Route::post('/create-requests-cost', [AgencyController::class, 'addRequestsCostProductSuppliers']);
+            });
+
 
             Route::post('/settings/update', [AgencyController::class, 'settingsUserUpdate']);
 

@@ -122,4 +122,19 @@ class OrderBurialResource extends Resource
             'edit' => Pages\EditOrderBurial::route('/{record}/edit'),
         ];
     }
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' || auth()->user()->role === 'deputy-admin' || auth()->user()->role === 'manager' ;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
+    }
+
+    public static function canCreate(): bool
+    {   
+        return false;
+    }
 }

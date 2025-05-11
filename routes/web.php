@@ -1,12 +1,13 @@
 <?php
 
 use App\Http\Controllers\Account\Admin\AdminBurialController;
+use App\Http\Controllers\Account\Admin\AdminGeoController;
 use App\Http\Controllers\Account\Admin\AdminOrganizationController;
 use App\Http\Controllers\Account\Admin\AdminRitualObjectsController;
 use App\Http\Controllers\Account\Admin\AdminSEOController;
+
+
 use App\Http\Controllers\Account\Agency\AgencyController;
-
-
 use App\Http\Controllers\Account\Agency\AgencyOrganizationController;
 use App\Http\Controllers\Account\Agency\AgencyOrganizationProviderController;
 use App\Http\Controllers\Account\Agency\Aplication\AgencyOrganizationAplicationBeautificationController;
@@ -20,9 +21,9 @@ use App\Http\Controllers\Account\User\AccountController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
+
+
 use App\Http\Controllers\Auth\RegisterController;
-
-
 use App\Http\Controllers\BasketBurialContoller;
 use App\Http\Controllers\BasketProductController;
 use App\Http\Controllers\BasketServiceContoller;
@@ -57,6 +58,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
 
 
 
@@ -668,6 +670,11 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
                     Route::post('/object/{page}/update', [AdminSEOController::class, 'updateSeo'])->name('account.admin.seo.object.update');
                 });
                 
+                Route::group(['prefix'=>'geo'], function() {
+                    Route::get('/parser', [AdminGeoController::class, 'parser'])->name('account.admin.parser.geo');
+                    Route::post('/import', [AdminGeoController::class, 'import'])->name('account.admin.parsing.geo');
+                    
+                });
 
                 Route::group(['prefix'=>'organization'], function() {
                     Route::get('/parser', [AdminOrganizationController::class, 'parser'])->name('account.admin.parser.organization');

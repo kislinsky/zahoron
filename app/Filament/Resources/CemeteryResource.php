@@ -158,8 +158,11 @@ class CemeteryResource extends Resource
                 Forms\Components\TextInput::make('responsible')
                     ->label('Отвественный')
                     ->maxLength(255),
-
-
+                
+                Forms\Components\TextInput::make('responsible_person_address')
+                    ->label('Адрес отвественного')
+                    ->maxLength(255),
+                    
                 Forms\Components\TextInput::make('cadastral_number')
                     ->label('кадастровый номер')
                     ->maxLength(1000),
@@ -500,5 +503,15 @@ class CemeteryResource extends Resource
             'create' => Pages\CreateCemetery::route('/create'),
             'edit' => Pages\EditCemetery::route('/{record}/edit'),
         ];
+    }
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' ;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
     }
 }

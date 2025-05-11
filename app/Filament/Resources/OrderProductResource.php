@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OrderProductResource\Pages;
 use App\Filament\Resources\OrderProductResource\RelationManagers;
 use App\Models\OrderProduct;
+use App\Models\City;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -15,6 +16,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class OrderProductResource extends Resource
@@ -22,53 +24,93 @@ class OrderProductResource extends Resource
     protected static ?string $model = OrderProduct::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Заказы товаров'; // Название в меню
-    protected static ?string $navigationGroup = 'Заказы'; // Указываем группу
+    protected static ?string $navigationLabel = 'Заказы товаров';
+    protected static ?string $navigationGroup = 'Заказы';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        if (static::isRestrictedUser()) {
+            $cityIds = static::getUserCityIds();
+            
+            if (!empty($cityIds)) {
+                $query->whereHas('organization', function($q) use ($cityIds) {
+                    $q->whereIn('city_id', $cityIds);
+                });
+            } else {
+                $query->whereNull('organization_id');
+            }
+        }
+        
+        return $query;
+    }
+
+    protected static function isRestrictedUser(): bool
+    {
+        return in_array(auth()->user()->role, ['deputy-admin', 'manager']);
+    }
+
+    protected static function getUserCityIds(): array
+    {
+        $user = auth()->user();
+        $cityIds = [];
+        
+        if (!empty($user->city_ids)) {
+            $decoded = json_decode($user->city_ids, true);
+            
+            if (is_array($decoded)) {
+                $cityIds = $decoded;
+            } else {
+                $cityIds = array_filter(explode(',', trim($user->city_ids, '[],"')));
+            }
+            
+            $cityIds = array_map('intval', array_filter($cityIds));
+        }
+        
+        return $cityIds;
+    }
 
     public static function form(Form $form): Form
     {
+        $isRestrictedUser = static::isRestrictedUser();
+        $userCityIds = $isRestrictedUser ? static::getUserCityIds() : [];
+        
         return $form
             ->schema([
-                // Дополнительная информация
                 TextInput::make('additional')
                     ->label('Дополнительно')
                     ->nullable(),
 
-                // Товар
                 Select::make('product_id')
                     ->label('Товар')
-                    ->relationship('product', 'title') // Предполагается, что у вас есть модель Product
+                    ->relationship('product', 'title')
                     ->required(),
 
-                // Пользователь
                 Select::make('user_id')
                     ->label('Пользователь')
-                    ->relationship('user', 'name') // Предполагается, что у вас есть модель User
-                    ->required(),
+                    ->relationship('user', 'id')
+                    ->required()
+                    ->disabled($isRestrictedUser),
 
-                // Комментарий клиента
                 Textarea::make('customer_comment')
                     ->label('Комментарий клиента')
                     ->nullable(),
 
-                // Количество
                 TextInput::make('count')
                     ->label('Количество')
                     ->numeric()
                     ->required(),
 
-                // Цена
                 TextInput::make('price')
                     ->label('Цена')
                     ->numeric()
                     ->required(),
 
-                // Размер
                 TextInput::make('size')
                     ->label('Размер')
                     ->nullable(),
 
-                // Статус
                 Select::make('status')
                     ->label('Статус')
                     ->options([
@@ -79,45 +121,47 @@ class OrderProductResource extends Resource
                     ->default(0)
                     ->required(),
 
-                // Кладбище
                 Select::make('cemetery_id')
                     ->label('Кладбище')
-                    ->relationship('cemetery', 'title') // Предполагается, что у вас есть модель Cemetery
+                    ->relationship('cemetery', 'title')
                     ->nullable(),
 
-                // Дата
                 TextInput::make('date')
                     ->label('Дата')
                     ->type('date')
                     ->nullable(),
 
-                // Время
                 TextInput::make('time')
                     ->label('Время')
                     ->nullable(),
 
-                // Морг
                 Select::make('mortuary_id')
                     ->label('Морг')
-                    ->relationship('mortuary', 'title') // Предполагается, что у вас есть модель Mortuary
+                    ->relationship('mortuary', 'title')
                     ->nullable(),
 
-                // Город отправления
                 TextInput::make('city_from')
                     ->label('Город отправления')
                     ->nullable(),
 
-                // Город назначения
                 TextInput::make('city_to')
                     ->label('Город назначения')
                     ->nullable(),
 
-
-                // Организация
                 Select::make('organization_id')
                     ->label('Организация')
-                    ->relationship('organization', 'title') // Предполагается, что у вас есть модель Organization
-                    ->nullable(),
+                    ->relationship('organization', 'title')
+                    ->searchable()
+                    ->preload()
+                    ->options(function() use ($userCityIds, $isRestrictedUser) {
+                        if ($isRestrictedUser) {
+                            return \App\Models\Organization::whereIn('city_id', $userCityIds)
+                                ->pluck('title', 'id');
+                        }
+                        return \App\Models\Organization::pluck('title', 'id');
+                    })
+                    ->nullable()
+                    ->disabled($isRestrictedUser),
             ]);
     }
 
@@ -125,57 +169,55 @@ class OrderProductResource extends Resource
     {
         return $table
             ->columns([
-                // ID
                 TextColumn::make('id')
                     ->label('ID')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
-                // Товар
                 TextColumn::make('product.title')
                     ->label('Товар')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
-                // Пользователь
                 TextColumn::make('user.name')
                     ->label('Пользователь')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
-                
-                // Цена
                 TextColumn::make('price')
                     ->label('Цена')
                     ->sortable(),
 
-                // Статус
                 TextColumn::make('status')
                     ->label('Статус')
                     ->formatStateUsing(fn (int $state): string => match ($state) {
                         0 => 'Новый',
                         1 => 'В работе',
                         2 => 'Завершён',
-                    }),
-
-              
-
-                // Дата
-                TextColumn::make('date')
-                    ->label('Дата')
-                    ->date('d.m.Y'),
-
-
-
-                // Организация
-                TextColumn::make('organization.title')
-                    ->label('Организация')
+                    })
                     ->sortable(),
 
-                // Дата создания
+                TextColumn::make('date')
+                    ->label('Дата')
+                    ->date('d.m.Y')
+                    ->sortable(),
+
+                TextColumn::make('organization.title')
+                    ->label('Организация')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('organization.city.title')
+                    ->label('Город организации')
+                    ->sortable()
+                    ->searchable(),
+
                 TextColumn::make('created_at')
                     ->label('Дата создания')
-                    ->dateTime('d.m.Y'),
+                    ->dateTime('d.m.Y')
+                    ->sortable(),
             ])
             ->filters([
-                // Фильтр по статусу
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Статус')
                     ->options([
@@ -184,23 +226,22 @@ class OrderProductResource extends Resource
                         2 => 'Завершён',
                     ]),
 
-                // Фильтр по кладбищу
                 Tables\Filters\SelectFilter::make('cemetery_id')
                     ->label('Кладбище')
                     ->relationship('cemetery', 'title'),
 
-                // Фильтр по моргу
                 Tables\Filters\SelectFilter::make('mortuary_id')
                     ->label('Морг')
                     ->relationship('mortuary', 'title'),
 
-                // Фильтр по организации
                 Tables\Filters\SelectFilter::make('organization_id')
                     ->label('Организация')
-                    ->relationship('organization', 'title'),
+                    ->relationship('organization', 'title')
+                    ->hidden(static::isRestrictedUser()),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -223,5 +264,40 @@ class OrderProductResource extends Resource
             'create' => Pages\CreateOrderProduct::route('/create'),
             'edit' => Pages\EditOrderProduct::route('/{record}/edit'),
         ];
+    }
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' || 
+               in_array(auth()->user()->role, ['deputy-admin', 'manager']);
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        if (auth()->user()->role === 'admin') {
+            return true;
+        }
+        
+        if (static::isRestrictedUser()) {
+            $userCityIds = static::getUserCityIds();
+            return $record->organization && in_array($record->organization->city_id, $userCityIds);
+        }
+        
+        return false;
+    }
+
+    public static function canCreate(): bool
+    {   
+        return false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::canEdit($record);
     }
 }

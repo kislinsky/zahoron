@@ -7,9 +7,27 @@
             <td  class='title_black' >Максимальная</td>
         </tr>
         <tr>
-            <td class='title_blue'>{{$price_min}} ₽</td>
-            <td class='title_blue'>{{$price_middle}} ₽</td>
-            <td class='title_blue'>{{$price_max}} ₽</td>
+            <td class='title_blue'>
+                @if($price_min==0 || $price_min==null)
+                    Уточняйте
+                @else
+                    {{$price_min}} ₽
+                @endif
+            </td>
+            <td class='title_blue'>
+                @if($price_middle==0 || $price_middle==null)
+                    Уточняйте
+                @else
+                    {{$price_middle}} ₽
+                @endif
+            </td>
+            <td class='title_blue'>
+                @if($price_max==0 || $price_max==null)
+                    Уточняйте
+                @else
+                    {{$price_max}} ₽
+                @endif
+            </td>
         </tr>
     </tbody>
 </table>

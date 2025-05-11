@@ -13,4 +13,8 @@ class News extends Model
     public function route(){
         return route('news.single',$this->slug);
     }
+
+    function category(){
+        return $this->belongsTo(CategoryNews::class,'category_id');
+    }
 }

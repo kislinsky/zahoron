@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\FuneralServiceResource\Pages;
 use App\Filament\Resources\FuneralServiceResource\RelationManagers;
 use App\Models\FuneralService;
+use App\Models\City;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -14,6 +15,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class FuneralServiceResource extends Resource
@@ -21,14 +23,58 @@ class FuneralServiceResource extends Resource
     protected static ?string $model = FuneralService::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Ритуальные услуги'; // Название в меню
-    protected static ?string $navigationGroup = 'Pop up'; // Указываем группу
+    protected static ?string $navigationLabel = 'Ритуальные услуги';
+    protected static ?string $navigationGroup = 'Pop up';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        if (static::isRestrictedUser()) {
+            $cityIds = static::getUserCityIds();
+            
+            if (!empty($cityIds)) {
+                $query->whereIn('city_id', $cityIds);
+            } else {
+                $query->whereNull('city_id');
+            }
+        }
+        
+        return $query;
+    }
+
+    protected static function isRestrictedUser(): bool
+    {
+        return in_array(auth()->user()->role, ['deputy-admin', 'manager']);
+    }
+
+    protected static function getUserCityIds(): array
+    {
+        $user = auth()->user();
+        $cityIds = [];
+        
+        if (!empty($user->city_ids)) {
+            $decoded = json_decode($user->city_ids, true);
+            
+            if (is_array($decoded)) {
+                $cityIds = $decoded;
+            } else {
+                $cityIds = array_filter(explode(',', trim($user->city_ids, '[],"')));
+            }
+            
+            $cityIds = array_map('intval', array_filter($cityIds));
+        }
+        
+        return $cityIds;
+    }
 
     public static function form(Form $form): Form
     {
+        $isRestrictedUser = static::isRestrictedUser();
+        $userCityIds = $isRestrictedUser ? static::getUserCityIds() : [];
+        
         return $form
             ->schema([
-                // Основные поля
                 Select::make('service')
                     ->label('Выберите услугу')
                     ->options([
@@ -40,30 +86,41 @@ class FuneralServiceResource extends Resource
 
                 Select::make('city_id')
                     ->label('Город отправки')
-                    ->relationship('city', 'title') // Предполагается, что у вас есть модель City
-                    ->required(),
+                    ->options(function () use ($userCityIds, $isRestrictedUser) {
+                        if ($isRestrictedUser) {
+                            return City::whereIn('id', $userCityIds)->pluck('title', 'id');
+                        }
+                        return City::pluck('title', 'id');
+                    })
+                    ->required()
+                    ->searchable()
+                    ->disabled($isRestrictedUser),
 
                 Select::make('cemetery_id')
                     ->label('Кладбище')
-                    ->relationship('cemetery', 'title') // Предполагается, что у вас есть модель Cemetery
+                    ->relationship('cemetery', 'title')
+                    ->searchable()
                     ->nullable(),
 
                 Select::make('mortuary_id')
                     ->label('Морг')
-                    ->relationship('mortuary', 'title') // Предполагается, что у вас есть модель Mortuary
+                    ->relationship('mortuary', 'title')
+                    ->searchable()
                     ->nullable(),
 
                 Select::make('user_id')
                     ->label('Пользователь')
-                    ->relationship('user', 'id') // Предполагается, что у вас есть модель User
-                    ->required(),
+                    ->relationship('user', 'id') // Изменено на отображение имени
+                    ->required()
+                    ->disabled($isRestrictedUser),
 
                 Select::make('organization_id')
                     ->label('Организация')
-                    ->relationship('organization', 'id') // Предполагается, что у вас есть модель User
-                    ->required(),
+                    ->relationship('organization', 'title')
+                    ->required()
+                    ->searchable()
+                    ->disabled($isRestrictedUser),
 
-                // Дополнительные поля
                 TextInput::make('status_death')
                     ->label('Статус умершего')
                     ->required(),
@@ -101,17 +158,16 @@ class FuneralServiceResource extends Resource
     {
         return $table
             ->columns([
-                // ID
                 TextColumn::make('id')
                     ->label('ID')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
-                // Город
                 TextColumn::make('city.title')
                     ->label('Город отправки')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
-                // Услуга
                 TextColumn::make('service')
                     ->label('Услуга')
                     ->formatStateUsing(fn (int $state): string => match ($state) {
@@ -122,18 +178,16 @@ class FuneralServiceResource extends Resource
                     })
                     ->sortable(),
 
-              
-
-                // Пользователь
-                TextColumn::make('user.id')
+                TextColumn::make('user.id') // Изменено на отображение имени
                     ->label('Пользователь')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
-                TextColumn::make('organization.id')
+                TextColumn::make('organization.title')
                     ->label('Организация')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
-                // Статус
                 TextColumn::make('status')
                     ->label('Статус')
                     ->formatStateUsing(fn (int $state): string => match ($state) {
@@ -141,15 +195,15 @@ class FuneralServiceResource extends Resource
                         1 => 'В работе',
                         2 => 'Завершён',
                         4 => 'Архив',
-                    }),
+                    })
+                    ->sortable(),
 
-                // Дата создания
                 TextColumn::make('created_at')
                     ->label('Дата создания')
-                    ->dateTime('d.m.Y'),
+                    ->dateTime('d.m.Y')
+                    ->sortable(),
             ])
             ->filters([
-                // Фильтр по статусу
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Статус')
                     ->options([
@@ -159,17 +213,15 @@ class FuneralServiceResource extends Resource
                         4 => 'Архив',
                     ]),
 
-                // Фильтр по городу
                 Tables\Filters\SelectFilter::make('city_id')
                     ->label('Город')
-                    ->relationship('city', 'title'),
+                    ->relationship('city', 'title')
+                    ->hidden(static::isRestrictedUser()),
 
-                // Фильтр по району
                 Tables\Filters\SelectFilter::make('mortuary_id')
-                    ->label('Район')
+                    ->label('Морг')
                     ->relationship('mortuary', 'title'),
 
-                // Фильтр по организации
                 Tables\Filters\SelectFilter::make('organization_id')
                     ->label('Организация')
                     ->relationship('organization', 'title'),
@@ -199,5 +251,40 @@ class FuneralServiceResource extends Resource
             'create' => Pages\CreateFuneralService::route('/create'),
             'edit' => Pages\EditFuneralService::route('/{record}/edit'),
         ];
+    }
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' || 
+               in_array(auth()->user()->role, ['deputy-admin', 'manager']);
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        if (auth()->user()->role === 'admin') {
+            return true;
+        }
+        
+        if (static::isRestrictedUser()) {
+            $userCityIds = static::getUserCityIds();
+            return in_array($record->city_id, $userCityIds);
+        }
+        
+        return false;
+    }
+
+    public static function canCreate(): bool
+    {   
+        return false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::canEdit($record);
     }
 }

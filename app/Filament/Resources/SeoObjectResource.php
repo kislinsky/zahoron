@@ -98,4 +98,16 @@ class SeoObjectResource extends Resource
             'edit' => Pages\EditSeoObject::route('/{record}/edit'),
         ];
     }
+
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' || 
+               auth()->user()->role === 'seo-specialist';
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\DeadApplicationResource\Pages;
 use App\Filament\Resources\DeadApplicationResource\RelationManagers;
 use App\Models\DeadApplication;
+use App\Models\City;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -14,6 +15,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DeadApplicationResource extends Resource
@@ -21,48 +23,101 @@ class DeadApplicationResource extends Resource
     protected static ?string $model = DeadApplication::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Заявки на захоронение'; // Название в меню
-    protected static ?string $navigationGroup = 'Pop up'; // Указываем группу
+    protected static ?string $navigationLabel = 'Заявки на захоронение';
+    protected static ?string $navigationGroup = 'Pop up';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        if (static::isRestrictedUser()) {
+            $cityIds = static::getUserCityIds();
+            
+            if (!empty($cityIds)) {
+                $query->whereIn('city_id', $cityIds);
+            } else {
+                // Если у пользователя нет назначенных городов, не показываем ничего
+                $query->whereNull('city_id');
+            }
+        }
+        
+        return $query;
+    }
+
+    protected static function isRestrictedUser(): bool
+    {
+        return in_array(auth()->user()->role, ['deputy-admin', 'manager']);
+    }
+
+    protected static function getUserCityIds(): array
+    {
+        $user = auth()->user();
+        $cityIds = [];
+        
+        if (!empty($user->city_ids)) {
+            // Пробуем декодировать JSON
+            $decoded = json_decode($user->city_ids, true);
+            
+            if (is_array($decoded)) {
+                $cityIds = $decoded;
+            } else {
+                // Если это строка с числами через запятую
+                $cityIds = array_filter(explode(',', trim($user->city_ids, '[],"')));
+            }
+            
+            // Преобразуем в числа и удаляем пустые значения
+            $cityIds = array_map('intval', array_filter($cityIds));
+        }
+        
+        return $cityIds;
+    }
 
     public static function form(Form $form): Form
     {
+        $isRestrictedUser = static::isRestrictedUser();
+        $userCityIds = $isRestrictedUser ? static::getUserCityIds() : [];
+        
         return $form
             ->schema([
-                // Город
                 Select::make('city_id')
                     ->label('Город')
-                    ->relationship('city', 'title') // Предполагается, что у вас есть модель City
-                    ->required(),
+                    ->options(function () use ($userCityIds, $isRestrictedUser) {
+                        if ($isRestrictedUser) {
+                            return City::whereIn('id', $userCityIds)->pluck('title', 'id');
+                        }
+                        return City::pluck('title', 'id');
+                    })
+                    ->required()
+                    ->searchable()
+                    ->disabled($isRestrictedUser),
 
-                // ФИО
                 TextInput::make('fio')
                     ->label('ФИО')
                     ->required(),
 
-                // Морг
                 Select::make('mortuary_id')
                     ->label('Морг')
-                    ->relationship('mortuary', 'title') // Предполагается, что у вас есть модель Mortuary
+                    ->relationship('mortuary', 'title')
+                    ->searchable()
                     ->nullable(),
 
-                // Пользователь
                 Select::make('user_id')
                     ->label('Пользователь')
-                    ->relationship('user', 'id') // Предполагается, что у вас есть модель User
-                    ->required(),
+                    ->relationship('user', 'id')  // Изменено на отображение имени вместо id
+                    ->required()
+                    ->disabled($isRestrictedUser),
 
-                // Организация
                 Select::make('organization_id')
                     ->label('Организация')
-                    ->relationship('organization', 'title') // Предполагается, что у вас есть модель Organization
-                    ->nullable(),
+                    ->relationship('organization', 'title')
+                    ->searchable()
+                    ->nullable()
+                    ->disabled($isRestrictedUser),
 
-                // Время звонка
                 TextInput::make('call_time')
                     ->label('Время звонка')
                     ->nullable(),
 
-                // Статус
                 Select::make('status')
                     ->label('Статус')
                     ->options([
@@ -80,38 +135,36 @@ class DeadApplicationResource extends Resource
     {
         return $table
             ->columns([
-                // ID
                 TextColumn::make('id')
                     ->label('ID')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
-                // Город
                 TextColumn::make('city.title')
                     ->label('Город')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
-                // ФИО
                 TextColumn::make('fio')
                     ->label('ФИО')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
-                // Морг
                 TextColumn::make('mortuary.title')
                     ->label('Морг')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
-                // Пользователь
-                TextColumn::make('user.id')
+                TextColumn::make('user.name')  // Изменено на отображение имени
                     ->label('Пользователь')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
-                // Организация
                 TextColumn::make('organization.title')
                     ->label('Организация')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
-            
-                // Статус
                 TextColumn::make('status')
                     ->label('Статус')
                     ->formatStateUsing(fn (int $state): string => match ($state) {
@@ -119,15 +172,15 @@ class DeadApplicationResource extends Resource
                         1 => 'В работе',
                         2 => 'Завершён',
                         4 => 'Архив',
-                    }),
+                    })
+                    ->sortable(),
 
-                // Дата создания
                 TextColumn::make('created_at')
                     ->label('Дата создания')
-                    ->dateTime('d.m.Y'),
+                    ->dateTime('d.m.Y')
+                    ->sortable(),
             ])
             ->filters([
-                // Фильтр по статусу
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Статус')
                     ->options([
@@ -137,17 +190,15 @@ class DeadApplicationResource extends Resource
                         4 => 'Архив',
                     ]),
 
-                // Фильтр по городу
                 Tables\Filters\SelectFilter::make('city_id')
                     ->label('Город')
-                    ->relationship('city', 'title'),
+                    ->relationship('city', 'title')
+                    ->hidden(static::isRestrictedUser()),
 
-                // Фильтр по моргу
                 Tables\Filters\SelectFilter::make('mortuary_id')
                     ->label('Морг')
                     ->relationship('mortuary', 'title'),
 
-                // Фильтр по организации
                 Tables\Filters\SelectFilter::make('organization_id')
                     ->label('Организация')
                     ->relationship('organization', 'title'),
@@ -166,7 +217,7 @@ class DeadApplicationResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // Отношения (можно добавить позже)
+            //
         ];
     }
 
@@ -177,5 +228,40 @@ class DeadApplicationResource extends Resource
             'create' => Pages\CreateDeadApplication::route('/create'),
             'edit' => Pages\EditDeadApplication::route('/{record}/edit'),
         ];
+    }
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' || 
+               in_array(auth()->user()->role, ['deputy-admin', 'manager']);
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        if (auth()->user()->role === 'admin') {
+            return true;
+        }
+        
+        if (static::isRestrictedUser()) {
+            $userCityIds = static::getUserCityIds();
+            return in_array($record->city_id, $userCityIds);
+        }
+        
+        return false;
+    }
+
+    public static function canCreate(): bool
+    {   
+        return false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::canEdit($record);
     }
 }

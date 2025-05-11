@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\City;
 use App\Models\District;
 
-$cities_memorial=City::orderBy('title','asc')->get();
 $districts=selectCity()->districts;
 $user=null;
 if(Auth::check()){

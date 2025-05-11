@@ -93,7 +93,7 @@ class BurialResource extends Resource
                                     $latitude = $get('width');
                                     $longitude = $get('longitude');
 
-                                    return "https://yandex.ru/maps/?rtext=~{$latitude},{$longitude}";
+                                    return "https://yandex.ru/maps/?pt={$latitude},{$longitude}&z=18&l=map";
                                 })
                                 ->openUrlInNewTab()
                             ),
@@ -538,5 +538,15 @@ class BurialResource extends Resource
             'create' => Pages\CreateBurial::route('/create'),
             'edit' => Pages\EditBurial::route('/{record}/edit'),
         ];
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' ;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
     }
 }

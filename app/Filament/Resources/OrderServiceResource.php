@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OrderServiceResource\Pages;
 use App\Filament\Resources\OrderServiceResource\RelationManagers;
 use App\Models\OrderService;
+use App\Models\City;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -14,6 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class OrderServiceResource extends Resource
@@ -21,47 +23,88 @@ class OrderServiceResource extends Resource
     protected static ?string $model = OrderService::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationLabel = 'Заказы услуг';
+    protected static ?string $navigationGroup = 'Заказы';
 
-    protected static ?string $navigationLabel = 'Заказы услуг'; // Название в меню
-    protected static ?string $navigationGroup = 'Заказы'; // Указываем группу
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        
+        if (static::isRestrictedUser()) {
+            $cityIds = static::getUserCityIds();
+            
+            if (!empty($cityIds)) {
+                $query->whereHas('cemetery', function($q) use ($cityIds) {
+                    $q->whereIn('city_id', $cityIds);
+                });
+            } else {
+                $query->whereNull('cemetery_id');
+            }
+        }
+        
+        return $query;
+    }
+
+    protected static function isRestrictedUser(): bool
+    {
+        return in_array(auth()->user()->role, ['deputy-admin', 'manager']);
+    }
+
+    protected static function getUserCityIds(): array
+    {
+        $user = auth()->user();
+        $cityIds = [];
+        
+        if (!empty($user->city_ids)) {
+            $decoded = json_decode($user->city_ids, true);
+            
+            if (is_array($decoded)) {
+                $cityIds = $decoded;
+            } else {
+                $cityIds = array_filter(explode(',', trim($user->city_ids, '[],"')));
+            }
+            
+            $cityIds = array_map('intval', array_filter($cityIds));
+        }
+        
+        return $cityIds;
+    }
 
     public static function form(Form $form): Form
     {
+        $isRestrictedUser = static::isRestrictedUser();
+        $userCityIds = $isRestrictedUser ? static::getUserCityIds() : [];
+        
         return $form
             ->schema([
-                // Захоронение
                 Forms\Components\Select::make('burial_id')
                     ->label('Захоронение')
-                    ->relationship('burial', 'id') // предполагается, что у вас есть модель Burial
+                    ->relationship('burial', 'id')
                     ->required(),
                     
-                    Select::make('services_id')
+                Select::make('services_id')
                     ->label('Услуги')
-                    ->relationship('services', 'title') // предполагается, что у вас есть модель Service
-                    ->multiple() // Множественный выбор
-                    ->preload() // Предзагрузка данных
-                    ->searchable() // Поиск услуг
+                    ->relationship('services', 'title')
+                    ->multiple()
+                    ->preload()
+                    ->searchable()
                     ->required()
-                    ->options(\App\Models\Service::pluck('title', 'id')) // Загрузка всех услуг
-                    ->getOptionLabelFromRecordUsing(fn (\App\Models\Service $service) => $service->title) // Отображение названия услуги
+                    ->options(\App\Models\Service::pluck('title', 'id'))
+                    ->getOptionLabelFromRecordUsing(fn (\App\Models\Service $service) => $service->title)
                     ->afterStateHydrated(function (Select $component, $state) {
-                        // Преобразуем JSON в массив для отображения выбранных услуг
                         if (is_string($state)) {
                             $state = json_decode($state, true);
                         }
                         $component->state($state);
                     })
                     ->dehydrateStateUsing(fn ($state) => json_encode($state)),
-                // Пользователь
+
                 Forms\Components\Select::make('user_id')
                     ->label('Пользователь')
-                    ->relationship('user', 'id') // предполагается, что у вас есть модель User
-                    ->required(),
+                    ->relationship('user', 'id') // Изменено на отображение имени
+                    ->required()
+                    ->disabled($isRestrictedUser),
 
-                // Услуги
-            
-
-                // Статус
                 Select::make('status')
                     ->label('Статус')
                     ->options([
@@ -71,53 +114,55 @@ class OrderServiceResource extends Resource
                     ->required()
                     ->default(0),
 
-                // Размер
                 Forms\Components\TextInput::make('size')
                     ->label('Размер')
                     ->required(),
 
-                // Дата оплаты
                 Forms\Components\TextInput::make('date_pay')
                     ->label('Дата оплаты')
                     ->nullable(),
 
-                // Изображения
                 Forms\Components\Textarea::make('imgs')
                     ->label('Изображения')
                     ->nullable(),
 
-                // Комментарий клиента
                 Forms\Components\Textarea::make('customer_comment')
                     ->label('Комментарий клиента')
                     ->nullable(),
 
-                // Работник
                 Forms\Components\Select::make('worker_id')
                     ->label('Работник')
-                    ->relationship('worker', 'id') // предполагается, что у вас есть модель User для работников
+                    ->relationship('worker', 'id') // Изменено на отображение имени
                     ->nullable(),
 
-                // Кладбище
                 Forms\Components\Select::make('cemetery_id')
                     ->label('Кладбище')
-                    ->relationship('cemetery', 'title') // предполагается, что у вас есть модель Cemetery
-                    ->nullable(),
+                    ->relationship('cemetery', 'title')
+                    ->searchable()
+                    ->preload()
+                    ->options(function() use ($userCityIds, $isRestrictedUser) {
+                        if ($isRestrictedUser) {
+                            return \App\Models\Cemetery::whereIn('city_id', $userCityIds)
+                                ->pluck('title', 'id');
+                        }
+                        return \App\Models\Cemetery::pluck('title', 'id');
+                    })
+                    ->nullable()
+                    ->disabled($isRestrictedUser),
 
-                // Цена
                 Forms\Components\TextInput::make('price')
                     ->label('Цена')
                     ->numeric()
                     ->required(),
 
-                // Оплачено
                 Select::make('paid')
-                ->label('Оплачено')
-                ->options([
-                    0 => 'Не оплачен',
-                    1 => 'Оплачен',
-                ])
-                ->required()
-                ->default(0),
+                    ->label('Оплачено')
+                    ->options([
+                        0 => 'Не оплачен',
+                        1 => 'Оплачен',
+                    ])
+                    ->required()
+                    ->default(0),
             ]);
     }
 
@@ -125,89 +170,92 @@ class OrderServiceResource extends Resource
     {
         return $table
             ->columns([
-                // ID
-                Tables\Columns\TextColumn::make('id')
+                TextColumn::make('id')
                     ->label('ID')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('burial.id')
+                    ->label('ID захоронения')
                     ->sortable(),
 
-                // Захоронение
-                Tables\Columns\TextColumn::make('burial.id')
-                    ->label('Захоронение')
-                    ->sortable(),
-
-                // Пользователь
-                Tables\Columns\TextColumn::make('user.id')
+                TextColumn::make('user.id')
                     ->label('Пользователь')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
-               
-                // Статус
                 TextColumn::make('status')
                     ->label('Статус')
                     ->formatStateUsing(fn (int $state): string => match ($state) {
                         0 => 'Не оплачен',
                         1 => 'Оплачен',
-                    }),
+                    })
+                    ->sortable(),
 
-             
+                TextColumn::make('date_pay')
+                    ->label('Дата оплаты')
+                    ->date('d.m.Y')
+                    ->sortable(),
 
-                // Дата оплаты
-                Tables\Columns\TextColumn::make('date_pay')
-                    ->label('Дата оплаты'),
-
-                // Цена
-                Tables\Columns\TextColumn::make('price')
+                TextColumn::make('price')
                     ->label('Цена')
                     ->sortable(),
 
-     
                 TextColumn::make('paid')
                     ->label('Оплачено')
                     ->formatStateUsing(fn (int $state): string => match ($state) {
                         0 => 'Не оплачен',
                         1 => 'Оплачен',
-                    }),
-                // Дата создания
-                Tables\Columns\TextColumn::make('created_at')
+                    })
+                    ->sortable(),
+
+                TextColumn::make('cemetery.title')
+                    ->label('Кладбище')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('cemetery.city.title')
+                    ->label('Город')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('created_at')
                     ->label('Дата создания')
-                    ->dateTime('d.m.Y'),
+                    ->dateTime('d.m.Y')
+                    ->sortable(),
             ])
-            
             ->filters([
                 SelectFilter::make('status')
-                ->label('Статус')
-                ->options([
-                    0 => 'Новый',
-                    3 => 'В работе',
-                    4 => 'На проверке',
-                    5 => 'Завершён',
-                ])
-                ->default(0) // Значение по умолчанию
-                ->attribute('status'), // Поле для фильтрации
+                    ->label('Статус')
+                    ->options([
+                        0 => 'Не оплачен',
+                        1 => 'Оплачен',
+                    ])
+                    ->default(0)
+                    ->attribute('status'),
 
-            // Фильтр по городу
-            SelectFilter::make('city')
-                ->label('Город')
-                ->relationship('cemetery.city', 'title') // Предполагается, что burial связан с city
-                ->searchable() // Поиск по городам
-                ->preload(), // Предзагрузка данных
+                SelectFilter::make('city')
+                    ->label('Город')
+                    ->relationship('cemetery.city', 'title')
+                    ->searchable()
+                    ->preload()
+                    ->hidden(static::isRestrictedUser()),
 
-            // Фильтр по кладбищу
-            SelectFilter::make('cemetery')
-                ->label('Кладбище')
-                ->relationship('cemetery', 'title') // Предполагается, что cemetery связан с OrderService
-                ->searchable() // Поиск по кладбищам
-                ->preload(), // Предзагрузка данных
+                SelectFilter::make('cemetery')
+                    ->label('Кладбище')
+                    ->relationship('cemetery', 'title')
+                    ->searchable()
+                    ->preload(),
 
-            // Фильтр по исполнителю
-            SelectFilter::make('worker')
-                ->label('Исполнитель')
-                ->relationship('worker', 'id') // Предполагается, что worker связан с User
-                ->searchable() // Поиск по исполнителям
-                ->preload(), // Предзагрузка дан
+                SelectFilter::make('worker')
+                    ->label('Исполнитель')
+                    ->relationship('worker', 'id')
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -219,7 +267,7 @@ class OrderServiceResource extends Resource
     public static function getRelations(): array
     {
         return [
-            
+            //
         ];
     }
 
@@ -230,5 +278,40 @@ class OrderServiceResource extends Resource
             'create' => Pages\CreateOrderService::route('/create'),
             'edit' => Pages\EditOrderService::route('/{record}/edit'),
         ];
+    }
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role === 'admin' || 
+               in_array(auth()->user()->role, ['deputy-admin', 'manager']);
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::shouldRegisterNavigation();
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        if (auth()->user()->role === 'admin') {
+            return true;
+        }
+        
+        if (static::isRestrictedUser()) {
+            $userCityIds = static::getUserCityIds();
+            return $record->cemetery && in_array($record->cemetery->city_id, $userCityIds);
+        }
+        
+        return false;
+    }
+
+    public static function canCreate(): bool
+    {   
+        return false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::canEdit($record);
     }
 }

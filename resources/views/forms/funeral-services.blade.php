@@ -3,7 +3,7 @@
 
 use Illuminate\Support\Facades\Auth;
 $mortuaries=selectCity()->mortuaries;
-$cemeteries_beatification=selectCity()->cemeteries;;
+$cemeteries_beatification=selectCity()->cemeteries;
 
 $user=null;
 if(Auth::check()){

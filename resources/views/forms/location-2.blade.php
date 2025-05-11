@@ -1,9 +1,9 @@
 <?php 
 
 use App\Models\Edge;
-$edges=Edge::orderBy('title','asc')->get();
+//$edges=Edge::orderBy('title','asc')->get();
 ?>
-
+{{-- 
 <div class="modal fade" id="location_form_2" tabindex="-1" aria-labelledby="location_form_2" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -43,4 +43,4 @@ $edges=Edge::orderBy('title','asc')->get();
             </div>
         </div>
     </div>
-</div>
+</div> --}}

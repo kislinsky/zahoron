@@ -1044,5 +1044,55 @@ public static function createOrganization(Request $request) {}
  */
 public static function update(Request $request) {}
 
+
+
+
+
+/**
+ * @OA\Post(
+ *     path="/v1/account/agency/organization-provider/create-requests-cost",
+ *     summary="Создание заявки на расчет стоимости",
+ *     tags={"Заявки"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"organization_id", "user_id", "products", "count"},
+ *             @OA\Property(property="organization_id", type="integer", example=1),
+ *             @OA\Property(property="user_id", type="integer", example=1),
+ *             @OA\Property(
+ *                 property="products", 
+ *                 type="array",
+ *                 @OA\Items(type="integer", example=1)
+ *             ),
+ *             @OA\Property(
+ *                 property="count", 
+ *                 type="array",
+ *                 @OA\Items(type="integer", example=1)
+ *             ),
+ *             @OA\Property(
+ *                 property="lcs",
+ *                 type="array",
+ *                 nullable=true,
+ *                 @OA\Items(type="string", example="1")
+ *             ),
+ *             @OA\Property(
+ *                 property="all_lcs",
+ *                 type="boolean",
+ *                 nullable=true
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(response=201, description="Успешно создано"),
+ *     @OA\Response(response=422, description="Ошибка валидации")
+ * )
+ */
+
+public static function addRequestsCostProductSuppliers(Request $request)
+{
+    // ... ваш существующий код ...
 }
+
+}
+
 
