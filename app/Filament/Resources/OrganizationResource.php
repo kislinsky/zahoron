@@ -171,20 +171,20 @@ class OrganizationResource extends Resource
             ])
             ->inline(),
 
-            Forms\Components\Select::make('city_id')
-                ->label('Город')
-                ->options(function () {
-                    if (auth()->user()->role === 'admin') {
-                        return City::pluck('title', 'id');
-                    } else {
-                        $userCityIds = json_decode(auth()->user()->city_ids);
-                        return City::whereIn('id', $userCityIds)->pluck('title', 'id');
-                    }
-                })
-                ->required()
-                ->searchable()
-                ->preload()
-                ->live(),
+         Forms\Components\Select::make('city_id')
+            ->label('Город')
+            ->relationship('city', 'title', function ($query) {
+                $user = auth()->user();
+
+                if ($user->role === 'admin') {
+                    return $query->orderBy('title');
+                }
+
+                $userCityIds = json_decode($user->city_ids ?? '[]');
+                return $query->whereIn('id', $userCityIds)->orderBy('title');
+            })
+            ->searchable()
+            ->required(),
 
             Forms\Components\TextInput::make('width')
                 ->label('Ширина')
@@ -376,11 +376,12 @@ class OrganizationResource extends Resource
                     ->searchable()
                     ->preload(),
 
-                SelectFilter::make('city_id')
-                    ->label('Город')
-                    ->relationship('city', 'title')
-                    ->searchable()
-                    ->preload(),
+              SelectFilter::make('city_id')
+                ->label('Город')
+                ->relationship('city', 'title') // предполагается, что есть связанная модель 'city'
+                ->searchable(),
+
+               
 
                 SelectFilter::make('cemetery_id')
                     ->label('Работает на кладбище')

@@ -26,6 +26,7 @@ Route::prefix('v1')->group(function () {
 
             Route::group(['prefix'=>'organization-provider'], function() {
                 Route::post('/create-requests-cost', [AgencyController::class, 'addRequestsCostProductSuppliers']);
+                Route::delete('/delete-requests-cost/{request}', [AgencyController::class, 'deleteRequestCostProductProvider']);
             });
 
 
@@ -36,6 +37,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('/', [AgencyController::class, 'addProduct']);
                 Route::post('/{product}/update', [AgencyController::class, 'updateProduct']);
                 Route::delete('/{product}', [AgencyController::class, 'deleteProduct']);
+                
             });
         });
     });

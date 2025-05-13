@@ -876,60 +876,71 @@ class AgencyController extends Controller
 
 
  public function addRequestsCostProductSuppliers(Request $request)
-{
-    // Упрощенная валидация
-    $validated = $request->validate([
-        'organization_id' => 'required|integer',
-        'user_id' => 'required|integer',
-        'products' => 'required|array|min:1',
-        'products.*' => 'integer',
-        'count' => 'required|array|min:1',
-        'count.*' => 'integer|min:1',
-        'lcs' => 'nullable|array',
-        'lcs.*' => 'string',
-        'all_lcs' => 'nullable|boolean'
-    ]);
-
-    // Проверка соответствия массивов
-    if (count($validated['products']) !== count($validated['count'])) {
-        return response()->json([
-            'message' => 'Количество продуктов и значений count должно совпадать'
-        ], 422);
-    }
-
-    // Проверка организации
-    $organization = Organization::find($validated['organization_id']);
-    if (!$organization || $organization->user_id != $validated['user_id']) {
-        return response()->json([
-            'message' => 'Организация не найдена или не принадлежит пользователю'
-        ], 422);
-    }
-
-    // Формирование данных
-    $products = array_map(function($product, $count) {
-        return [(int)$product, (int)$count, 0];
-    }, $validated['products'], $validated['count']);
-
-    // Обработка транспортных компаний
-    $transportCompanies = ($validated['all_lcs'] ?? false) ? 'all' : ($validated['lcs'] ?? []);
-
-    try {
-        $requestCost = RequestsCostProductsSupplier::create([
-            'organization_id' => $validated['organization_id'],
-            'products' => json_encode($products),
-            'transport_companies' => json_encode($transportCompanies),
-            'categories_provider_product' => json_encode($validated['products']),
+    {
+        // Упрощенная валидация
+        $validated = $request->validate([
+            'organization_id' => 'required|integer',
+            'user_id' => 'required|integer',
+            'products' => 'required|array|min:1',
+            'products.*' => 'integer',
+            'count' => 'required|array|min:1',
+            'count.*' => 'integer|min:1',
+            'lcs' => 'nullable|array',
+            'lcs.*' => 'string',
+            'all_lcs' => 'nullable|boolean'
         ]);
 
-        return response()->json($requestCost, 201);
+        // Проверка соответствия массивов
+        if (count($validated['products']) !== count($validated['count'])) {
+            return response()->json([
+                'message' => 'Количество продуктов и значений count должно совпадать'
+            ], 422);
+        }
 
-    } catch (\Exception $e) {
-        return response()->json([
-            'message' => 'Ошибка при создании заявки',
-            'error' => $e->getMessage()
-        ], 500);
+        // Проверка организации
+        $organization = Organization::find($validated['organization_id']);
+        if (!$organization || $organization->user_id != $validated['user_id']) {
+            return response()->json([
+                'message' => 'Организация не найдена или не принадлежит пользователю'
+            ], 422);
+        }
+
+        // Формирование данных
+        $products = array_map(function($product, $count) {
+            return [(int)$product, (int)$count, 0];
+        }, $validated['products'], $validated['count']);
+
+        // Обработка транспортных компаний
+        $transportCompanies = ($validated['all_lcs'] ?? false) ? 'all' : ($validated['lcs'] ?? []);
+
+        try {
+            $requestCost = RequestsCostProductsSupplier::create([
+                'organization_id' => $validated['organization_id'],
+                'products' => json_encode($products),
+                'transport_companies' => json_encode($transportCompanies),
+                'categories_provider_product' => json_encode($validated['products']),
+            ]);
+
+            return response()->json($requestCost, 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Ошибка при создании заявки',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-}
+
+    public function deleteRequestCostProductProvider($request)
+    {
+        $aplication=RequestsCostProductsSupplier::findOrFail($request)->delete();
+
+         return response()->json([
+                'success' => true,
+                'message' => 'Заявка успешно удалена.'
+            ], 200);
+
+    }
 }
 
 

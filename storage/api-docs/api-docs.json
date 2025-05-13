@@ -1632,7 +1632,7 @@
         "/v1/account/agency/organization-provider/create-requests-cost": {
             "post": {
                 "tags": [
-                    "Заявки"
+                    "Заявки от организаций поставщикам"
                 ],
                 "summary": "Создание заявки на расчет стоимости",
                 "operationId": "3f13742a4a13a1324be2ef19891598b9",
@@ -1701,6 +1701,64 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/v1/account/agency/organization-provider/delete-requests-cost/{request}": {
+            "delete": {
+                "tags": [
+                    "Заявки от организаций поставщикам"
+                ],
+                "summary": "Удаление заявки на стоимость товара поставщика",
+                "operationId": "d452cf66c4fd650f23edc7604dd5432d",
+                "parameters": [
+                    {
+                        "name": "request",
+                        "in": "path",
+                        "description": "ID заявки",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Заявка успешно удалена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Заявка успешно удалена."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Заявка не найдена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\RequestsCostProductsSupplier] {id}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/v1/register": {
@@ -2490,8 +2548,8 @@
             "description": "Организация"
         },
         {
-            "name": "Заявки",
-            "description": "Заявки"
+            "name": "Заявки от организаций поставщикам",
+            "description": "Заявки от организаций поставщикам"
         },
         {
             "name": "Авторизация/регистрация",

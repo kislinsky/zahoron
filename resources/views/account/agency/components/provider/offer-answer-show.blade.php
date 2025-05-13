@@ -1,4 +1,4 @@
-@if($requests->count()>0) 
+@if($requests->count()>0 ) 
     <div class="ul_organizaiotns margin_top_20">
         
         @foreach($requests as $request)

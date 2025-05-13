@@ -1052,7 +1052,7 @@ public static function update(Request $request) {}
  * @OA\Post(
  *     path="/v1/account/agency/organization-provider/create-requests-cost",
  *     summary="Создание заявки на расчет стоимости",
- *     tags={"Заявки"},
+ *     tags={"Заявки от организаций поставщикам"},
  *     security={{"bearerAuth": {}}},
  *     @OA\RequestBody(
  *         required=true,
@@ -1092,6 +1092,54 @@ public static function addRequestsCostProductSuppliers(Request $request)
 {
     // ... ваш существующий код ...
 }
+
+
+/**
+ * @OA\Delete(
+ *     path="/v1/account/agency/organization-provider/delete-requests-cost/{request}",
+ *     summary="Удаление заявки на стоимость товара поставщика",
+ *     tags={"Заявки от организаций поставщикам"},
+ *     @OA\Parameter(
+ *         name="request",
+ *         in="path",
+ *         required=true,
+ *         description="ID заявки",
+ *         @OA\Schema(
+ *             type="integer"
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Заявка успешно удалена",
+ *         @OA\JsonContent(
+ *             @OA\Property(
+ *                 property="success",
+ *                 type="boolean",
+ *                 example=true
+ *             ),
+ *             @OA\Property(
+ *                 property="message",
+ *                 type="string",
+ *                 example="Заявка успешно удалена."
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Заявка не найдена",
+ *         @OA\JsonContent(
+ *             @OA\Property(
+ *                 property="message",
+ *                 type="string",
+ *                 example="No query results for model [App\\Models\\RequestsCostProductsSupplier] {id}"
+ *             )
+ *         )
+ *     )
+ * )
+ */
+
+
+ public function deleteRequestCostProductProvider($request){}
 
 }
 
