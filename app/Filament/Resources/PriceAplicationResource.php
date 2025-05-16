@@ -43,8 +43,7 @@ class PriceAplicationResource extends Resource
                 ->label('Город')
                 ->relationship('city', 'title')
                 ->required()
-                ->searchable()
-                ->preload(),
+                ->searchable(),
 
             Forms\Components\TextInput::make('price')
                 ->label('Цена')

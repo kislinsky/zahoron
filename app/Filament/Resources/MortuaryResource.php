@@ -276,8 +276,7 @@ class MortuaryResource extends Resource
             SelectFilter::make('city_id')
                 ->label('Город')
                 ->relationship('city', 'title') // Используем вложенное отношение
-                ->searchable()
-                ->preload(),
+                ->searchable(),
 
                 SelectFilter::make('has_phone')
                 ->label('Отсутсвует телефон')

@@ -221,15 +221,18 @@ class ParserOrganizationService
                         $rating = $organization[$columns['Рейтинг']] ?? null;
                         $nameType = $organization[$columns['Вид деятельности']] ?? null;
     
-                        $area = createArea($district, $region);
-                        $city = createCity($cityName, $region);
+                       $objects=linkRegionDistrictCity($region,$district,$cityName);
+
+                        $area = $objects['district'];
+                        $city =  $objects['city'];
                     
                         if($city == null || $phones == null) continue;
         
-                        $time_difference = $city->utc_offset ?? 0;
-                        // if(env('API_WORK')=='true'){
-                        //     $time_difference=differencetHoursTimezone(getTimeByCoordinates($latitude,$longitude)['timezone']);
-                        // }
+                        $time_difference = $city->utc_offset ?? null;
+                        if($time_difference==null && env('API_WORK')=='true'){
+                            $time_difference=differencetHoursTimezone(getTimeByCoordinates($latitude,$longitude)['timezone']);
+                            $city->update(['utc_offset'=> $time_difference]);
+                        }
                         
                         $updateData = [
                             'title' => $orgTitle,
@@ -320,10 +323,12 @@ class ParserOrganizationService
                             
                         if($city == null || $phones == null) continue;
         
-                        $time_difference = $city->utc_offset ?? 0;
-                        // if(env('API_WORK')=='true'){
-                        //     $time_difference=differencetHoursTimezone(getTimeByCoordinates($latitude,$longitude)['timezone']);
-                        // }
+                        $time_difference = $city->utc_offset ?? null;
+                        if($time_difference==null && env('API_WORK')=='true'){
+                            $time_difference=differencetHoursTimezone(getTimeByCoordinates($latitude,$longitude)['timezone']);
+                            $city->update(['utc_offset'=> $time_difference]);
+
+                        }
                         
                         if($logoUrl!=null && !isBrokenLink($logoUrl)){
                             $logoUrl = $logoUrl ;

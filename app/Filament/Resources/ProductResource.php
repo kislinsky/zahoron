@@ -267,7 +267,6 @@ class ProductResource extends Resource
                     ->label('Город')
                     ->relationship('organization.city', 'title')
                     ->searchable()
-                    ->preload()
                     ->hidden(auth()->user()->role === 'deputy-admin'),
 
                 SelectFilter::make('cemetery_id')

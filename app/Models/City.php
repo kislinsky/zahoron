@@ -44,6 +44,11 @@ class City extends Model
         return $this->hasMany(District::class);
     }
 
+    public function organizations(){
+        return $this->hasMany(Organization::class);
+    }
+
+
     public function route(){
         return route('city.select',$this->id);
     }

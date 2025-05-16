@@ -93,17 +93,21 @@ class ReviewsOrganizationResource extends Resource
                     ->searchable()
                     ->preload(),
 
-                Forms\Components\Select::make('city_id')
-                    ->label('Город')
-                    ->options(function () use ($userCityIds, $isRestrictedUser) {
-                        if ($isRestrictedUser) {
-                            return City::whereIn('id', $userCityIds)->pluck('title', 'id');
-                        }
-                        return City::pluck('title', 'id');
-                    })
-                    ->required()
-                    ->searchable()
-                    ->disabled($isRestrictedUser),
+               Select::make('city_id')
+                ->label('Город')
+                ->relationship('city', 'title', function ($query) {
+                    $user = auth()->user();
+
+                    if ($user->role === 'admin') {
+                        return $query->orderBy('title');
+                    }
+
+                    $userCityIds = json_decode($user->city_ids ?? '[]');
+                    return $query->whereIn('id', $userCityIds)->orderBy('title');
+                })
+                ->searchable()
+                ->required()
+                ->disabled($isRestrictedUser),
 
                 Forms\Components\Textarea::make('content')
                     ->label('Контент')

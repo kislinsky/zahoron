@@ -183,8 +183,7 @@ class ActivityCategoryOrganizationResource extends Resource
                 SelectFilter::make('city_id')
                     ->label('Город')
                     ->relationship('organization.city', 'title')
-                    ->searchable()
-                    ->preload(),
+                    ->searchable(),
 
                 SelectFilter::make('has_price')
                     ->label('Наличие цены')

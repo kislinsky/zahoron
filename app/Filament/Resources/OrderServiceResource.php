@@ -238,7 +238,6 @@ class OrderServiceResource extends Resource
                     ->label('Город')
                     ->relationship('cemetery.city', 'title')
                     ->searchable()
-                    ->preload()
                     ->hidden(static::isRestrictedUser()),
 
                 SelectFilter::make('cemetery')

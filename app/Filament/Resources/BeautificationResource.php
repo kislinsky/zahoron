@@ -126,17 +126,24 @@ class BeautificationResource extends Resource
                     ->default(0)
                     ->required(),
 
-                Select::make('city_id')
-                    ->label('Город')
-                    ->options(function () use ($userCityIds, $isRestrictedUser) {
-                        if ($isRestrictedUser) {
-                            return City::whereIn('id', $userCityIds)->pluck('title', 'id');
-                        }
-                        return City::pluck('title', 'id');
-                    })
-                    ->searchable()
-                    ->required()
-                    ->disabled($isRestrictedUser),
+
+            Select::make('city_id')
+                ->label('Город')
+                ->relationship('city', 'title', function ($query) {
+                    $user = auth()->user();
+
+                    if ($user->role === 'admin') {
+                        return $query->orderBy('title');
+                    }
+
+                    $userCityIds = json_decode($user->city_ids ?? '[]');
+                    return $query->whereIn('id', $userCityIds)->orderBy('title');
+                })
+                ->searchable()
+                ->required()
+                ->disabled($isRestrictedUser),
+
+               
 
                 TextInput::make('call_time')
                     ->label('Время звонка')
@@ -194,7 +201,8 @@ class BeautificationResource extends Resource
                 Tables\Filters\SelectFilter::make('city_id')
                     ->label('Город')
                     ->relationship('city', 'title')
-                    ->hidden(static::isRestrictedUser()),
+                    ->hidden(static::isRestrictedUser())
+                    ->searchable(),
 
                 Tables\Filters\SelectFilter::make('cemetery_id')
                     ->label('Кладбище')

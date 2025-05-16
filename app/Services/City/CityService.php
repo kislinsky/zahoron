@@ -7,6 +7,7 @@ namespace App\Services\City;
 use App\Models\City;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -20,8 +21,14 @@ class CityService {
     }
 
     public static function ajaxCity($city){
-        $cities=City::orderBy('title','asc')->where('title','like','%'. $city.'%')->get();
-        return view('components.components_form.cities',compact('cities'));
+$cities = DB::table('cities')
+    ->join('organizations', 'organizations.city_id', '=', 'cities.id')
+    ->where('cities.title', 'like', '%' . $city . '%')
+    ->select('cities.*')
+    ->groupBy('cities.id')
+    ->orderBy('cities.title', 'asc')
+    ->get();
+            return view('components.components_form.cities',compact('cities'));
     }
 
     public static function ajaxCityFromEdge($edge_id){

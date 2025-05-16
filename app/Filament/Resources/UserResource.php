@@ -59,7 +59,6 @@ class UserResource extends Resource
                     return City::all()->pluck('title', 'id')->toArray();
                 })
                 ->searchable()
-                ->preload()
                 ->default(fn ($record) => is_array($record?->city_ids) ? $record->city_ids : [])
                 ->dehydrateStateUsing(function ($state) {
                     return json_encode($state ?? []);
@@ -149,8 +148,7 @@ class UserResource extends Resource
                 Forms\Components\Select::make('city_id')
                 ->label('Город')
                 ->relationship('city', 'title')
-                ->searchable()
-                ->preload(),
+                ->searchable(),
 
             
                 Select::make('sms_notifications') // Поле для статуса
@@ -230,8 +228,7 @@ class UserResource extends Resource
                 SelectFilter::make('city_id')
                 ->label('Город')
                 ->relationship('city', 'title') // Используем вложенное отношение
-                ->searchable()
-                ->preload(),
+                ->searchable(),
 
             ])
             ->actions([

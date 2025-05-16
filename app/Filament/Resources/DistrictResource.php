@@ -35,8 +35,7 @@ class DistrictResource extends Resource
                     ->label('Город')
                     ->relationship('city', 'title')
                     ->required()
-                    ->searchable()
-                    ->preload(),
+                    ->searchable(),
             ]);
     }
 
@@ -61,8 +60,7 @@ class DistrictResource extends Resource
                 SelectFilter::make('city_id')
                 ->label('Город')
                 ->relationship('city', 'title') // Используем отношение и поле для отображения
-                ->searchable() // Добавляем поиск
-                ->preload(), // Предзагрузка данных 
+                ->searchable(), 
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
