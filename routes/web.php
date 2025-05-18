@@ -166,6 +166,11 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
 
     Route::prefix('ajax')->group(function () {
 
+
+
+        Route::get('/geo', [CityController::class, 'ajaxGeo'])->name('geo.ajax');
+
+
         Route::get('category/children/ul', [CategoryProductController::class, 'ajaxCategoryChildrenUl'])->name('category.product.children.ul');
                 
         Route::post('/add-cemetery-setings', [AgentController::class, 'addCemetery'])->name('add.cemetery.settings');

@@ -65,4 +65,12 @@ class CityController extends Controller
         return redirect()->route('city.index', ['city' => $city->slug]);
     }
 
+    public static function ajaxGeo(Request $request){
+        $data=request()->validate([
+            'type_object'=>['required','string'],
+            'id'=>['required','integer'],
+            'type_request'=>['required','string'],
+        ]);
+        return CityService::ajaxGeo($data);
+    }
 }

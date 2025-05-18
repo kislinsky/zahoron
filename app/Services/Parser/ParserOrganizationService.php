@@ -44,7 +44,8 @@ class ParserOrganizationService
             $titles = $sheet->toArray()[0];
             $organizations = array_slice($sheet->toArray(), 1);
         
-            $columns = array_flip($titles);
+            $filteredTitles = array_filter($titles, fn($value) => $value !== null);
+            $columns = array_flip($filteredTitles);
         
             foreach($organizations as $organization) {
                 $orgId = rtrim($organization[$columns['ID']] ?? '', '!');
@@ -64,6 +65,8 @@ class ParserOrganizationService
                 $nameType = $organization[$columns['Вид деятельности']] ?? null;
                 $urlSite = $organization[$columns['Сайт']] ?? null;
     
+                if(empty($cityName)) continue;
+
                 $objects=linkRegionDistrictCity($region,$district,$cityName);
 
                 $area = $objects['district'];

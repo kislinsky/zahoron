@@ -52,23 +52,29 @@ class UserResource extends Resource
                 ->default(1), // Значение по умолчанию
 
 
-                Select::make('city_ids')
-                ->label('Города к которым привязан пользователь(менджер,зам-админ)')
-                ->multiple() // множественный выбор
-                ->options(function () {
-                    return City::all()->pluck('title', 'id')->toArray();
-                })
-                ->searchable()
-                ->default(fn ($record) => is_array($record?->city_ids) ? $record->city_ids : [])
-                ->dehydrateStateUsing(function ($state) {
-                    return json_encode($state ?? []);
-                })
-                ->afterStateHydrated(function (Select $component, $state) {
-                    $decoded = is_string($state) ? json_decode($state, true) : $state;
-                    $component->state(is_array($decoded) ? $decoded : []);
-                })
-                ->columnSpan('full'),
-                
+             Select::make('city_ids')
+    ->label('Города, к которым привязан пользователь (менеджер, зам. админ)')
+    ->multiple()
+    ->searchable(['async' => true])
+    ->getSearchResultsUsing(function (string $search) {
+        return City::query()
+            ->where('title', 'like', "%{$search}%")
+            ->limit(50)
+            ->pluck('title', 'id')
+            ->toArray(); // max 50 results for performance
+    })
+    ->getOptionLabelsUsing(function (array $values) {
+        return City::whereIn('id', $values)
+            ->pluck('title', 'id')
+            ->toArray();
+    })
+    ->default(fn ($record) => (array) json_decode($record?->city_ids, true) ?? [])
+    ->dehydrateStateUsing(fn ($state) => json_encode($state ?: []))
+    ->afterStateHydrated(function (Select $component, $state) {
+        $decoded = is_string($state) ? json_decode($state, true) : $state;
+        $component->state((array) $decoded);
+    })
+    ->columnSpanFull(),
 
                 Forms\Components\TextInput::make('phone')
                 ->label('Телефон')

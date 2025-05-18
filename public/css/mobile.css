@@ -492,6 +492,7 @@
     }
     .li_organization .title_li_organiaztion{
         font-size: 18px;
+        width: 100%;
         line-height: 1.4;
     }
     .li_flex_icon_organization{

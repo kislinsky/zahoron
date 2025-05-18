@@ -2551,7 +2551,14 @@ text-align: left;
     height: 24px;
 }
 
-
+.blue_btn.li_location{
+    width: 100px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+}
 .li_location{
     padding: 5px 0px;
     font-size: 16px;
@@ -2565,9 +2572,13 @@ text-align: left;
 .block_location .title_news,#location_form .flex_title_message,#location_form_2 .flex_title_message{
     margin: 0px;
 }
+.html_geo{
+    min-height: 600px;
+}
 .ul_location{
     transition: all 0.3s ease;
-
+    max-height: 500px;
+    overflow-y: scroll;
     position: relative;
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -3422,8 +3433,16 @@ text-align: left;
     left: 50%;
     z-index: 113;
     transform: translate(-50%,-50%);
-
 }
+
+.load_block_2{
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: none;
+    left: 50%;
+}
+
 .add_to_cart_product{
 display: flex;
 justify-content: center;
@@ -5159,7 +5178,7 @@ background: #F7F7F8;
     margin-top: auto;
 }
 .info_li_organization .title_li_organiaztion{
-    max-width: 320px;
+    width: 300px;
 }
 .title_li_organiaztion{
     font-family: EB Garamond;

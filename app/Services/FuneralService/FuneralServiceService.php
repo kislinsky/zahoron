@@ -105,7 +105,10 @@ class FuneralServiceService {
     }
 
     public static function ajaxMortuary($city){
-        $mortuaries=Mortuary::orderBy('title','asc')->where('city_id',$city)->get();
+       $areaId=City::find($city)->area_id;
+        $mortuaries = Mortuary::whereHas('city', function($q) use ($areaId) {
+            $q->where('area_id', $areaId);
+        })->orderBy('title', 'asc')->get();
         return view('components.components_form.mortuaries',compact('mortuaries'));
     }
 

@@ -508,20 +508,20 @@ $( ".city_li" ).on( "click", function() {
 })
 
 
-$( ".li_cemetery_2" ).on( "click", function() {
-  value_id=$(this).attr('id_cemetery')
-  value_html=$(this).html()
+// $( ".li_cemetery_2" ).on( "click", function() {
+//   value_id=$(this).attr('id_cemetery')
+//   value_html=$(this).html()
 
-  $('input[name="id_cemetery"]').val(value_id)
-  $('input[name="location"]').val(value_html)
+//   $('input[name="id_cemetery"]').val(value_id)
+//   $('input[name="location"]').val(value_html)
 
-  $('#beautification_form').modal('show');
+//   $('#beautification_form').modal('show');
   
 
-});
+// });
 
 
-$( ".li_cemetery_3" ).on( "click", function() {
+$( ".li_cemetery" ).on( "click", function() {
   value_id=$(this).attr('id_cemetery')
   value_html=$(this).html()
 
@@ -533,75 +533,6 @@ $( ".li_cemetery_3" ).on( "click", function() {
 
 });
 
-
-
-
-// let currentLevel = 'region';
-
-// // Обработчик для регионов
-// $(".edge_li").on("click", function() {
-//     const regionId = $(this).attr('id_edge');
-    
-//     // Скрываем все регионы и сбрасываем стили
-//     $(".edge_li").hide();
-    
-//     // Показываем города выбранного региона как grid
-//     $(`.cities_ul[id_edge_ul="${regionId}"]`)
-//         .css('display', 'grid')
-//         .find('.city_li')
-//         .css('display', 'block');
-    
-//     $('.block_location .title_news').html('Город');
-//     $('#backButton').show();
-//     currentLevel = 'city';
-// });
-
-// // Обработчик для городов
-// $(".city_li").on("click", function() {
-//     const cityId = $(this).attr('id_city');
-    
-//     // Скрываем все города
-//     $(".city_li").hide();
-    
-//     // Показываем кладбища как grid
-//     $(`.cemetery_ul[id_city_ul="${cityId}"]`)
-//         .css('display', 'grid')
-//         .find('.li_cemetery_3')
-//         .css('display', 'block');
-    
-//     $('.block_location .title_news').html('Кладбище');
-//     currentLevel = 'cemetery';
-// });
-
-// // Обработчик для кнопки "Назад"
-// $('#backButton').on('click', function() {
-//     if(currentLevel === 'cemetery') {
-//         // Возвращаемся к городам
-//         $(".cemetery_ul").hide();
-//         $(".city_li").show();
-//         $('.cities_ul').css('display', 'grid'); // Важно!
-//         $('.block_location .title_news').html('Город');
-//         currentLevel = 'city';
-//     } else if(currentLevel === 'city') {
-//         // Возвращаемся к регионам
-//         $(".cities_ul").hide();
-//         $(".edge_li").show();
-//         $('.ul_location_main').css('display', 'grid'); // Важно!
-//         $('.block_location .title_news').html('Область');
-//         $('#backButton').hide();
-//         currentLevel = 'region';
-//     }
-// });
-
-// // Обработчик для кладбищ
-// $(".li_cemetery_3").on("click", function() {
-//     const cemeteryId = $(this).attr('id_cemetery');
-//     const cemeteryName = $(this).html();
-//     $('input[name="id_cemetery"]').val(cemeteryId);
-//     $('input[name="location"]').val(cemeteryName);
-//     $('input[name="location_cemetery"]').val(cemeteryName);
-//     $('#location_form_2').modal('hide');
-// });
 
 
 
