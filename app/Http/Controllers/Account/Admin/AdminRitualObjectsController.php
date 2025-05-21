@@ -52,9 +52,6 @@ class AdminRitualObjectsController extends Controller
     }
 
     public static function mortuaryImport(Request $request){
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv'
-        ]);
         return AdminMortuaryService::import($request);
     }
 
@@ -82,9 +79,6 @@ class AdminRitualObjectsController extends Controller
     }
 
     public static function crematoriumImport(Request $request){
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv'
-        ]);
         return AdminCrematoriumService::import($request);
     }
 

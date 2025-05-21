@@ -178,6 +178,13 @@ class ParserCemeteryService
     
                         $status = $cemeteryRow[$columns['Статус кладбища']] == 'Открыто' ? 1 : 0;
                         
+
+                        $time_difference = $city->utc_offset ?? null;
+                        if($time_difference==null && env('API_WORK')=='true'){
+                            $time_difference=differencetHoursTimezone(getTimeByCoordinates($cemeteryRow[$columns['Latitude']],$cemeteryRow[$columns['Longitude']])['timezone']);
+                            $city->update(['utc_offset'=> $time_difference]);
+                        }
+
                         $cemeteryData = [
                             'title' => $cemeteryRow[$columns['Наименование кладбища']],
                             'adres' => $cemeteryRow[$columns['Ориентир'] ?? null],
@@ -192,8 +199,9 @@ class ParserCemeteryService
                             'status' => $status,
                             'img_url' => 'default',
                             'href_img' => 1,
+                            'count_burials'=>$cemeteryRow[$columns['Захоронения'] ?? null],
                             'price_burial_location' => $price ?? 0,
-                            'time_difference' => 10,
+                            'time_difference' => $time_difference,
                         ];
     
                         if ($importAction === 'create') {
@@ -203,7 +211,23 @@ class ParserCemeteryService
                                 $skippedRows++;
                                 continue;
                             }
-                            Cemetery::create($cemeteryData);
+                            $cemetery=Cemetery::create($cemeteryData);
+                            // Обработка режима работы при создании
+                            if(isset($columns['Режим работы']) && $cemeteryRow[$columns['Режим работы']] != null) {
+                                $workHours = $cemeteryRow[$columns['Режим работы']];
+                                $days = parseWorkingHours($workHours);
+                                
+                                foreach($days as $day) {
+                                    $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
+                                    WorkingHoursCemetery::create([
+                                        'day' => $day['day'],
+                                        'time_start_work' => $day['time_start_work'],
+                                        'time_end_work' => $day['time_end_work'],
+                                        'holiday' => $holiday,
+                                        'cemetery_id' => $cemetery->id,
+                                    ]);
+                                }
+                            }
                             $createdCemeteries++;
                         } elseif ($importAction === 'update') {
                             // Ищем по кадастровому номеру
@@ -221,6 +245,27 @@ class ParserCemeteryService
                                     $cemetery->update($updateData);
                                     $updatedCemeteries++;
                                 }
+
+                                if(in_array('working_hours', $updateFields) && isset($columns['Режим работы'])) {
+                                $workHours = $cemeteryRow[$columns['Режим работы']] ?? null;
+                                if($workHours) {
+                                    // Удаляем старые записи о рабочем времени
+                                    WorkingHoursCemetery::where('cemetery_id', $cemetery->id)->delete();
+                                    
+                                    // Создаем новые записи
+                                    $days = parseWorkingHours($workHours);
+                                    foreach($days as $day) {
+                                        $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
+                                        WorkingHoursCemetery::create([
+                                            'day' => $day['day'],
+                                            'time_start_work' => $day['time_start_work'],
+                                            'time_end_work' => $day['time_end_work'],
+                                            'holiday' => $holiday,
+                                            'cemetery_id' => $cemetery->id,
+                                        ]);
+                                    }
+                                }
+                            }
                             } else {
                                 $skippedRows++;
                             }
