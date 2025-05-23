@@ -200,6 +200,7 @@ class ParserCemeteryService
                             'img_url' => 'default',
                             'href_img' => 1,
                             'count_burials'=>$cemeteryRow[$columns['Захоронения'] ?? null],
+                            'inn'=>$cemeteryRow[$columns['ИНН'] ?? null],
                             'price_burial_location' => $price ?? 0,
                             'time_difference' => $time_difference,
                         ];

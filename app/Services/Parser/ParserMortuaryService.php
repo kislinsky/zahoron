@@ -6,6 +6,7 @@ use App\Models\Cemetery;
 use App\Models\City;
 
 use App\Models\Edge;
+use App\Models\ImageCemetery;
 use App\Models\ImageMortuary;
 use App\Models\Mortuary;
 use App\Models\ReviewMortuary;
@@ -121,7 +122,7 @@ class ParserMortuaryService
             $columns = array_flip($titles);
 
             // Проверка наличия обязательных колонок
-            $requiredColumns = ['Название организации', 'Latitude', 'Longitude','ID'];
+            $requiredColumns = ['Название организации', 'Latitude', 'Longitude', 'ID','Адрес'];
             foreach ($requiredColumns as $col) {
                 if (!isset($columns[$col])) {
                     continue 2;
@@ -133,6 +134,11 @@ class ParserMortuaryService
                 try {
                     // Проверка обязательных полей
                     if (empty($mortuaryRow[$columns['Название организации']])) {
+                        $skippedRows++;
+                        continue;
+                    }
+
+                    if (empty($mortuaryRow[$columns['Адрес']])) {
                         $skippedRows++;
                         continue;
                     }
@@ -177,19 +183,25 @@ class ParserMortuaryService
                     $mortuaryData = [
                         'id'=>$objectId,
                         'title' => $mortuaryRow[$columns['Название организации']],
-                        'adres' => $mortuaryRow[$columns['Адрес'] ?? null],
+                        'adres' => $mortuaryRow[$columns['Адрес']],
                         'width' => $mortuaryRow[$columns['Latitude']],
                         'longitude' => $mortuaryRow[$columns['Longitude']],
                         'city_id' => $city->id,
                         'phone' => normalizePhone($mortuaryRow[$columns['Телефоны'] ?? null]),
                         'content'=>$mortuaryRow[$columns['Описание'] ?? $mortuaryRow[$columns['SEO Описание']] ?? null],
-                        'img_url' => 'default',
+                        'img_url' => $mortuaryRow[$columns['Логотип']] ?? 'default',
                         'href_img' => 1,
                         'time_difference' => $time_difference,
                         'url_site' => $mortuaryRow[$columns['Сайт'] ?? null] ?? null,
                     ];
 
-                  
+                    if($mortuaryRow[$columns['Логотип']]!='default') {
+                        if(!isBrokenLink($mortuaryRow[$columns['Логотип']])){
+                            $mortuaryData['img_url'] = $mortuaryRow[$columns['Логотип']];
+                        }else{
+                            $mortuaryData['img_url'] = 'default';
+                        }
+                    }
 
                     if ($importAction === 'create' && Mortuary::find($objectId)==null) {
                         $mortuary = Mortuary::create($mortuaryData);
@@ -202,7 +214,7 @@ class ParserMortuaryService
                             
                             foreach($days as $day) {
                                 $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
-                                WorkingHoursMortuary::create([
+                                ImageMortuary::create([
                                     'day' => $day['day'],
                                     'time_start_work' => $day['time_start_work'],
                                     'time_end_work' => $day['time_end_work'],
@@ -211,6 +223,23 @@ class ParserMortuaryService
                                 ]);
                             }
                         }
+
+
+                        if(isset($columns['Фотографии']) && $mortuaryRow[$columns['Фотографии']] != null) {
+                            ImageMortuary::where('mortuary_id', $mortuary->id)->delete();
+                            
+                            $urls_array = explode(', ', $mortuaryRow[$columns['Фотографии']]);
+                            foreach($urls_array as $img) {
+                                if(!isBrokenLink($img)){
+                                    ImageMortuary::create([
+                                        'img_url' => $img,
+                                        'href_img' => 1,
+                                        'mortuary_id' => $mortuary->id,
+                                    ]);
+                                }
+                            }
+                        }
+
                     } elseif ($importAction === 'update') {
                         $mortuary = Mortuary::find($objectId);
                         

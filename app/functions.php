@@ -2171,17 +2171,17 @@ function linkRegionDistrictCity($regionName, $districtName, $cityName)
         'area_id' => $district->id,
 
     ]);
-    if(env('API_WORK')=='true'){
-        $coord=getCoordinatesCity($cityName,$district->title);
+    // if(env('API_WORK')=='true'){
+    //     $coord=getCoordinatesCity($cityName,$district->title);
 
-        if($coord!=null){
+    //     if($coord!=null){
 
-            $city ->update([
-                'width'=>$coord['lat'],
-                'longitude'=>$coord['lng'],
-            ]);
-        }
-    }
+    //         $city ->update([
+    //             'width'=>$coord['lat'],
+    //             'longitude'=>$coord['lng'],
+    //         ]);
+    //     }
+    // }
 
     return [
         'region' => $region,

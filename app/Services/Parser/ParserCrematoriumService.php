@@ -113,7 +113,7 @@ class ParserCrematoriumService
             $columns = array_flip($titles);
 
             // Проверка наличия обязательных колонок
-            $requiredColumns = ['Название организации', 'Latitude', 'Longitude', 'ID'];
+            $requiredColumns = ['Название организации', 'Latitude', 'Longitude', 'ID','Адрес'];
             foreach ($requiredColumns as $col) {
                 if (!isset($columns[$col])) {
                     continue 2;
@@ -133,6 +133,10 @@ class ParserCrematoriumService
                         continue;
                     }
 
+                     if (empty($crematoriumRow[$columns['Адрес']])) {
+                        $skippedRows++;
+                        continue;
+                    }
                     // Проверка координат
                     if (empty($crematoriumRow[$columns['Latitude']])) {
                         $skippedRows++;
@@ -168,17 +172,25 @@ class ParserCrematoriumService
                     $crematoriumData = [
                         'id' => $objectId,
                         'title' => $crematoriumRow[$columns['Название организации']],
-                        'adres' => $crematoriumRow[$columns['Адрес'] ?? null],
+                        'adres' => $crematoriumRow[$columns['Адрес']],
                         'width' => $crematoriumRow[$columns['Latitude']],
                         'longitude' => $crematoriumRow[$columns['Longitude']],
                         'city_id' => $city->id,
                         'phone' => normalizePhone($crematoriumRow[$columns['Телефоны'] ?? null]),
-                        'content'=>$crematoriumRow[$columns['Описание'] ?? $mortuaryRow[$columns['SEO Описание']] ?? null],
-                        'img_url' => 'default',
+                        'content'=>$crematoriumRow[$columns['Описание'] ?? $crematoriumRow[$columns['SEO Описание']] ?? null],
+                        'img_url' => $crematoriumRow[$columns['Логотип']] ?? 'default',
                         'href_img' => 1,
                         'time_difference' => $time_difference,
                         'url_site' => $crematoriumRow[$columns['Сайт'] ?? null] ?? null,
                     ];
+
+                    if($crematoriumRow[$columns['Логотип']]!='default') {
+                        if(!isBrokenLink($crematoriumRow[$columns['Логотип']])){
+                            $mortuaryData['img_url'] = $crematoriumRow[$columns['Логотип']];
+                        }else{
+                            $mortuaryData['img_url'] = 'default';
+                        }
+                    }
 
                     if ($importAction === 'create' && Crematorium::find($objectId)==null) {
                         $crematorium = Crematorium::create($crematoriumData);
@@ -200,6 +212,23 @@ class ParserCrematoriumService
                                 ]);
                             }
                         }
+
+                        if(isset($columns['Фотографии']) && $crematoriumRow[$columns['Фотографии']] != null) {
+                            ImageCrematorium::where('crematorium_id', $crematorium->id)->delete();
+                            
+                            $urls_array = explode(', ', $crematoriumRow[$columns['Фотографии']]);
+                            foreach($urls_array as $img) {
+                                if(!isBrokenLink($img)){
+                                    ImageCrematorium::create([
+                                        'img_url' => $img,
+                                        'href_img' => 1,
+                                        'crematorium_id' => $crematorium->id,
+                                    ]);
+                                }
+                            }
+                        }
+
+
                     } elseif ($importAction === 'update') {
                         $crematorium = Crematorium::find($objectId);
                         
