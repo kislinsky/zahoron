@@ -10,7 +10,9 @@
             @foreach($similar_columbariums as $similar_columbarium)
                 <div class="swiper-slide">
                     <div class="li_organization_similar">
-                        <img class='logo_organization_similar' src="{{$similar_columbarium->urlImg() }}" alt="">
+                            <img class='white_img_org logo_organization_similar' src="{{$similar_columbarium->defaultImg()[0]}}" alt="">   
+                            <img class='black_img_org logo_organization_similar' src="{{$similar_columbarium->defaultImg()[1]}}" alt="">   
+                     
                         <a href='{{route('crematorium.single',$similar_columbarium->id)}}'class="title_news">{{$similar_columbarium->title}} </a>
                         <div class="flex_stars">
                             <img src="{{asset('storage/uploads/Frame 334.svg')}}" alt="">

@@ -52,6 +52,7 @@ class ParserOrganizationService
                 $orgTitle = $organization[$columns['Название организации']] ?? null;
                 $address = $organization[$columns['Адрес']] ?? null;
                 $latitude = $organization[$columns['Latitude']] ?? null;
+                $two_gis_link = $organization[$columns['URL']] ?? null;
                 $longitude = $organization[$columns['Longitude']] ?? null;
                 $phones = $organization[$columns['Телефоны']] ?? null;
                 $workHours = $organization[$columns['Режим работы']] ?? null;
@@ -241,6 +242,7 @@ class ParserOrganizationService
                             'title' => $orgTitle,
                             'slug'=> slugOrganization($orgTitle),
                             'adres' => $address,
+                            'two_gis_link'=>$two_gis_link,
                             'width' => $latitude,
                             'longitude' => $longitude,
                             'link_website' => $urlSite ?: $existingOrg->link_website,
@@ -349,6 +351,7 @@ class ParserOrganizationService
                         $organization_create = Organization::create([
                             'id' => $orgId,
                             'title' => $orgTitle,
+                            'two_gis_link'=>$two_gis_link,
                             'adres' => $address,
                             'nearby' => $nearby,
                             'width' => $latitude,

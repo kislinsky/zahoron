@@ -7,6 +7,7 @@ use App\Models\Area;
 use App\Models\CategoryProduct;
 use App\Models\Cemetery;
 use App\Models\City;
+use App\Models\Crematorium;
 use App\Models\Faq;
 use App\Models\ImageOrganization;
 use App\Models\Organization;

@@ -117,6 +117,7 @@ class ParserColumbariumService
                         'content'=>$columbariumRow[$columns['Описание'] ?? $columbariumRow[$columns['SEO Описание']] ?? null],
                         'img_url' => $columbariumRow[$columns['Логотип']] ?? 'default',
                         'href_img' => 1,
+                        'two_gis_link'=> $crematoriumRow[$columns['URL']]  ?? null,
                         'time_difference' => $time_difference,
                         'url_site' => $columbariumRow[$columns['Сайт'] ?? null] ?? null,
                     ];

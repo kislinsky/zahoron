@@ -146,7 +146,6 @@ class ParserCrematoriumService
                         $skippedRows++;
                         continue;
                     }
-
                     $objects = linkRegionDistrictCity(
                         $crematoriumRow[$columns['Регион'] ?? null],
                         $crematoriumRow[$columns['Район'] ?? null],
@@ -179,10 +178,13 @@ class ParserCrematoriumService
                         'content'=>$crematoriumRow[$columns['Описание'] ?? $crematoriumRow[$columns['SEO Описание']] ?? null],
                         'img_url' => $crematoriumRow[$columns['Логотип']] ?? 'default',
                         'href_img' => 1,
+                        'two_gis_link'=> $crematoriumRow[$columns['URL']]  ?? null,
                         'time_difference' => $time_difference,
                         'url_site' => $crematoriumRow[$columns['Сайт'] ?? null] ?? null,
                     ];
 
+
+                    
                     if($crematoriumRow[$columns['Логотип']]!='default') {
                         if($crematoriumRow[$columns['Логотип']]!=null && !isBrokenLink($crematoriumRow[$columns['Логотип']])){
                             $mortuaryData['img_url'] = $crematoriumRow[$columns['Логотип']];
@@ -193,6 +195,7 @@ class ParserCrematoriumService
 
                     if ($importAction === 'create' && Crematorium::find($objectId)==null) {
                         $crematorium = Crematorium::create($crematoriumData);
+
                         $createdCrematoriums++;
 
                         // Обработка режима работы при создании

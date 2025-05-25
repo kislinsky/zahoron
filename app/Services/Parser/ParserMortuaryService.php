@@ -191,6 +191,7 @@ class ParserMortuaryService
                         'content'=>$mortuaryRow[$columns['Описание'] ?? $mortuaryRow[$columns['SEO Описание']] ?? null],
                         'img_url' => $mortuaryRow[$columns['Логотип']] ?? 'default',
                         'href_img' => 1,
+                        'two_gis_link'=> $crematoriumRow[$columns['URL']]  ?? null,
                         'time_difference' => $time_difference,
                         'url_site' => $mortuaryRow[$columns['Сайт'] ?? null] ?? null,
                     ];

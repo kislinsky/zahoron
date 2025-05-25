@@ -191,6 +191,7 @@ class ParserCemeteryService
                             'width' => $cemeteryRow[$columns['Latitude']],
                             'longitude' => $cemeteryRow[$columns['Longitude']],
                             'city_id' => $city->id,
+                            'two_gis_link'=> $crematoriumRow[$columns['URL']]  ?? null,
                             'area_id' => $area->id,
                             'phone' => normalizePhone($cemeteryRow[$columns['Тел. Ответственного'] ?? null]),
                             'square' => $cemeteryRow[$columns['Общая площадь (га)'] ?? null],

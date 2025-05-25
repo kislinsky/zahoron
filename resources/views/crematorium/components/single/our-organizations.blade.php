@@ -10,7 +10,12 @@
             @foreach($organizations_our as $organization_our)
                 <div class="swiper-slide">
                     <div class="li_organization_similar">
-                        <img class='logo_organization_similar'src="{{$organization_our->urlImg()}}" alt="">
+                         @if($organization_our->urlImg()=='default')
+                            <img class='white_img_org logo_organization_similar' src="{{$organization_our->defaultLogoImg()[0]}}" alt="">   
+                            <img class='black_img_org logo_organization_similar' src="{{$organization_our->defaultLogoImg()[1]}}" alt="">   
+                        @else
+                            <img  class='logo_organization_similar' src="{{$organization_our->urlImg()}}" alt="">   
+                        @endif
                         <a href='{{$organization_our->route()}}'class="title_news">{{$organization_our->title}} </a>
                         <div class="flex_stars">
                             <img src="{{asset('storage/uploads/Frame 334.svg')}}" alt="">
