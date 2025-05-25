@@ -1,8 +1,13 @@
 <div class="block_content_organization_single">
     <div class="main_block_organization_single">
         <div class="logo_organization_single logo_organization_single_ritual_object">
-            <img src="{{$columbarium->urlImg()}}" alt="">
-            <div class="blue_btn">{{$columbarium->title}}</div>
+            @if($crematorium->urlImg()=='default')
+                <img class='white_img_org' src="{{$crematorium->defaultImg()[0]}}" alt="">   
+                <img class='black_img_org' src="{{$crematorium->defaultImg()[1]}}" alt="">   
+            @else
+                <img src="{{$crematorium->urlImgMain()}}" alt="">   
+            @endif
+            <div class="blue_btn">{{$crematorium->title}}</div>
         </div>
         <div class="content_main_block_organization_single">
             <div class="flex_single_organization">

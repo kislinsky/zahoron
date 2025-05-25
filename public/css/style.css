@@ -7271,7 +7271,7 @@ text-decoration-skip-ink: none;
     width: 100%;
     gap: 20px;
     justify-content: space-between;
-    top: 69px;
+    top: 66px;
     background: white;
     border-top: 1px solid #E9E8EA;
     left: 0px;
@@ -7465,6 +7465,14 @@ color: #050505;
 .filter_update_organization{
     display: none;
 }
+
+.img_place .black_img_org{
+    display: none;
+}
+ .img_place .white_img_org{
+    display: block;
+}
+
 
 .logo_organization_single .black_img_org{
     display: none;

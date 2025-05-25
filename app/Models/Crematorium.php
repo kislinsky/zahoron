@@ -56,13 +56,23 @@ class Crematorium extends Model
         return ReviewCrematorium::where('crematorium_id',$this->id)->where('status',1)->count();
     }
 
-    public function urlImg(){
+     public function urlImg(){
         if($this->href_img==0){
             return asset('storage/'.$this->img_file);
+        }
+        if($this->img_url=='default'){
+            return 'default';
         }
         return $this->img_url;
     }
 
+
+    function defaultImg(){
+        $url_white_theme=asset('storage/uploads/Theme=White (1).svg');
+        $url_black_theme=asset('storage/uploads/Theme=Black (1).svg');
+        return [$url_white_theme,$url_black_theme];
+    }
+    
     public function ulWorkingDays(){    
         $days=WorkingHoursCrematorium::where('crematorium_id',$this->id)->orderByRaw("FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')")->get();
         if($days->count()>0){

@@ -542,3 +542,10 @@ color: white;
 .black_theme .logo_organization_similar.white_img_org{
     display: none;
 }
+
+.black_theme .img_place .black_img_org{
+    display: block;
+}
+.black_theme .img_place .white_img_org{
+    display: none;
+}

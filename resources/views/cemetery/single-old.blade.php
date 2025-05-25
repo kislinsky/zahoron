@@ -18,6 +18,7 @@
                 {!! $cemetery->content !!}
                 <a href='#'class="blue_btn">Позвонить</a>
             </div>
+            
             <img src="{{asset('storage/uploads_cemeteries/'.$cemetery->img)}}" alt="">
         </div>
         <div class="block_single_cemetery">

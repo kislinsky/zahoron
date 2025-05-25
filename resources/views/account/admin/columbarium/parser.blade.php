@@ -30,6 +30,7 @@
                 <option value="adres">Адрес</option>
                 <option value="width">Широта</option>
                 <option value="longitude">Долгота</option>
+                <option value="galerey">Фотографии</option>
                 <option value="phone">Телефон</option>
             </select>  
         </div>

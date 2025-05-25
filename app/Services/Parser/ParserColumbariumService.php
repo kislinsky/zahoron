@@ -15,69 +15,6 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class ParserColumbariumService
 {
-    // public static function index($request){
-    //     $spreadsheet = new Spreadsheet();
-    //     $file = $request->file('file');
-    //     $spreadsheet = IOFactory::load($file);
-    //     // Получение данных из первого листа
-    //     $sheet = $spreadsheet->getActiveSheet();
-    //     $columbariums = array_slice($sheet->toArray(),1);
-    //     foreach($columbariums as $columbarium){
-    //         $city=createCity($columbarium[7],$columbarium[6]);
-    //         if($city!=null && $columbarium[12]!=null && $columbarium[13]!=null){
-    //             $content=$columbarium[31];
-    //             $timezone=getTimeByCoordinates($columbarium[12],$columbarium[13])['timezone'];                
-    //             $columbarium_create=Columbarium::create([
-    //                 'title'=>$columbarium[3],
-    //                 'village'=>$columbarium[8],
-    //                 'adres'=>$columbarium[10],
-    //                 'width'=>$columbarium[12],
-    //                 'longitude'=>$columbarium[13],
-    //                 'phone'=>phoneImport($columbarium[15]),
-    //                 'email'=>$columbarium[19],
-    //                 'img'=>$columbarium[34],
-    //                 'city_id'=>$city->id,
-    //                 'rating'=>$columbarium[26],
-    //                 'mini_content'=>$columbarium[31],
-    //                 'href_img'=>1,
-    //                 'content'=>$content,
-    //                 'time_difference'=>differencetHoursTimezone($timezone),
-    //             ]);
-    //             if($columbarium[35]!=null){
-    //                 $imgs=explode(',',$columbarium[35]);
-    //                 foreach($imgs as $img){
-    //                     ImageCrematorium::create([
-    //                         'title'=>$img,
-    //                         'href_img'=>1,
-    //                         'columbarium_id'=>$columbarium_create->id,
-    //                     ]);
-    //                 }
-    //             }
-    //             if($columbarium[17]!=null){
-    //                 $worktime=explode(',',$columbarium[17]);
-    //                 foreach($worktime as $days){
-    //                     $days=parseWorkingHours($days);
-    //                     foreach($days as $day){
-    //                         $holiday=0;
-    //                         if($day['time_start_work']=='Выходной'){
-    //                             $holiday=1;
-    //                         }
-    //                         WorkingHoursColumbarium::create([
-    //                             'day'=>$day['day'],
-    //                             'time_start_work'=>$day['time_start_work'],
-    //                             'time_end_work'=>$day['time_end_work'],
-    //                             'holiday'=>$holiday,
-    //                             'columbarium_id'=>$columbarium_create->id,
-    //                         ]);
-    //                     }
-
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return redirect()->back()->with("message_cart", 'Колумабрии успешно добавлены');
-    // }
-
 
     public static function index($request) {
     // Валидация входных данных
@@ -109,8 +46,8 @@ class ParserColumbariumService
             $sheet = $spreadsheet->getActiveSheet();
             $titles = $sheet->toArray()[0];
             $columbariumsData = array_slice($sheet->toArray(), 1);
-            
-            $columns = array_flip($titles);
+            $filteredTitles = array_filter($titles, fn($value) => $value !== null);
+            $columns = array_flip($filteredTitles);
 
             // Проверка наличия обязательных колонок
             $requiredColumns = ['Название организации', 'Latitude', 'Longitude', 'ID','Адрес'];
@@ -185,7 +122,7 @@ class ParserColumbariumService
                     ];
 
                     if($columbariumRow[$columns['Логотип']]!='default') {
-                        if(!isBrokenLink($columbariumRow[$columns['Логотип']])){
+                        if($columbariumRow[$columns['Логотип']]!=null &&  !isBrokenLink($columbariumRow[$columns['Логотип']])){
                             $mortuaryData['img_url'] = $columbariumRow[$columns['Логотип']];
                         }else{
                             $mortuaryData['img_url'] = 'default';
@@ -195,6 +132,9 @@ class ParserColumbariumService
                     if ($importAction === 'create' && Columbarium::find($objectId)==null) {
                         $columbarium = Columbarium::create($columbariumData);
                         $createdColumbariums++;
+
+
+                        
 
                         // Обработка режима работы при создании
                         if(isset($columns['Режим работы']) && $columbariumRow[$columns['Режим работы']] != null) {
@@ -218,7 +158,7 @@ class ParserColumbariumService
                             
                             $urls_array = explode(', ', $columbariumRow[$columns['Фотографии']]);
                             foreach($urls_array as $img) {
-                                if(!isBrokenLink($img)){
+                                if($img!=null && !isBrokenLink($img)){
                                     ImageColumbarium::create([
                                         'img_url' => $img,
                                         'href_img' => 1,
@@ -261,6 +201,21 @@ class ParserColumbariumService
                                             'time_start_work' => $day['time_start_work'],
                                             'time_end_work' => $day['time_end_work'],
                                             'holiday' => $holiday,
+                                            'columbarium_id' => $columbarium->id,
+                                        ]);
+                                    }
+                                }
+                            }
+
+                            if(in_array('galerey', $updateFields) && isset($columns['Фотографии'])) {
+                                ImageColumbarium::where('columbarium_id', $columbarium->id)->delete();
+                                
+                                $urls_array = explode(', ', $columbariumRow[$columns['Фотографии']]);
+                                foreach($urls_array as $img) {
+                                    if($img!=null && !isBrokenLink($img)){
+                                        ImageColumbarium::create([
+                                            'img_url' => $img,
+                                            'href_img' => 1,
                                             'columbarium_id' => $columbarium->id,
                                         ]);
                                     }

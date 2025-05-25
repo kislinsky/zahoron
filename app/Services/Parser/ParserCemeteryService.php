@@ -126,8 +126,8 @@ class ParserCemeteryService
                 $sheet = $spreadsheet->getActiveSheet();
                 $titles = $sheet->toArray()[0];
                 $cemeteriesData = array_slice($sheet->toArray(), 1);
-                
-                $columns = array_flip($titles);
+                $filteredTitles = array_filter($titles, fn($value) => $value !== null);
+                $columns = array_flip($filteredTitles);
     
                 // Проверка наличия обязательных колонок
                 $requiredColumns = ['Наименование кладбища', 'Latitude', 'Longitude', 'кадастровый номер'];

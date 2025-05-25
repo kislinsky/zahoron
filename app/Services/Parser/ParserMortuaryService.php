@@ -118,8 +118,8 @@ class ParserMortuaryService
             $sheet = $spreadsheet->getActiveSheet();
             $titles = $sheet->toArray()[0];
             $mortuariesData = array_slice($sheet->toArray(), 1);
-            
-            $columns = array_flip($titles);
+            $filteredTitles = array_filter($titles, fn($value) => $value !== null);
+            $columns = array_flip($filteredTitles);
 
             // Проверка наличия обязательных колонок
             $requiredColumns = ['Название организации', 'Latitude', 'Longitude', 'ID','Адрес'];
@@ -196,7 +196,7 @@ class ParserMortuaryService
                     ];
 
                     if($mortuaryRow[$columns['Логотип']]!='default') {
-                        if(!isBrokenLink($mortuaryRow[$columns['Логотип']])){
+                        if($mortuaryRow[$columns['Логотип']]!=null && !isBrokenLink($mortuaryRow[$columns['Логотип']])){
                             $mortuaryData['img_url'] = $mortuaryRow[$columns['Логотип']];
                         }else{
                             $mortuaryData['img_url'] = 'default';
@@ -230,7 +230,7 @@ class ParserMortuaryService
                             
                             $urls_array = explode(', ', $mortuaryRow[$columns['Фотографии']]);
                             foreach($urls_array as $img) {
-                                if(!isBrokenLink($img)){
+                                if($img!=null && !isBrokenLink($img)){
                                     ImageMortuary::create([
                                         'img_url' => $img,
                                         'href_img' => 1,
@@ -272,6 +272,20 @@ class ParserMortuaryService
                                             'time_start_work' => $day['time_start_work'],
                                             'time_end_work' => $day['time_end_work'],
                                             'holiday' => $holiday,
+                                            'mortuary_id' => $mortuary->id,
+                                        ]);
+                                    }
+                                }
+                            }
+                            if(in_array('galerey', $updateFields) && isset($columns['Фотографии'])) {
+                                ImageMortuary::where('mortuary_id', $mortuary->id)->delete();
+                                
+                                $urls_array = explode(', ', $mortuaryRow[$columns['Фотографии']]);
+                                foreach($urls_array as $img) {
+                                    if($img!=null && !isBrokenLink($img)){
+                                        ImageMortuary::create([
+                                            'img_url' => $img,
+                                            'href_img' => 1,
                                             'mortuary_id' => $mortuary->id,
                                         ]);
                                     }

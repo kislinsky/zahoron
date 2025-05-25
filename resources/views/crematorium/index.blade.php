@@ -30,7 +30,10 @@
                 @if (isset($crematoriums) && $crematoriums->count()>0)
                     @foreach ($crematoriums as $crematorium)
                         <div  class="li_place">
-                            <a  href="{{ $crematorium->route() }}"  class="img_place"> <img src="{{$crematorium->urlImg()}}" alt=""> </a>
+                            <a  href="{{ $crematorium->route() }}"  class="img_place"> 
+                                <img class='white_img_org' src="{{$crematorium->defaultImg()[0]}}" alt="">   
+                                <img class='black_img_org' src="{{$crematorium->defaultImg()[1]}}" alt="">    
+                            </a>
                             <div class="content_place_mini">
                                 <a href="{{ $crematorium->route() }}" class="title_blue">{{$crematorium->title}}</a>
                                 <div class="text_black">г.{{$city->title}}</div>

@@ -59,9 +59,18 @@ class Mortuary extends Model
         if($this->href_img==0){
             return asset('storage/'.$this->img_file);
         }
+        if($this->img_url=='default'){
+            return 'default';
+        }
         return $this->img_url;
     }
 
+    function defaultImg(){
+        $url_white_theme=asset('storage/uploads/Theme=White (1).svg');
+        $url_black_theme=asset('storage/uploads/Theme=Black (1).svg');
+        return [$url_white_theme,$url_black_theme];
+    }
+    
     public function timeNow(){
         $day=addHoursAndGetDay($this->time_difference);
         $get_hours=WorkingHoursMortuary::where('mortuary_id',$this->id)->where('day',$day)->first();

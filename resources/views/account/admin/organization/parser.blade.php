@@ -44,37 +44,7 @@
 
                 </select>  
             </div>
-            <div class="block_input filter_update_organization">
-                <label >Регион (Край/Область)</label>
-                <select name="filter_region" id="filter_region" class="form-select">
-                    <option value="">-- Не выбран --</option>
-                    @foreach ($edges as $edge)
-                        <option value="{{ $edge->title }}">{{ $edge->title }}</option>
-                    @endforeach
-                    {{-- Добавьте остальные регионы по вашему усмотрению --}}
-                </select>
-            </div>
-            <div class="block_input filter_update_organization">
-                <label >Район/Округ</label>
-                <select name="filter_district" id="filter_district" class="form-select">
-                    <option value="">-- Не выбран --</option>
-                    @foreach ($areas as $area)
-                        <option value="{{ $area->title }}">{{ $area->title }}</option>
-                    @endforeach
-                    {{-- Другие округа / районы --}}
-                </select>
-            </div>
-            <div class="block_input filter_update_organization">
-                <label >Город</label>
-                    <select name="filter_city" id="filter_city" class="form-select">
-                        <option value="">-- Не выбран --</option>
-                        @foreach ($cities as $city)
-                            <option value="{{ $city->title }}">{{ $city->title }}</option>
-                        @endforeach
-                        {{-- Добавьте нужные города --}}
-                    </select>
-            </div>
-        
+           
                   
             @error('file')
                 <div class='error-text'>{{ $message }}</div>

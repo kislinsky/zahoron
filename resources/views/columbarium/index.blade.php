@@ -31,7 +31,10 @@
                 @if (isset($columbariums) && $columbariums->count()>0)
                     @foreach ($columbariums as $columbarium)
                         <div  class="li_place">
-                            <a  href="{{ $columbarium->route() }}"  class="img_place"> <img src="{{$columbarium->urlImg()}}" alt=""> </a>
+                            <a  href="{{ $columbarium->route() }}"  class="img_place"> 
+                                <img class='white_img_org' src="{{$columbarium->defaultImg()[0]}}" alt="">   
+                                <img class='black_img_org' src="{{$columbarium->defaultImg()[1]}}" alt="">    
+                            </a>
                             <div class="content_place_mini">
                                 <a href="{{ $columbarium->route() }}" class="title_blue">{{$columbarium->title}}</a>
                                 <div class="text_black">г.{{$city->title}}</div>

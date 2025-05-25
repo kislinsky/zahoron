@@ -30,7 +30,10 @@
                 @if (isset($mortuaries) && $mortuaries->count()>0)
                     @foreach ($mortuaries as $mortuary)
                         <div  class="li_place">
-                            <a  href="{{ $mortuary->route() }}"  class="img_place"> <img src="{{$mortuary->urlImg()}}" alt=""> </a>
+                            <a  href="{{ $mortuary->route() }}"  class="img_place"> 
+                                <img class='white_img_org' src="{{$mortuary->defaultImg()[0]}}" alt="">   
+                                <img class='black_img_org' src="{{$mortuary->defaultImg()[1]}}" alt="">    
+                            </a>
                             <div class="content_place_mini">
                                 <a href="{{ $mortuary->route() }}" class="title_blue">{{$mortuary->title}}</a>
                                 <div class="text_black">г.{{$city->title}}</div>
