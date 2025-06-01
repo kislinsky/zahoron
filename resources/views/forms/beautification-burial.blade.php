@@ -11,7 +11,7 @@ if(Auth::check()){
 }
 
 ?>
-
+@if(!versionProject())
 <div class="modal fade" id="beautification_form"  tabindex="-1" aria-labelledby="beautification_form" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -117,7 +117,7 @@ if(Auth::check()){
         </div>
     </div>
 </div>
-
+@endif
 
 
 

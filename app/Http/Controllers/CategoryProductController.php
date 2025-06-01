@@ -14,4 +14,12 @@ class CategoryProductController extends Controller
         ]);
         return CategoryProductService::ajaxCategoryChildrenUl($data['cat_id']);
     }
+
+    public static function ajaxCategoryChildrenUlForFilter(Request $request){
+        $data=request()->validate([
+            'category_id'=>["required"],
+        ]);
+        return CategoryProductService::ajaxCategoryChildrenUlForFilter($data['category_id']);
+    }
+    
 }

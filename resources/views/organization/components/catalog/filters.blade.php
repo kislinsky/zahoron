@@ -1,5 +1,117 @@
+<div class="flex_filters_organizaitons_mobile">
+    <div class="grid_two">
+        <!-- Фильтр категорий -->
+        <div class="block_filter_mobile">
+            <div class="text_gray_mini">Выберите категорию</div>
+            <div class="info_block">
+                <div class="text_black_bold category-title">
+                    
+                    @if($category && $category->parent)
+                        {{ $category->parent->title }}
+                    @elseif($cats->first()!=null)
+                        {{ $cats->first()->title }}
+                    @endif
+                </div>
+                <img src="{{ asset('storage/uploads/arrow_down_black.svg') }}" alt="" class="open_mobile_filter_select">
+            </div>
+            
+            <div class="mobile_filter_select category-select">
+                @if(isset($cats))
+                    @foreach ($cats as $cat)
+                        <div class="mobile_filter_option" data-id="{{ $cat->id }}">{{ $cat->title }}</div>
+                    @endforeach
+                @endif
+            </div>
+        </div>
+        
+        <!-- Фильтр подкатегорий -->
+        <div class="block_filter_mobile">
+            <div class="text_gray_mini">Выберите подкатегорию</div>
+            <div class="info_block">
+                <div class="text_black_bold subcategory-title">
+                    @if($category)
+                        {{ $category->title }}
+                    @elseif($cats->first()!=null)
+                        <?php $cats_children=childrenCategoryProducts($cats->first());?>
+                        @if($cats_children->first())
+                            {{ $cats_children->first()->title }}
+                        @endif
+                    @endif
+                </div>
+                <img src="{{ asset('storage/uploads/arrow_down_black.svg') }}" alt="" class="open_mobile_filter_select">
+            </div>
+            
+            <div class="mobile_filter_select subcategory-select">
+                @if($category && $category->parent)
+                    <?php $cats_children=childrenCategoryProducts($category->parent);?>
+                @elseif($cats->first()!=null)
+                    <?php $cats_children=childrenCategoryProducts($cats->first());?>
+                @endif
+                
+                @if(isset($cats_children) && count($cats_children)>0)
+                    @foreach ($cats_children as $cat_children)
+                        <div class="mobile_filter_option" data-id="{{ $cat_children->id }}" data-slug="{{ $cat_children->slug }}">{{ $cat_children->title }}</div>
+                    @endforeach
+                @endif
+            </div>
+        </div>
+    </div>
+    
+    <!-- Фильтр кладбищ (показывается для ритуальных услуг и благоустройства) -->
+    <div class="block_filter_mobile cemetery-filter">
+        <div class="text_gray_mini">Выберите кладбище</div>
+        <div class="info_block">
+            <div class="text_black_bold cemetery-title">
+                @if($cemetery_choose)
+                    {{ $cemetery_choose->title }}
+                @elseif($cemeteries->count()>0)
+                    {{ $cemeteries[0]->title }}
+                @endif
+            </div>
+            <img src="{{ asset('storage/uploads/arrow_down_black.svg') }}" alt="" class="open_mobile_filter_select">
+        </div>
+        
+        <div class="mobile_filter_select cemetery-select">
+            <div class="mobile_filter_option" data-id="0">Все кладбища</div>
+            @if($cemeteries->count()>0)
+                @foreach ($cemeteries as $cemetery)
+                    <div class="mobile_filter_option" data-id="{{ $cemetery->id }}">{{ $cemetery->title }}</div>
+                @endforeach
+            @endif
+        </div>
+    </div>
+    
+    <!-- Фильтр районов (показывается для организации поминок) -->
+    <div class="block_filter_mobile district-filter" style="display: none;">
+        <div class="text_gray_mini">Выберите район</div>
+        <div class="info_block">
+            <div class="text_black_bold district-title">
+                @if($district_choose)
+                    {{ $district_choose->title }}
+                @elseif($districts->count()>0)
+                    {{ $districts[0]->title }}
+                @else
+                    Все районы
+                @endif
+            </div>
+            <img src="{{ asset('storage/uploads/arrow_down_black.svg') }}" alt="" class="open_mobile_filter_select">
+        </div>
+        
+        <div class="mobile_filter_select district-select">
+            <div class="mobile_filter_option" data-id="0">Все районы</div>
+            @if($districts->count()>0)
+                @foreach ($districts as $district)
+                    <div class="mobile_filter_option" data-id="{{ $district->id }}">{{ $district->title }}</div>
+                @endforeach
+            @endif
+        </div>
+    </div>
+    
+</div>
+
+
 <div class="flex_filters_organizaitons">
-    <div class="filter_block_organization">
+    <div class="filter_block_organization filter_place">
         <label id='label_select_1' class='<?php if($district_choose==null || ($district_choose==null && $cemetery_choose==null)){echo 'active_label_select';}?>' for="">Выберите кладбище</label>
         <label id='label_select_2' class='<?php if($cemetery_choose==null && $district_choose!=null){echo 'active_label_select';}?>' for="">Выберите район</label>
 
@@ -36,7 +148,9 @@
 
     </label>
 
-    <div class="filter_block_organization">
+    <div class="filter_block_organization filter_work">
         <label class='checkbox <?php if(isset($filter_work) && $filter_work=='on'){echo 'active_checkbox';}?>'><input required value='1'  <?php if(isset($filter_work) && $filter_work=='on'){echo 'checked';}?> class='filter_work' type="checkbox" name="filter_work" id="filter_work">работает сейчас</label>
     </div>
 </div>
+
+

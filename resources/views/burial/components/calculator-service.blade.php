@@ -11,9 +11,17 @@
             @if ($services->count()>0)
                 @foreach ($services as $service)
                     <label class='checkbox'>
-                        <input price={{$service->getPriceForCemetery(selectCity()->cemeteries->first()->id)  }} type="checkbox" name="service[]" value='{{ $service->id }}'>
-                        <a href='{{ route('service.single',$service->id) }}'class="text_block_mini">{{ $service->title }}</a>
-                        <div class="title_middle">{{ $service->getPriceForCemetery(selectCity()->cemeteries->first()->id) }} ₽</div>
+                        @if (selectCity()->cemeteries->first()!=null)
+                            <input price={{$service->getPriceForCemetery(selectCity()->cemeteries->first()->id)  }} type="checkbox" name="service[]" value='{{ $service->id }}'>
+                            <a href='{{ route('service.single',$service->id) }}'class="text_block_mini">{{ $service->title }}</a>
+                            <div class="title_middle">{{ $service->getPriceForCemetery(selectCity()->cemeteries->first()->id) }} ₽</div>  
+                        @else
+                            <input price={{$service->price  }} type="checkbox" name="service[]" value='{{ $service->id }}'>
+                            <a href='{{ route('service.single',$service->id) }}'class="text_block_mini">{{ $service->title }}</a>
+                            <div class="title_middle">{{ $service->price }} ₽</div>   
+                        @endif
+                        
+                       
                     </label>
                 @endforeach
             @endif

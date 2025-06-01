@@ -105,9 +105,6 @@ class AdminRitualObjectsController extends Controller
     }
 
     public static function columbariumImport(Request $request){
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv'
-        ]);
         return AdminColumbariumService::import($request);
     }
 

@@ -26,8 +26,12 @@
                     <img src="{{asset('storage/uploads/Похороны-Photoroom 1.svg')}}" alt="" class="img_index_service">
                 </div>
                 <div class="grid_btn">
-                    <div class="blue_btn open_funeral_arrangements border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('organizacia-pohoron')}} руб.</div>
-                    <a href='{{route('organizations')}}'class="gray_btn">Каталог</A>
+                    @if(versionProject())
+                        <a href='{{route('organizations.category','organizacia-pohoron')}}' class="blue_btn border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('organizacia-pohoron')}} руб.</a>
+                    @else
+                        <div class="blue_btn open_funeral_arrangements border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('organizacia-pohoron')}} руб.</div>
+                    @endif
+                    <a href='{{route('organizations.category','organizacia-pohoron')}}'class="gray_btn">Каталог</A>
                 </div>
             </div>
 
@@ -40,8 +44,12 @@
                     <img class='img_black_theme'src="{{asset('storage/uploads/airplane 1_black.svg')}}" alt="" class="img_index_service">
                 </div>
                 <div class="grid_btn">
-                    <div class="blue_btn open_shipping_200 border_radius_btn" >Стоимость от {{minPriceCategoryProductOrganization('podgotovka-otpravki-gruza-200')}} руб.</div>
-                    <a href='{{route('organizations')}}'class="gray_btn">Каталог</A>
+                    @if(versionProject())
+                        <a href='{{route('organizations.category','podgotovka-otpravki-gruza-200')}}' class="blue_btn border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('podgotovka-otpravki-gruza-200')}} руб.</a>
+                    @else
+                        <div class="blue_btn open_funeral_arrangements border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('podgotovka-otpravki-gruza-200')}} руб.</div>
+                    @endif
+                    <a href='{{route('organizations.category','podgotovka-otpravki-gruza-200')}}'class="gray_btn">Каталог</A>
                 </div>
             </div>
 
@@ -77,7 +85,11 @@
                             <img class='img_black_theme mini_index_img'src="{{asset('storage/uploads/menu 1 (1)_black.svg')}}" alt="" class="img_index_service">
                             
                         </div>
-                        <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#dead_form">узнать</div>
+                        @if(versionProject())
+                            <a href='{{ route('mortuaries') }}'  class="blue_btn border_radius_btn" >узнать</a>
+                        @else
+                            <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#dead_form">узнать</div>
+                        @endif
                     </div>
                     <div class="gray_index_block_service">
                         <a href='{{ route('cemeteries') }}' class="title_li">Кладбища 
@@ -110,7 +122,11 @@
                             <img class='img_light_theme mini_index_img' src="{{asset('storage/uploads/Group_index.svg')}}" alt="" >
                             <img class='img_black_theme mini_index_img' src="{{asset('storage/uploads/menu 1 (3)_black.svg')}}" alt="" >
                         </div>
-                    <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#memorial_form">Оформить заказ</div>
+                        @if(versionProject())
+                            <div class="blue_btn border_radius_btn" >Оформить заказ</div>
+                        @else
+                            <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#memorial_form">Оформить заказ</div>
+                        @endif
                 </div>
                 <div class="gray_index_block_service">
                     <a href='{{route('marketplace.category','organizacia-kremacii')}}' class="title_li">Организация 
@@ -120,7 +136,11 @@
                         <img src="{{asset('storage/uploads/Group_cemetery.svg')}}" alt="" class="img_light_theme img_index_service">
                         <img src="{{asset('storage/uploads/_index_block_vblack.svg')}}" alt="" class="img_black_theme img_index_service">
                     </div>
-                    <div class="blue_btn border_radius_btn open_organization_cremation">Узнать цены</div>
+                    @if(versionProject())
+                        <a  href='{{ route('crematoriums') }}'class="blue_btn border_radius_btn">Узнать цены</a>
+                    @else
+                        <div class="blue_btn border_radius_btn open_organization_cremation">Узнать цены</div>
+                    @endif
                 </div>
             </div>
 
@@ -134,9 +154,15 @@
                     <img src="{{asset('storage/uploads/437956-mogila-narisovannaia-24-Photoroom 1.svg')}}" alt="" class="img_index_service">
                 </div>
                 <div class="flex_btn">
-                    <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#beautification_form">Запрос цен</div>
-                    <a href='{{route('marketplace.category','pamatniki')}}'class="blue_btn border_radius_btn">Памятники</a>
-                    <a href='{{route('marketplace.category','ogradki')}}'class="blue_btn border_radius_btn">Оградки</a>
+                    @if(versionProject())
+                        <div class="blue_btn border_radius_btn">Запрос цен</div>
+                        <a href='{{route('marketplace.category','pamatniki')}}'class="blue_btn border_radius_btn">Памятники</a>
+                        <a href='{{route('marketplace.category','ogradki')}}'class="blue_btn border_radius_btn">Оградки</a>                    
+                    @else
+                        <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#beautification_form">Запрос цен</div>
+                        <a href='{{route('marketplace.category','pamatniki')}}'class="blue_btn border_radius_btn">Памятники</a>
+                        <a href='{{route('marketplace.category','ogradki')}}'class="blue_btn border_radius_btn">Оградки</a>                    
+                    @endif
                 </div>
             </div>
         
@@ -197,7 +223,11 @@
                     услуг от 10 проверенных организаций 
                     без дополнительных услуг
                 </div>
-                <div class="blue_btn open_shipping_200">Сэкономить до 20 000 руб.</div>
+                @if(versionProject())
+                    <a href='{{ route('organizations') }}'class="blue_btn">Сэкономить до 20 000 руб.</a>
+                @else
+                    <div class="blue_btn open_shipping_200">Сэкономить до 20 000 руб.</div>
+                @endif
             </div>
         </div>
     </div>
@@ -220,7 +250,11 @@
                 <div class="title_text_block">Получите прямой расчёт
                     от 10 проверенных ритуальных агентств по низким ценам
                 </div>
-                <div class="blue_btn" data-bs-toggle="modal" data-bs-target="#beautification_form">Получить расчет</div>
+                @if(versionProject())
+                    <a href='{{ route('organizations.category','pamatniki') }}'class="blue_btn">Получить расчет</a>
+                @else
+                    <div class="blue_btn" data-bs-toggle="modal" data-bs-target="#beautification_form">Получить расчет</div>
+                @endif
             </div>
         </div>
     </div>

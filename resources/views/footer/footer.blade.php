@@ -11,14 +11,16 @@
             <img class='img_light_theme' src='{{asset('storage/uploads/zahoron.svg')}}'>
             <img class='img_black_theme' src="{{asset('storage/uploads/РИТУАЛреестр.svg')}}" alt=""> </a>
          <div class='pages'>
-            <a href='{{ route('page.search.burial.filter') }}'class="no_bac_btn">Герои </a>
-            <a href='{{ route('marketplace') }}'class="no_bac_btn">Маркетплейс</a>
-            <a href='{{ route('page.search.burial.request') }}'class="no_bac_btn">Заявка на поиск</a>
-            <a href='{{ route('our.products') }}'class="no_bac_btn">Наши работы</a>
-            <a href='{{ route('cemeteries') }}'class="no_bac_btn">Кладбища </a>
-            <a href='{{ route('news') }}'class="no_bac_btn">Статьи</a>
-            <a href='{{ route('contacts') }}'class="no_bac_btn">Контакты</a>
-            <a href='#'class="no_bac_btn">Партнерам</a>
+            <a href='{{ route('index') }}'class="no_bac_btn">Главная </a>
+            <div id_city_selected='{{selectCity()->id }}' class="no_bac_btn city_selected">
+                <img class='img_light_theme'src='{{ asset('storage/uploads/Group (22).svg') }}'>
+                <img class='img_black_theme'src='{{ asset('storage/uploads/Group_black_theme.svg') }}'>
+                {{ selectCity()->title }}
+            </div>
+            <a href='{{ route('search.burial') }}'class="no_bac_btn">Поиск могил </a>
+            <a href='{{route('organizations.category','organizacia-pohoron')}}'class="no_bac_btn">Ритуальные агенства</a>
+            <a href='{{route('pricelist')}}'class="no_bac_btn">Товары и услуги</a>
+
          </div>
        </div>
  

@@ -151,6 +151,7 @@ class ParserCrematoriumService
                         $crematoriumRow[$columns['Район'] ?? null],
                         $crematoriumRow[$columns['Населённый пункт'] ?? null]
                     );
+                    
                     $area = $objects['district'] ?? null;
                     $city = $objects['city'] ?? null;
 
@@ -175,9 +176,10 @@ class ParserCrematoriumService
                         'longitude' => $crematoriumRow[$columns['Longitude']],
                         'city_id' => $city->id,
                         'phone' => normalizePhone($crematoriumRow[$columns['Телефоны'] ?? null]),
-                        'content'=>$crematoriumRow[$columns['Описание'] ?? $crematoriumRow[$columns['SEO Описание']] ?? null],
+                        'content'=>$crematoriumRow[$columns['SEO Описание']] ?? $crematoriumRow[$columns['Описание']]  ,
                         'img_url' => $crematoriumRow[$columns['Логотип']] ?? 'default',
                         'href_img' => 1,
+                        'rating'=>$crematoriumRow[$columns['Рейтинг']],
                         'two_gis_link'=> $crematoriumRow[$columns['URL']]  ?? null,
                         'time_difference' => $time_difference,
                         'url_site' => $crematoriumRow[$columns['Сайт'] ?? null] ?? null,

@@ -88,7 +88,6 @@ class ParserMortuaryService
 
 
     public static function index($request) {
-      
     // Валидация входных данных
     $validated = $request->validate([
         'files' => 'required|array',
@@ -185,15 +184,16 @@ class ParserMortuaryService
                         'title' => $mortuaryRow[$columns['Название организации']],
                         'adres' => $mortuaryRow[$columns['Адрес']],
                         'width' => $mortuaryRow[$columns['Latitude']],
+                        'rating'=>$mortuaryRow[$columns['Рейтинг']],
                         'longitude' => $mortuaryRow[$columns['Longitude']],
                         'city_id' => $city->id,
                         'phone' => normalizePhone($mortuaryRow[$columns['Телефоны'] ?? null]),
-                        'content'=>$mortuaryRow[$columns['Описание'] ?? $mortuaryRow[$columns['SEO Описание']] ?? null],
+                        'content'=>$mortuaryRow[$columns['SEO Описание']] ??  $mortuaryRow[$columns['Описание']],
                         'img_url' => $mortuaryRow[$columns['Логотип']] ?? 'default',
                         'href_img' => 1,
                         'two_gis_link'=> $crematoriumRow[$columns['URL']]  ?? null,
                         'time_difference' => $time_difference,
-                        'url_site' => $mortuaryRow[$columns['Сайт'] ?? null] ?? null,
+                        'url_site' => $mortuaryRow[$columns['Сайт']] ?? null,
                     ];
 
                     if($mortuaryRow[$columns['Логотип']]!='default') {

@@ -478,6 +478,7 @@ class ParserOrganizationService
 
 
     public static function importPrices($request) {
+
         $files = $request->file('files_prices'); // Массив файлов
         $importWithUser = $request->input('import_with_user_prices', 0); // 0 или 1
         $updateEmptyToAsk = $request->input('update_empty_to_ask', 0); // 0 или 1
@@ -511,7 +512,6 @@ class ParserOrganizationService
             
     
                 $organization = Organization::find($orgId);
-                
                 if (!$organization) continue;
     
                 // Проверяем условие import_with_user
@@ -553,7 +553,7 @@ class ParserOrganizationService
                     ]);
                 } else {
                     ActivityCategoryOrganization::create([
-                        'price' => is_numeric($priceValue) ? (float)$priceValue : $priceValue,
+                        'price' => is_numeric((int)$priceValue) ? (float)$priceValue : $priceValue,
                         'category_children_id' => $categoryProduct->id,
                         'category_main_id' => $categoryProduct->parent_id,
                         'organization_id' => $organization->id,

@@ -17,10 +17,13 @@ class Service extends Model
     // В модели Service
     public function getPriceForCemetery($cemeteryId)
     {
-        $price=$this->priceService->where('cemetery_id', $cemeteryId)->first();
-        if($price==null){
-            return $this->price;
+        if($cemeteryId!=null){
+            $price=$this->priceService->where('cemetery_id', $cemeteryId)->first();
+            if($price==null){
+                return $this->price;
+            }
         }
+        
         return  $price->price;
     }
 

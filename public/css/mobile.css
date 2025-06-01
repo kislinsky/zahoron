@@ -105,6 +105,7 @@
         left: 14px;
     }
 
+
     .flex_footer .pages{
         width: 100%;
         flex-direction: column;
@@ -624,8 +625,37 @@
     .search_application .grid_3{
         grid-template-columns: 1fr;
     }
- 
- 
+    .flex_filters_organizaitons_mobile{
+        display: flex;
+    }
+
+    .organization_marketplace .sidebar{
+         display: none;
+    }
+    .filter_place{
+        display: none;
+    }
+    .filter_sort,.filter_work {
+        width: auto;
+        min-width: 230px;
+        justify-content: start;
+        padding: 8px;
+        font-size: 15px;
+    }
+    .filter_work{
+        padding: 0px;
+    }
+    .flex_filters_organizaitons{
+        gap: 10px;
+        align-items: start;
+
+    }
+    .one_block_market .ul_organizaiotns{
+        order: 3;
+    }
+    .one_block_market .block_table_price_orgniaztions{
+        order: 1;
+    }
 }
 
 @media(max-width:560px){
@@ -883,8 +913,11 @@
         font-size: 18px;
     }
     .open_faq{
-        width: 40px;
-        height: 40px;
+        width: 20px;
+        height: 10px;
+    }
+    .li_faq{
+        padding: 15px;
     }
     .li_faq .text_li{
         margin-top: 15px;
@@ -1184,6 +1217,10 @@
 }
 
 @media(max-width:430px){
+    .flex_li_service{
+        flex-wrap: wrap;
+    }
+
     .li_place{
         flex-wrap: wrap;
     }

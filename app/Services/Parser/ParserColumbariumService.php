@@ -114,9 +114,10 @@ class ParserColumbariumService
                         'longitude' => $columbariumRow[$columns['Longitude']],
                         'city_id' => $city->id,
                         'phone' => normalizePhone($columbariumRow[$columns['Телефоны'] ?? null]),
-                        'content'=>$columbariumRow[$columns['Описание'] ?? $columbariumRow[$columns['SEO Описание']] ?? null],
+                        'content'=>$columbariumRow[$columns['SEO Описание']]  ?? $columbariumRow[$columns['Описание']],
                         'img_url' => $columbariumRow[$columns['Логотип']] ?? 'default',
                         'href_img' => 1,
+                        'rating'=>$columbariumRow[$columns['Рейтинг']],
                         'two_gis_link'=> $crematoriumRow[$columns['URL']]  ?? null,
                         'time_difference' => $time_difference,
                         'url_site' => $columbariumRow[$columns['Сайт'] ?? null] ?? null,
@@ -237,6 +238,15 @@ class ParserColumbariumService
             $errors[] = "Ошибка при обработке файла {$file->getClientOriginalName()}: " . $e->getMessage();
         }
     }
+    $message = "Импорт  завершен. " .
+               "Файлов обработано: $createdColumbariums, " .
+               "Создано колумбариев: $createdColumbariums, " .
+               "Обновлено колумбариев: $createdColumbariums, " .
+               "Пропущено строк: $skippedRows";
+
+    return redirect()->back()
+        ->with("message_cart", $message)
+        ->withErrors($errors);
 }
 
     public static function importReviews($request){

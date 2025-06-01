@@ -4,11 +4,14 @@ let rewies_swiper = new Swiper(".rewies_swiper", {
     spaceBetween: 20,
   
     breakpoints: {
-      340: {
-        slidesPerView: 1,
+      450: {
+        slidesPerView: 2,
+      },
+      840: {
+        slidesPerView: 3,
       },
       1040: {
-        slidesPerView: 2,
+        slidesPerView: 4,
       },
      
     },
@@ -975,6 +978,9 @@ $(".cart_icon").click(function() {
   $(this).children('.children_icon_cart').toggleClass('children_icon_cart_active')
 
 });
+
+
+
 
 
 $('.open_form_call_organization').on( "click", function() {

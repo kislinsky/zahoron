@@ -259,75 +259,75 @@ function organizationPages(){
 
 
 function mobilePages(){
-    $catalog_organiazations=[['Каталог',route('organizations')],];
-    if(Auth::user() && (user()->role=='organization' || user()->role=='organization-provider' || user()->role=='admin')){
-        $catalog_organiazations[]=['Каталог поставщиков',route('organizations.provider')];
+    
+   $catalog_organizations = [['Каталог', route('organizations')]];
+
+    if (Auth::user() && (user()->role == 'organization' || user()->role == 'organization-provider' || user()->role == 'admin') && versionProject()) {
+        $catalog_organizations[] = ['Каталог поставщиков', route('organizations.provider')];
     }
-    return [
+
+    $pages = [
+        [
+            ['Главная', route('index')],
+        ],
         
         [
-            ['Главная',route('index')],
-            
-        ],
-    
-        [
-            ['Поиск могил',''],
-
+            ['Поиск могил', ''],
             [
-                ['Поиск',route('search.burial')],
-                ['Герои',route('page.search.burial.filter')],
-                ['Заявка на поиск',route('page.search.burial.request')],
+                ['Поиск', route('search.burial')],
+                ['Герои', route('page.search.burial.filter')],
+                ['Заявка на поиск', route('page.search.burial.request')],
             ],
         ],
-
-        [
-            ['Облогораживание',''],
-
+        
+        // Блок "Облогораживание" - показываем только если versionProject() != true
+        (!versionProject() ? [
+            ['Облогораживание', ''],
             [
-                ['Товары и услуги',route('pricelist')],
-                ['Маркетплэйс',route('marketplace')],
+                ['Товары и услуги', route('pricelist')],
+                ['Маркетплэйс', route('marketplace')],
+            ],
+        ] : null),
+        
+        [
+            ['Оформление заказа', ''],
+            [
+                ['Захоронений', route('checkout.burial')],
+                ['Услуг', route('checkout.service')],
             ],
         ],
-
+        
         [
-            ['Оформление заказа',''],
-
+            ['Места', ''],
             [
-                ['Захоронений',route('checkout.burial')],
-                ['Услуг',route('checkout.service')],
+                ['Кладбища', route('cemeteries')],
+                ['Морги', route('mortuaries')],
+                ['Колумбарии', route('columbariums')],
+                ['Крематории', route('crematoriums')],
             ],
         ],
-
-
+        
         [
-            ['Места',''],
-
-            [
-                ['Кладбища',route('cemeteries')],
-                ['Морги',route('mortuaries')],
-                ['Колумабрии',route('columbariums')],
-                ['Крематории',route('crematoriums')],
-            ],
+            ['Организации', ''],
+            $catalog_organizations,
         ],
-
-
+        
+        // Блок "Информация" - изменяем в зависимости от versionProject()
         [
-            ['Организации',''],
-
-            $catalog_organiazations,
+            ['Информация', ''],
+            array_filter([
+                (!versionProject() ? ['Наши работы', route('our.products')] : null),
+                (!versionProject() ? ['Статьи', route('news')] : null),
+                ['Контакты', route('contacts')],
+            ]),
         ],
-
-        [
-            ['Информация',''],
-
-            [
-                ['Наши работы',route('our.products')],
-                ['Статьи',route('news')],
-                ['Контакты',route('contacts')],
-            ],
-        ],
-       
+        
     ];
+
+    // Удаляем null-элементы, которые могли появиться из-за условных блоков
+    $pages = array_filter($pages);
+    
+    return $pages;
 }
 
 

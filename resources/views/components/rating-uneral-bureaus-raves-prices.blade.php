@@ -24,9 +24,9 @@ $organizations=organizationRatingUneralBureausRavesPrices($city->id);?>
                     @foreach($organizations as $organization)
                         @if($organization!=null)
                             <?php 
-                                $price_1=ActivityCategoryOrganization::where('category_children_id',29)->where('organization_id',$organization->id)->get()->first()->price;
-                                $price_2=ActivityCategoryOrganization::where('category_children_id',30)->where('organization_id',$organization->id)->get()->first()->price;
-                                $price_3=ActivityCategoryOrganization::where('category_children_id',39)->where('organization_id',$organization->id)->get()->first()->price;
+                                $price_1=ActivityCategoryOrganization::where('category_children_id',29)->where('organization_id',$organization->id)->get()->first()->priceHtml();
+                                $price_2=ActivityCategoryOrganization::where('category_children_id',30)->where('organization_id',$organization->id)->get()->first()->priceHtml();
+                                $price_3=ActivityCategoryOrganization::where('category_children_id',39)->where('organization_id',$organization->id)->get()->first()->priceHtml();
                             ?>
                             <tr>
                                 <td class='name_organization'>
@@ -39,9 +39,9 @@ $organizations=organizationRatingUneralBureausRavesPrices($city->id);?>
                                     <a href='{{$organization->route()}}'class="title_organization">Ритуальное агентство 
                                         "{{$organization->title}}"</a>
                                 </td>
-                                <td><div class="text_black">от {{$price_1}} р</div></td>
-                                <td><div class="text_black">от {{$price_2}} р</div></td>
-                                <td><div class="text_black">от {{$price_3}} р</div></td>
+                                <td><div class="text_black"> {{$price_1}} </div></td>
+                                <td><div class="text_black"> {{$price_2}} </div></td>
+                                <td><div class="text_black"> {{$price_3}} </div></td>
                             </tr>
                          @endif
                     @endforeach

@@ -36,7 +36,7 @@ $sorted_organizations=organizationratingEstablishmentsProvidingHallsHoldingComme
                                 </td>
                                 <?php $district=$organization->district;?>
                                 <td><div class="text_black">{{$district->title}}</div></td>
-                                <td><div class="text_black">от {{$sorted_organization->price}} р</div></td>
+                                <td><div class="text_black">от {{$sorted_organization->priceHtml()}} р</div></td>
                             </tr>
                         @endforeach
                 </tbody>

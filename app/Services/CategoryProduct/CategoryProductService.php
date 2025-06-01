@@ -16,4 +16,20 @@ class CategoryProductService {
         return view('components.category.children-product',compact('cats'));
     }
     
+    public static function ajaxCategoryChildrenUlForFilter($id) {
+        $cats = CategoryProduct::orderBy('id', 'desc')
+                            ->where('parent_id', $id)
+                            ->get();
+        
+        $result = [];
+        foreach ($cats as $cat) {
+            $result[] = [
+                'id' => $cat->id,
+                'title' => $cat->title,
+                'slug' => $cat->slug
+            ];
+        }
+        
+        return response()->json($result);
+    }
 }

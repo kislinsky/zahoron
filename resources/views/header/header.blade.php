@@ -88,14 +88,10 @@ use Artesaos\SEOTools\Facades\SEOTools;
                 <img class='img_black_theme' src='{{asset('storage/uploads/Vector 9_black.svg')}}'>
  
             </div>
-            <div class="btn_bac_gray open_children_pages">
-                Облагораживание
-                <div class='children_pages'>
-                    <a href='{{ route('pricelist') }}'class="btn_bac_gray <?php if($page==8){echo ' active_label_product';}?>">Товары и услуги </a>
-                    <a href='{{ route('marketplace') }}'class="btn_bac_gray <?php if($page==2){echo ' active_label_product';}?>">Маркетплейс</a>
-                </div>
-                <img class='img_light_theme' src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>
-                <img class='img_black_theme' src='{{asset('storage/uploads/Vector 9_black.svg')}}'>            </div>
+            <a href='{{route('organizations.category','organizacia-pohoron')}}'class="btn_bac_gray">Ритуальные агенства</a>
+            <a href='{{route('pricelist')}}'class="btn_bac_gray">Товары и услуги</a>
+
+            
            
         </div> 
        
@@ -113,19 +109,33 @@ use Artesaos\SEOTools\Facades\SEOTools;
     <div class="container">
         <div class="ul_pages_header_big">
             <div class="block_pages_header_big">
-                <div class="title_li">Оформление заказа</div>
+                <div class="title_li">Поиск и уход</div>
                 <ul>
-                  
                     <li>
-                        <a class='text_black' href='{{ route('checkout.burial') }}'>Захоронений</a>
+                        <a href='{{ route('search.burial') }}'class="text_black">Поиск могил </a>
                     </li>
                     <li>
-                        <a class='text_black' href='{{ route('checkout.service') }}'>Услуг</a>
+                        <a href='{{ route('page.search.burial.filter') }}'class="text_black">Герои </a>
+                    </li>
+                    <li>
+                        <a href='{{ route('page.search.burial.request') }}'class="text_black">Заявка на поиск </a>
                     </li>
                 </ul>
             </div>
             <div class="block_pages_header_big">
-                <div class="title_li">Места</div>
+                <div class="title_li">Ритуальные услуги</div>
+                <ul>
+                    <li>
+                        <a class='text_black' href='{{route('organizations.category','organizacia-pohoron')}}'>Ритуальные агенства</a>
+                    </li>
+                    <li>
+                        <a class='text_black' href='{{ route('pricelist') }}'>Ритуальные товары, услуги</a>
+                    </li>
+                    
+                </ul>
+            </div>
+             <div class="block_pages_header_big">
+                <div class="title_li">Ритуальные обьекты</div>
                 <ul>
                     <li>
                         <a class='text_black' href='{{ route('cemeteries') }}'>Кладбища</a>
@@ -139,19 +149,6 @@ use Artesaos\SEOTools\Facades\SEOTools;
                     <li>
                         <a class='text_black' href='{{ route('crematoriums') }}'>Крематории</a>
                     </li>
-                </ul>
-            </div>
-            <div class="block_pages_header_big">
-                <div class="title_li">Организации</div>
-                <ul>
-                    <li>
-                        <a class='text_black' href='{{ route('organizations') }}'>Каталог</a>
-                    </li>
-                    @if(@$user->role=='organization' || @$user->role=='organization-provider' || @$user->role=='admin')
-                        <li>
-                            <a class='text_black' href='{{ route('organizations.provider') }}'>Каталог поставщиков</a>
-                        </li>
-                    @endif
                 </ul>
             </div>
             <div class="block_pages_header_big">
@@ -173,10 +170,18 @@ use Artesaos\SEOTools\Facades\SEOTools;
 </div>
 
 <div class="mobile_header_mini_info">
-    <div data-bs-toggle="modal" data-bs-target="#beautification_form" class="btn_border_blue">
-        <img src="{{asset('storage/uploads/Frame (3).svg')}}" alt="">
-        Облагородить 
-    </div>
+    @if(versionProject())
+        <div class="btn_border_blue">
+            <img src="{{asset('storage/uploads/Frame (3).svg')}}" alt="">
+            Облагородить 
+        </div>
+    @else
+        <div data-bs-toggle="modal" data-bs-target="#beautification_form" class="btn_border_blue">
+            <img src="{{asset('storage/uploads/Frame (3).svg')}}" alt="">
+            Облагородить 
+        </div>
+    @endif
+    
     <div class="flex_icon_header">
         <a href='{{ route('login') }}' class='icon_header icon_login'><img class='img_black_theme' src='{{asset('storage/uploads/Group 1_black_theme.svg')}}'><img class='img_light_theme' src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
         <a class='gray_circle icon_header open_mobile_header' >

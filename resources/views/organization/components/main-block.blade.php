@@ -40,8 +40,11 @@
                         {!!$organization->ulWorkingDays()!!}
                     </div>
                 </div>
-                <div class="text_black">{{$organization->adres}}</div>
-            </div>
+                <a href='https://yandex.ru/maps/?pt={{ $organization->longitude }},{{ $organization->width }}&z=15&text={{ urlencode("$organization->title\n$organization->adres") }}'
+                class="text_black"
+                target="_etarget">
+                    {{ $organization->adres }}
+                </a>            </div>
             <div class="flex_info_main_single_organization">
                 <div class="text_black">Ежедневно</div>
             </div>
@@ -49,7 +52,11 @@
         </div>
         <div class="flex_center_single_organization">
             <div class="btn_border_gray">{{$organization->openOrNot()}}</div>
-            <div id_organization="{{ $organization->id }}" class="mini_text_blue open_form_call_organization" >Вы владелец?</div>
+            @if(versionProject())
+                <div id_organization="{{ $organization->id }}" class="mini_text_blue" >Вы владелец?</div>
+            @else
+                <div id_organization="{{ $organization->id }}" class="mini_text_blue open_form_call_organization" >Вы владелец?</div>
+            @endif
         </div>
     </div>
     <div class="flex_btn_single_organization">
