@@ -397,8 +397,11 @@ function organizationRatingFuneralAgenciesPrices($city){
         $price_2=ActivityCategoryOrganization::where('category_children_id',33)->where('organization_id',$organization->id)->get();
         $price_3=ActivityCategoryOrganization::where('category_children_id',34)->where('organization_id',$organization->id)->get();
         
+        if($price_1->first()!=null && $price_2->first()!=null && $price_3->first()!=null){
             $organization->all_price=$price_1->first()->price+$price_2->first()->price+$price_3->first()->price;
             return $organization;
+        }
+         
         
 
 

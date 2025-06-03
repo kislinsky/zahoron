@@ -46,7 +46,7 @@
             </div>
            
                   
-            @error('file')
+            @error('files')
                 <div class='error-text'>{{ $message }}</div>
             @enderror
             <div class="col-auto margin_top_20">

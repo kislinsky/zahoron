@@ -156,8 +156,8 @@
                 <div class="flex_btn">
                     @if(versionProject())
                         <div class="blue_btn border_radius_btn">Запрос цен</div>
-                        <a href='{{route('marketplace.category','pamatniki')}}'class="blue_btn border_radius_btn">Памятники</a>
-                        <a href='{{route('marketplace.category','ogradki')}}'class="blue_btn border_radius_btn">Оградки</a>                    
+                        <div class="blue_btn border_radius_btn">Памятники</div>
+                        <div class="blue_btn border_radius_btn">Оградки</div>                    
                     @else
                         <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#beautification_form">Запрос цен</div>
                         <a href='{{route('marketplace.category','pamatniki')}}'class="blue_btn border_radius_btn">Памятники</a>
@@ -192,7 +192,11 @@
                         <div class="mini_text">Вам предоставят цены на кремацию от более 10 ритуальных агентств {{$city->title}} для выбора лучшего варианта.</div>
                         <img src="{{asset('storage/uploads/Group_cemetery.svg')}}" alt="" class="img_index_service">
                     </div>
-                    <div class="blue_btn border_radius_btn open_organization_cremation">Узнать цены</div>
+                     @if(versionProject())
+                        <a  href='{{ route('crematoriums') }}'class="blue_btn border_radius_btn">Узнать цены</a>
+                    @else
+                        <div class="blue_btn border_radius_btn open_organization_cremation">Узнать цены</div>
+                    @endif
                 </div>
             </div>
 
@@ -383,18 +387,18 @@
 
 <script>
     
-function showWelcomeMessage() {
-  // Проверяем, есть ли уже установленный флаг
-  if (!sessionStorage.getItem('hasVisited')) {
-      // Если нет, показываем уведомление
-      $('.city_question').css('display','flex');
+// function showWelcomeMessage() {
+//   // Проверяем, есть ли уже установленный флаг
+//   if (!sessionStorage.getItem('hasVisited')) {
+//       // Если нет, показываем уведомление
+//       $('.city_question').css('display','flex');
 
-      // Устанавливаем флаг, что пользователь уже посещал сайт в этой сессии
-      sessionStorage.setItem('hasVisited', 'true');
-  }
-}
-// Вызываем функцию при загрузке страницы
-window.onload = showWelcomeMessage;
+//       // Устанавливаем флаг, что пользователь уже посещал сайт в этой сессии
+//       sessionStorage.setItem('hasVisited', 'true');
+//   }
+// }
+// // Вызываем функцию при загрузке страницы
+// window.onload = showWelcomeMessage;
 
 </script>
 

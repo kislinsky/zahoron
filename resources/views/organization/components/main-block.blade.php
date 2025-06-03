@@ -40,7 +40,7 @@
                         {!!$organization->ulWorkingDays()!!}
                     </div>
                 </div>
-                <a href='https://yandex.ru/maps/?pt={{ $organization->longitude }},{{ $organization->width }}&z=15&text={{ urlencode("$organization->title\n$organization->adres") }}'
+                <a href='{{ $organization->two_gis_link }}'
                 class="text_black"
                 target="_etarget">
                     {{ $organization->adres }}

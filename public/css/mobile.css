@@ -517,6 +517,9 @@
         justify-content: space-between;
         gap: 10px;
     }
+    .li_organization .info_li_org_mobile.li_org_mobile:first-child{
+        justify-content: start;
+    }
     .li_flex_btn_organization{
         flex-direction: row;
         gap: 15px;

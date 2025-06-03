@@ -20,6 +20,7 @@ class AdminOrganizationController extends Controller
         'files' => 'required',
         'files.*' => 'required|mimes:xlsx,xls,csv'
         ]);
+
         return AdminOrganizationIndexService::import($request);
     }
 

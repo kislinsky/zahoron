@@ -66,18 +66,20 @@ class ParserOrganizationService
                 $nameType = $organization[$columns['Вид деятельности']] ?? null;
                 $urlSite = $organization[$columns['Сайт']] ?? null;
     
-                if(empty($cityName)) continue;
+                if($importType != 'update') {
+                    if(empty($cityName)) continue;
 
-                $objects=linkRegionDistrictCity($region,$district,$cityName);
+                    $objects=linkRegionDistrictCity($region,$district,$cityName);
 
-                $area = $objects['district'];
-                $city =  $objects['city'];
+                    $area = $objects['district'];
+                    $city =  $objects['city'];
+                }
 
                 // Пропускаем если нет ID
                 if(empty($orgId)) continue;
         
                 // Ищем организацию в базе с загрузкой связанных данных
-                $existingOrg = Organization::with(['city', 'city.area'])->find($orgId);
+                $existingOrg = Organization::find($orgId);
                 
                 // Применяем фильтры по местоположению
                 if ($filterRegion || $filterDistrict || $filterCity) {

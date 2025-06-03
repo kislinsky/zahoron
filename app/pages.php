@@ -260,11 +260,11 @@ function organizationPages(){
 
 function mobilePages(){
     
-   $catalog_organizations = [['Каталог', route('organizations')]];
+   $catalog_organizations = [['Ритуальные агенства', route('organizations')],['Ритуальные товары,услуги', route('pricelist')]];
 
-    if (Auth::user() && (user()->role == 'organization' || user()->role == 'organization-provider' || user()->role == 'admin') && versionProject()) {
-        $catalog_organizations[] = ['Каталог поставщиков', route('organizations.provider')];
-    }
+    // if (Auth::user() && (user()->role == 'organization' || user()->role == 'organization-provider' || user()->role == 'admin') && versionProject()) {
+    //     $catalog_organizations[] = ['Каталог поставщиков', route('organizations.provider')];
+    // }
 
     $pages = [
         [
@@ -289,16 +289,16 @@ function mobilePages(){
             ],
         ] : null),
         
-        [
+        (!versionProject() ? [
             ['Оформление заказа', ''],
             [
                 ['Захоронений', route('checkout.burial')],
                 ['Услуг', route('checkout.service')],
             ],
-        ],
+        ] : null),
         
         [
-            ['Места', ''],
+            ['Ритуальные обьекты', ''],
             [
                 ['Кладбища', route('cemeteries')],
                 ['Морги', route('mortuaries')],
@@ -308,7 +308,7 @@ function mobilePages(){
         ],
         
         [
-            ['Организации', ''],
+            ['Ритуальные услуги', ''],
             $catalog_organizations,
         ],
         
