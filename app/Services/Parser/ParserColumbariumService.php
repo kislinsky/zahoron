@@ -49,101 +49,92 @@ class ParserColumbariumService
             $filteredTitles = array_filter($titles, fn($value) => $value !== null);
             $columns = array_flip($filteredTitles);
 
-            // Проверка наличия обязательных колонок
-            $requiredColumns = ['Название организации', 'Latitude', 'Longitude', 'ID','Адрес'];
-            foreach ($requiredColumns as $col) {
-                if (!isset($columns[$col])) {
-                    continue 2;
-                }
-            }
-
             foreach ($columbariumsData as $rowIndex => $columbariumRow) {
                 try {
-                    // Проверка обязательных полей
-                    if (empty($columbariumRow[$columns['Название организации']])) {
+                    // Получаем ID если есть колонка ID
+                    $objectId = isset($columns['ID']) ? rtrim($columbariumRow[$columns['ID']] ?? '', '!') : null;
+
+                    // Для режима update пропускаем если нет ID
+                    if ($importAction === 'update' && !$objectId) {
                         $skippedRows++;
                         continue;
                     }
 
-                    if (empty($columbariumRow[$columns['ID']])) {
-                        $skippedRows++;
-                        continue;
-                    }
-
-                     if (empty($columbariumRow[$columns['Адрес']])) {
-                        $skippedRows++;
-                        continue;
-                    }
-                    // Проверка координат
-                    if (empty($columbariumRow[$columns['Latitude']])) {
-                        $skippedRows++;
-                        continue;
-                    }
-
-                    if (empty($columbariumRow[$columns['Longitude']])) {
-                        $skippedRows++;
-                        continue;
-                    }
-
+                    // Получаем связанные объекты (регион, район, город)
                     $objects = linkRegionDistrictCity(
-                        $columbariumRow[$columns['Регион'] ?? null],
-                        $columbariumRow[$columns['Район'] ?? null],
-                        $columbariumRow[$columns['Населённый пункт'] ?? null]
+                        $columbariumRow[$columns['Регион'] ?? null] ?? null,
+                        $columbariumRow[$columns['Район'] ?? null] ?? null,
+                        $columbariumRow[$columns['Населённый пункт'] ?? null] ?? null
                     );
+                    
                     $area = $objects['district'] ?? null;
                     $city = $objects['city'] ?? null;
 
-                    if (!$city || !$area) {
-                        $skippedRows++;
-                        continue;
-                    }
-
-                    $objectId = rtrim($columbariumRow[$columns['ID']] ?? '', '!');
-
+                    // Получаем разницу во времени если есть координаты
                     $time_difference = $city->utc_offset ?? null;
-                    if($time_difference==null && env('API_WORK')=='true'){
-                        $time_difference=differencetHoursTimezone(getTimeByCoordinates($columbariumRow[$columns['Latitude']],$columbariumRow[$columns['Longitude']])['timezone']);
-                        $city->update(['utc_offset'=> $time_difference]);
+                    if ($time_difference == null && env('API_WORK') == 'true' && 
+                        isset($columns['Latitude']) && isset($columns['Longitude']) &&
+                        !empty($columbariumRow[$columns['Latitude']]) && !empty($columbariumRow[$columns['Longitude']])) {
+                        $time_difference = differencetHoursTimezone(getTimeByCoordinates(
+                            $columbariumRow[$columns['Latitude']], 
+                            $columbariumRow[$columns['Longitude']]
+                        )['timezone']);
+                        
+                        if ($city) {
+                            $city->update(['utc_offset' => $time_difference]);
+                        }
                     }
 
+                    // Формируем данные для колумбария
                     $columbariumData = [
-                        'id' => $objectId,
-                        'title' => $columbariumRow[$columns['Название организации']],
-                        'adres' => $columbariumRow[$columns['Адрес']],
-                        'width' => $columbariumRow[$columns['Latitude']],
-                        'longitude' => $columbariumRow[$columns['Longitude']],
-                        'city_id' => $city->id,
-                        'phone' => normalizePhone($columbariumRow[$columns['Телефоны'] ?? null]),
-                        'content'=>$columbariumRow[$columns['SEO Описание']]  ?? $columbariumRow[$columns['Описание']],
-                        'img_url' => $columbariumRow[$columns['Логотип']] ?? 'default',
+                        'title' => $columbariumRow[$columns['Название организации'] ?? null] ?? null,
+                        'adres' => $columbariumRow[$columns['Адрес'] ?? null] ?? null,
+                        'width' => $columbariumRow[$columns['Latitude'] ?? null] ?? null,
+                        'rating' => $columbariumRow[$columns['Рейтинг'] ?? null] ?? null,
+                        'longitude' => $columbariumRow[$columns['Longitude'] ?? null] ?? null,
+                        'city_id' => $city->id ?? null,
+                        'phone' => normalizePhone($columbariumRow[$columns['Телефоны'] ?? null] ?? null),
+                        'content' => $columbariumRow[$columns['SEO Описание'] ?? null] ?? ($columbariumRow[$columns['Описание'] ?? null] ?? null),
+                        'img_url' => $columbariumRow[$columns['Логотип'] ?? null] ?? 'default',
                         'href_img' => 1,
-                        'rating'=>$columbariumRow[$columns['Рейтинг']],
-                        'two_gis_link'=> $crematoriumRow[$columns['URL']]  ?? null,
+                        'two_gis_link' => $columbariumRow[$columns['URL'] ?? null] ?? null,
                         'time_difference' => $time_difference,
                         'url_site' => $columbariumRow[$columns['Сайт'] ?? null] ?? null,
                     ];
 
-                    if($columbariumRow[$columns['Логотип']]!='default') {
-                        if($columbariumRow[$columns['Логотип']]!=null &&  !isBrokenLink($columbariumRow[$columns['Логотип']])){
-                            $mortuaryData['img_url'] = $columbariumRow[$columns['Логотип']];
-                        }else{
-                            $mortuaryData['img_url'] = 'default';
+                    // Обработка логотипа
+                    if (isset($columns['Логотип']) && $columbariumRow[$columns['Логотип']] != 'default') {
+                        if ($columbariumRow[$columns['Логотип']] != null && !isBrokenLink($columbariumRow[$columns['Логотип']])) {
+                            $columbariumData['img_url'] = $columbariumRow[$columns['Логотип']];
+                        } else {
+                            $columbariumData['img_url'] = 'default';
                         }
                     }
 
-                    if ($importAction === 'create' && Columbarium::find($objectId)==null) {
+                    if ($importAction === 'create') {
+                        // Для создания - если нет ID, пропускаем
+                        if (!$objectId) {
+                            $skippedRows++;
+                            continue;
+                        }
+
+                        // Проверяем, существует ли уже запись с таким ID
+                        if (Columbarium::find($objectId)) {
+                            $skippedRows++;
+                            continue;
+                        }
+
+                        // Создаем новую запись
+                        $columbariumData['id'] = $objectId;
                         $columbarium = Columbarium::create($columbariumData);
                         $createdColumbariums++;
 
-
-                        
-
-                        // Обработка режима работы при создании
-                        if(isset($columns['Режим работы']) && $columbariumRow[$columns['Режим работы']] != null) {
+                        // Обработка режима работы
+                        if (isset($columns['Режим работы']) && !empty($columbariumRow[$columns['Режим работы']])) {
                             $workHours = $columbariumRow[$columns['Режим работы']];
                             $days = parseWorkingHours($workHours);
                             
-                            foreach($days as $day) {
+                            foreach ($days as $day) {
                                 $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
                                 WorkingHoursColumbarium::create([
                                     'day' => $day['day'],
@@ -155,12 +146,11 @@ class ParserColumbariumService
                             }
                         }
 
-                        if(isset($columns['Фотографии']) && $columbariumRow[$columns['Фотографии']] != null) {
-                            ImageColumbarium::where('columbarium_id', $columbarium->id)->delete();
-                            
+                        // Обработка фотографий
+                        if (isset($columns['Фотографии']) && !empty($columbariumRow[$columns['Фотографии']])) {
                             $urls_array = explode(', ', $columbariumRow[$columns['Фотографии']]);
-                            foreach($urls_array as $img) {
-                                if($img!=null && !isBrokenLink($img)){
+                            foreach ($urls_array as $img) {
+                                if ($img != null && !isBrokenLink($img)) {
                                     ImageColumbarium::create([
                                         'img_url' => $img,
                                         'href_img' => 1,
@@ -169,52 +159,50 @@ class ParserColumbariumService
                                 }
                             }
                         }
-
-
                     } elseif ($importAction === 'update') {
+                        // Для обновления - находим существующую запись
                         $columbarium = Columbarium::find($objectId);
-                        
+           
                         if ($columbarium) {
-                            $updateData = [];
+                            // Обновляем только указанные поля
+                            $dataToUpdate = [];
                             foreach ($updateFields as $field) {
-                                if (isset($columbariumData[$field])) {
-                                    $updateData[$field] = $columbariumData[$field];
+                                if (array_key_exists($field, $columbariumData) && !is_null($columbariumData[$field])) {
+                                    $dataToUpdate[$field] = $columbariumData[$field];
                                 }
                             }
-                            
-                            if (!empty($updateData)) {
-                                $columbarium->update($updateData);
+
+                            if (!empty($dataToUpdate)) {
+                                $columbarium->update($dataToUpdate);
                                 $updatedColumbariums++;
                             }
 
                             // Обработка режима работы при обновлении
-                            if(in_array('working_hours', $updateFields) && isset($columns['Режим работы'])) {
-                                $workHours = $columbariumRow[$columns['Режим работы']] ?? null;
-                                if($workHours) {
-                                    // Удаляем старые записи о рабочем времени
-                                    WorkingHoursColumbarium::where('columbarium_id', $columbarium->id)->delete();
-                                    
-                                    // Создаем новые записи
-                                    $days = parseWorkingHours($workHours);
-                                    foreach($days as $day) {
-                                        $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
-                                        WorkingHoursColumbarium::create([
-                                            'day' => $day['day'],
-                                            'time_start_work' => $day['time_start_work'],
-                                            'time_end_work' => $day['time_end_work'],
-                                            'holiday' => $holiday,
-                                            'columbarium_id' => $columbarium->id,
-                                        ]);
-                                    }
+                            if (in_array('working_hours', $updateFields) && isset($columns['Режим работы']) && !empty($columbariumRow[$columns['Режим работы']])) {
+                                WorkingHoursColumbarium::where('columbarium_id', $columbarium->id)->delete();
+                                
+                                $workHours = $columbariumRow[$columns['Режим работы']];
+                                $days = parseWorkingHours($workHours);
+                                
+                                foreach ($days as $day) {
+                                    $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
+                                    WorkingHoursColumbarium::create([
+                                        'day' => $day['day'],
+                                        'time_start_work' => $day['time_start_work'],
+                                        'time_end_work' => $day['time_end_work'],
+                                        'holiday' => $holiday,
+                                        'columbarium_id' => $columbarium->id,
+                                    ]);
                                 }
                             }
 
-                            if(in_array('galerey', $updateFields) && isset($columns['Фотографии'])) {
+                            // Обработка фотографий при обновлении
+                            if (in_array('galerey', $updateFields) && isset($columns['Фотографии']) && !empty($columbariumRow[$columns['Фотографии']])) {
                                 ImageColumbarium::where('columbarium_id', $columbarium->id)->delete();
                                 
                                 $urls_array = explode(', ', $columbariumRow[$columns['Фотографии']]);
-                                foreach($urls_array as $img) {
-                                    if($img!=null && !isBrokenLink($img)){
+                                foreach ($urls_array as $img) {
+                                    if ($img != null && !isBrokenLink($img)) {
                                         ImageColumbarium::create([
                                             'img_url' => $img,
                                             'href_img' => 1,
@@ -238,10 +226,11 @@ class ParserColumbariumService
             $errors[] = "Ошибка при обработке файла {$file->getClientOriginalName()}: " . $e->getMessage();
         }
     }
-    $message = "Импорт  завершен. " .
-               "Файлов обработано: $createdColumbariums, " .
+
+    $message = "Импорт колумбариев завершен. " .
+               "Файлов обработано: $processedFiles, " .
                "Создано колумбариев: $createdColumbariums, " .
-               "Обновлено колумбариев: $createdColumbariums, " .
+               "Обновлено колумбариев: $updatedColumbariums, " .
                "Пропущено строк: $skippedRows";
 
     return redirect()->back()

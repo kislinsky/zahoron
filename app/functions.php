@@ -917,13 +917,22 @@ function slug($item){
 }
 
 
-function slugOrganization($item){
-    $generator = new SlugGenerator(); 
-    $slug=$generator->generate($item); 
-    $orgainizations=Organization::where('slug',$slug)->get();
-    if($orgainizations->count()>0){
-        $slug=$slug.'-'.$orgainizations->count()+1;
+function slugOrganization($item, $excludeId = null) {
+    $generator = new SlugGenerator();
+    $baseSlug = $generator->generate($item);
+    $slug = $baseSlug;
+    
+    $count = 1;
+    
+    while (Organization::when($excludeId, function($query) use ($excludeId) {
+                $query->where('id', '!=', $excludeId);
+            })
+            ->where('slug', $slug)
+            ->exists()) {
+        $slug = $baseSlug . '-' . $count;
+        $count++;
     }
+    
     return $slug;
 }
 

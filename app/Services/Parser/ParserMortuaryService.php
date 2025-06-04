@@ -87,8 +87,8 @@ class ParserMortuaryService
 
 
 
-    public static function index($request) {
-    // Валидация входных данных
+  public static function index($request) {
+    // Валидация только файлов и типа импорта
     $validated = $request->validate([
         'files' => 'required|array',
         'files.*' => 'file|mimes:xlsx,xls',
@@ -120,102 +120,94 @@ class ParserMortuaryService
             $filteredTitles = array_filter($titles, fn($value) => $value !== null);
             $columns = array_flip($filteredTitles);
 
-            // Проверка наличия обязательных колонок
-            $requiredColumns = ['Название организации', 'Latitude', 'Longitude', 'ID','Адрес'];
-            foreach ($requiredColumns as $col) {
-                if (!isset($columns[$col])) {
-                    continue 2;
-                }
-            }
-           
-
             foreach ($mortuariesData as $rowIndex => $mortuaryRow) {
                 try {
-                    // Проверка обязательных полей
-                    if (empty($mortuaryRow[$columns['Название организации']])) {
+                    // Получаем ID если есть колонка ID
+                    $objectId = isset($columns['ID']) ? rtrim($mortuaryRow[$columns['ID']] ?? '', '!') : null;
+
+                    // Для режима update пропускаем если нет ID
+                    if ($importAction === 'update' && !$objectId) {
                         $skippedRows++;
                         continue;
                     }
 
-                    if (empty($mortuaryRow[$columns['Адрес']])) {
-                        $skippedRows++;
-                        continue;
-                    }
-
-                    if (empty($mortuaryRow[$columns['ID']])) {
-                        $skippedRows++;
-                        continue;
-                    }
-
-                    // Проверка координат
-                    if (empty($mortuaryRow[$columns['Latitude']])) {
-                        $skippedRows++;
-                        continue;
-                    }
-
-                    if (empty($mortuaryRow[$columns['Longitude']])) {
-                        $skippedRows++;
-                        continue;
-                    }
-
+                    // Получаем связанные объекты (регион, район, город)
                     $objects = linkRegionDistrictCity(
-                        $mortuaryRow[$columns['Регион'] ?? null],
-                        $mortuaryRow[$columns['Район'] ?? null],
-                        $mortuaryRow[$columns['Населённый пункт'] ?? null]
+                        $mortuaryRow[$columns['Регион'] ?? null] ?? null,
+                        $mortuaryRow[$columns['Район'] ?? null] ?? null,
+                        $mortuaryRow[$columns['Населённый пункт'] ?? null] ?? null
                     );
+                    
                     $area = $objects['district'] ?? null;
                     $city = $objects['city'] ?? null;
 
-                    if (!$city || !$area) {
-                        $skippedRows++;
-                        continue;
-                    }
-
-                    $objectId = rtrim($mortuaryRow[$columns['ID']] ?? '', '!');
-
+                    // Получаем разницу во времени если есть координаты
                     $time_difference = $city->utc_offset ?? null;
-                    if($time_difference==null && env('API_WORK')=='true'){
-                        $time_difference=differencetHoursTimezone(getTimeByCoordinates($mortuaryRow[$columns['Latitude']],$mortuaryRow[$columns['Longitude']])['timezone']);
-                        $city->update(['utc_offset'=> $time_difference]);
+                    if ($time_difference == null && env('API_WORK') == 'true' && 
+                        isset($columns['Latitude']) && isset($columns['Longitude']) &&
+                        !empty($mortuaryRow[$columns['Latitude']]) && !empty($mortuaryRow[$columns['Longitude']])) {
+                        $time_difference = differencetHoursTimezone(getTimeByCoordinates(
+                            $mortuaryRow[$columns['Latitude']], 
+                            $mortuaryRow[$columns['Longitude']]
+                        )['timezone']);
+                        
+                        if ($city) {
+                            $city->update(['utc_offset' => $time_difference]);
+                        }
                     }
 
+                    // Формируем данные для морга
                     $mortuaryData = [
-                        'id'=>$objectId,
-                        'title' => $mortuaryRow[$columns['Название организации']],
-                        'adres' => $mortuaryRow[$columns['Адрес']],
-                        'width' => $mortuaryRow[$columns['Latitude']],
-                        'rating'=>$mortuaryRow[$columns['Рейтинг']],
-                        'longitude' => $mortuaryRow[$columns['Longitude']],
-                        'city_id' => $city->id,
-                        'phone' => normalizePhone($mortuaryRow[$columns['Телефоны'] ?? null]),
-                        'content'=>$mortuaryRow[$columns['SEO Описание']] ??  $mortuaryRow[$columns['Описание']],
-                        'img_url' => $mortuaryRow[$columns['Логотип']] ?? 'default',
+                        'title' => $mortuaryRow[$columns['Название организации'] ?? null] ?? null,
+                        'adres' => $mortuaryRow[$columns['Адрес'] ?? null] ?? null,
+                        'width' => $mortuaryRow[$columns['Latitude'] ?? null] ?? null,
+                        'rating' => $mortuaryRow[$columns['Рейтинг'] ?? null] ?? null,
+                        'longitude' => $mortuaryRow[$columns['Longitude'] ?? null] ?? null,
+                        'city_id' => $city->id ?? null,
+                        'phone' => normalizePhone($mortuaryRow[$columns['Телефоны'] ?? null] ?? null),
+                        'content' => $mortuaryRow[$columns['SEO Описание'] ?? null] ?? ($mortuaryRow[$columns['Описание'] ?? null] ?? null),
+                        'img_url' => $mortuaryRow[$columns['Логотип'] ?? null] ?? 'default',
                         'href_img' => 1,
-                        'two_gis_link'=> $crematoriumRow[$columns['URL']]  ?? null,
+                        'two_gis_link' => $mortuaryRow[$columns['URL'] ?? null] ?? null,
                         'time_difference' => $time_difference,
-                        'url_site' => $mortuaryRow[$columns['Сайт']] ?? null,
+                        'url_site' => $mortuaryRow[$columns['Сайт'] ?? null] ?? null,
                     ];
 
-                    if($mortuaryRow[$columns['Логотип']]!='default') {
-                        if($mortuaryRow[$columns['Логотип']]!=null && !isBrokenLink($mortuaryRow[$columns['Логотип']])){
+                    // Обработка логотипа
+                    if (isset($columns['Логотип']) && $mortuaryRow[$columns['Логотип']] != 'default') {
+                        if ($mortuaryRow[$columns['Логотип']] != null && !isBrokenLink($mortuaryRow[$columns['Логотип']])) {
                             $mortuaryData['img_url'] = $mortuaryRow[$columns['Логотип']];
-                        }else{
+                        } else {
                             $mortuaryData['img_url'] = 'default';
                         }
                     }
 
-                    if ($importAction === 'create' && Mortuary::find($objectId)==null) {
+                    if ($importAction === 'create') {
+                        // Для создания - если нет ID, пропускаем (или можно генерировать, если нужно)
+                        if (!$objectId) {
+                            $skippedRows++;
+                            continue;
+                        }
+
+                        // Проверяем, существует ли уже запись с таким ID
+                        if (Mortuary::find($objectId)) {
+                            $skippedRows++;
+                            continue;
+                        }
+
+                        // Создаем новую запись
+                        $mortuaryData['id'] = $objectId;
                         $mortuary = Mortuary::create($mortuaryData);
                         $createdMortuaries++;
 
-                        // Обработка режима работы при создании
-                        if(isset($columns['Режим работы']) && $mortuaryRow[$columns['Режим работы']] != null) {
+                        // Обработка режима работы
+                        if (isset($columns['Режим работы']) && !empty($mortuaryRow[$columns['Режим работы']])) {
                             $workHours = $mortuaryRow[$columns['Режим работы']];
                             $days = parseWorkingHours($workHours);
                             
-                            foreach($days as $day) {
+                            foreach ($days as $day) {
                                 $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
-                                ImageMortuary::create([
+                                WorkingHoursMortuary::create([
                                     'day' => $day['day'],
                                     'time_start_work' => $day['time_start_work'],
                                     'time_end_work' => $day['time_end_work'],
@@ -225,13 +217,11 @@ class ParserMortuaryService
                             }
                         }
 
-
-                        if(isset($columns['Фотографии']) && $mortuaryRow[$columns['Фотографии']] != null) {
-                            ImageMortuary::where('mortuary_id', $mortuary->id)->delete();
-                            
+                        // Обработка фотографий
+                        if (isset($columns['Фотографии']) && !empty($mortuaryRow[$columns['Фотографии']])) {
                             $urls_array = explode(', ', $mortuaryRow[$columns['Фотографии']]);
-                            foreach($urls_array as $img) {
-                                if($img!=null && !isBrokenLink($img)){
+                            foreach ($urls_array as $img) {
+                                if ($img != null && !isBrokenLink($img)) {
                                     ImageMortuary::create([
                                         'img_url' => $img,
                                         'href_img' => 1,
@@ -240,50 +230,50 @@ class ParserMortuaryService
                                 }
                             }
                         }
-
                     } elseif ($importAction === 'update') {
+                        // Для обновления - находим существующую запись
                         $mortuary = Mortuary::find($objectId);
-                        
+           
                         if ($mortuary) {
-                            $updateData = [];
+                            // Обновляем только указанные поля
+                            $dataToUpdate = [];
                             foreach ($updateFields as $field) {
-                                if (isset($mortuaryData[$field])) {
-                                    $updateData[$field] = $mortuaryData[$field];
+                                if (array_key_exists($field, $mortuaryData) && !is_null($mortuaryData[$field])) {
+                                    $dataToUpdate[$field] = $mortuaryData[$field];
                                 }
                             }
-                            
-                            if (!empty($updateData)) {
-                                $mortuary->update($updateData);
+
+                            if (!empty($dataToUpdate)) {
+                                $mortuary->update($dataToUpdate);
                                 $updatedMortuaries++;
                             }
 
                             // Обработка режима работы при обновлении
-                            if(in_array('working_hours', $updateFields) && isset($columns['Режим работы'])) {
-                                $workHours = $mortuaryRow[$columns['Режим работы']] ?? null;
-                                if($workHours) {
-                                    // Удаляем старые записи о рабочем времени
-                                    WorkingHoursMortuary::where('mortuary_id', $mortuary->id)->delete();
-                                    
-                                    // Создаем новые записи
-                                    $days = parseWorkingHours($workHours);
-                                    foreach($days as $day) {
-                                        $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
-                                        WorkingHoursMortuary::create([
-                                            'day' => $day['day'],
-                                            'time_start_work' => $day['time_start_work'],
-                                            'time_end_work' => $day['time_end_work'],
-                                            'holiday' => $holiday,
-                                            'mortuary_id' => $mortuary->id,
-                                        ]);
-                                    }
+                            if (in_array('working_hours', $updateFields) && isset($columns['Режим работы']) && !empty($mortuaryRow[$columns['Режим работы']])) {
+                                WorkingHoursMortuary::where('mortuary_id', $mortuary->id)->delete();
+                                
+                                $workHours = $mortuaryRow[$columns['Режим работы']];
+                                $days = parseWorkingHours($workHours);
+                                
+                                foreach ($days as $day) {
+                                    $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
+                                    WorkingHoursMortuary::create([
+                                        'day' => $day['day'],
+                                        'time_start_work' => $day['time_start_work'],
+                                        'time_end_work' => $day['time_end_work'],
+                                        'holiday' => $holiday,
+                                        'mortuary_id' => $mortuary->id,
+                                    ]);
                                 }
                             }
-                            if(in_array('galerey', $updateFields) && isset($columns['Фотографии'])) {
+
+                            // Обработка фотографий при обновлении
+                            if (in_array('galerey', $updateFields) && isset($columns['Фотографии']) && !empty($mortuaryRow[$columns['Фотографии']])) {
                                 ImageMortuary::where('mortuary_id', $mortuary->id)->delete();
                                 
                                 $urls_array = explode(', ', $mortuaryRow[$columns['Фотографии']]);
-                                foreach($urls_array as $img) {
-                                    if($img!=null && !isBrokenLink($img)){
+                                foreach ($urls_array as $img) {
+                                    if ($img != null && !isBrokenLink($img)) {
                                         ImageMortuary::create([
                                             'img_url' => $img,
                                             'href_img' => 1,

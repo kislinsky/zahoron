@@ -61,7 +61,7 @@ class ParserOrganizationService
                 $photos = $organization[$columns['Фотографии']] ?? null;
                 $services = $organization[$columns['Подраздел']] ?? null;
                 $region = $organization[$columns['Регион']] ?? null;
-                $cityName = $organization[$columns['city']] ?? null;
+                $cityName = $organization[$columns['Населённый пункт']] ?? null;
                 $district = $organization[$columns['Район']] ?? null;
                 $nameType = $organization[$columns['Вид деятельности']] ?? null;
                 $urlSite = $organization[$columns['Сайт']] ?? null;

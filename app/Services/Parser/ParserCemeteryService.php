@@ -85,6 +85,7 @@ class ParserCemeteryService
                             continue;
                         }
     
+                        
                         $objects = linkRegionDistrictCity(
                             $cemeteryRow[$columns['Край/Область'] ?? null],
                             $cemeteryRow[$columns['Муниципального округа'] ?? null],

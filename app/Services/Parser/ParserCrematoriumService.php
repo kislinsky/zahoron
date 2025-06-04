@@ -87,6 +87,7 @@ class ParserCrematoriumService
         'import_type' => 'required|in:create,update',
         'columns_to_update' => 'nullable|array',
     ]);
+
     $files = $request->file('files');
     $importAction = $request->input('import_type', 'create');
     $updateFields = $request->input('columns_to_update', []);
@@ -104,108 +105,99 @@ class ParserCrematoriumService
         }
 
         try {
-            
             $spreadsheet = IOFactory::load($file->getRealPath());
             $sheet = $spreadsheet->getActiveSheet();
             $titles = $sheet->toArray()[0];
             $crematoriumsData = array_slice($sheet->toArray(), 1);
             $filteredTitles = array_filter($titles, fn($value) => $value !== null);
             $columns = array_flip($filteredTitles);
-            // Проверка наличия обязательных колонок
-            $requiredColumns = ['Название организации', 'Latitude', 'Longitude', 'ID','Адрес'];
-            foreach ($requiredColumns as $col) {
-                if (!isset($columns[$col])) {
-                    continue 2;
-                }
-            }
 
             foreach ($crematoriumsData as $rowIndex => $crematoriumRow) {
                 try {
-                    // Проверка обязательных полей
-                    if (empty($crematoriumRow[$columns['Название организации']])) {
+                    // Получаем ID если есть колонка ID
+                    $objectId = isset($columns['ID']) ? rtrim($crematoriumRow[$columns['ID']] ?? '', '!') : null;
+
+                    // Для режима update пропускаем если нет ID
+                    if ($importAction === 'update' && !$objectId) {
                         $skippedRows++;
                         continue;
                     }
 
-                    if (empty($crematoriumRow[$columns['ID']])) {
-                        $skippedRows++;
-                        continue;
-                    }
-
-                     if (empty($crematoriumRow[$columns['Адрес']])) {
-                        $skippedRows++;
-                        continue;
-                    }
-                    // Проверка координат
-                    if (empty($crematoriumRow[$columns['Latitude']])) {
-                        $skippedRows++;
-                        continue;
-                    }
-
-                    if (empty($crematoriumRow[$columns['Longitude']])) {
-                        $skippedRows++;
-                        continue;
-                    }
+                    // Получаем связанные объекты (регион, район, город)
                     $objects = linkRegionDistrictCity(
-                        $crematoriumRow[$columns['Регион'] ?? null],
-                        $crematoriumRow[$columns['Район'] ?? null],
-                        $crematoriumRow[$columns['Населённый пункт'] ?? null]
+                        $crematoriumRow[$columns['Регион'] ?? null] ?? null,
+                        $crematoriumRow[$columns['Район'] ?? null] ?? null,
+                        $crematoriumRow[$columns['Населённый пункт'] ?? null] ?? null
                     );
                     
                     $area = $objects['district'] ?? null;
                     $city = $objects['city'] ?? null;
 
-                    if (!$city || !$area) {
-                        $skippedRows++;
-                        continue;
-                    }
-
-                    $objectId = rtrim($crematoriumRow[$columns['ID']] ?? '', '!');
-
+                    // Получаем разницу во времени если есть координаты
                     $time_difference = $city->utc_offset ?? null;
-                    if($time_difference==null && env('API_WORK')=='true'){
-                        $time_difference=differencetHoursTimezone(getTimeByCoordinates($crematoriumRow[$columns['Latitude']],$crematoriumRow[$columns['Longitude']])['timezone']);
-                        $city->update(['utc_offset'=> $time_difference]);
+                    if ($time_difference == null && env('API_WORK') == 'true' && 
+                        isset($columns['Latitude']) && isset($columns['Longitude']) &&
+                        !empty($crematoriumRow[$columns['Latitude']]) && !empty($crematoriumRow[$columns['Longitude']])) {
+                        $time_difference = differencetHoursTimezone(getTimeByCoordinates(
+                            $crematoriumRow[$columns['Latitude']], 
+                            $crematoriumRow[$columns['Longitude']]
+                        )['timezone']);
+                        
+                        if ($city) {
+                            $city->update(['utc_offset' => $time_difference]);
+                        }
                     }
 
+                    // Формируем данные для крематория
                     $crematoriumData = [
-                        'id' => $objectId,
-                        'title' => $crematoriumRow[$columns['Название организации']],
-                        'adres' => $crematoriumRow[$columns['Адрес']],
-                        'width' => $crematoriumRow[$columns['Latitude']],
-                        'longitude' => $crematoriumRow[$columns['Longitude']],
-                        'city_id' => $city->id,
-                        'phone' => normalizePhone($crematoriumRow[$columns['Телефоны'] ?? null]),
-                        'content'=>$crematoriumRow[$columns['SEO Описание']] ?? $crematoriumRow[$columns['Описание']]  ,
-                        'img_url' => $crematoriumRow[$columns['Логотип']] ?? 'default',
+                        'title' => $crematoriumRow[$columns['Название организации'] ?? null] ?? null,
+                        'adres' => $crematoriumRow[$columns['Адрес'] ?? null] ?? null,
+                        'width' => $crematoriumRow[$columns['Latitude'] ?? null] ?? null,
+                        'rating' => $crematoriumRow[$columns['Рейтинг'] ?? null] ?? null,
+                        'longitude' => $crematoriumRow[$columns['Longitude'] ?? null] ?? null,
+                        'city_id' => $city->id ?? null,
+                        'phone' => normalizePhone($crematoriumRow[$columns['Телефоны'] ?? null] ?? null),
+                        'content' => $crematoriumRow[$columns['SEO Описание'] ?? null] ?? ($crematoriumRow[$columns['Описание'] ?? null] ?? null),
+                        'img_url' => $crematoriumRow[$columns['Логотип'] ?? null] ?? 'default',
                         'href_img' => 1,
-                        'rating'=>$crematoriumRow[$columns['Рейтинг']],
-                        'two_gis_link'=> $crematoriumRow[$columns['URL']]  ?? null,
+                        'two_gis_link' => $crematoriumRow[$columns['URL'] ?? null] ?? null,
                         'time_difference' => $time_difference,
                         'url_site' => $crematoriumRow[$columns['Сайт'] ?? null] ?? null,
                     ];
 
-
-                    
-                    if($crematoriumRow[$columns['Логотип']]!='default') {
-                        if($crematoriumRow[$columns['Логотип']]!=null && !isBrokenLink($crematoriumRow[$columns['Логотип']])){
-                            $mortuaryData['img_url'] = $crematoriumRow[$columns['Логотип']];
-                        }else{
-                            $mortuaryData['img_url'] = 'default';
+                    // Обработка логотипа
+                    if (isset($columns['Логотип']) && $crematoriumRow[$columns['Логотип']] != 'default') {
+                        if ($crematoriumRow[$columns['Логотип']] != null && !isBrokenLink($crematoriumRow[$columns['Логотип']])) {
+                            $crematoriumData['img_url'] = $crematoriumRow[$columns['Логотип']];
+                        } else {
+                            $crematoriumData['img_url'] = 'default';
                         }
                     }
 
-                    if ($importAction === 'create' && Crematorium::find($objectId)==null) {
-                        $crematorium = Crematorium::create($crematoriumData);
+                    if ($importAction === 'create') {
+                        // Для создания - если нет ID, пропускаем
+                        if (!$objectId) {
+                            $skippedRows++;
+                            continue;
+                        }
 
+                        // Проверяем, существует ли уже запись с таким ID
+                        if (Crematorium::find($objectId)) {
+                            $skippedRows++;
+                            continue;
+                        }
+
+                        // Создаем новую запись
+                        $crematoriumData['id'] = $objectId;
+                        $crematorium = Crematorium::create($crematoriumData);
                         $createdCrematoriums++;
 
-                        // Обработка режима работы при создании
-                        if(isset($columns['Режим работы']) && $crematoriumRow[$columns['Режим работы']] != null) {
+                        // Обработка режима работы
+                        if (isset($columns['Режим работы']) && !empty($crematoriumRow[$columns['Режим работы']])) {
                             $workHours = $crematoriumRow[$columns['Режим работы']];
                             $days = parseWorkingHours($workHours);
                             
-                            foreach($days as $day) {
+                            foreach ($days as $day) {
                                 $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
                                 WorkingHoursCrematorium::create([
                                     'day' => $day['day'],
@@ -217,12 +209,11 @@ class ParserCrematoriumService
                             }
                         }
 
-                        if(isset($columns['Фотографии']) && $crematoriumRow[$columns['Фотографии']] != null) {
-                            ImageCrematorium::where('crematorium_id', $crematorium->id)->delete();
-                            
+                        // Обработка фотографий
+                        if (isset($columns['Фотографии']) && !empty($crematoriumRow[$columns['Фотографии']])) {
                             $urls_array = explode(', ', $crematoriumRow[$columns['Фотографии']]);
-                            foreach($urls_array as $img) {
-                                if($img!=null && !isBrokenLink($img)){
+                            foreach ($urls_array as $img) {
+                                if ($img != null && !isBrokenLink($img)) {
                                     ImageCrematorium::create([
                                         'img_url' => $img,
                                         'href_img' => 1,
@@ -231,51 +222,50 @@ class ParserCrematoriumService
                                 }
                             }
                         }
-
-
                     } elseif ($importAction === 'update') {
+                        // Для обновления - находим существующую запись
                         $crematorium = Crematorium::find($objectId);
-                        
+           
                         if ($crematorium) {
-                            $updateData = [];
+                            // Обновляем только указанные поля
+                            $dataToUpdate = [];
                             foreach ($updateFields as $field) {
-                                if (isset($crematoriumData[$field])) {
-                                    $updateData[$field] = $crematoriumData[$field];
+                                if (array_key_exists($field, $crematoriumData) && !is_null($crematoriumData[$field])) {
+                                    $dataToUpdate[$field] = $crematoriumData[$field];
                                 }
                             }
-                            
-                            if (!empty($updateData)) {
-                                $crematorium->update($updateData);
+
+                            if (!empty($dataToUpdate)) {
+                                $crematorium->update($dataToUpdate);
                                 $updatedCrematoriums++;
                             }
 
                             // Обработка режима работы при обновлении
-                            if(in_array('working_hours', $updateFields) && isset($columns['Режим работы'])) {
-                                $workHours = $crematoriumRow[$columns['Режим работы']] ?? null;
-                                if($workHours) {
-                                    // Удаляем старые записи о рабочем времени
-                                    WorkingHoursCrematorium::where('crematorium_id', $crematorium->id)->delete();
-                                    
-                                    // Создаем новые записи
-                                    $days = parseWorkingHours($workHours);
-                                    foreach($days as $day) {
-                                        $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
-                                        WorkingHoursCrematorium::create([
-                                            'day' => $day['day'],
-                                            'time_start_work' => $day['time_start_work'],
-                                            'time_end_work' => $day['time_end_work'],
-                                            'holiday' => $holiday,
-                                            'crematorium_id' => $crematorium->id,
-                                        ]);
-                                    }
+                            if (in_array('working_hours', $updateFields) && isset($columns['Режим работы']) && !empty($crematoriumRow[$columns['Режим работы']])) {
+                                WorkingHoursCrematorium::where('crematorium_id', $crematorium->id)->delete();
+                                
+                                $workHours = $crematoriumRow[$columns['Режим работы']];
+                                $days = parseWorkingHours($workHours);
+                                
+                                foreach ($days as $day) {
+                                    $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
+                                    WorkingHoursCrematorium::create([
+                                        'day' => $day['day'],
+                                        'time_start_work' => $day['time_start_work'],
+                                        'time_end_work' => $day['time_end_work'],
+                                        'holiday' => $holiday,
+                                        'crematorium_id' => $crematorium->id,
+                                    ]);
                                 }
                             }
-                            if(in_array('galerey', $updateFields) && isset($columns['Фотографии'])) {
+
+                            // Обработка фотографий при обновлении
+                            if (in_array('galerey', $updateFields) && isset($columns['Фотографии']) && !empty($crematoriumRow[$columns['Фотографии']])) {
                                 ImageCrematorium::where('crematorium_id', $crematorium->id)->delete();
                                 
                                 $urls_array = explode(', ', $crematoriumRow[$columns['Фотографии']]);
-                                foreach($urls_array as $img) {
-                                    if($img!=null && !isBrokenLink($img)){
+                                foreach ($urls_array as $img) {
+                                    if ($img != null && !isBrokenLink($img)) {
                                         ImageCrematorium::create([
                                             'img_url' => $img,
                                             'href_img' => 1,
