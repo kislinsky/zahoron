@@ -149,6 +149,13 @@ use Artesaos\SEOTools\Facades\SEOTools;
                     <li>
                         <a class='text_black' href='{{ route('crematoriums') }}'>Крематории</a>
                     </li>
+                    <li>
+                        <a class='text_black' href='{{ route('churches') }}'>Церкви</a>
+                    </li>
+                    <li>
+                        <a class='text_black' href='{{ route('mosques') }}'>Мечети</a>
+                    </li>
+
                 </ul>
             </div>
             <div class="block_pages_header_big">

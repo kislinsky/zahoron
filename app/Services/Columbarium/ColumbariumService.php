@@ -52,7 +52,7 @@ class ColumbariumService {
             $query->where('role','organization'); // или 'asc' для возрастающей сортировки
         }])->get();
 
-        $organizations_our=$city->cityOrganizations();
+        $organizations_our=$city->organizations;
         $columbarium_all=Columbarium::all();
         $services=$columbarium->services;
         $faqs=FaqColumbarium::orderBy('id','desc')->get();
@@ -70,7 +70,7 @@ class ColumbariumService {
         if(isset($data['rating'])){
             $rating=$data['rating'];
         }
-        Reviewcolumbarium::create([
+        ReviewColumbarium::create([
             'rating'=>$rating,
             'city_id'=>selectCity()->id,
             'content'=>$data['content_review'],

@@ -304,6 +304,8 @@ function mobilePages(){
                 ['Морги', route('mortuaries')],
                 ['Колумбарии', route('columbariums')],
                 ['Крематории', route('crematoriums')],
+                ['Церкви', route('churches')],
+                ['Мечети', route('mosques')],
             ],
         ],
         

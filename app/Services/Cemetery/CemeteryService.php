@@ -3,17 +3,13 @@
 namespace App\Services\Cemetery;
 
 
-use App\Models\News;
-use App\Models\Service;
+
 use App\Models\Cemetery;
-use App\Models\CategoryNews;
 use App\Models\FaqCemetery;
 use App\Models\ImageCemetery;
-use App\Models\Organization;
 use App\Models\ReviewCemetery;
 use App\Models\ServiceCemetery;
 use App\Models\UsefulCemetery;
-use Illuminate\Http\Request;
 use Artesaos\SEOTools\Facades\SEOTools;
 
 

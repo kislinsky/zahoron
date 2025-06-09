@@ -12,8 +12,13 @@ class City extends Model
     use HasFactory;
     protected $guarded =[];
 
-    public function cityOrganizations(){
-        return $this->hasMany(Organization::class);
+
+    public function churches(){
+        return $this->hasMany(Church::class);
+    }
+
+    public function mosques(){
+        return $this->hasMany(Mosque::class);
     }
 
     public function cemeteries(){

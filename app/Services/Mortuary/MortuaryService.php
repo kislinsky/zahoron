@@ -49,7 +49,7 @@ class MortuaryService {
         $reviews=ReviewMortuary::orderBy('id','desc')->where('status',1)->where('mortuary_id',$id)->get();
         $reviews_main=$reviews->take(3);
         $city=selectCity();
-        $organizations_our=$city->cityOrganizations();
+        $organizations_our=$city->organizations;
         $mortuary_all=Mortuary::all();
         $services=$mortuary->services;
         $faqs=FaqMortuary::orderBy('id','desc')->get();

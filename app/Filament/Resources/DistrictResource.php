@@ -21,7 +21,7 @@ class DistrictResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Районы'; // Название в меню
     protected static ?string $navigationGroup = 'Cубъекты'; // Указываем группу
-
+    protected static ?int $navigationSort = 4;
     public static function form(Form $form): Form
     {
         return $form

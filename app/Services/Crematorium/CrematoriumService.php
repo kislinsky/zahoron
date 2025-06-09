@@ -42,7 +42,7 @@ class CrematoriumService {
         $reviews=ReviewCrematorium::orderBy('id','desc')->where('status',1)->where('crematorium_id',$id)->get();
         $reviews_main=$reviews->take(3);
         $city=selectCity();
-        $organizations_our=$city->cityOrganizations();
+        $organizations_our=$city->organizations;
         $crematorium_all=Crematorium::all();
         $services=$crematorium->services;
         $faqs=FaqCrematorium::orderBy('id','desc')->get();

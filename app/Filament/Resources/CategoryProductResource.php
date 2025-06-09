@@ -52,14 +52,7 @@ class CategoryProductResource extends Resource
                     ->options(CategoryProduct::whereNull('parent_id')->pluck('title', 'id')) // Только главные категории
                     ->nullable(),
 
-                    Forms\Components\TextInput::make('title')
-                    ->label('Название')
-                    ->required(),
-
-                Forms\Components\Select::make('parent_id')
-                    ->label('Родительская категория')
-                    ->relationship('parent', 'title') // предполагается наличие отношения 'parent'
-                    ->nullable(),
+                
 
                 Forms\Components\FileUpload::make('icon')
                     ->label('Иконка')

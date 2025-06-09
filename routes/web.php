@@ -31,6 +31,7 @@ use App\Http\Controllers\BeautificationController;
 use App\Http\Controllers\BurialController;
 use App\Http\Controllers\CategoryProductController;
 use App\Http\Controllers\CemeteriesController;
+use App\Http\Controllers\ChurchController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\ColumbariumController;
 use App\Http\Controllers\CrematoriumController;
@@ -42,6 +43,7 @@ use App\Http\Controllers\LifeStoryBurialController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\MemorialController;
 use App\Http\Controllers\MortuaryController;
+use App\Http\Controllers\MosqueController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\OrderBurialController;
 use App\Http\Controllers\OrderProductController;
@@ -53,11 +55,13 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\WordsMemoryController;
 use App\Http\Controllers\YooMoneyController;
 use App\Http\Middleware\Authenticate;
+use App\Models\Mosque;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
 
 
 
@@ -338,10 +342,26 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
 
     });
 
+    Route::get('/churches', [ChurchController::class, 'index'])->name('churches');
+
+    Route::group(['prefix'=>'church'], function() {
+        Route::get('/{church}', [ChurchController::class, 'single'])->name('church.single');
+        Route::get('/review/add', [ChurchController::class, 'addReview'])->name('church.review.add');
+
+
+    });
+
+    Route::group(['prefix'=>'mosque'], function() {
+        Route::get('/{mosque}', [MosqueController::class, 'single'])->name('mosque.single');
+        Route::get('/review/add', [MosqueController::class, 'addReview'])->name('mosque.review.add');
+
+
+    });
+
+    Route::get('/mosques', [MosqueController::class, 'index'])->name('mosques');
 
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-
 
     Route::get('/beautification/send', [BeautificationController::class, 'sendBeautification'])->name('beautification.send');
     Route::get('/memorial/send', [MemorialController::class, 'memorialAdd'])->name('memorial.send');

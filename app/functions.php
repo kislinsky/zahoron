@@ -1462,7 +1462,7 @@ function minPriceCategoryProductOrganization($slug){
         $query->whereHas('city', function ($q) use ($city) {
             $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
         })
-        ->where('role', 'organization-provider')
+        ->where('role', 'organization')
         ->where('status', 1);
     })->where('category_children_id',$cat->id)->where('price','>',0)->min('price');
 

@@ -452,6 +452,11 @@ $(document).ready(function() {
             type: 'GET',
             url: '{{route("organizations.ajax.title")}}',
             data: filters,
+            success: function (result) {
+                $('.content_order_page').html(result)
+                 $('.bac_loader').fadeOut()
+           $('.load_block').fadeOut()
+            },
             error: function() {
                 console.error('Ошибка при загрузке заголовка');
             }
@@ -462,16 +467,28 @@ $(document).ready(function() {
             type: 'GET',
             url: '{{route("organizations.ajax.category-prices")}}',
             data: filters,
+            success: function (result) {
+                $('.block_table_price_orgniaztions').html(result)
+                 $('.bac_loader').fadeOut()
+           $('.load_block').fadeOut()
+            },
             error: function() {
                 console.error('Ошибка при загрузке цен');
             }
         });
+        
 
         // AJAX запрос для обновления карты
         $.ajax({
             type: 'GET',
             url: '{{route("organizations.ajax.map")}}',
+            success: function (result) {
+                $('.map_organizations').html(result)
+                 $('.bac_loader').fadeOut()
+           $('.load_block').fadeOut()
+            },
             data: filters,
+            
             error: function() {
                 console.error('Ошибка при загрузке карты');
             }

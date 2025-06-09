@@ -25,9 +25,9 @@
                     <div id_block=1 class="menu_single_organization menu_single_organization_active">
                         <div class="text_black">О нас</div>
                     </div>
-                    <div id_block=2 class="menu_single_organization">
+                    {{-- <div id_block=2 class="menu_single_organization">
                         <div class="text_black">Цены</div>
-                    </div>
+                    </div> --}}
                    
                     <div id_block=3 class="menu_single_organization">
                         <div class="text_black">Фотогалерея</div>

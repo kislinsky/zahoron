@@ -12,7 +12,9 @@ if(isset($crematorium)){
 if(isset($mortuary)){
     $model=$mortuary;
 }
-
+if(isset($object)){
+    $model=$object;
+}
 ?>
 
 <script type="application/ld+json">

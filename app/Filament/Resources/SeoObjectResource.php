@@ -34,9 +34,11 @@ class SeoObjectResource extends Resource
                     Repeater::make('SEO')
                     ->relationship('SEO') // Указываем название связи
                     ->schema([
+                         TextInput::make('title')
+                    ->label('Название'),
                         TextInput::make('name')
                             ->label('Meta Title')
-                            ->disabled(),
+                            ->required(),
 
                         Textarea::make('content')
                             ->label('Meta Description')
