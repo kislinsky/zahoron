@@ -107,7 +107,11 @@ class ParserCemeteryService
                         if($time_difference==null && env('API_WORK')=='true'){
                             $time_difference=differencetHoursTimezone(getTimeByCoordinates($cemeteryRow[$columns['Latitude']],$cemeteryRow[$columns['Longitude']])['timezone']);
                             $city->update(['utc_offset'=> $time_difference]);
+                            
                         }
+                        if($time_difference==null){
+                            $time_difference=0;
+                        }   
 
                         $cemeteryData = [
                             'title' => $cemeteryRow[$columns['Наименование кладбища']],

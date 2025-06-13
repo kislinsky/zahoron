@@ -106,7 +106,7 @@ class MosqueResource extends Resource
                         }
                     }),
 
-                Forms\Components\TextInput::make('width')
+                Forms\Components\TextInput::make('latitude')
                     ->label('Широта')
                     ->required()
                     ->maxLength(255),
@@ -125,7 +125,7 @@ class MosqueResource extends Resource
                             ->label('Открыть карту')
                             ->icon('heroicon-s-map')
                             ->url(function ($get) {
-                                $latitude = $get('width');
+                                $latitude = $get('latitude');
                                 $longitude = $get('longitude');
                                 return "https://yandex.ru/maps/?rtext=~{$latitude},{$longitude}";
                             })
@@ -201,7 +201,7 @@ class MosqueResource extends Resource
 
                 FileUpload::make('img_file')
                     ->label('Загрузить изображение')
-                    ->directory('/uploads_mosques')
+                    ->directory('/uploads_mosque')
                     ->image()
                     ->maxSize(2048)
                     ->reactive()
@@ -215,7 +215,7 @@ class MosqueResource extends Resource
                     ->columnSpan('full')
                     ->hidden(fn ($get) => intval($get('href_img')) === 0),
 
-                Forms\Components\TextInput::make('adres')
+                Forms\Components\TextInput::make('address')
                     ->label('Адрес')
                     ->required()
                     ->maxLength(255),
@@ -330,13 +330,13 @@ class MosqueResource extends Resource
                                 return [
                                     'ID' => $mosque->id,
                                     'Название' => $mosque->title,
-                                    'Широта' => $mosque->width,
+                                    'Широта' => $mosque->latitude,
                                     'Долгота' => $mosque->longitude,
                                     'Ссылка на карту' => $mosque->map_link,
                                     'Край' => $mosque->city->area->edge->title ?? 'Не указано',
                                     'Округ' => $mosque->city->area->title ?? 'Не указано',
                                     'Город' => $mosque->city->title ?? 'Не указано',
-                                    'Адрес' => $mosque->adres,
+                                    'Адрес' => $mosque->address,
                                     'Телефон' => $mosque->phone,
                                     'Рейтинг' => $mosque->rating,
                                 ];
@@ -351,13 +351,13 @@ class MosqueResource extends Resource
                                     return [
                                         'ID' => $mosque->id,
                                         'Название' => $mosque->title,
-                                        'Широта' => $mosque->width,
+                                        'Широта' => $mosque->latitude,
                                         'Долгота' => $mosque->longitude,
                                         'Ссылка на карту' => $mosque->map_link,
                                         'Край' => $mosque->city->area->edge->title ?? 'Не указано',
                                         'Округ' => $mosque->city->area->title ?? 'Не указано',
                                         'Город' => $mosque->city->title ?? 'Не указано',
-                                        'Адрес' => $mosque->adres,
+                                        'Адрес' => $mosque->address,
                                         'Телефон' => $mosque->phone,
                                         'Рейтинг' => $mosque->rating,
                                     ];

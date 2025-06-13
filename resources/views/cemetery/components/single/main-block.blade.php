@@ -5,7 +5,7 @@
                 <img class='white_img_org' src="{{$crematorium->defaultImg()[0]}}" alt="">   
                 <img class='black_img_org' src="{{$crematorium->defaultImg()[1]}}" alt="">   
             @else
-                <img src="{{$crematorium->urlImgMain()}}" alt="">   
+                <img src="{{$crematorium->urlImg()}}" alt="">   
             @endif
             <div class="blue_btn">{{$crematorium->title}}</div>
         </div>

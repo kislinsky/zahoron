@@ -5,7 +5,7 @@
                 <img class='white_img_org' src="{{$mortuary->defaultImg()[0]}}" alt="">   
                 <img class='black_img_org' src="{{$mortuary->defaultImg()[1]}}" alt="">   
             @else
-                <img src="{{$mortuary->urlImgMain()}}" alt="">   
+                <img src="{{$mortuary->urlImg()}}" alt="">   
             @endif
             <div class="blue_btn">{{$mortuary->title}}</div>
         </div>

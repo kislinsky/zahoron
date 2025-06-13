@@ -103,7 +103,7 @@ class ChurchResource extends Resource
                         }
                     }),
 
-                Forms\Components\TextInput::make('width')
+                Forms\Components\TextInput::make('latitude')
                     ->label('Широта')
                     ->required()
                     ->maxLength(255),
@@ -122,7 +122,7 @@ class ChurchResource extends Resource
                             ->label('Открыть карту')
                             ->icon('heroicon-s-map')
                             ->url(function ($get) {
-                                $latitude = $get('width');
+                                $latitude = $get('latitude');
                                 $longitude = $get('longitude');
                                 return "https://yandex.ru/maps/?rtext=~{$latitude},{$longitude}";
                             })
@@ -198,7 +198,7 @@ class ChurchResource extends Resource
 
                 FileUpload::make('img_file')
                     ->label('Загрузить изображение')
-                    ->directory('/uploads_churches')
+                    ->directory('/uploads_church')
                     ->image()
                     ->maxSize(2048)
                     ->reactive()
@@ -212,7 +212,7 @@ class ChurchResource extends Resource
                     ->columnSpan('full')
                     ->hidden(fn ($get) => intval($get('href_img')) === 0),
 
-                Forms\Components\TextInput::make('adres')
+                Forms\Components\TextInput::make('address')
                     ->label('Адрес')
                     ->required()
                     ->maxLength(255),
@@ -327,13 +327,13 @@ class ChurchResource extends Resource
                                 return [
                                     'ID' => $church->id,
                                     'Название' => $church->title,
-                                    'Широта' => $church->width,
+                                    'Широта' => $church->latitude,
                                     'Долгота' => $church->longitude,
                                     'Ссылка на карту' => $church->map_link,
                                     'Край' => $church->city->area->edge->title ?? 'Не указано',
                                     'Округ' => $church->city->area->title ?? 'Не указано',
                                     'Город' => $church->city->title ?? 'Не указано',
-                                    'Адрес' => $church->adres,
+                                    'Адрес' => $church->address,
                                     'Телефон' => $church->phone,
                                     'Рейтинг' => $church->rating,
                                 ];
@@ -348,13 +348,13 @@ class ChurchResource extends Resource
                                     return [
                                         'ID' => $church->id,
                                         'Название' => $church->title,
-                                        'Широта' => $church->width,
+                                        'Широта' => $church->latitude,
                                         'Долгота' => $church->longitude,
                                         'Ссылка на карту' => $church->map_link,
                                         'Край' => $church->city->area->edge->title ?? 'Не указано',
                                         'Округ' => $church->city->area->title ?? 'Не указано',
                                         'Город' => $church->city->title ?? 'Не указано',
-                                        'Адрес' => $church->adres,
+                                        'Адрес' => $church->address,
                                         'Телефон' => $church->phone,
                                         'Рейтинг' => $church->rating,
                                     ];

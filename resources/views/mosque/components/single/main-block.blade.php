@@ -5,7 +5,7 @@
                 <img class='white_img_org' src="{{$object->defaultImg()[0]}}" alt="">   
                 <img class='black_img_org' src="{{$object->defaultImg()[1]}}" alt="">   
             @else
-                <img src="{{$object->urlImgMain()}}" alt="">   
+                <img src="{{$object->urlImg()}}" alt="">   
             @endif
             <div class="blue_btn">{{$object->title}}</div>
         </div>

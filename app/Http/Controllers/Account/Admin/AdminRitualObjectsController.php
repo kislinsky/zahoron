@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Account\Admin;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\Account\Admin\AdminCemeteryService;
+use App\Services\Account\Admin\AdminChurchService;
 use App\Services\Account\Admin\AdminColumbariumService;
 use App\Services\Account\Admin\AdminCrematoriumService;
 use App\Services\Account\Admin\AdminMortuaryService;
+use App\Services\Account\Admin\AdminMosqueService;
+use Illuminate\Http\Request;
 
 class AdminRitualObjectsController extends Controller
 {
@@ -114,5 +116,21 @@ class AdminRitualObjectsController extends Controller
             'file_reviews' => 'required|mimes:xlsx,xls,csv'
         ]);
         return AdminColumbariumService::importReviews($request);
+    }
+
+    public static function mosqueParser(){
+        return AdminMosqueService::parser();
+    }
+
+    public static function mosqueImport(Request $request){
+        return AdminMosqueService::import($request);
+    }
+
+    public static function churchParser(){
+        return AdminChurchService::parser();
+    }
+
+    public static function churchImport(Request $request){
+        return AdminChurchService::import($request);
     }
 }

@@ -83,8 +83,11 @@ class ParserColumbariumService
                         if ($city) {
                             $city->update(['utc_offset' => $time_difference]);
                         }
+                        
                     }
-
+if($time_difference==null){
+                        $time_difference=0;
+                    }   
                     // Формируем данные для колумбария
                     $columbariumData = [
                         'title' => $columbariumRow[$columns['Название организации'] ?? null] ?? null,

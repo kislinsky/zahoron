@@ -750,6 +750,16 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
                     Route::get('/parser', [AdminRitualObjectsController::class, 'columbariumParser'])->name('account.admin.parser.columbarium');
                     Route::post('/import', [AdminRitualObjectsController::class, 'columbariumImport'])->name('account.admin.parsing.columbarium');
                 });
+
+                Route::group(['prefix'=>'mosque'], function() {
+                    Route::get('/parser', [AdminRitualObjectsController::class, 'mosqueParser'])->name('account.admin.parser.mosque');
+                    Route::post('/import', [AdminRitualObjectsController::class, 'mosqueImport'])->name('account.admin.parsing.mosque');
+                });
+
+                Route::group(['prefix'=>'church'], function() {
+                    Route::get('/parser', [AdminRitualObjectsController::class, 'churchParser'])->name('account.admin.parser.church');
+                    Route::post('/import', [AdminRitualObjectsController::class, 'churchImport'])->name('account.admin.parsing.church');
+                });
               
             });
     

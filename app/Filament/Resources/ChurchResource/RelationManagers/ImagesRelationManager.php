@@ -41,7 +41,7 @@ class ImagesRelationManager extends RelationManager
         // Поле для загрузки файла (отображается только если выбран вариант "Файл на сайте")
         FileUpload::make('img_file')
             ->label('Загрузить изображение')
-            ->directory('/uploads_cemeteries') // Директория для хранения файлов
+            ->directory('/uploads_church') // Директория для хранения файлов
             ->image()
             ->maxSize(2048)
             ->reactive()

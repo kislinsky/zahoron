@@ -238,8 +238,11 @@ class ParserOrganizationService
                         if($time_difference==null && env('API_WORK')=='true'){
                             $time_difference=differencetHoursTimezone(getTimeByCoordinates($latitude,$longitude)['timezone']);
                             $city->update(['utc_offset'=> $time_difference]);
+                            
                         }
-                        
+                        if($time_difference==null){
+                        $time_difference=0;
+                    }   
                         $updateData = [
                             'title' => $orgTitle,
                             'slug'=> slugOrganization($orgTitle),
@@ -336,6 +339,9 @@ class ParserOrganizationService
                             $city->update(['utc_offset'=> $time_difference]);
 
                         }
+                        if($time_difference==null){
+                        $time_difference=0;
+                    }   
                         
                         if($logoUrl!=null && !isBrokenLink($logoUrl)){
                             $logoUrl = $logoUrl ;

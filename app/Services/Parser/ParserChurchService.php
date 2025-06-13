@@ -2,23 +2,17 @@
 
 namespace App\Services\Parser;
 
-use App\Models\Cemetery;
-use App\Models\City;
-use App\Models\Crematorium;
 use App\Models\Edge;
-use App\Models\ImageCrematorium;
-use App\Models\ReviewCrematorium;
-use App\Models\WorkingHoursCrematorium;
+use App\Models\ImageChurch;
+use App\Models\Church;
+use App\Models\WorkingHoursChurch;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
-class ParserChurcheService
+class ParserChurchService
 {
 
-
-
-    public static function index($request) {
-    // Валидация входных данных
+  public static function index($request) {
+    // Валидация только файлов и типа импорта
     $validated = $request->validate([
         'files' => 'required|array',
         'files.*' => 'file|mimes:xlsx,xls',
@@ -31,12 +25,13 @@ class ParserChurcheService
     $updateFields = $request->input('columns_to_update', []);
     
     $processedFiles = 0;
-    $createdCrematoriums = 0;
-    $updatedCrematoriums = 0;
+    $createdChurches = 0;
+    $updatedChurches = 0;
     $skippedRows = 0;
     $errors = [];
 
     foreach ($files as $file) {
+        
         if (!$file->isValid()) {
             $errors[] = "Файл {$file->getClientOriginalName()} не валиден";
             continue;
@@ -46,14 +41,14 @@ class ParserChurcheService
             $spreadsheet = IOFactory::load($file->getRealPath());
             $sheet = $spreadsheet->getActiveSheet();
             $titles = $sheet->toArray()[0];
-            $crematoriumsData = array_slice($sheet->toArray(), 1);
+            $churchesData = array_slice($sheet->toArray(), 1);
             $filteredTitles = array_filter($titles, fn($value) => $value !== null);
             $columns = array_flip($filteredTitles);
 
-            foreach ($crematoriumsData as $rowIndex => $crematoriumRow) {
+            foreach ($churchesData as $rowIndex => $churchRow) {
                 try {
                     // Получаем ID если есть колонка ID
-                    $objectId = isset($columns['ID']) ? rtrim($crematoriumRow[$columns['ID']] ?? '', '!') : null;
+                    $objectId = isset($columns['ID']) ? rtrim($churchRow[$columns['ID']] ?? '', '!') : null;
 
                     // Для режима update пропускаем если нет ID
                     if ($importAction === 'update' && !$objectId) {
@@ -63,154 +58,157 @@ class ParserChurcheService
 
                     // Получаем связанные объекты (регион, район, город)
                     $objects = linkRegionDistrictCity(
-                        $crematoriumRow[$columns['Регион'] ?? null] ?? null,
-                        $crematoriumRow[$columns['Район'] ?? null] ?? null,
-                        $crematoriumRow[$columns['Населённый пункт'] ?? null] ?? null
+                        $churchRow[$columns['Регион'] ?? null] ?? null,
+                        $churchRow[$columns['Район'] ?? null] ?? null,
+                        $churchRow[$columns['Населённый пункт'] ?? null] ?? null
                     );
-                    
+
                     $area = $objects['district'] ?? null;
                     $city = $objects['city'] ?? null;
 
                     // Получаем разницу во времени если есть координаты
                     $time_difference = $city->utc_offset ?? null;
+                    
                     if ($time_difference == null && env('API_WORK') == 'true' && 
                         isset($columns['Latitude']) && isset($columns['Longitude']) &&
-                        !empty($crematoriumRow[$columns['Latitude']]) && !empty($crematoriumRow[$columns['Longitude']])) {
+                        !empty($churchRow[$columns['Latitude']]) && !empty($churchRow[$columns['Longitude']])) {
                         $time_difference = differencetHoursTimezone(getTimeByCoordinates(
-                            $crematoriumRow[$columns['Latitude']], 
-                            $crematoriumRow[$columns['Longitude']]
+                            $churchRow[$columns['Latitude']], 
+                            $churchRow[$columns['Longitude']]
                         )['timezone']);
+                        
                         
                         if ($city) {
                             $city->update(['utc_offset' => $time_difference]);
                         }
                     }
+
                     if($time_difference==null){
                         $time_difference=0;
-                    }   
+                    }             
 
-                    // Формируем данные для крематория
-                    $crematoriumData = [
-                        'title' => $crematoriumRow[$columns['Название организации'] ?? null] ?? null,
-                        'adres' => $crematoriumRow[$columns['Адрес'] ?? null] ?? null,
-                        'width' => $crematoriumRow[$columns['Latitude'] ?? null] ?? null,
-                        'rating' => $crematoriumRow[$columns['Рейтинг'] ?? null] ?? null,
-                        'longitude' => $crematoriumRow[$columns['Longitude'] ?? null] ?? null,
+                    // Формируем данные для церкви
+                    $churchData = [
+                        'title' => $churchRow[$columns['Название организации'] ?? null] ?? null,
+                        'address' => $churchRow[$columns['Адрес'] ?? null] ?? null,
+                        'latitude' => $churchRow[$columns['Latitude'] ?? null] ?? null,
+                        'rating' => $churchRow[$columns['Рейтинг'] ?? null] ?? null,
+                        'longitude' => $churchRow[$columns['Longitude'] ?? null] ?? null,
                         'city_id' => $city->id ?? null,
-                        'phone' => normalizePhone($crematoriumRow[$columns['Телефоны'] ?? null] ?? null),
-                        'content' => $crematoriumRow[$columns['SEO Описание'] ?? null] ?? ($crematoriumRow[$columns['Описание'] ?? null] ?? null),
-                        'img_url' => $crematoriumRow[$columns['Логотип'] ?? null] ?? 'default',
+                        'phone' => normalizePhone($churchRow[$columns['Телефоны'] ?? null] ?? null),
+                        'content' => $churchRow[$columns['SEO Описание'] ?? null] ?? ($churchRow[$columns['Описание'] ?? null] ?? null),
+                        'img_url' => $churchRow[$columns['Логотип'] ?? null] ?? 'default',
                         'href_img' => 1,
-                        'two_gis_link' => $crematoriumRow[$columns['URL'] ?? null] ?? null,
+                        'two_gis_link' => $churchRow[$columns['URL'] ?? null] ?? null,
                         'time_difference' => $time_difference,
-                        'url_site' => $crematoriumRow[$columns['Сайт'] ?? null] ?? null,
+                        'url_site' => $churchRow[$columns['Сайт'] ?? null] ?? null,
                     ];
-
                     // Обработка логотипа
-                    if (isset($columns['Логотип']) && $crematoriumRow[$columns['Логотип']] != 'default') {
-                        if ($crematoriumRow[$columns['Логотип']] != null && !isBrokenLink($crematoriumRow[$columns['Логотип']])) {
-                            $crematoriumData['img_url'] = $crematoriumRow[$columns['Логотип']];
+                    if (isset($columns['Логотип']) && $churchRow[$columns['Логотип']] != 'default') {
+                        if ($churchRow[$columns['Логотип']] != null && !isBrokenLink($churchRow[$columns['Логотип']])) {
+                            $churchData['img_url'] = $churchRow[$columns['Логотип']];
                         } else {
-                            $crematoriumData['img_url'] = 'default';
+                            $churchData['img_url'] = 'default';
                         }
                     }
 
                     if ($importAction === 'create') {
-                        // Для создания - если нет ID, пропускаем
+                        
+                        // Для создания - если нет ID, пропускаем (или можно генерировать, если нужно)
                         if (!$objectId) {
                             $skippedRows++;
                             continue;
                         }
 
                         // Проверяем, существует ли уже запись с таким ID
-                        if (Crematorium::find($objectId)) {
+                        if (Church::find($objectId)) {
                             $skippedRows++;
                             continue;
                         }
 
                         // Создаем новую запись
-                        $crematoriumData['id'] = $objectId;
-                        $crematorium = Crematorium::create($crematoriumData);
-                        $createdCrematoriums++;
+                        $churchData['id'] = $objectId;
+                        $church = Church::create($churchData);
+                        $createdChurches++;
 
                         // Обработка режима работы
-                        if (isset($columns['Режим работы']) && !empty($crematoriumRow[$columns['Режим работы']])) {
-                            $workHours = $crematoriumRow[$columns['Режим работы']];
+                        if (isset($columns['Режим работы']) && !empty($churchRow[$columns['Режим работы']])) {
+                            $workHours = $churchRow[$columns['Режим работы']];
                             $days = parseWorkingHours($workHours);
                             
                             foreach ($days as $day) {
                                 $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
-                                WorkingHoursCrematorium::create([
+                                WorkingHoursChurch::create([
                                     'day' => $day['day'],
                                     'time_start_work' => $day['time_start_work'],
                                     'time_end_work' => $day['time_end_work'],
                                     'holiday' => $holiday,
-                                    'crematorium_id' => $crematorium->id,
+                                    'church_id' => $church->id,
                                 ]);
                             }
                         }
 
                         // Обработка фотографий
-                        if (isset($columns['Фотографии']) && !empty($crematoriumRow[$columns['Фотографии']])) {
-                            $urls_array = explode(', ', $crematoriumRow[$columns['Фотографии']]);
+                        if (isset($columns['Фотографии']) && !empty($churchRow[$columns['Фотографии']])) {
+                            $urls_array = explode(', ', $churchRow[$columns['Фотографии']]);
                             foreach ($urls_array as $img) {
                                 if ($img != null && !isBrokenLink($img)) {
-                                    ImageCrematorium::create([
+                                    ImageChurch::create([
                                         'img_url' => $img,
                                         'href_img' => 1,
-                                        'crematorium_id' => $crematorium->id,
+                                        'church_id' => $church->id,
                                     ]);
                                 }
                             }
                         }
                     } elseif ($importAction === 'update') {
                         // Для обновления - находим существующую запись
-                        $crematorium = Crematorium::find($objectId);
+                        $church = Church::find($objectId);
            
-                        if ($crematorium) {
+                        if ($church) {
                             // Обновляем только указанные поля
                             $dataToUpdate = [];
                             foreach ($updateFields as $field) {
-                                if (array_key_exists($field, $crematoriumData) && !is_null($crematoriumData[$field])) {
-                                    $dataToUpdate[$field] = $crematoriumData[$field];
+                                if (array_key_exists($field, $churchData) && !is_null($churchData[$field])) {
+                                    $dataToUpdate[$field] = $churchData[$field];
                                 }
                             }
 
                             if (!empty($dataToUpdate)) {
-                                $crematorium->update($dataToUpdate);
-                                $updatedCrematoriums++;
+                                $church->update($dataToUpdate);
+                                $updatedChurches++;
                             }
 
                             // Обработка режима работы при обновлении
-                            if (in_array('working_hours', $updateFields) && isset($columns['Режим работы']) && !empty($crematoriumRow[$columns['Режим работы']])) {
-                                WorkingHoursCrematorium::where('crematorium_id', $crematorium->id)->delete();
+                            if (in_array('working_hours', $updateFields) && isset($columns['Режим работы']) && !empty($churchRow[$columns['Режим работы']])) {
+                                WorkingHoursChurch::where('church_id', $church->id)->delete();
                                 
-                                $workHours = $crematoriumRow[$columns['Режим работы']];
+                                $workHours = $churchRow[$columns['Режим работы']];
                                 $days = parseWorkingHours($workHours);
                                 
                                 foreach ($days as $day) {
                                     $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
-                                    WorkingHoursCrematorium::create([
+                                    WorkingHoursChurch::create([
                                         'day' => $day['day'],
                                         'time_start_work' => $day['time_start_work'],
                                         'time_end_work' => $day['time_end_work'],
                                         'holiday' => $holiday,
-                                        'crematorium_id' => $crematorium->id,
+                                        'church_id' => $church->id,
                                     ]);
                                 }
                             }
 
                             // Обработка фотографий при обновлении
-                            if (in_array('galerey', $updateFields) && isset($columns['Фотографии']) && !empty($crematoriumRow[$columns['Фотографии']])) {
-                                ImageCrematorium::where('crematorium_id', $crematorium->id)->delete();
+                            if (in_array('galerey', $updateFields) && isset($columns['Фотографии']) && !empty($churchRow[$columns['Фотографии']])) {
+                                ImageChurch::where('church_id', $church->id)->delete();
                                 
-                                $urls_array = explode(', ', $crematoriumRow[$columns['Фотографии']]);
+                                $urls_array = explode(', ', $churchRow[$columns['Фотографии']]);
                                 foreach ($urls_array as $img) {
                                     if ($img != null && !isBrokenLink($img)) {
-                                        ImageCrematorium::create([
+                                        ImageChurch::create([
                                             'img_url' => $img,
                                             'href_img' => 1,
-                                            'crematorium_id' => $crematorium->id,
+                                            'church_id' => $church->id,
                                         ]);
                                     }
                                 }
@@ -231,45 +229,14 @@ class ParserChurcheService
         }
     }
 
-    $message = "Импорт крематориев завершен. " .
+    $message = "Импорт церквей завершен. " .
                "Файлов обработано: $processedFiles, " .
-               "Создано крематориев: $createdCrematoriums, " .
-               "Обновлено крематориев: $updatedCrematoriums, " .
+               "Создано церквей: $createdChurches, " .
+               "Обновлено церквей: $updatedChurches, " .
                "Пропущено строк: $skippedRows";
 
     return redirect()->back()
         ->with("message_cart", $message)
         ->withErrors($errors);
-}
-
-    public static function importReviews($request){
-        $spreadsheet = new Spreadsheet();
-        $file = $request->file('file_reviews');
-        $spreadsheet = IOFactory::load($file);
-        // Получение данных из первого листа
-        $sheet = $spreadsheet->getActiveSheet();
-        $reviews = array_slice($sheet->toArray(),1);
-        foreach($reviews as $review){
-            $edge=Edge::where('title',$review[2])->first();
-            if($edge!=null){
-                $cities=City::where('edge_id',$edge->id)->pluck('id');
-                $cemetery=Cemetery::where('title',$review[3])->whereIn('city_id',$cities)->first();
-                if($cemetery!=null){
-                    ReviewCrematorium::create([
-                        'name'=>$review[5],
-                        'rating'=>$review[7],
-                        'content'=>$review[9],
-                        'created_at'=>$review[6],
-                        'cemetery_id'=>$cemetery->id,
-                        'status'=>1,
-                    ]);
-                    $cemetery->updateRating();
-                }
-            }
-            
-        }
-        return redirect()->back()->with("message_cart", 'Отзывы успешно добавлены');
-
-    }
-
+  }
 }
