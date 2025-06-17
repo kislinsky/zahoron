@@ -242,34 +242,137 @@ class ParserChurcheService
         ->withErrors($errors);
 }
 
-    public static function importReviews($request){
-        $spreadsheet = new Spreadsheet();
-        $file = $request->file('file_reviews');
-        $spreadsheet = IOFactory::load($file);
-        // Получение данных из первого листа
-        $sheet = $spreadsheet->getActiveSheet();
-        $reviews = array_slice($sheet->toArray(),1);
-        foreach($reviews as $review){
-            $edge=Edge::where('title',$review[2])->first();
-            if($edge!=null){
-                $cities=City::where('edge_id',$edge->id)->pluck('id');
-                $cemetery=Cemetery::where('title',$review[3])->whereIn('city_id',$cities)->first();
-                if($cemetery!=null){
-                    ReviewCrematorium::create([
-                        'name'=>$review[5],
-                        'rating'=>$review[7],
-                        'content'=>$review[9],
-                        'created_at'=>$review[6],
-                        'cemetery_id'=>$cemetery->id,
-                        'status'=>1,
-                    ]);
-                    $cemetery->updateRating();
-                }
+    public static function importCrematoriumReviews($request)
+{
+    $file = $request->file('file_reviews');
+    $spreadsheet = IOFactory::load($file);
+    $sheet = $spreadsheet->getActiveSheet();
+    
+    $headers = $sheet->rangeToArray('A1:' . $sheet->getHighestColumn() . '1')[0];
+    $headers = array_map('strtolower', $headers);
+    
+    $columnIndexes = [
+        'crematorium_id' => array_search('id', $headers),
+        'name' => array_search('Имя', $headers),
+        'date' => array_search('Дата', $headers),
+        'rating' => array_search('Оценка', $headers),
+        'content' => array_search('Отзыв', $headers),
+    ];
+    
+    foreach ($columnIndexes as $key => $index) {
+        if ($index === false) {
+            return redirect()->back()->with("error_cart", "Отсутствует обязательная колонка: " . $key);
+        }
+    }
+
+    $reviews = array_slice($sheet->toArray(), 1);
+    $addedReviews = 0;
+    $skippedReviews = 0;
+    $errors = [];
+
+    foreach ($reviews as $rowIndex => $review) {
+        $rowNumber = $rowIndex + 2;
+        
+        try {
+            if (empty(array_filter($review))) {
+                $skippedReviews++;
+                continue;
             }
             
+            $crematoriumId = $review[$columnIndexes['crematorium_id']] ?? null;
+            $reviewerName = $review[$columnIndexes['name']] ?? null;
+            $reviewDate = $review[$columnIndexes['date']] ?? null;
+            $rating = $review[$columnIndexes['rating']] ?? null;
+            $content = $review[$columnIndexes['content']] ?? null;
+            
+            if (empty($crematoriumId)) {
+                $errors[] = "Строка {$rowNumber}: Не указан ID крематория";
+                $skippedReviews++;
+                continue;
+            }
+            
+            $crematorium = Crematorium::find($crematoriumId);
+            if (!$crematorium) {
+                $errors[] = "Строка {$rowNumber}: Крематорий с ID {$crematoriumId} не найден";
+                $skippedReviews++;
+                continue;
+            }
+            
+            if (!$crematorium->city) {
+                $errors[] = "Строка {$rowNumber}: У крематория не указан город";
+                $skippedReviews++;
+                continue;
+            }
+            
+            if (!is_numeric($rating) || $rating < 1 || $rating > 5) {
+                $errors[] = "Строка {$rowNumber}: Рейтинг должен быть числом от 1 до 5";
+                $skippedReviews++;
+                continue;
+            }
+            
+            if (!empty($reviewDate)) {
+                $reviewDate = trim(preg_replace('/отредактирован/ui', '', $reviewDate));
+                
+                $russianMonths = [
+                    'января' => '01', 'февраля' => '02', 'марта' => '03',
+                    'апреля' => '04', 'мая' => '05', 'июня' => '06',
+                    'июля' => '07', 'августа' => '08', 'сентября' => '09',
+                    'октября' => '10', 'ноября' => '11', 'декабря' => '12'
+                ];
+                
+                if (preg_match('/^(\d{1,2})\s+([а-яё]+)\s+(\d{4})$/ui', $reviewDate, $matches)) {
+                    $day = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
+                    $month = strtolower($matches[2]);
+                    $year = $matches[3];
+                    
+                    if (isset($russianMonths[$month])) {
+                        $reviewDate = "{$year}-{$russianMonths[$month]}-{$day}";
+                    } else {
+                        $errors[] = "Строка {$rowNumber}: Неизвестный месяц '{$matches[2]}' в дате '{$reviewDate}'";
+                        $skippedReviews++;
+                        continue;
+                    }
+                } 
+                elseif (($timestamp = strtotime($reviewDate)) !== false) {
+                    $reviewDate = date('Y-m-d', $timestamp);
+                } else {
+                    $errors[] = "Строка {$rowNumber}: Не удалось распознать дату '{$reviewDate}'";
+                    $skippedReviews++;
+                    continue;
+                }
+            } else {
+                $reviewDate = now()->format('Y-m-d');
+            }
+            
+            ReviewCrematorium::create([
+                'name' => $reviewerName,
+                'rating' => $rating,
+                'content' => $content,
+                'created_at' => !empty($reviewDate) ? $reviewDate : now(),
+                'crematorium_id' => $crematorium->id,
+                'status' => 1,
+                'city_id' => $crematorium->city->id,
+            ]);
+            
+            $addedReviews++;
+            
+        } catch (\Exception $e) {
+            $errors[] = "Строка {$rowNumber}: Ошибка обработки - " . $e->getMessage();
+            $skippedReviews++;
+            continue;
         }
-        return redirect()->back()->with("message_cart", 'Отзывы успешно добавлены');
-
     }
+    
+    $message = "Импорт отзывов для крематориев завершен. Добавлено: {$addedReviews}, Пропущено: {$skippedReviews}";
+    
+    if (!empty($errors)) {
+        $message .= "<br><br>Ошибки:<br>" . implode("<br>", array_slice($errors, 0, 10));
+        if (count($errors) > 10) {
+            $message .= "<br>... и ещё " . (count($errors) - 10) . " ошибок";
+        }
+    }
+    
+    return redirect()->back()->with("message_cart", $message);
+}
 
 }

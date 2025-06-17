@@ -2,9 +2,10 @@
 
 namespace App\Services\Parser;
 
+use App\Models\Church;
 use App\Models\Edge;
 use App\Models\ImageChurch;
-use App\Models\Church;
+use App\Models\ReviewChurch;
 use App\Models\WorkingHoursChurch;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -239,4 +240,137 @@ class ParserChurchService
         ->with("message_cart", $message)
         ->withErrors($errors);
   }
+
+  public static function importChurchReviews($request)
+{
+    $file = $request->file('file_reviews');
+    $spreadsheet = IOFactory::load($file);
+    $sheet = $spreadsheet->getActiveSheet();
+    
+    $headers = $sheet->rangeToArray('A1:' . $sheet->getHighestColumn() . '1')[0];
+    $headers = array_map('strtolower', $headers);
+    
+    $columnIndexes = [
+        'church_id' => array_search('id', $headers),
+        'name' => array_search('Имя', $headers),
+        'date' => array_search('Дата', $headers),
+        'rating' => array_search('Оценка', $headers),
+        'content' => array_search('Отзыв', $headers),
+    ];
+    
+    foreach ($columnIndexes as $key => $index) {
+        if ($index === false) {
+            return redirect()->back()->with("error_cart", "Отсутствует обязательная колонка: " . $key);
+        }
+    }
+
+    $reviews = array_slice($sheet->toArray(), 1);
+    $addedReviews = 0;
+    $skippedReviews = 0;
+    $errors = [];
+
+    foreach ($reviews as $rowIndex => $review) {
+        $rowNumber = $rowIndex + 2;
+        
+        try {
+            if (empty(array_filter($review))) {
+                $skippedReviews++;
+                continue;
+            }
+            
+            $churchId = $review[$columnIndexes['church_id']] ?? null;
+            $reviewerName = $review[$columnIndexes['name']] ?? null;
+            $reviewDate = $review[$columnIndexes['date']] ?? null;
+            $rating = $review[$columnIndexes['rating']] ?? null;
+            $content = $review[$columnIndexes['content']] ?? null;
+            
+            if (empty($churchId)) {
+                $errors[] = "Строка {$rowNumber}: Не указан ID церкви";
+                $skippedReviews++;
+                continue;
+            }
+            
+            $church = Church::find($churchId);
+            if (!$church) {
+                $errors[] = "Строка {$rowNumber}: Церковь с ID {$churchId} не найдена";
+                $skippedReviews++;
+                continue;
+            }
+            
+            if (!$church->city) {
+                $errors[] = "Строка {$rowNumber}: У церкви не указан город";
+                $skippedReviews++;
+                continue;
+            }
+            
+            if (!is_numeric($rating) || $rating < 1 || $rating > 5) {
+                $errors[] = "Строка {$rowNumber}: Рейтинг должен быть числом от 1 до 5";
+                $skippedReviews++;
+                continue;
+            }
+            
+            if (!empty($reviewDate)) {
+                $reviewDate = trim(preg_replace('/отредактирован/ui', '', $reviewDate));
+                
+                $russianMonths = [
+                    'января' => '01', 'февраля' => '02', 'марта' => '03',
+                    'апреля' => '04', 'мая' => '05', 'июня' => '06',
+                    'июля' => '07', 'августа' => '08', 'сентября' => '09',
+                    'октября' => '10', 'ноября' => '11', 'декабря' => '12'
+                ];
+                
+                if (preg_match('/^(\d{1,2})\s+([а-яё]+)\s+(\d{4})$/ui', $reviewDate, $matches)) {
+                    $day = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
+                    $month = strtolower($matches[2]);
+                    $year = $matches[3];
+                    
+                    if (isset($russianMonths[$month])) {
+                        $reviewDate = "{$year}-{$russianMonths[$month]}-{$day}";
+                    } else {
+                        $errors[] = "Строка {$rowNumber}: Неизвестный месяц '{$matches[2]}' в дате '{$reviewDate}'";
+                        $skippedReviews++;
+                        continue;
+                    }
+                } 
+                elseif (($timestamp = strtotime($reviewDate)) !== false) {
+                    $reviewDate = date('Y-m-d', $timestamp);
+                } else {
+                    $errors[] = "Строка {$rowNumber}: Не удалось распознать дату '{$reviewDate}'";
+                    $skippedReviews++;
+                    continue;
+                }
+            } else {
+                $reviewDate = now()->format('Y-m-d');
+            }
+            
+            ReviewChurch::create([
+                'name' => $reviewerName,
+                'rating' => $rating,
+                'content' => $content,
+                'created_at' => !empty($reviewDate) ? $reviewDate : now(),
+                'church_id' => $church->id,
+                'status' => 1,
+                'city_id' => $church->city->id,
+            ]);
+            
+            $addedReviews++;
+            
+        } catch (\Exception $e) {
+            $errors[] = "Строка {$rowNumber}: Ошибка обработки - " . $e->getMessage();
+            $skippedReviews++;
+            continue;
+        }
+    }
+    
+    $message = "Импорт отзывов для церквей завершен. Добавлено: {$addedReviews}, Пропущено: {$skippedReviews}";
+    
+    if (!empty($errors)) {
+        $message .= "<br><br>Ошибки:<br>" . implode("<br>", array_slice($errors, 0, 10));
+        if (count($errors) > 10) {
+            $message .= "<br>... и ещё " . (count($errors) - 10) . " ошибок";
+        }
+    }
+    
+    return redirect()->back()->with("message_cart", $message);
+}
 }

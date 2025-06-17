@@ -735,6 +735,8 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
                     Route::get('/delete/{id}', [AdminRitualObjectsController::class, 'mortuaryDelete'])->name('account.admin.mortuary.delete');
                     Route::get('/parser', [AdminRitualObjectsController::class, 'mortuaryParser'])->name('account.admin.parser.mortuary');
                     Route::post('/import', [AdminRitualObjectsController::class, 'mortuaryImport'])->name('account.admin.parsing.mortuary');
+                    Route::post('/import/reviews', [AdminRitualObjectsController::class, 'mortuaryReviewsImport'])->name('account.admin.parsing.mortuary.reviews');
+
                 });
 
                 Route::group(['prefix'=>'crematorium'], function() {

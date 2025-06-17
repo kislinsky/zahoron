@@ -63,6 +63,7 @@ class AdminRitualObjectsController extends Controller
         $request->validate([
             'file_reviews' => 'required|mimes:xlsx,xls,csv'
         ]);
+
         return AdminMortuaryService::importReviews($request);
     }
 
