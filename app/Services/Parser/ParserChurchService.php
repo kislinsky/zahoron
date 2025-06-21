@@ -98,15 +98,16 @@ class ParserChurchService
                         'city_id' => $city->id ?? null,
                         'phone' => normalizePhone($churchRow[$columns['Телефоны'] ?? null] ?? null),
                         'content' => $churchRow[$columns['SEO Описание'] ?? null] ?? ($churchRow[$columns['Описание'] ?? null] ?? null),
-                        'img_url' => $churchRow[$columns['Логотип'] ?? null] ?? 'default',
+                        'img_url' => $churchRow[$columns['Главное фото'] ?? null] ?? 'default',
                         'href_img' => 1,
                         'two_gis_link' => $churchRow[$columns['URL'] ?? null] ?? null,
                         'time_difference' => $time_difference,
                         'url_site' => $churchRow[$columns['Сайт'] ?? null] ?? null,
                     ];
+                    
                     // Обработка логотипа
-                    if (isset($columns['Логотип']) && $churchRow[$columns['Логотип']] != 'default') {
-                        if ($churchRow[$columns['Логотип']] != null && !isBrokenLink($churchRow[$columns['Логотип']])) {
+                    if (isset($columns['Главное фото']) && $churchRow[$columns['Главное фото']] != 'default') {
+                        if ($churchRow[$columns['Главное фото']] != null && !isBrokenLink($churchRow[$columns['Главное фото']])) {
                             $churchData['img_url'] = $churchRow[$columns['Логотип']];
                         } else {
                             $churchData['img_url'] = 'default';
@@ -198,7 +199,8 @@ class ParserChurchService
                                     ]);
                                 }
                             }
-
+                            
+                          
                             // Обработка фотографий при обновлении
                             if (in_array('galerey', $updateFields) && isset($columns['Фотографии']) && !empty($churchRow[$columns['Фотографии']])) {
                                 ImageChurch::where('church_id', $church->id)->delete();
@@ -241,23 +243,25 @@ class ParserChurchService
         ->withErrors($errors);
   }
 
-  public static function importChurchReviews($request)
+  public static function importReviews($request)
 {
+
     $file = $request->file('file_reviews');
     $spreadsheet = IOFactory::load($file);
     $sheet = $spreadsheet->getActiveSheet();
-    
+
     $headers = $sheet->rangeToArray('A1:' . $sheet->getHighestColumn() . '1')[0];
     $headers = array_map('strtolower', $headers);
     
     $columnIndexes = [
-        'church_id' => array_search('id', $headers),
+        'church_id' => array_search('ID', $headers),
         'name' => array_search('Имя', $headers),
         'date' => array_search('Дата', $headers),
         'rating' => array_search('Оценка', $headers),
         'content' => array_search('Отзыв', $headers),
     ];
-    
+
+
     foreach ($columnIndexes as $key => $index) {
         if ($index === false) {
             return redirect()->back()->with("error_cart", "Отсутствует обязательная колонка: " . $key);

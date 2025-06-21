@@ -1,6 +1,6 @@
 @if($ritual_products!=null && count($ritual_products)>0)
     <div class="block_content_organization_single">
-        <div class="title_li title_li_organization_single">Ритуальные товары</div>
+        <h2 class="title_li title_li_organization_single">Ритуальные товары</h2>
         <div class="ul_memorial_menu">
             @foreach ($ritual_products as $ritual_product)
                 <div class="li_memorial_menu">

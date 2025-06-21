@@ -547,7 +547,7 @@ class ParserOrganizationService
 
 
     
-    public static function importOrganizationReviews($request)
+    public static function importReviews($request)
 {
     $file = $request->file('file_reviews');
     $spreadsheet = IOFactory::load($file);

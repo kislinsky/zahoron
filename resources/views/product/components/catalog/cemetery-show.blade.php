@@ -2,7 +2,7 @@
     
     <section class="cart_marketplace">
         <div class="container">
-            <div class="title"><a href="{{ route('cemeteries.single',$cemetery->id) }}" class='text_decoration'>{{ $cemetery->title }} </a>{{ $cemetery->adres }}</div>
+            <h2 class="title"><a href="{{ route('cemeteries.single',$cemetery->id) }}" class='text_decoration'>{{ $cemetery->title }} </a>{{ $cemetery->adres }}</h2>
             <div class="block_single_cemetery">
                 <div id="map_cemetery_single" style="width: 100%; height: 600px"></div>
             </div>

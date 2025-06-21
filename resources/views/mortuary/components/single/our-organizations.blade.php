@@ -2,7 +2,7 @@
 @if($organizations_our!=null && $organizations_our->count()>0)
 <section class="block_content_organization_single our_products_single_organization">
     <div class="flex_single_organization">
-        <div class="title_li">Ритуальные агенства</div>
+        <h2 class="title_li">Ритуальные агенства</h2>
     </div>
     <div class="swiper our_products_swiper">
         <div class="swiper-wrapper">

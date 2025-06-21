@@ -45,7 +45,7 @@
         <div class="gos_block gos_block_1">
             <img src="{{asset('storage/uploads/image 29.png')}}" alt="">  
             <div class="content_gos_block">
-                <div class="title_blue_big">Государственные выплаты <span class='title_green_big'>+ 13500 рублей</span></div>    
+                <h2 class="title_blue_big">Государственные выплаты <span class='title_green_big'>+ 13500 рублей</span></h2>    
                 <div class="text_gray">Выплаты производятся умершиим не работающим пенсионерам</div>
             </div>      
         </div>
@@ -61,10 +61,10 @@
         <div class="grid_two mobile_block_info_1_grid">
             <img src="{{asset('storage/uploads/002-spisok-uslug-2 1.png')}}" alt="" class="img_text_block">
             <div class="text_block_index">
-                <div class="title_text_block">Получите расчет стоимости ритуальных
+                <h2 class="title_text_block">Получите расчет стоимости ритуальных
                     услуг от 10 проверенных организаций 
                     без дополнительных услуг
-                </div>
+                </h2>
                 @if(versionProject())
                     <a href='{{ route('organizations') }}'class="blue_btn">Сэкономить до 20 000 руб.</a>
                 @else

@@ -3,7 +3,7 @@
     @if (count($faqs)>0)
         <section class="faq">
             <div class="container">
-                <div class="title">Часто задаваемые вопросы</div>
+                <h2 class="title">Часто задаваемые вопросы</h2>
                 <div class="ul_faq">
                     @foreach ($faqs as $faq )    
                         <div class="li_faq">

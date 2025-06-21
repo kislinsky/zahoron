@@ -7,7 +7,7 @@ $count_projects=count(OurWork::orderby('id','desc')->get());
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-            <div class="index_title">Наши работы</div>    
+            <h1 class="index_title">Наши работы</h1>    
         </div>
         <img class='img_light_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
         <img class='img_black_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">        
@@ -19,7 +19,7 @@ $count_projects=count(OurWork::orderby('id','desc')->get());
     <div class="container">
         <div class="grid_two_our_works">
             <div class="block_one_our_works">
-                <div class="title_our_works">Ниже {{$count_projects}} отчета по уборкам,<br>ваш отчет может быть следующим!</div>
+                <h2 class="title_our_works">Ниже {{$count_projects}} отчета по уборкам,<br>ваш отчет может быть следующим!</h2>
                 <div class="text_block_mini">Сотни убранных могил среди наших отчетов оправдывают ваше доверие,вы можете посмотреть результаты наших работ ниже</div>
             </div>
             <div class="block_one_our_works">

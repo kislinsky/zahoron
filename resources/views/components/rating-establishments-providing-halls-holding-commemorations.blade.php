@@ -8,7 +8,7 @@ $sorted_organizations=organizationratingEstablishmentsProvidingHallsHoldingComme
 
 <section class="raiting raiting_2">
     <div class="container">
-        <div class="title_our_works">Рейтинг заведений, предоставляющих залы для проведения поминок в г. {{$city->title}}.</div>
+        <h2 class="title_our_works">Рейтинг заведений, предоставляющих залы для проведения поминок в г. {{$city->title}}.</h2>
         <div class="text_block">* Цены являются приблизительными. Уточняйте стоимость, позвонив в агентство.</div>
         <div class="table_rating_block">
             <table class="raiting_table">

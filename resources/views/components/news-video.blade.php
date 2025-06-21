@@ -2,7 +2,7 @@
     @if (count($news_video)>0)
         <section class="news">
             <div class="container">
-                <div class="title">Видео блог </div>
+                <h2 class="title">Видео блог </h2>
                 <div class="swiper news_video_swiper">
                     <div class="swiper-wrapper">
                         @foreach ($news_video as $news_video_one )

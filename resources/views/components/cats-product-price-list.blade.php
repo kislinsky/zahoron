@@ -7,7 +7,7 @@ $cats=mainCategoryPriceList();
 
     <section class='cats_product'>
         <div class="container">
-            <div class="title">Удобный выбор категорий</div>
+            <h2 class="title">Удобный выбор категорий</h2>
             <div class="ul_cats_product">
                     @foreach ($cats as $cat)
                         <div class="li_cat_product">

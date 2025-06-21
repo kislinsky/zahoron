@@ -66,5 +66,20 @@
     });
 </script>
 
-
+<div class="">
+        <div class="title_middle">Добавить новые отзывы о мечетях из файла</div>  
+        <form class='default_admin_form' method="post" enctype="multipart/form-data" action="{{route('account.admin.parsing.mosque.reviews')}}">
+            @csrf
+            <div class="mb-3">
+                <label for="formFile_2" class="form-label">Выберите файл</label>
+                <input class="form-control" type="file" name='file_reviews' id="formFile_2">
+            </div>
+            @error('file_reviews')
+                <div class='error-text'>{{ $message }}</div>
+            @enderror
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary mb-3">Начать импорт</button>
+            </div>   
+        </form>
+    </div>   
 @endsection

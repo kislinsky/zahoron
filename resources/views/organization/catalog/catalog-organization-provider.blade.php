@@ -38,7 +38,7 @@
         <div class="gos_block">
             <img src="{{asset('storage/uploads/image 171.png')}}" alt="">  
             <div class="content_gos_block">
-                <div class="title_green_big">Заказчик хочет другой памятник, но у вас его нет?</div>    
+                <h2 class="title_green_big">Заказчик хочет другой памятник, но у вас его нет?</h2>    
                 <div class="text_black">Приложите картинку памятника и сделайте запрос по всем поставщикам или иного товара</div>
             </div>  
             <img class='btn_img_gos_block' src='{{asset('storage/uploads/Переключатель.svg')}}'>    
@@ -58,9 +58,9 @@
         <div class="grid_two mobile_block_info_1_grid">
             <img src="{{asset('storage/uploads/002-spisok-uslug-2 2.png')}}" alt="" class="img_text_block">
             <div class="text_block_index">
-                <div class="title_text_block">Получите прямой расчёт
+                <h2 class="title_text_block">Получите прямой расчёт
                     от 10 проверенных ритуальных агентств по низким ценам
-                </div>
+                </h2>
                 <div class="blue_btn" data-bs-toggle="modal" data-bs-target="#beautification_form">Получить расчет</div>
             </div>
         </div>

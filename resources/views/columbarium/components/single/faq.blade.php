@@ -3,7 +3,7 @@
 @if (isset($faqs))
     @if (count($faqs)>0)
         <section class="faq_organization">
-            <div class="title_li">Популярные вопросы по колумбарию {{$columbarium->title}} в г. {{$city->title}}</div>
+            <h2 class="title_li">Популярные вопросы по колумбарию {{$columbarium->title}} в г. {{$city->title}}</h2>
             <div class="ul_faq">
             
                     @foreach ($faqs as $faq )    

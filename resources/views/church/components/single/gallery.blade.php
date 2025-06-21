@@ -3,7 +3,7 @@
 
 <section class="block_content_organization_single our_products_single_organization">
     <div class="flex_single_organization">
-        <div class="title_li">Фотогалерея</div>
+        <h2 class="title_li">Фотогалерея</h2>
     </div>
     <div class="swiper galerey_swiper">
         <div class="swiper-wrapper">

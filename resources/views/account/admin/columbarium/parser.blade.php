@@ -68,7 +68,7 @@
 
     <div class="">
         <div class="title_middle">Добавить новые отзывы о колумбариях из файла</div>  
-        <form class='default_admin_form' method="post" enctype="multipart/form-data" action="{{route('account.admin.parsing.cemetery.reviews')}}">
+        <form class='default_admin_form' method="post" enctype="multipart/form-data" action="{{route('account.admin.parsing.columbarium.reviews')}}">
             @csrf
             <div class="mb-3">
                 <label for="formFile_2" class="form-label">Выберите файл</label>

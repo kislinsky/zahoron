@@ -36,7 +36,6 @@ use Artesaos\SEOTools\Facades\SEOTools;
 
 <body class='{{getTheme()}}'>
 <div class="margin_top_for_header"></div>
-@include('components.all-forms-message')
 
 @include('header.header-mobile')
 

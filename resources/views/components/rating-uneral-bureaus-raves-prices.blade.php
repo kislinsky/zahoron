@@ -7,7 +7,7 @@ $organizations=organizationRatingUneralBureausRavesPrices($city->id);?>
 @if($organizations!=null && $organizations->count()>0 && $organizations->first()!=null)
 <section class="raiting raiting_2">
     <div class="container">
-        <div class="title_our_works">Рейтинг ритуальных бюро по облагораживанию могил с самыми низкими ценами г. {{$city->title}}</div>
+        <h2 class="title_our_works">Рейтинг ритуальных бюро по облагораживанию могил с самыми низкими ценами г. {{$city->title}}</h2>
         <div class="text_block">* Цены являются приблизительными. Уточняйте стоимость, позвонив в агентство.</div>
         
         <div class="table_rating_block">

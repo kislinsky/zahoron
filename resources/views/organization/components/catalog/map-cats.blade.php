@@ -1,7 +1,7 @@
 @if($organizations_category!=null && $organizations_category->count()>0)
     <section class="karta_all">
         <div class="container">
-            <div class="title">Организации г. {{$city->title}} на карте</div>
+            <h2 class="title">Организации г. {{$city->title}} на карте</h2>
             <div id="map-cats" style="width: 100%; height: 600px"></div>
         </div>
     </section>

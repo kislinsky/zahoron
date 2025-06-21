@@ -3,7 +3,7 @@
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-            <div class="index_title">Кладбища в г. {{$city->title}}</div>    
+            <h1 class="index_title">Кладбища в г. {{$city->title}}</h1>    
         </div>
         <img class='img_light_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
         <img class='img_black_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">        
@@ -16,10 +16,10 @@
 <div class="block_ritual_objects">
 
     <div class="container">
-        <div class="title_middle mobile_title_ritual_object">Кладбища на карте в г. {{$city->title}}</div>
+        <h2 class="title_middle mobile_title_ritual_object">Кладбища на карте в г. {{$city->title}}</h2>
         <div id="map" style="width: 100%; height: 600px"></div>
         <div class="mobile_sidebar_ritual_object">
-            <div class="title_middle">Памятники в г. {{ $city->title }}</div>
+            <h2 class="title_middle">Памятники в г. {{ $city->title }}</h2>
             {{view('cemetery.components.sidebar',compact('products'))}}
         </div>
     </div>
@@ -53,7 +53,7 @@
     
     
             <div class="block_info_place">
-                <div class="title_middle">Информация о кладбищах в г. {{$city->title}}</div>
+                <h2 class="title_middle">Информация о кладбищах в г. {{$city->title}}</h2>
                 <div class="text_black">
                     {!!str_replace('{city}',$city->title,get_acf(2,'content_1'))!!}
                 </div>

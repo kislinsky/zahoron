@@ -112,7 +112,7 @@
             
             <div class="two_block_li_product">
                 <div class="mini_flex_li_product">
-                    <div class="index_title">{{ $product->surname }} {{ $product->name }} {{ $product->patronymic }}</div>
+                    <h1 class="index_title">{{ $product->surname }} {{ $product->name }} {{ $product->patronymic }}</h1>
                     <div class="text_li">{{timeDifference( $product->date_birth,$product->date_death)->y}} лет</div>
                 </div>
                 <div class="mini_flex_li_product">

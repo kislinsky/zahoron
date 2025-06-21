@@ -2,7 +2,7 @@
     @if (count($usefuls)>0)
         <section class="faq">
             <div class="container">
-                <div class="title">Будет полезно</div>
+                <h2 class="title">Будет полезно</h2>
                 <div class="ul_faq">
                         @foreach ($usefuls as $useful )    
                             <div class="li_faq">

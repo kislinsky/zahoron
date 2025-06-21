@@ -13,4 +13,8 @@ class AdminMosqueService {
         return ParserMosqueService::index($request);
     }
 
+    public static function importReviews($request){
+        return ParserMosqueService::importReviews($request);
+    }
+
 }

@@ -3,7 +3,7 @@
 <section class="order_page bac_gray">
     <div class="container order_page_search">
         <div class="content_order_page content_order_page_2">
-            <div class="index_title">Установить судьбу</div>    
+            <h1 class="index_title">Установить судьбу</h1>    
             <form method='get' action="{{route('search.burial.filter')}}" class="search">
                 @csrf
                 <div class="block_input">

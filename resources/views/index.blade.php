@@ -5,7 +5,7 @@
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-            <div data-bs-toggle="modal" data-bs-target="#cemetery_choose_form" class="title">Актуальные цены на ритуальные услуги г. {{$city->title}}</div>
+            <h1 data-bs-toggle="modal" data-bs-target="#cemetery_choose_form" class="title">Актуальные цены на ритуальные услуги г. {{$city->title}}</h1>
         </div>
         <img class='img_light_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
         <img class='img_black_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">
@@ -17,7 +17,7 @@
     <div class="container">
         <div class="grid_two index_block_grid">
             <div class="gray_index_block_service">
-                <div class="title_li">Организация похорон в городе {{$city->title}}</div>
+                <h2 class="title_li">Организация похорон в городе {{$city->title}}</h2>
                 <div class="flex_text_service_index">
                     <div class="text_middle_index">Сравните цены на ритуальные
                         услуги в ритуальных агентствах
@@ -36,7 +36,7 @@
             </div>
 
             <div class="gray_index_block_service dekstop_index_block">
-                <div class="title_li">Отправка груза 200 в другой город</div>
+                <h2 class="title_li">Отправка груза 200 в другой город</h2>
                 <div class="flex_text_service_index">
                     <div class="text_middle_index">Сравните стоимость услуг по отправке груза 200 в другой город выбрав агентство подходящее под Ваши запросы
                     </div>
@@ -56,7 +56,7 @@
         </div>
         <div class="grid_two ">
             <div class="gray_index_block_service">
-                <div class="title_li">Найти могилу в городе {{$city->title}}</div>
+                <h2 class="title_li">Найти могилу в городе {{$city->title}}</h2>
                 <div class="flex_text_service_index">
                     <div class="text_middle_index">Найдите могилу и закажите уход за ней</div>
                     <img style='max-width:117px;'src="{{asset('storage/uploads/Похороны-Photoroom 2.svg')}}" alt="" class="img_index_service">
@@ -75,7 +75,7 @@
             </div>
             <div class="grid_two mobile_grid_index">
                     <div class="gray_index_block_service">
-                        <a href='{{ route('mortuaries') }}' class="title_li">Морги в г. {{$city->title}}</a>
+                        <h2><a href='{{ route('mortuaries') }}' class="title_li">Морги в г. {{$city->title}}</a></h2>
                         <div class="flex_text_service_index">
                             <a href='{{ route('mortuaries') }}' class="title_li title_li_mobile">Морги в г. {{$city->title}}</a>
 
@@ -92,8 +92,8 @@
                         @endif
                     </div>
                     <div class="gray_index_block_service">
-                        <a href='{{ route('cemeteries') }}' class="title_li">Кладбища 
-                            г. {{$city->title}}</a>
+                        <h2><a href='{{ route('cemeteries') }}' class="title_li">Кладбища 
+                            г. {{$city->title}}</a></h2>
                         <div class="flex_text_service_index">
                             <a href='{{ route('cemeteries') }}' class="title_li title_li_mobile">Кладбища 
                                 г. {{$city->title}}</a>
@@ -111,8 +111,8 @@
         <div class="grid_two">
             <div class="grid_two dekstop_index_block">
                 <div class="gray_index_block_service">
-                    <a href='{{route('marketplace.category','pominal-nyh-obedy')}}' class="title_li">Заказать поминки
-                        г. {{$city->title}}</a>
+                    <h2><a href='{{route('marketplace.category','pominal-nyh-obedy')}}' class="title_li">Заказать поминки
+                        г. {{$city->title}}</a></h2>
                     <div class="flex_text_service_index">
                         <div class="mini_text">Получите ценовое
                             предложения 
@@ -129,8 +129,8 @@
                         @endif
                 </div>
                 <div class="gray_index_block_service">
-                    <a href='{{route('marketplace.category','organizacia-kremacii')}}' class="title_li">Организация 
-                        кремации г. {{$city->title}}</a>
+                    <h2><a href='{{route('marketplace.category','organizacia-kremacii')}}' class="title_li">Организация 
+                        кремации г. {{$city->title}}</a></h2>
                     <div class="flex_text_service_index">
                         <div class="mini_text">Вам предоставят цены на кремацию от более 10 ритуальных агентств {{$city->title}}  для выбора лучшего варианта.</div>
                         <img src="{{asset('storage/uploads/Group_cemetery.svg')}}" alt="" class="img_light_theme img_index_service">
@@ -145,7 +145,7 @@
             </div>
 
             <div class="gray_index_block_service">
-                <div class="title_li">Маркетплейс с ценами на все виды ритуальных услуг в г. {{$city->title}}</div>
+                <h2 class="title_li">Маркетплейс с ценами на все виды ритуальных услуг в г. {{$city->title}}</h2>
                 <div class="flex_text_service_index">
                     <div class="mini_text">Сравнивайте и покупайте памятники, 
                         оградки,столики и лавочки, заказывайте 
@@ -169,8 +169,8 @@
 
             <div class="grid_two mobile_index_block_grid">
                 <div class="gray_index_block_service">
-                    <a href='{{route('marketplace.category','pominal-nyh-obedy')}}' class="title_li">Заказать поминки
-                        г. {{$city->title}}</a>
+                    <h2><a href='{{route('marketplace.category','pominal-nyh-obedy')}}' class="title_li">Заказать поминки
+                        г. {{$city->title}}</a></h2>
                     <div class="flex_text_service_index">
                         <a href='{{route('marketplace.category','pominal-nyh-obedy')}}' class="title_li title_li_mobile">Заказать поминки
                             г. {{$city->title}}</a> 
@@ -184,8 +184,8 @@
                     <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#memorial_form">Оформить заказ</div>
                 </div>
                 <div class="gray_index_block_service">
-                    <a href='{{route('marketplace.category','organizacia-kremacii')}}' class="title_li">Организация 
-                        кремации г. {{$city->title}}</a>
+                    <h2><a href='{{route('marketplace.category','organizacia-kremacii')}}' class="title_li">Организация 
+                        кремации г. {{$city->title}}</a></h2>
                     <div class="flex_text_service_index">
                         <a href='{{route('marketplace.category','organizacia-kremacii')}}' class="title_li title_li_mobile">Организация 
                             кремации г. {{$city->title}}</a> 
@@ -203,7 +203,7 @@
 
             <div class="gray_index_block_service mobile_index_block">
                 <div class="flex_text_service_index">
-                    <div class="title_li">Отправка груза 200 в другой город</div>
+                    <h2 class="title_li">Отправка груза 200 в другой город</h2>
 
                     <img src="{{asset('storage/uploads/airplane 1.svg')}}" alt="" class="img_index_service">
                 </div>
@@ -223,10 +223,10 @@
         <div class="grid_two index_block_grid">
             <img src="{{asset('storage/uploads/002-spisok-uslug-2 1.png')}}" alt="" class="img_text_block">
             <div class="text_block_index">
-                <div class="title_text_block">Получите расчет стоимости ритуальных
+                <h2 class="title_text_block">Получите расчет стоимости ритуальных
                     услуг от 10 проверенных организаций 
                     без дополнительных услуг
-                </div>
+                </h2>
                 @if(versionProject())
                     <a href='{{ route('organizations') }}'class="blue_btn">Сэкономить до 20 000 руб.</a>
                 @else
@@ -251,9 +251,9 @@
         <div class="grid_two index_block_grid">
             <img src="{{asset('storage/uploads/002-spisok-uslug-2 2.png')}}" alt="" class="img_text_block">
             <div class="text_block_index">
-                <div class="title_text_block">Получите прямой расчёт
+                <h2 class="title_text_block">Получите прямой расчёт
                     от 10 проверенных ритуальных агентств по низким ценам
-                </div>
+                </h2>
                 @if(versionProject())
                     <a href='{{ route('organizations.category','pamatniki') }}'class="blue_btn">Получить расчет</a>
                 @else
@@ -362,7 +362,7 @@
 @if($city->text_about_project!=null)
     <section class="about_company bac_gray">
         <div class="container">
-            <div class="title">О проекте "Цены на ритуальные услуги в г. {{$city->title}}</div>
+            <h2 class="title">О проекте "Цены на ритуальные услуги в г. {{$city->title}}</h2>
             <div class="content_block">{!! get_acf(15,'content_1') !!}</div>
 
         </div>
@@ -376,7 +376,7 @@
 @if($city->text_how_properly_arrange_funeral_services!=null)
     <section class="about_company bac_gray">
         <div class="container">
-            <div class="title">Как правильно оформить ритуальные услуги в г. {{$city->title}}</div>
+            <h2 class="title">Как правильно оформить ритуальные услуги в г. {{$city->title}}</h2>
             <div class="content_block">{!!get_acf(15,'content_2') !!}</div>
 
         </div>

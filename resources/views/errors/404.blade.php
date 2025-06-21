@@ -3,7 +3,7 @@
 <section class="page_404">
     <div class="container">
         <div class='flex_404_page'>
-            <div class="title_404">404</div>
+            <h1 class="title_404">404</h1>
             <div class="title_404_middle">Страница не найдена</div>
             <div><a href="{{ route('index') }}" class="blue_btn">Вернуться на главную</a></div>
         </div>

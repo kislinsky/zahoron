@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 <section class="order_page bac_gray">
     <div class="container order_page_search">
         <div class="content_order_page search_request">
-            <div class="index_title">Поиск захоронения</div>    
+            <h1 class="index_title">Поиск захоронения</h1>    
             <div class="text_block">Сотрудники проектавнесут в базу и предоставят Вам фотографии с места<br>захоронения. Чтобы места захоронения, где покоятся Ваши родные, не были признаны<br>заброшенными и не исчезли, позаботьтесь о них сейчас.</div>
             <form method='get' action="{{route('search.burial.request')}}" class="search_application">
                 @csrf

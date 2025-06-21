@@ -241,7 +241,7 @@ if($time_difference==null){
         ->withErrors($errors);
 }
 
-   public static function importColumbariumReviews($request)
+   public static function importReviews($request)
 {
     $file = $request->file('file_reviews');
     $spreadsheet = IOFactory::load($file);

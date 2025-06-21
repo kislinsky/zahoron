@@ -13,7 +13,7 @@
 <section class="product_price_list">
     <div class="container">
         @if($product->title_advice!=null)
-            <div class="title">{{$product->title_advice}} </div>
+            <h2 class="title">{{$product->title_advice}} </h2>
         @endif
        
         @if(count($advices)>0)
@@ -68,7 +68,7 @@
 
         @if($product->text_before_videos!=null)
             <div class="videos_products_price_list">
-                <div class="title">Видео {{$product->title}}</div>
+                <h2 class="title">Видео {{$product->title}}</h2>
                 
                     <div class="text_block">
                         {!! $product->text_before_videos !!}
@@ -84,7 +84,7 @@
 
         <div class="videos_products_price_list">
             @if($product->text_images!=null || count($imgs_service)>0)
-                <div class="title">Фотографии работ До и После</div>
+                <h2 class="title">Фотографии работ До и После</h2>
                     <div class="text_block">
                         {!! $product->text_images !!}
                     </div>
@@ -111,7 +111,7 @@
 
         @if($product->text_advantages!=null)
             <div class="text_block border_gray">
-                <div class="title">Чем хорош {{$product->title}}</div>
+                <h2 class="title">Чем хорош {{$product->title}}</h2>
                 {!! $product->text_advantages !!}
             </div>
         @endif
@@ -129,7 +129,7 @@
         </div>
         @if($product->text_how_make!=null)
             <div class="text_block">
-                <div class="title">Как создаётся {{$product->title}}?</div>
+                <h2 class="title">Как создаётся {{$product->title}}?</h2>
                 <p>{!! $product->text_how_make !!}</p>
 
 
@@ -154,7 +154,7 @@
 
         @if($product->title_variants!=null)
             <div class="block_variants">
-                <div class="title">{{$product->title_variants}}</div>
+                <h2 class="title">{{$product->title_variants}}</h2>
                 <div class="text_block">{!! $product->text_variants !!}</div>
                 @if(count($variants)>0)
                     <div class="ul_variants">
@@ -171,7 +171,7 @@
 
         <div class="videos_products_price_list">
             @if($product->text_images!=null || count($imgs_service)>0)
-                <div class="title">Фотографии работ До и После</div>
+                <h2 class="title">Фотографии работ До и После</h2>
                     <div class="text_block">
                         {!! $product->text_images !!}
                     </div>

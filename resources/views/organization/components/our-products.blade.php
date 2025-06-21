@@ -5,7 +5,7 @@ use App\Models\ImageProduct;
 
 <section class="block_content_organization_single our_products_single_organization">
     <div class="flex_single_organization">
-        <div class="title_li">Наши товары</div>
+        <h2 class="title_li">Наши товары</h2>
     </div>
     <div class="swiper our_products_swiper">
         <div class="swiper-wrapper">

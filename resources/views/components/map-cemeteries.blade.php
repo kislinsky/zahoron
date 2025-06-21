@@ -1,11 +1,11 @@
 <?php 
 $city=selectCity();
-$cemeteries=allCemetery();
+$cemeteries=$city->cemeteries;
 ?>
 
 <section class="karta_all">
     <div class="container">
-        <div class="title">Морги г. {{$city->title}} на карте</div>
+        <h2 class="title">Морги г. {{$city->title}} на карте</h2>
         <div id="map_mortuary" style="width: 100%; height: 600px"></div>
     </div>
 </section>

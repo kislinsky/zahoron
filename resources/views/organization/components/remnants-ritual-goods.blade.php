@@ -1,6 +1,6 @@
 @if($remnants_ritual_goods!=null && count($remnants_ritual_goods)>0)
     <div class="block_content_organization_single table_block_price_list">
-        <div class="title_li">Остатки ритуальных товаров</div>
+        <h2 class="title_li">Остатки ритуальных товаров</h2>
         <table class="table_price_list_organization">
             <thead>
                 <tr>

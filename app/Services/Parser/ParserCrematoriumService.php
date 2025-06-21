@@ -12,7 +12,7 @@ use App\Models\WorkingHoursCrematorium;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
-class ParserChurcheService
+class ParserCrematoriumService
 {
 
 
@@ -242,7 +242,7 @@ class ParserChurcheService
         ->withErrors($errors);
 }
 
-    public static function importCrematoriumReviews($request)
+    public static function importReviews($request)
 {
     $file = $request->file('file_reviews');
     $spreadsheet = IOFactory::load($file);
@@ -374,5 +374,25 @@ class ParserChurcheService
     
     return redirect()->back()->with("message_cart", $message);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

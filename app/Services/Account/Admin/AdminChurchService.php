@@ -2,6 +2,7 @@
 
 namespace App\Services\Account\Admin;
 use App\Services\Parser\ParserChurchService;
+use App\Services\Parser\ParserMosqueService;
 
 class AdminChurchService {
 
@@ -11,6 +12,10 @@ class AdminChurchService {
 
     public static function import($request){
         return ParserChurchService::index($request);
+    }
+
+    public static function importReviews($request){
+        return ParserChurchService::importReviews($request);
     }
 
 }

@@ -7,7 +7,7 @@ use App\Models\AdditionProduct;
 <section class="order_page bac_gray">
     <div class="container order_page_search">
         <div class="content_order_page">
-            <div class="index_title">Оформление заказа</div>    
+            <h1 class="index_title">Оформление заказа</h1>    
         </div>
         <img class='img_light_theme rose_checkout'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
         <img class='img_black_theme rose_checkout'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">
@@ -16,7 +16,7 @@ use App\Models\AdditionProduct;
 
 <section class="checkout">
     <div class="container">
-        <div class="title_middle">Ваш заказ</div>
+        <h2 class="title_middle">Ваш заказ</h2>
         <div class="html_basket">
             @if (isset($cart_items))
                 @if(count($cart_items)>0)

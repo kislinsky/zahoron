@@ -239,7 +239,7 @@ class ParserMosqueService
     }
 
 
-    public static function importMosqueReviews($request)
+    public static function importReviews($request)
 {
     $file = $request->file('file_reviews');
     $spreadsheet = IOFactory::load($file);

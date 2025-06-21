@@ -1,6 +1,6 @@
 {{view('forms.add-review-product',compact('product'))}}
 <div class="content_product">
-    <div class="title_news">Отзывы клиентов</div>
+    <h2 class="title_news">Отзывы клиентов</h2>
     <div class="blue_btn" data-bs-toggle="modal" data-bs-target="#add_review_form">Оставить отзыв</div>
     @if (isset($comments))
         @if ($comments->count()>0)

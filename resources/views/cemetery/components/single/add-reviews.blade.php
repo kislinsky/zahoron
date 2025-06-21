@@ -1,7 +1,7 @@
 <form method='get' action='{{route('cemetery.review.add')}}'class="block_content_organization_single our_products_single_organization">
     @csrf
     <div class="flex_single_organization">
-        <div class="title_li">Поделитесь мнением</div>
+        <h2 class="title_li">Поделитесь мнением</h2>
         <input type="hidden" value='{{$cemetery->id}}'name="cemetery_id">
         <div class="star-rating">
             <div class="star-rating__wrap">

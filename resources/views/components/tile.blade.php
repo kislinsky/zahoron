@@ -10,7 +10,7 @@ use App\Models\Product;
 
 <section class='products_monuments_grave'>
     <div class="container">
-        <div class="title">Заказать плитку на могилу в г. {{$city->title}} на маркетплейсе.</div>
+        <h2 class="title">Заказать плитку на могилу в г. {{$city->title}} на маркетплейсе.</h2>
             <div class="swiper products_tile_swiper">
                 <div class="swiper-wrapper">
                 @foreach($products_monuments_grave as $product_monuments_grave)

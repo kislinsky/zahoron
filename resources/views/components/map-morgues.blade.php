@@ -1,11 +1,11 @@
 <?php 
 $city=selectCity();
-$mortuaries=allMortuary();
+$mortuaries=$city->mortuaries;
 ?>
 
 <section class="karta_all">
     <div class="container">
-        <div class="title">Кладбища г. {{$city->title}} на карте</div>
+        <h2 class="title">Кладбища г. {{$city->title}} на карте</h2>
         <div id="map" style="width: 100%; height: 600px"></div>
     </div>
 </section>

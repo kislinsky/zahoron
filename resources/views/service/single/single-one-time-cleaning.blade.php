@@ -10,7 +10,7 @@ use App\Models\Service;
 <section class="order_page bac_gray">
     <div class="container order_page_search">
         <div class="content_order_page">
-            <div class="index_title">{{ $service->title }}</div>    
+            <h1 class="index_title">{{ $service->title }}</h1>    
         </div>
         <img class='img_light_theme rose_checkout'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
         <img class='img_black_theme rose_checkout'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">         
@@ -20,9 +20,9 @@ use App\Models\Service;
 
 <section class="single_service">
     <div class="container">
-        <div class="title">
+        <h2 class="title">
             {{ $service->title }} могилы на кладбищах в городе {{ $city->title }} {{ $edge->title }} 
-        </div>
+        </h2>
         @if($service->text_under_title!=null)
             <div class="text_block">
                 {!! $service->text_under_title !!}

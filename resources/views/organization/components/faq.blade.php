@@ -6,7 +6,7 @@ $faqs=FaqOrganization::orderBy('id','desc')->where('organization_id',$organizati
 @if (isset($faqs))
     @if (count($faqs)>0)
         <section class="faq_organization">
-            <div class="title_li">Популярные вопросы</div>
+            <h2 class="title_li">Популярные вопросы</h2>
             <div class="ul_faq">
             
                     @foreach ($faqs as $faq )    

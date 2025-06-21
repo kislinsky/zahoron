@@ -4,7 +4,7 @@
 
 <section class="block_content_organization_single sale_products_organization">
     <div class="flex_single_organization">
-        <div class="title_li">Скидки на товары</div>
+        <h2 class="title_li">Скидки на товары</h2>
     </div>
     <div class="swiper sale_products_swiper">
         <div class="swiper-wrapper">

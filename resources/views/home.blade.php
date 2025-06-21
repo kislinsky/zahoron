@@ -6,7 +6,7 @@
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-            <div class="index_title">Здравствуйте, {{ $user->name }}! <br>Добро пожаловать в ваш личный кабинет.</div>    
+            <h1 class="index_title">Здравствуйте, {{ $user->name }}! <br>Добро пожаловать в ваш личный кабинет.</h1>    
         </div>
         <img class='img_light_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
         <img class='img_black_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">        

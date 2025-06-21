@@ -48,7 +48,7 @@
             @if(count($parameters)>0)
                 <div class="content_product text_center">
                     <div class="title_product_content">{{$product->title}}</div>
-                    <div class="title_parameters"><div class="line_black_param"></div>В пакет входит<div class="line_black_param"></div></div>
+                    <h2 class="title_parameters"><div class="line_black_param"></div>В пакет входит<div class="line_black_param"></div></h2>
                     <ul>
                         @foreach ($parameters as $parameter)
                             <li>{{$parameter->title}}</li>
@@ -58,7 +58,7 @@
             @endif
             @if($product->content!=null)
                 <div class="content_product">
-                    <div class="title_product_content">Описание {{$product->title}} от {{$organization->title}} в г. {{$city->title}}</div>
+                    <h2 class="title_product_content">Описание {{$product->title}} от {{$organization->title}} в г. {{$city->title}}</h2>
                     {!! $product->content !!}
                 </div>
             @endif

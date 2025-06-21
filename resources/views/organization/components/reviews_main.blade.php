@@ -1,7 +1,7 @@
 @if($reviews_main!=null && count($reviews_main)>0)
     <div class="block_content_organization_single organization_single_reviews">
         <div class="flex_single_organization">
-            <div class="title_li">Отзывы <div class="title_gray">({{count($reviews)}})</div></div>
+            <h2 class="title_li">Отзывы <div class="title_gray">({{count($reviews)}})</div></h2>
             <a  class="text_black open_all_reviews_organization">Все отзывы <img src="{{asset('storage/uploads/Vector 9_2.svg')}}" alt=""></a>
         </div>
 

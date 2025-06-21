@@ -43,10 +43,10 @@
                     
                     @if($crematorium->content!=null)
                         <div class="block_content_organization_single">
-                            <div class="title_li title_li_organization_single">О нас</div>
+                            <h2 class="title_li title_li_organization_single">О нас</h2>
                                 <div class="text_black">
-                                    <div class="content_not_all">{!!custom_echo($crematorium->content,450)!!}</div>
-                                    <div class="content_all">{!!$crematorium->content!!}</div>
+                                    <div class="content_not_all">{!!custom_echo(contentCart($crematorium->content,$crematorium),450)!!}</div>
+                                    <div class="content_all">{!!contentCart($crematorium->content,$crematorium)!!}</div>
                                 </div>
                             </div>
                     @endif

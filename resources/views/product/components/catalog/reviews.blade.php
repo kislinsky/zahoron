@@ -1,7 +1,7 @@
 @if($reviews->count()>0)
 <section class='reviews_organizations reviews_products'>
     <div class="container">
-        <div class="title">Отзывы клиентов</div>
+        <h2 class="title">Отзывы клиентов</h2>
             <div class="swiper reviews_funeral_agencies_swiper">
                 <div class="swiper-wrapper">
                 @foreach($reviews as $review)

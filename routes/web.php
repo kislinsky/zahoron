@@ -744,6 +744,8 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
                     Route::get('/delete/{id}', [AdminRitualObjectsController::class, 'crematoriumDelete'])->name('account.admin.crematorium.delete');
                     Route::get('/parser', [AdminRitualObjectsController::class, 'crematoriumParser'])->name('account.admin.parser.crematorium');
                     Route::post('/import', [AdminRitualObjectsController::class, 'crematoriumImport'])->name('account.admin.parsing.crematorium');
+                    Route::post('/import/reviews', [AdminRitualObjectsController::class, 'crematoriumReviewsImport'])->name('account.admin.parsing.crematorium.reviews');
+
                 });
 
                 Route::group(['prefix'=>'columbarium'], function() {
@@ -751,16 +753,22 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
                     Route::get('/delete/{id}', [AdminRitualObjectsController::class, 'columbariumDelete'])->name('account.admin.columbarium.delete');
                     Route::get('/parser', [AdminRitualObjectsController::class, 'columbariumParser'])->name('account.admin.parser.columbarium');
                     Route::post('/import', [AdminRitualObjectsController::class, 'columbariumImport'])->name('account.admin.parsing.columbarium');
+                    Route::post('/import/reviews', [AdminRitualObjectsController::class, 'columbariumReviewsImport'])->name('account.admin.parsing.columbarium.reviews');
+
                 });
 
                 Route::group(['prefix'=>'mosque'], function() {
                     Route::get('/parser', [AdminRitualObjectsController::class, 'mosqueParser'])->name('account.admin.parser.mosque');
                     Route::post('/import', [AdminRitualObjectsController::class, 'mosqueImport'])->name('account.admin.parsing.mosque');
+                    Route::post('/import/reviews', [AdminRitualObjectsController::class, 'mosqueReviewsImport'])->name('account.admin.parsing.mosque.reviews');
+
                 });
 
                 Route::group(['prefix'=>'church'], function() {
                     Route::get('/parser', [AdminRitualObjectsController::class, 'churchParser'])->name('account.admin.parser.church');
                     Route::post('/import', [AdminRitualObjectsController::class, 'churchImport'])->name('account.admin.parsing.church');
+                    Route::post('/import/reviews', [AdminRitualObjectsController::class, 'churchReviewsImport'])->name('account.admin.parsing.church.reviews');
+
                 });
               
             });

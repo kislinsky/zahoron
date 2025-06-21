@@ -45,8 +45,8 @@
                         <div class="block_content_organization_single">
                             <div class="title_li title_li_organization_single">О нас</div>
                                 <div class="text_black">
-                                    <div class="content_not_all">{!!custom_echo($columbarium->content,450)!!}</div>
-                                    <div class="content_all">{!!$columbarium->content!!}</div>
+                                    <div class="content_not_all">{!!custom_echo(contentCart($columbarium->content,$columbarium),450)!!}</div>
+                                    <div class="content_all">{!!contentCart($columbarium->content,$columbarium)!!}</div>
                                 </div>
                             </div>
                     @endif

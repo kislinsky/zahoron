@@ -1,6 +1,6 @@
 @if($services!=null && count($services)>0)
     <div class="block_content_organization_single">
-        <div class="title_li title_li_organization_single">Цены на услуги {{$mortuary->title}} морга в г. {{$city->title}}</div>
+        <h2 class="title_li title_li_organization_single">Цены на услуги {{$mortuary->title}} морга в г. {{$city->title}}</h2>
         <div class="ul_memorial_menu">
             @foreach ($services as $service)
                 <div class="li_memorial_menu">

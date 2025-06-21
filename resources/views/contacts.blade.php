@@ -3,7 +3,7 @@
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-            <div class="index_title">Контакты</div>    
+            <h1 class="index_title">Контакты</h1>    
         </div>
         <img class='img_light_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
         <img class='img_black_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">
@@ -39,7 +39,7 @@
 
 <section class="karta_contacts">
     <div class="container">
-        <div class="title_our_works">Офис на карте</div>
+        <h2 class="title_our_works">Офис на карте</h2>
         <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3Aeceab6635117d452c8357b016b6e5af7c3d9e21b18b5056fa41b8cab5010a732&amp;source=constructor" width="100%" height="530" style='margin-top:20px;'frameborder="0"></iframe>    </div>
 </section>
 

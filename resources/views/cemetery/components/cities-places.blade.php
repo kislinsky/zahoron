@@ -5,7 +5,7 @@ $cities=selectCity()->edgeCities('cemeteries');
 @endphp
 <section class="block_cities_places">
     <div class="container">
-        <div class="title_middle">Города {{selectCity()->edge->title}} и их кладбища</div>
+        <h2 class="title_middle">Города {{selectCity()->edge->title}} и их кладбища</h2>
         @if(isset($cities) && $cities!=null && $cities->count()>0)
             <div class="ul_cities_places">
                 @foreach($cities as $city_place)

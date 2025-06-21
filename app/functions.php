@@ -2212,3 +2212,7 @@ function versionProject(){
     }
     return false;
 }
+
+function contentCart($content, $model) {
+    return str_replace('[Населённый пункт]', $model->city->title ?? '', $content);
+}

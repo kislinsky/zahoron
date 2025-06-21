@@ -2,7 +2,7 @@
     @if (count($news)>0)
         <section class="news">
             <div class="container">
-                <div class="title">Блог</div>
+                <h2 class="title">Блог</h2>
                 <div class="ul_news">
                     @foreach ($news as $news_one )
                         <div class="li_news">

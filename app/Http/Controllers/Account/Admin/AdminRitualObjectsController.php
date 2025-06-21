@@ -127,11 +127,27 @@ class AdminRitualObjectsController extends Controller
         return AdminMosqueService::import($request);
     }
 
+     public static function mosqueReviewsImport(Request $request){
+        
+        $request->validate([
+            'file_reviews' => 'required|mimes:xlsx,xls,csv'
+        ]);
+        return AdminMosqueService::importReviews($request);
+    }
+
     public static function churchParser(){
         return AdminChurchService::parser();
     }
 
     public static function churchImport(Request $request){
         return AdminChurchService::import($request);
+    }
+
+     public static function churchReviewsImport(Request $request){
+        
+        $request->validate([
+            'file_reviews' => 'required|mimes:xlsx,xls,csv'
+        ]);
+        return AdminChurchService::importReviews($request);
     }
 }

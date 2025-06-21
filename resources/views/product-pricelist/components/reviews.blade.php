@@ -3,7 +3,7 @@
         <section class="rewies">
             <div class="container">
                 <div class="flex_block">
-                    <div class="title">Отзывы клиентов</div>
+                    <h2 class="title">Отзывы клиентов</h2>
                     <div class="btn_border_blue">
                         Оставить отзыв
                     </div>

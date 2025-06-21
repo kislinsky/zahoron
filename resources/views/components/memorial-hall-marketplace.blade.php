@@ -10,7 +10,7 @@ use App\Models\Product;
 
 <section class="memorial_dinners">
     <div class="container">
-        <div class="title">Арендовать поминальный зал в г. {{$city->title}} на маркет плейсе</div>
+        <h2 class="title">Арендовать поминальный зал в г. {{$city->title}} на маркет плейсе</h2>
             <div class="swiper memorial_hall_swiper">
                 <div class="swiper-wrapper">
                 @foreach($products_memorial_hall as $product_memorial_hall)

@@ -11,7 +11,7 @@ use App\Models\Product;
 
 <section class="memorial_dinners">
     <div class="container">
-        <div class="title">Заказать поминальные обеды в г. {{$city->title}} на маркетплейсе</div>
+        <h2 class="title">Заказать поминальные обеды в г. {{$city->title}} на маркетплейсе</h2>
             <div class="swiper memorial_dinners_swiper">
                 <div class="swiper-wrapper">
                 @foreach($products_memorial_dinners as $product_memorial_dinner)

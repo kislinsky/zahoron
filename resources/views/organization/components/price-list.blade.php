@@ -1,6 +1,6 @@
 @if($price_lists!=null && count($price_lists)>0)
     <div class="block_content_organization_single table_block_price_list">
-        <div class="title_li">Прайслисты</div>
+        <h2 class="title_li">Прайслисты</h2>
         <table class="table_price_list_organization">
             <thead>
                 <tr>

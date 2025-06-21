@@ -6,7 +6,7 @@ $reviews_organization=reviewsOrganization($city->id);
 @if($reviews_organization->count()>0)
 <section class='reviews_organizations'>
     <div class="container">
-        <div class="title">Отзывы клиентов о ритуальных агентствах в г. {{$city->title}}</div>
+        <h2 class="title">Отзывы клиентов о ритуальных агентствах в г. {{$city->title}}</h2>
 
             <div class="swiper reviews_funeral_agencies_swiper">
                 <div class="swiper-wrapper">

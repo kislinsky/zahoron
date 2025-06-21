@@ -3,7 +3,7 @@ use App\Models\ImageProduct;
 
 ?>
 <div class="block_content_organization_single">
-    <div class="title_li">Ритуальные услуги и товары ритуального агенства “{{$organization->title}}”</div>
+    <h2 class="title_li">Ритуальные услуги и товары ритуального агенства “{{$organization->title}}”</h2>
     <div class="flex_select_products_organization">
         <div class="block_input" >
             <label for="">Выберите категорию</label>
