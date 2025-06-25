@@ -98,7 +98,7 @@ if($time_difference==null){
                         'city_id' => $city->id ?? null,
                         'phone' => normalizePhone($columbariumRow[$columns['Телефоны'] ?? null] ?? null),
                         'content' => $columbariumRow[$columns['SEO Описание'] ?? null] ?? ($columbariumRow[$columns['Описание'] ?? null] ?? null),
-                        'img_url' => $columbariumRow[$columns['Логотип'] ?? null] ?? 'default',
+                        'img_url' => $columbariumRow[$columns['Главное фото'] ?? null] ?? 'default',
                         'href_img' => 1,
                         'two_gis_link' => $columbariumRow[$columns['URL'] ?? null] ?? null,
                         'time_difference' => $time_difference,
@@ -106,9 +106,9 @@ if($time_difference==null){
                     ];
 
                     // Обработка логотипа
-                    if (isset($columns['Логотип']) && $columbariumRow[$columns['Логотип']] != 'default') {
-                        if ($columbariumRow[$columns['Логотип']] != null && !isBrokenLink($columbariumRow[$columns['Логотип']])) {
-                            $columbariumData['img_url'] = $columbariumRow[$columns['Логотип']];
+                    if (isset($columns['Главное фото']) && $columbariumRow[$columns['Главное фото']] != 'default') {
+                        if ($columbariumRow[$columns['Главное фото']] != null && !isBrokenLink($columbariumRow[$columns['Главное фото']])) {
+                            $columbariumData['img_url'] = $columbariumRow[$columns['Главное фото']];
                         } else {
                             $columbariumData['img_url'] = 'default';
                         }

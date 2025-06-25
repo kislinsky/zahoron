@@ -41,7 +41,7 @@
                         @enderror
                         <div class="text_input">дд.мм.гггг</div>
                     </div>
-                    <button class='blue_btn' type='submit'>Заказать поиск</button>
+                    <button class='blue_btn' type='submit'>Поиск</button>
                 </div>
                
                 

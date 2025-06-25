@@ -7572,3 +7572,7 @@ color: #0080D7;
 .block_filter_mobile .text_black_bold{
     text-align: start;
 }
+
+.header_admin .item_decoder{
+    margin-left: auto;
+}

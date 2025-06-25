@@ -512,17 +512,23 @@ function get_ip()
 }
 
 
-function custom_echo($x, $length)
+function custom_echo($x, $length) 
 {
-  if(strlen($x)<=$length)
-  {
-    echo $x;
-  }
-  else
-  {
-    $y=substr($x,0,$length) . '... <br> <div class="open_all_content_block">Читать</div>';
-    echo $y;
-  }
+    // Проверяем, что mbstring доступен
+    $mb_available = function_exists('mb_substr');
+    
+    if ($mb_available ? mb_strlen($x) <= $length : strlen($x) <= $length) {
+        echo htmlspecialchars($x, ENT_QUOTES, 'UTF-8');
+    } else {
+        // Обрезаем с учетом многобайтовых символов
+        $trimmed = $mb_available 
+            ? mb_substr($x, 0, $length, 'UTF-8')
+            : substr($x, 0, $length);
+        
+        // Экранируем вывод и добавляем "Читать"
+        echo htmlspecialchars($trimmed, ENT_QUOTES, 'UTF-8') 
+            . '... <br> <div class="open_all_content_block">Читать</div>';
+    }
 }
 
 

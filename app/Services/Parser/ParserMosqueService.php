@@ -94,7 +94,7 @@ class ParserMosqueService
                             'city_id' => $city->id ?? null,
                             'phone' => normalizePhone($mosqueRow[$columns['Телефоны'] ?? null] ?? null),
                             'content' => $mosqueRow[$columns['SEO Описание'] ?? null] ?? ($mosqueRow[$columns['Описание'] ?? null] ?? null),
-                            'img_url' => $mosqueRow[$columns['Логотип'] ?? null] ?? 'default',
+                            'img_url' => $mosqueRow[$columns['Главное фото'] ?? null] ?? 'default',
                             'href_img' => 1,
                             'two_gis_link' => $mosqueRow[$columns['URL'] ?? null] ?? null,
                             'time_difference' => $time_difference,
@@ -103,9 +103,9 @@ class ParserMosqueService
 
                         
                         // Обработка логотипа
-                        if (isset($columns['Логотип']) && $mosqueRow[$columns['Логотип']] != 'default') {
-                            if ($mosqueRow[$columns['Логотип']] != null && !isBrokenLink($mosqueRow[$columns['Логотип']])) {
-                                $mosqueData['img_url'] = $mosqueRow[$columns['Логотип']];
+                        if (isset($columns['Главное фото']) && $mosqueRow[$columns['Главное фото']] != 'default') {
+                            if ($mosqueRow[$columns['Главное фото']] != null && !isBrokenLink($mosqueRow[$columns['Главное фото']])) {
+                                $mosqueData['img_url'] = $mosqueRow[$columns['Главное фото']];
                             } else {
                                 $mosqueData['img_url'] = 'default';
                             }

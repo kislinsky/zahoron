@@ -1,7 +1,14 @@
 <?php 
 
 use App\Models\Edge;
-$objects=Edge::orderBy('title','asc')->get();
+$objects = Edge::whereHas('area', function($query) {
+    $query->whereHas('cities', function($query) {
+        $query->whereHas('cemeteries');
+    });
+})
+->orderBy('title', 'asc')
+->get();
+
 $type='edge';
 
 ?>

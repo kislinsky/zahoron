@@ -31,6 +31,8 @@
             <label>Выбор полей для обновления данных</label>
             <select name="columns_to_update[]" id="columns_to_update" class="form-select" multiple>
                 <option value="title">Название</option>
+                <option value="img_url">Главное фото</option>
+                <option value="galerey">Фотографии</option>
                 <option value="adres">Адрес</option>
                 <option value="width">Широта</option>
                 <option value="longitude">Долгота</option>

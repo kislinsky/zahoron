@@ -99,7 +99,7 @@ class ParserCrematoriumService
                         'city_id' => $city->id ?? null,
                         'phone' => normalizePhone($crematoriumRow[$columns['Телефоны'] ?? null] ?? null),
                         'content' => $crematoriumRow[$columns['SEO Описание'] ?? null] ?? ($crematoriumRow[$columns['Описание'] ?? null] ?? null),
-                        'img_url' => $crematoriumRow[$columns['Логотип'] ?? null] ?? 'default',
+                        'img_url' => $crematoriumRow[$columns['Главное фото'] ?? null] ?? 'default',
                         'href_img' => 1,
                         'two_gis_link' => $crematoriumRow[$columns['URL'] ?? null] ?? null,
                         'time_difference' => $time_difference,
@@ -107,9 +107,9 @@ class ParserCrematoriumService
                     ];
 
                     // Обработка логотипа
-                    if (isset($columns['Логотип']) && $crematoriumRow[$columns['Логотип']] != 'default') {
-                        if ($crematoriumRow[$columns['Логотип']] != null && !isBrokenLink($crematoriumRow[$columns['Логотип']])) {
-                            $crematoriumData['img_url'] = $crematoriumRow[$columns['Логотип']];
+                    if (isset($columns['Главное фото']) && $crematoriumRow[$columns['Главное фото']] != 'default') {
+                        if ($crematoriumRow[$columns['Главное фото']] != null && !isBrokenLink($crematoriumRow[$columns['Главное фото']])) {
+                            $crematoriumData['img_url'] = $crematoriumRow[$columns['Главное фото']];
                         } else {
                             $crematoriumData['img_url'] = 'default';
                         }

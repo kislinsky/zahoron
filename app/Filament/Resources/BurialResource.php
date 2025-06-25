@@ -208,7 +208,7 @@ class BurialResource extends Resource
 
                           View::make('image')
                             ->label('Текущее изображение')
-                            ->view('filament.forms.components.custom-image') // Указываем путь к Blade-шаблону
+                            ->view('filament.forms.components.custom-image-burial') // Указываем путь к Blade-шаблону
                             ->extraAttributes(['class' => 'custom-image-class'])
                             ->columnSpan('full'),
                            

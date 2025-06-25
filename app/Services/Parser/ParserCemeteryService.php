@@ -160,7 +160,7 @@ class ParserCemeteryService
                             'two_gis_link'=> $cemeteryRow[$columns['URL']],
                             'area_id' => $area->id,
                             'phone' => normalizePhone($cemeteryRow[$columns['Телефоны']]),
-                            'img_url' => 'default',
+                            'img_url' => $cemeteryRow[$columns['Главное фото'] ] ,
                             'href_img' => 1,
                             'price_burial_location' => $price ?? 0,
                             'time_difference' => $time_difference,
@@ -202,55 +202,59 @@ class ParserCemeteryService
                                 }
                             }
                         } elseif ($importAction === 'update') {
-                            if($cadastralNumber!=null){
-                                // Проверяем существование по кадастровому номеру
-                                $cemetery = Cemetery::where('cadastral_number', $cadastralNumber)->first();
-                                if ($cemetery) {
-                                    $skippedRows++;
-                                    continue;
-                                }    
-                            }
 
-                            // Проверяем существование по кадастровому номеру
                             $cemetery = Cemetery::find($objectId);
+
                             if ($cemetery) {
-                                $skippedRows++;
-                                continue;
-                            }    
-                            
-                            if ($cemetery) {
+                                
                                 $updateData = [];
                                 foreach ($updateFields as $field) {
                                     if (isset($cemeteryData[$field])) {
                                         $updateData[$field] = $cemeteryData[$field];
                                     }
                                 }
-                                
+
+
                                 if (!empty($updateData)) {
                                     $cemetery->update($updateData);
                                     $updatedCemeteries++;
                                 }
 
                                 if(in_array('working_hours', $updateFields) && isset($columns['Режим работы'])) {
-                                $workHours = $cemeteryRow[$columns['Режим работы']] ?? null;
-                                if($workHours) {
-                                    // Удаляем старые записи о рабочем времени
-                                    WorkingHoursCemetery::where('cemetery_id', $cemetery->id)->delete();
-                                    
-                                    // Создаем новые записи
-                                    $days = parseWorkingHours($workHours);
-                                    foreach($days as $day) {
-                                        $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
-                                        WorkingHoursCemetery::create([
-                                            'day' => $day['day'],
-                                            'time_start_work' => $day['time_start_work'],
-                                            'time_end_work' => $day['time_end_work'],
-                                            'holiday' => $holiday,
-                                            'cemetery_id' => $cemetery->id,
-                                        ]);
+                                    $workHours = $cemeteryRow[$columns['Режим работы']] ?? null;
+                                    if($workHours) {
+                                        // Удаляем старые записи о рабочем времени
+                                        WorkingHoursCemetery::where('cemetery_id', $cemetery->id)->delete();
+                                        
+                                        // Создаем новые записи
+                                        $days = parseWorkingHours($workHours);
+                                        foreach($days as $day) {
+                                            $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
+                                            WorkingHoursCemetery::create([
+                                                'day' => $day['day'],
+                                                'time_start_work' => $day['time_start_work'],
+                                                'time_end_work' => $day['time_end_work'],
+                                                'holiday' => $holiday,
+                                                'cemetery_id' => $cemetery->id,
+                                            ]);
+                                        }
                                     }
                                 }
-                            }
+                                // Обработка фотографий при обновлении
+                                if (in_array('galerey', $updateFields) && isset($columns['Фотографии']) && !empty($cemeteryRow[$columns['Фотографии']])) {
+                                    ImageCemetery::where('cemetery_id', $cemetery->id)->delete();
+                                    
+                                    $urls_array = explode(', ', $cemeteryRow[$columns['Фотографии']]);
+                                    foreach ($urls_array as $img) {
+                                        if ($img != null ) {
+                                            ImageCemetery::create([
+                                                'img_url' => $img,
+                                                'href_img' => 1,
+                                                'cemetery_id' => $cemetery->id,
+                                            ]);
+                                        }
+                                    }
+                                }
                             } else {
                                 $skippedRows++;
                             }
@@ -497,7 +501,7 @@ class ParserCemeteryService
     $headers = array_map('strtolower', $headers);
     
     $columnIndexes = [
-        'cemetery_id' => array_search('id', $headers),
+        'cemetery_id' => array_search('ID', $headers),
         'name' => array_search('Имя', $headers),
         'date' => array_search('Дата', $headers),
         'rating' => array_search('Оценка', $headers),

@@ -67,34 +67,70 @@ class CityService {
 
 
     public static function ajaxGeo($data){
-        if($data['type_request']=='children'){
-            if($data['type_object']=='edge'){
-                $objects=Area::where('edge_id',$data['id'])->orderBy('title','asc')->get();
-                $type='area';
+       if ($data['type_request'] == 'children') {
+            if ($data['type_object'] == 'edge') {
+                // Для краёв: только те, у которых есть области с городами, где есть кладбища
+                $objects = Area::whereHas('cities', function($query) {
+                        $query->whereHas('cemeteries');
+                    })
+                    ->where('edge_id', $data['id'])
+                    ->orderBy('title', 'asc')
+                    ->get();
+                $type = 'area';
             }
-            if($data['type_object']=='area'){
-                $objects=City::where('area_id',$data['id'])->orderBy('title','asc')->get();
-                $type='city';
+            elseif ($data['type_object'] == 'area') {
+                // Для областей: только те города, у которых есть кладбища
+                $objects = City::whereHas('cemeteries')
+                    ->where('area_id', $data['id'])
+                    ->orderBy('title', 'asc')
+                    ->get();
+                $type = 'city';
             }
-            if($data['type_object']=='city'){
-                $objects=Cemetery::where('city_id',$data['id'])->orderBy('title','asc')->get();
-                $type='cemetery';
+            elseif ($data['type_object'] == 'city') {
+                // Для городов: просто все кладбища (поскольку мы уже фильтровали города)
+                $objects = Cemetery::where('city_id', $data['id'])
+                    ->orderBy('title', 'asc')
+                    ->get();
+                $type = 'cemetery';
             }
         }
-        else{
-            if($data['type_object']=='cemetery'){
-                $parent_id=Cemetery::find($data['id'])->city->area_id;
-                $objects=City::where('area_id',$parent_id)->orderBy('title','asc')->get();
-                $type='city';
+        else {
+            if ($data['type_object'] == 'cemetery') {
+                // Получаем родительский город (city) для кладбища
+                $city = Cemetery::find($data['id'])->city;
+                $parent_id = $city->area_id;
+                
+                // Получаем города в этой области (area), у которых есть кладбища
+                $objects = City::whereHas('cemeteries')
+                    ->where('area_id', $parent_id)
+                    ->orderBy('title', 'asc')
+                    ->get();
+                $type = 'city';
             }
-            if($data['type_object']=='city'){
-                $parent_id=City::find($data['id'])->area->edge_id;
-                $objects=Area::where('edge_id',$parent_id)->orderBy('title','asc')->get();
-                $type='area';
+            elseif ($data['type_object'] == 'city') {
+                // Получаем родительскую область (area) для города
+                $area = City::find($data['id'])->area;
+                $parent_id = $area->edge_id;
+                
+                // Получаем области в этом крае (edge), у которых есть города с кладбищами
+                $objects = Area::whereHas('cities', function($query) {
+                        $query->whereHas('cemeteries');
+                    })
+                    ->where('edge_id', $parent_id)
+                    ->orderBy('title', 'asc')
+                    ->get();
+                $type = 'area';
             }
-            if($data['type_object']=='area'){
-                $objects=Edge::orderBy('title','asc')->get();
-                $type='edge';
+            elseif ($data['type_object'] == 'area') {
+                // Получаем все края (edge), у которых есть области с городами, где есть кладбища
+                $objects = Edge::whereHas('area', function($query) {
+                        $query->whereHas('cities', function($query) {
+                            $query->whereHas('cemeteries');
+                        });
+                    })
+                    ->orderBy('title', 'asc')
+                    ->get();
+                $type = 'edge';
             }
         }
         

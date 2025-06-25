@@ -10,9 +10,9 @@
             @csrf
             <div class="mb-3">
                 <label for="formFile" class="form-label">Выберите файл</label>
-                <input class="form-control" type="file" name='file' id="formFile">
+                <input class="form-control" type="file" multiple name='files[]' id="formFile">
             </div>
-            @error('file')
+            @error('files[]')
                 <div class='error-text'>{{ $message }}</div>
             @enderror
             <div class="col-auto">

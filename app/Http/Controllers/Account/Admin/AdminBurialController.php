@@ -22,9 +22,6 @@ class AdminBurialController extends Controller
     }
     
     public static function import(Request $request){
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv'
-        ]);
         return AdminBurialService::import($request);
     }
 }

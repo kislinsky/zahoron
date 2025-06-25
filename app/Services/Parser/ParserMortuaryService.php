@@ -103,7 +103,7 @@ class ParserMortuaryService
                         'city_id' => $city->id ?? null,
                         'phone' => normalizePhone($mortuaryRow[$columns['Телефоны'] ?? null] ?? null),
                         'content' => $mortuaryRow[$columns['SEO Описание'] ?? null] ?? ($mortuaryRow[$columns['Описание'] ?? null] ?? null),
-                        'img_url' => $mortuaryRow[$columns['Логотип'] ?? null] ?? 'default',
+                        'img_url' => $mortuaryRow[$columns['Главное фото'] ?? null] ?? 'default',
                         'href_img' => 1,
                         'two_gis_link' => $mortuaryRow[$columns['URL'] ?? null] ?? null,
                         'time_difference' => $time_difference,
@@ -111,9 +111,9 @@ class ParserMortuaryService
                     ];
 
                     // Обработка логотипа
-                    if (isset($columns['Логотип']) && $mortuaryRow[$columns['Логотип']] != 'default') {
-                        if ($mortuaryRow[$columns['Логотип']] != null && !isBrokenLink($mortuaryRow[$columns['Логотип']])) {
-                            $mortuaryData['img_url'] = $mortuaryRow[$columns['Логотип']];
+                    if (isset($columns['Главное фото']) && $mortuaryRow[$columns['Главное фото']] != 'default') {
+                        if ($mortuaryRow[$columns['Главное фото']] != null && !isBrokenLink($mortuaryRow[$columns['Главное фото']])) {
+                            $mortuaryData['img_url'] = $mortuaryRow[$columns['Главное фото']];
                         } else {
                             $mortuaryData['img_url'] = 'default';
                         }
