@@ -16,7 +16,10 @@ class ImagePersonal extends Model
     }
 
     public function urlImg(){
-        return asset('storage/'.$this->title);
+        if($this->href_img!=1){
+            return asset('storage/'.$this->title);
+        }
+        return $this->title;
     }
 
 }

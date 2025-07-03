@@ -4,12 +4,13 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\City;
+use App\Models\Cemetery;
 use Illuminate\Support\Facades\DB;
 
 class CheckCityDuplicates extends Command
 {
     protected $signature = 'cities:check-duplicates';
-    protected $description = 'Check for city duplicates and clean up cities without organizations';
+    protected $description = 'Check for city duplicates and clean up, prioritizing cities with most organizations';
 
     public function handle()
     {
@@ -26,75 +27,65 @@ class CheckCityDuplicates extends Command
             return 0;
         }
 
-        $this->info('Found ' . $duplicates->count() . ' city names with duplicates.');
+        $this->info('Found ' . $duplicates->count() . ' duplicate city names.');
 
         $deletedCount = 0;
         $mergedCount = 0;
 
         foreach ($duplicates as $cityName) {
-            $this->line("Processing duplicates for city: {$cityName}");
+            $this->line("\nProcessing duplicates for: {$cityName}");
 
-            // Получаем все города с этим именем с подсчетом организаций
+            // Получаем города, отсортированные по количеству организаций (по убыванию)
             $cities = City::withCount('organizations')
                 ->where('title', $cityName)
                 ->orderByDesc('organizations_count')
                 ->get();
 
-            // Если только один город - пропускаем
-            if ($cities->count() < 2) {
-                continue;
-            }
+            $mainCity = $cities->first();
+            $otherCities = $cities->slice(1);
 
-            // Разделяем города с организациями и без
-            $withOrgs = $cities->filter(fn($city) => $city->organizations_count > 0);
-            $withoutOrgs = $cities->filter(fn($city) => $city->organizations_count === 0);
+            $this->info("Main city ID: {$mainCity->id} (Organizations: {$mainCity->organizations_count})");
 
-            // Случай 1: есть города без организаций
-            if ($withoutOrgs->isNotEmpty()) {
-                $this->info("Found {$withoutOrgs->count()} duplicates without organizations for '{$cityName}'");
+            foreach ($otherCities as $cityToProcess) {
+                try {
+                    DB::transaction(function () use ($mainCity, $cityToProcess, &$deletedCount, &$mergedCount) {
+                        $hasOrganizations = $cityToProcess->organizations_count > 0;
+                        $hasCemeteries = $cityToProcess->cemeteries()->exists();
 
-                // Удаляем города без организаций
-                foreach ($withoutOrgs as $city) {
-                    try {
-                        $city->delete();
-                        $deletedCount++;
-                        $this->line("Deleted city ID: {$city->id} (no organizations)");
-                    } catch (\Exception $e) {
-                        $this->error("Failed to delete city ID: {$city->id} - " . $e->getMessage());
-                    }
-                }
-            } 
-            // Случай 2: все города имеют организации
-            else {
-                $this->info("All duplicates for '{$cityName}' have organizations");
+                        // Переносим организации (если есть)
+                        if ($hasOrganizations) {
+                            $orgCount = $cityToProcess->organizations()->count();
+                            $cityToProcess->organizations()->update(['city_id' => $mainCity->id]);
+                            $this->line("Moved {$orgCount} organizations to main city ID: {$mainCity->id}");
+                        }
 
-                // Сортируем по количеству организаций (убывание)
-                $sortedCities = $cities->sortByDesc('organizations_count');
-                $mainCity = $sortedCities->first();
-                $otherCities = $sortedCities->slice(1);
+                        // Переносим кладбища (если есть)
+                        if ($hasCemeteries) {
+                            $cemeteryCount = $cityToProcess->cemeteries()->count();
+                            $cityToProcess->cemeteries()->update(['city_id' => $mainCity->id]);
+                            $this->line("Moved {$cemeteryCount} cemeteries to main city ID: {$mainCity->id}");
+                        }
 
-                foreach ($otherCities as $cityToMerge) {
-                    try {
-                        DB::transaction(function () use ($mainCity, $cityToMerge) {
-                            // Переносим организации
-                            $cityToMerge->organizations()->update(['city_id' => $mainCity->id]);
-                            
-                            // Удаляем город
-                            $cityToMerge->delete();
-                        });
+                        // Удаляем город-дубликат
+                        $cityToProcess->delete();
 
-                        $mergedCount++;
-                        $this->line("Merged organizations from city ID: {$cityToMerge->id} ({$cityToMerge->organizations_count} orgs) to city ID: {$mainCity->id}");
-                    } catch (\Exception $e) {
-                        $this->error("Failed to merge city ID: {$cityToMerge->id} - " . $e->getMessage());
-                    }
+                        if ($hasOrganizations || $hasCemeteries) {
+                            $mergedCount++;
+                            $this->info("Merged and deleted city ID: {$cityToProcess->id}");
+                        } else {
+                            $deletedCount++;
+                            $this->line("Deleted empty city ID: {$cityToProcess->id}");
+                        }
+                    });
+                } catch (\Exception $e) {
+                    $this->error("Error processing city ID: {$cityToProcess->id} - " . $e->getMessage());
                 }
             }
         }
 
-        $this->info("Completed!");
-        $this->info("Deleted {$deletedCount} duplicate cities without organizations.");
-        $this->info("Merged {$mergedCount} duplicate cities with organizations.");
+        $this->info("\nOperation completed!");
+        $this->info("Total merged cities: {$mergedCount}");
+        $this->info("Total deleted empty cities: {$deletedCount}");
         
         return 0;
     }

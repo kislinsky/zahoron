@@ -26,10 +26,10 @@ class RereadCities extends Command
      */
     public function handle()
     {
-        $cities=City::all();
+        $cities=City::whereHas('organizations')->where('width',null)->where('longitude',null)->get();
         foreach($cities as $city){
-            if(isset(getCoordinatesCity($city->title)['results'][0]['geometry'])){
-                $coordinates=getCoordinatesCity($city->title)['results'][0]['geometry'];
+            if(isset(getCoordinatesCity($city->title,$city->area->title)['results'][0]['geometry'])){
+                $coordinates=getCoordinatesCity($city->title,$city->area->title)['results'][0]['geometry'];
                 $city->update([
                     'width'=>$coordinates['lat'],
                     'longitude'=>$coordinates['lng'],

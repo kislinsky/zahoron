@@ -73,7 +73,7 @@
        <div class="grid_two_single_product">
             <div class="block_single_product">
                 <div class="swiper-button-next swiper_button_next_rewies"><img src='{{asset('storage/uploads/Переключатель.svg')}}'></div>
-                <div class="swiper-button-prev swiper_button_prev_rewies"><img src='{{asset('storage/uploads/Переключатель (1).svg')}}'></div>
+                <div class="swiper-button-prev swiper_button_prev_rewies"><img src='{{asset('storage/uploads/Переключатель (1) copy.svg')}}'></div>
                 <div class="swiper burial_swiper">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
@@ -257,7 +257,7 @@
                                     @foreach ($products_names as $products_name)
                                         <div class="li_product">
                                             <div class="one_block_li_product">
-                                                <img src="{{asset('storage/uploads_burials/'. $products_name->img )}}" alt="">
+                                                <img src="{{ $products_name->urlImg() }}" alt="">
                                                 <div class="btn_gray">{{ $products_name->who }}</div>
                                             </div>
                                             <div class="two_block_li_product">
@@ -292,7 +292,7 @@
                                     @foreach ($products_dates as $products_date)
                                         <div class="li_product">
                                             <div class="one_block_li_product">
-                                                <img src="{{asset('storage/uploads_burials/'. $products_date->img )}}" alt="">
+                                                <img src="{{ $products_date->urlImg() }}" alt="">
                                                 <div class="btn_gray">{{ $products_date->who }}</div>
                                             </div>
                                             <div class="two_block_li_product">

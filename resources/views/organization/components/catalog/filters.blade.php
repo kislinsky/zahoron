@@ -18,7 +18,9 @@
             <div class="mobile_filter_select category-select">
                 @if(isset($cats))
                     @foreach ($cats as $cat)
-                        <div class="mobile_filter_option" data-id="{{ $cat->id }}">{{ $cat->title }}</div>
+                        @if($cat->display==1)
+                            <div class="mobile_filter_option" data-id="{{ $cat->id }}">{{ $cat->title }}</div>
+                        @endif
                     @endforeach
                 @endif
             </div>
@@ -50,7 +52,9 @@
                 
                 @if(isset($cats_children) && count($cats_children)>0)
                     @foreach ($cats_children as $cat_children)
-                        <div class="mobile_filter_option" data-id="{{ $cat_children->id }}" data-slug="{{ $cat_children->slug }}">{{ $cat_children->title }}</div>
+                        @if($cat_children->display==1)
+                            <div class="mobile_filter_option" data-id="{{ $cat_children->id }}" data-slug="{{ $cat_children->slug }}">{{ $cat_children->title }}</div>
+                        @endif
                     @endforeach
                 @endif
             </div>

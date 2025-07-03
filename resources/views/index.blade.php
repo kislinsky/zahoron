@@ -61,7 +61,7 @@
                     <div class="text_middle_index">Найдите могилу и закажите уход за ней</div>
                     <img style='max-width:117px;'src="{{asset('storage/uploads/Похороны-Photoroom 2.svg')}}" alt="" class="img_index_service">
                 </div>
-                <form method='get' action="{{route('search.burial')}}" class='index_search'>
+                <form method='get' action="{{route('search.burial.result')}}" class='index_search'>
                     @csrf
                     <div class="grid_btn">
                         <input class='blue_input'type="text" name='surname' placeholder='Фамилия'>
