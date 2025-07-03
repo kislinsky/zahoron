@@ -13,50 +13,6 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class ParserBurialService
 {
-    // public static function index($request){
-    //     $spreadsheet = new Spreadsheet();
-    //     $file = $request->file('file');
-    //     $spreadsheet = IOFactory::load($file);
-    //     // Получение данных из первого листа
-    //     $sheet = $spreadsheet->getActiveSheet();
-    //     $burials = array_slice($sheet->toArray(),1);
-    //     foreach($burials as $burial){
-    //         $city=createCity($burial[2],$burial[1],);
-    //         $cemetery=createCemetery($burial[3],$city->title,str_replace(',','.',$burial[9]),str_replace(',','.',$burial[10]));
-
-    //         $status=1;
-    //         if($burial[16]!='Готово'){
-    //             $status=0;
-    //         }
-    //         if($city!=null && $cemetery!=null){
-
-    //             $burial_create=Burial::create([
-    //                 'surname'=>$burial[11],
-    //                 'name'=>$burial[12],
-    //                 'patronymic'=>$burial[13],
-    //                 'date_death'=>$burial[15],
-    //                 'date_birth'=>$burial[14],
-    //                 'status'=>$status,
-    //                 'href_img'=>1,
-    //                 'who'=>'Гражданский',
-    //                 'img'=>$burial[7],
-    //                 'img_original'=>$burial[8],
-
-    //                 'width'=>str_replace(',','.',$burial[9]),
-    //                 'longitude'=>str_replace(',','.',$burial[10]),
-    //                 'cemetery_id'=>$cemetery->id ,
-    //                 'slug'=>slug("$burial[11]-$burial[12]-$burial[13]-$burial[14]-$burial[15]"),
-    //                 'location_death'=>"Россия,$burial[1],$burial[2]",
-    //             ]);
-                
-
-
-    //         }
-    //     }
-    //     return redirect()->back()->with("message_cart", 'Захоронения успешно добавлены');
-       
-    // }
-
 
     public static function index($request) {
     // Валидация входных данных (изменено для множества файлов)
@@ -127,9 +83,15 @@ class ParserBurialService
                         continue;
                     }
 
-                    $cemetery = Cemetery::where('title', $burialRow[$columns['Кладбище']])
-                                        ->where('city_id', $city->id)
-                                        ->first();
+                   // Заменяем стандартный поиск на кастомный
+                    $cemetery = self::findCemeteryByName($burialRow[$columns['Кладбище']], $city->id);
+
+                    // Если не нашли, пробуем очистить название от лишних слов
+                    if (!$cemetery) {
+                        $cleanedName = self::cleanCemeteryName($burialRow[$columns['Кладбище']]);
+                        $cemetery = self::findCemeteryByName($cleanedName, $city->id);
+                    }
+
                     if (!$cemetery) {
                         $skippedRows++;
                         continue;
@@ -155,8 +117,7 @@ class ParserBurialService
                         'href_img' => 1,
                         'url' => $burialRow[$columns['URL']],
                         'who' => 'Гражданский',
-                        'img' => $burialRow[$columns['Главное фото']] ?? null,
-                        'img_original' => $burialRow[$columns['Главное фото']] ?? null,
+                        'img_url' => $burialRow[$columns['Главное фото']] ?? null,
                         'width' => str_replace(',', '.', $burialRow[$columns['Широта']]),
                         'longitude' => str_replace(',', '.', $burialRow[$columns['Долгота']]),
                         'cemetery_id' => $cemetery->id,
@@ -218,5 +179,46 @@ protected static function generateUniqueSlug($surname, $name, $patronymic, $birt
 
     return $slug;
 }
+protected static function findCemeteryByName(string $name, int $cityId)
+{
+    // Сначала пробуем точное совпадение
+    $cemetery = Cemetery::where('city_id', $cityId)
+        ->where('title', $name)
+        ->first();
 
+    if ($cemetery) {
+        return $cemetery;
+    }
+
+    // Если не нашли, пробуем поиск по части названия
+    return Cemetery::where('city_id', $cityId)
+        ->where(function($query) use ($name) {
+            $query->where('title', 'like', "%{$name}%")
+                  ->orWhereRaw('? LIKE CONCAT("%", title, "%")', [$name]);
+        })
+        ->orderByRaw('LENGTH(title)') // Предпочитаем более короткие названия (основные)
+        ->first();
+}
+
+/**
+ * Очистка названия кладбища от лишних слов
+ */
+protected static function cleanCemeteryName(string $name): string
+{
+    // Удаляем общие префиксы/суффиксы
+    $replacements = [
+        '/^Кладбище\s+/iu' => '',
+        '/г\.\s*/iu' => '',
+        '/пос\.\s*/iu' => '',
+        '/дер\.\s*/iu' => '',
+        '/село\s*/iu' => '',
+        '/деревня\s*/iu' => '',
+        '/\(.*\)/' => '', // Удаляем всё в скобках
+    ];
+
+    $name = preg_replace(array_keys($replacements), array_values($replacements), $name);
+    
+    // Удаляем лишние пробелы и обрезаем строку
+    return trim($name);
+}
 }

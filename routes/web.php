@@ -176,7 +176,7 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
 
 
         Route::get('category/children/ul', [CategoryProductController::class, 'ajaxCategoryChildrenUl'])->name('category.product.children.ul');
-        Route::get('category/children/ul', [CategoryProductController::class, 'ajaxCategoryChildrenUlForFilter'])->name('category.product.children.ul.filter');
+        Route::get('category/children/ul/filter', [CategoryProductController::class, 'ajaxCategoryChildrenUlForFilter'])->name('category.product.children.ul.filter');
                 
         Route::post('/add-cemetery-setings', [AgentController::class, 'addCemetery'])->name('add.cemetery.settings');
 

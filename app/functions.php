@@ -1549,18 +1549,22 @@ function formatContentBurial($content,$model){
     $city=selectCity()->title;
     $name='';
     $surname='';
+    $date_birth='';
+    $date_death='';
     $patronymic='';
     $adres='';
     $cemetery='';
     if($model!=null){
         $name=$model->name;
         $surname=$model->surname;
+        $date_birth=$model->date_birth;
+        $date_death=$model->date_death;
         $patronymic=$model->patronymic;
         $adres=$model->location_death;
         $cemetery=$model->cemetery->title;
     }
     
-    $result=str_replace(["{name}","{surname}","{patronymic}","{city}","{adres}","{cemetery}"],[$name,$surname,$patronymic,$city,$adres,$cemetery],$content);
+    $result=str_replace(["{name}","{surname}","{patronymic}","{city}","{adres}","{cemetery}","{date_birth}","{date_death}"],[$name,$surname,$patronymic,$city,$adres,$cemetery,$date_birth,$date_death],$content);
     
     
     return $result;

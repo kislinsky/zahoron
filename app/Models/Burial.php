@@ -49,10 +49,12 @@ class Burial extends Model
 
     public function urlImg(){
         if($this->href_img==0){
-            return asset('storage/'.$this->img);
+            return asset('storage/'.$this->img_file);
         }
-        return $this->img;
+        return $this->img_url;
     }
+
+   
 
     function imageMonument(){
         return $this->hasMany(ImageMonument::class);

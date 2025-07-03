@@ -50,9 +50,9 @@
         
         {{view('account.agency.components.create-organization.cats',compact('categories','categories_children'))}}
         
-        {{view('account.agency.components.create-organization.contacts',compact('cities'))}}
+        {{view('account.agency.components.create-organization.contacts')}}
 
-        {{view('account.agency.components.create-organization.work-time',compact('cities'))}}
+        {{view('account.agency.components.create-organization.work-time')}}
 
         
         {{view('account.agency.components.create-organization.cemeteries',compact('cemeteries'))}}

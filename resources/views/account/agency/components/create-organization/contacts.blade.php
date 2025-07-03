@@ -68,20 +68,20 @@
         <input placeholder='ст. Комсомольская' type="text" name='underground' >
     </div>
 </div>
-
+<?php $city=selectCity();?>
 <script>
 
 ymaps.ready(init);
 
 function init() {
     var myMap = new ymaps.Map("map_organization_single", {
-            center: [{{  $cities[0]->width}}, {{$cities[0]->longitude}}],
+            center: [{{  $city->width}}, {{$city->longitude}}],
             zoom: 10
         });
 
         myMap.controls.remove('searchControl');
         
-      myMap.geoObjects.add(new ymaps.Placemark(['{{$cities[0]->width}}', '{{$cities[0]->longitude}}'], {
+      myMap.geoObjects.add(new ymaps.Placemark(['{{$city->width}}', '{{$city->longitude}}'], {
             balloonContent: 'Название организации',
             iconCaption: 'Название организации'
         },));

@@ -41,11 +41,10 @@ class AgencyOrganizationService {
 
 
     public static function createPage(){
-        $cities=City::orderBy('title','asc')->get();
         $cemeteries=[];
         $categories=CategoryProduct::where('parent_id',null)->get();
         $categories_children=childrenCategoryProducts($categories[0]);
-        return view('account.agency.organization.create',compact('cemeteries','cities','categories_children','categories'));
+        return view('account.agency.organization.create',compact('cemeteries','categories_children','categories'));
 
     } 
 
@@ -345,8 +344,7 @@ class AgencyOrganizationService {
         else{
             $organizations=Organization::where('city_id',$city->id)->where('role','organization')->paginate(10);
         }
-        $cities=City::all();
-        return view('account.agency.organization.add-organization',compact('organizations','city','cities','s'));
+        return view('account.agency.organization.add-organization',compact('organizations','city','s'));
     }
     
 

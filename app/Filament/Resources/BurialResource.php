@@ -17,6 +17,7 @@ use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\View;
@@ -186,31 +187,47 @@ class BurialResource extends Resource
                                 }
                             }),
                             
-                            FileUpload::make('img')
-                            ->label('Картинка') // Название поля
-                            ->directory('/uploads_burials') // Директория для сохранения
-                            ->image() // Только изображения (jpg, png и т.д.)
-                            ->maxSize(2048) // Максимальный размер файла в КБ
-                            ->required()
-                            
-                            ->afterStateUpdated(function ($set, $state, $record) {
-                                if ($state && $record) {
-                                    
-                                    // Получаем только имя файла (без директории)
-                                    $filename = basename($state);
-                                    
-                                    // Обновляем запись в базе данных, сохраняя только имя файла
-                                    $record->update([
-                                        'href_img' => 0, // Или любое другое значение
-                                    ]);
-                                }
-                            }),
 
-                          View::make('image')
-                            ->label('Текущее изображение')
-                            ->view('filament.forms.components.custom-image-burial') // Указываем путь к Blade-шаблону
-                            ->extraAttributes(['class' => 'custom-image-class'])
-                            ->columnSpan('full'),
+
+
+
+                        Radio::make('href_img')
+                        ->label('Выберите источник изображения')
+                        ->options([
+                            0 => 'Файл на сайте',
+                            1 => 'Ссылка (URL)'
+                        ])
+                        ->inline()
+                        ->live(), // Автоматически обновляет форму при изменении
+
+                    // Поле для ссылки (отображается только если выбран вариант "Ссылка")
+                    TextInput::make('img_url')
+                        ->label('Ссылка на изображение')
+                        ->placeholder('https://example.com/image.jpg')
+                        ->reactive()
+                        ->required(fn ($get) => intval($get('href_img')) === 1)
+                        ->hidden(fn ($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
+
+                    // Поле для загрузки файла (отображается только если выбран вариант "Файл на сайте")
+                    FileUpload::make('img_file')
+                        ->label('Загрузить изображение')
+                        ->directory('/uploads_burials') // Директория для хранения файлов
+                        ->image()
+                        ->maxSize(2048)
+                        ->reactive()
+                        ->required(fn ($get) => intval($get('href_img')) === 0)
+                        ->hidden(fn ($get) => intval($get('href_img')) === 1), // Скрыто, если выбрано "Ссылка"
+
+                    // Отображение текущего изображения (если запись уже существует)
+                    View::make('image')
+                        ->label('Текущее изображение')
+                        ->view('filament.forms.components.custom-image-burial') // Указываем путь к Blade-шаблону
+                        ->extraAttributes(['class' => 'custom-image-class'])
+                        ->columnSpan('full')
+                        ->hidden(fn ($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
+
+                       
+
                            
 
                 Forms\Components\TextInput::make('location_death')
@@ -383,7 +400,7 @@ class BurialResource extends Resource
             ->actions([
                 Tables\Actions\Action::make('view_burial')
                 ->label('Посмотреть') // Текст кнопки
-                ->url(fn ($record) => $record->route()) // Ссылка на товар
+                ->url(fn ($record) => '/'.selectCity()->slug.'/burial/'.$record->slug) // Ссылка на товар
                 ->icon('heroicon-o-eye') // Иконка "глаза"
                 ->color('primary') // Цвет кнопки
                 ->openUrlInNewTab(),

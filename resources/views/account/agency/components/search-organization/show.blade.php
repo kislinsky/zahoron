@@ -3,7 +3,15 @@
     <div class="ul_search_add_organizations">
         @foreach($organizations as $organization)
             <div class="li_search_add_organization">
-                <img class='img_logo_organization'src="{{$organization->urlImg()}}" alt="">
+
+                @if($organization->urlImg()=='default')
+                    <img class='white_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[0]}}" alt="">   
+                    <img class='black_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[1]}}" alt="">   
+                @else
+                    <img class='img_logo_organization' src="{{$organization->urlImg()}}" alt="">   
+                @endif
+
+                
                 <div class="info_li_search_add_organization">
                     <a href='{{$organization->route()}}' class="title_middle_black_bold">{{$organization->title}}</a>
                     <div class="text_black">{{$organization->name_type}}</div>

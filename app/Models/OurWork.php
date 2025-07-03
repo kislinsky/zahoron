@@ -9,4 +9,8 @@ class OurWork extends Model
 {
     use HasFactory;
     protected $guarded =[];
+
+    function category(){
+        return $this->belongsTo(CategoryOurWork::class,'category_id');
+    }
 }

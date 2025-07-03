@@ -35,7 +35,6 @@
     let type_request=$(this).attr('type_request')
     let type_object=$(this).attr('type_object')
     let html_old=$('.html_geo').html()
-    $('.html_geo .block_location').remove()
 
     let data  = {
         "type_request": type_request,
@@ -43,20 +42,28 @@
         'id':id,
     };
 
-    console.log(data)
-    $.ajax({
-        type: 'GET',
-        url: '{{route('geo.ajax')}}',
-        data:  data,
-        success: function (result) {
-            $('.load_block_2').hide()
-            $( ".html_geo" ).html(result)
-        },
-        error: function () {
-            $('.load_block_2').hide()
-            $( ".html_geo" ).html(html)
-        }
-    });
+    if(type_request=='children' & type_object=='cemetery'){
+        $('#location_form_2').modal('hide')
+        $('.input_location input').val($(this).html())
+        $('.load_block_2').hide()
+    }else{
+        $('.html_geo .block_location').remove()
+        $.ajax({
+            type: 'GET',
+            url: '{{route('geo.ajax')}}',
+            data:  data,
+            success: function (result) {
+                $('.load_block_2').hide()
+                $( ".html_geo" ).html(result)
+            },
+            error: function () {
+                $('.load_block_2').hide()
+                $( ".html_geo" ).html(html)
+            }
+        });
+    }
+    
+    
 });
 
 

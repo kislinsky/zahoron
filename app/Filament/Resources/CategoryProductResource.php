@@ -6,6 +6,7 @@ use App\Filament\Resources\CategoryProductResource\Pages;
 use App\Filament\Resources\CategoryProductResource\RelationManagers;
 use App\Models\CategoryProduct;
 use Filament\Forms;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -52,7 +53,13 @@ class CategoryProductResource extends Resource
                     ->options(CategoryProduct::whereNull('parent_id')->pluck('title', 'id')) // Только главные категории
                     ->nullable(),
 
-                
+                  Radio::make('display')
+                        ->label('Отображать категорию')
+                        ->options([
+                            0 => 'Нет',
+                            1 => 'Да'
+                        ])
+                        ->inline(),
 
                 Forms\Components\FileUpload::make('icon')
                     ->label('Иконка')

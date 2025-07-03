@@ -3,8 +3,8 @@
 
 @section('content')
 
-    {{view('account.agency.components.search-organization.form-search',compact('s','city','cities'))}}
+    {{view('account.agency.components.search-organization.form-search',compact('s','city'))}}
 
-    {{view('account.agency.components.search-organization.show',compact('organizations','city','cities'))}}
+    {{view('account.agency.components.search-organization.show',compact('organizations','city'))}}
 
 @endsection

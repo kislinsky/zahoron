@@ -37,8 +37,8 @@ $count_projects=count(OurWork::orderby('id','desc')->get());
                             <div class="li_our_work">
                                 <div class="title_before_our_works">До уборки</div>
                                 <div class="title_after_our_works">После уборки</div>
-                                <img src="{{asset('storage/uploads_our_works/'. $our_work->img_before )}}" alt="">
-                                <img src="{{asset('storage/uploads_our_works/'. $our_work->img_after )}}" alt="">
+                                <img src="{{asset('/storage/'.$our_work->img_before )}}" alt="">
+                                <img src="{{asset( '/storage/'.$our_work->img_after )}}" alt="">
                             </div>
                         @endforeach
                     @endif

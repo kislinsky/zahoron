@@ -279,6 +279,8 @@ class ParserCrematoriumService
                 continue;
             }
             
+
+            
             $crematoriumId = $review[$columnIndexes['crematorium_id']] ?? null;
             $reviewerName = $review[$columnIndexes['name']] ?? null;
             $reviewDate = $review[$columnIndexes['date']] ?? null;
@@ -311,39 +313,50 @@ class ParserCrematoriumService
             }
             
             if (!empty($reviewDate)) {
-                $reviewDate = trim(preg_replace('/отредактирован/ui', '', $reviewDate));
-                
-                $russianMonths = [
-                    'января' => '01', 'февраля' => '02', 'марта' => '03',
-                    'апреля' => '04', 'мая' => '05', 'июня' => '06',
-                    'июля' => '07', 'августа' => '08', 'сентября' => '09',
-                    'октября' => '10', 'ноября' => '11', 'декабря' => '12'
-                ];
-                
-                if (preg_match('/^(\d{1,2})\s+([а-яё]+)\s+(\d{4})$/ui', $reviewDate, $matches)) {
-                    $day = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
-                    $month = strtolower($matches[2]);
-                    $year = $matches[3];
-                    
-                    if (isset($russianMonths[$month])) {
-                        $reviewDate = "{$year}-{$russianMonths[$month]}-{$day}";
-                    } else {
-                        $errors[] = "Строка {$rowNumber}: Неизвестный месяц '{$matches[2]}' в дате '{$reviewDate}'";
-                        $skippedReviews++;
-                        continue;
-                    }
-                } 
-                elseif (($timestamp = strtotime($reviewDate)) !== false) {
-                    $reviewDate = date('Y-m-d', $timestamp);
-                } else {
-                    $errors[] = "Строка {$rowNumber}: Не удалось распознать дату '{$reviewDate}'";
-                    $skippedReviews++;
-                    continue;
-                }
-            } else {
-                $reviewDate = now()->format('Y-m-d');
-            }
-            
+    // Remove "отредактирован" and any trailing punctuation
+    $reviewDate = trim(preg_replace('/отредактирован/ui', '', $reviewDate));
+    $reviewDate = rtrim($reviewDate, " ,.;");
+    
+    $russianMonths = [
+        'января' => '01', 'февраля' => '02', 'марта' => '03',
+        'апреля' => '04', 'мая' => '05', 'июня' => '06',
+        'июля' => '07', 'августа' => '08', 'сентября' => '09',
+        'октября' => '10', 'ноября' => '11', 'декабря' => '12'
+    ];
+    
+    // Improved regex pattern that handles optional commas and different spacings
+    if (preg_match('/^(\d{1,2})\s+([а-яё]+)\s+(\d{4})\b[,.]?/ui', $reviewDate, $matches)) {
+        $day = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
+        $month = mb_strtolower(trim($matches[2]));
+        $year = $matches[3];
+        
+        if (isset($russianMonths[$month])) {
+            $reviewDate = "{$year}-{$russianMonths[$month]}-{$day}";
+        } else {
+            $errors[] = "Строка {$rowNumber}: Неизвестный месяц '{$matches[2]}' в дате '{$reviewDate}'";
+            $skippedReviews++;
+            continue;
+        }
+    } 
+    // Try to parse with strtotime (handles various formats)
+    elseif (($timestamp = strtotime($reviewDate)) !== false) {
+        $reviewDate = date('Y-m-d', $timestamp);
+    } 
+    // Try to parse after removing all non-alphanumeric characters except spaces and dashes
+    else {
+        $cleanedDate = preg_replace('/[^\dа-яё\s-]/ui', '', $reviewDate);
+        if ($timestamp = strtotime($cleanedDate)) {
+            $reviewDate = date('Y-m-d', $timestamp);
+        } else {
+            $errors[] = "Строка {$rowNumber}: Не удалось распознать дату '{$reviewDate}'";
+            $skippedReviews++;
+            continue;
+        }
+    }
+} else {
+    $reviewDate = now()->format('Y-m-d');
+}
+
             ReviewCrematorium::create([
                 'name' => $reviewerName,
                 'rating' => $rating,
@@ -374,21 +387,6 @@ class ParserCrematoriumService
     
     return redirect()->back()->with("message_cart", $message);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

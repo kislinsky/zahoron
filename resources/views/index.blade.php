@@ -111,8 +111,17 @@
         <div class="grid_two">
             <div class="grid_two dekstop_index_block">
                 <div class="gray_index_block_service">
-                    <h2><a href='{{route('marketplace.category','pominal-nyh-obedy')}}' class="title_li">Заказать поминки
-                        г. {{$city->title}}</a></h2>
+                    <h2>
+                        @if(versionProject())
+                           <div  class="title_li">Заказать поминки
+                            г. {{$city->title}}</div>
+                        @else
+                        <a href='{{route('marketplace.category','pominal-nyh-obedy')}}' class="title_li">Заказать поминки
+                            г. {{$city->title}}</a>
+                          
+                        @endif
+                    
+                    </h2>
                     <div class="flex_text_service_index">
                         <div class="mini_text">Получите ценовое
                             предложения 
@@ -129,8 +138,16 @@
                         @endif
                 </div>
                 <div class="gray_index_block_service">
-                    <h2><a href='{{route('marketplace.category','organizacia-kremacii')}}' class="title_li">Организация 
-                        кремации г. {{$city->title}}</a></h2>
+                    <h2>
+                        @if(versionProject())
+                          <div class="title_li">Организация 
+                                кремации г. {{$city->title}}</div>
+                        @else
+                          <a href='{{route('marketplace.category','organizacia-kremacii')}}' class="title_li">Организация 
+                                кремации г. {{$city->title}}</a>
+                            
+                        @endif
+                    </h2>
                     <div class="flex_text_service_index">
                         <div class="mini_text">Вам предоставят цены на кремацию от более 10 ритуальных агентств {{$city->title}}  для выбора лучшего варианта.</div>
                         <img src="{{asset('storage/uploads/Group_cemetery.svg')}}" alt="" class="img_light_theme img_index_service">

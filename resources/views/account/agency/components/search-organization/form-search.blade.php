@@ -20,7 +20,7 @@
                     @endif
                 >
             </div>
-            @error('city_beautification')
+            @error('city_search')
                 <div class='error-text'>{{ $message }}</div>
             @enderror
         </div> 
