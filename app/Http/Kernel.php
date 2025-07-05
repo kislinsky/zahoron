@@ -10,6 +10,7 @@ use App\Http\Middleware\CheckCity;
 use App\Http\Middleware\CheckRoleAccessMiddleware;
 use App\Http\Middleware\CheckUserStatus;
 use App\Http\Middleware\DecoderMiddleware;
+use App\Http\Middleware\JwtAuthenticate;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -82,6 +83,6 @@ class Kernel extends HttpKernel
         'user.role.check'=>CheckUserStatus::class,
         'check.city' => CheckCity::class,
         'admin.check'=>CheckRoleAccessMiddleware::class,
-
+        'jwt.auth'=>JwtAuthenticate::class,
     ];
 }

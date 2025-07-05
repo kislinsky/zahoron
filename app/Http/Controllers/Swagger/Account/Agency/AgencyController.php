@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Swagger\Account\Agency;
 
 use App\Http\Controllers\Controller;
 
+use App\Models\ProductRequestToSupplier;
 use Illuminate\Http\Request;
 
 class AgencyController extends Controller
@@ -1141,6 +1142,211 @@ public static function addRequestsCostProductSuppliers(Request $request)
 
  public function deleteRequestCostProductProvider($request){}
 
+/**
+ * @OA\Post(
+ *     path="/v1/account/agency/organization-provider/offer/add",
+ *     summary="Заявка на создание товара",
+ *     description="Создание запроса товара",
+ *     tags={"Заявки от организаций поставщикам"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         description="Offer data with images",
+ *         @OA\MediaType(
+ *             mediaType="multipart/form-data",
+ *             @OA\Schema(
+ *                 required={"title", "content", "images[]"},
+ *                 @OA\Property(
+ *                     property="title",
+ *                     type="string",
+ *                     example="Request for 50 wooden caskets",
+ *                     maxLength=255,
+ *                     description="Title of the offer"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="content",
+ *                     type="string",
+ *                     example="We need 50 high-quality wooden caskets by next month",
+ *                     description="Detailed description of the offer"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="images[]",
+ *                     type="array",
+ *                     @OA\Items(
+ *                         type="string",
+ *                         format="binary"
+ *                     ),
+ *                     maxItems=5,
+ *                     minItems=1,
+ *                     description="Array of image files (1-5 images allowed)"
+ *                 ),
+ *                 @OA\Property(
+ *                     property="category_id",
+ *                     type="integer",
+ *                     nullable=true,
+ *                     example=1,
+ *                     description="Category ID (optional)"
+ *                 ),
+ * 
+ *              @OA\Property(
+ *                     property="delivery_required",
+ *                     type="integer",
+ *                     nullable=true,
+ *                     example=1,
+ *                     description="Whether delivery is required (optional)"
+ *                 ),
+ *                
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="Offer created successfully",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Offer created successfully"),
+ *             @OA\Property(
+ *                 property="data",
+ *                 type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="title", type="string", example="Request for 50 wooden caskets"),
+ *                 @OA\Property(property="content", type="string", example="We need 50 high-quality wooden caskets by next month"),
+ *                 @OA\Property(
+ *                     property="images",
+ *                     type="string",
+ *                     example="[\u0022filename1.jpeg\u0022,\u0022filename2.jpeg\u0022]",
+ *                     description="JSON encoded array of image filenames"
+ *                 ),
+ *                 @OA\Property(property="organization_id", type="integer", example=5),
+ *                 @OA\Property(property="category_id", type="integer", nullable=true, example=3),
+ *                 @OA\Property(property="delivery_required", type="boolean", example=true),
+ *                 @OA\Property(
+ *                     property="status",
+ *                     type="string",
+ *                     example="pending",
+ *                     enum={"pending", "accepted", "rejected", "completed"}
+ *                 ),
+ *                 @OA\Property(property="created_at", type="string", format="date-time"),
+ *                 @OA\Property(property="updated_at", type="string", format="date-time")
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Validation error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(
+ *                 property="errors",
+ *                 type="object",
+ *                 example={
+ *                     "title": {"The title field is required."},
+ *                     "images": {"The images must have between 1 and 5 items."}
+ *                 }
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Organization not found",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Organization not found for this user")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Image upload error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="You must upload between 1 and 5 images")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Server error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Failed to create offer"),
+ *             @OA\Property(property="error", type="string", example="Error message details")
+ *         )
+ *     )
+ * )
+ */
+public function createProviderOffer(Request $request)
+{
+    // Method implementation
 }
 
 
+/**
+ * @OA\Delete(
+ *     path="/v1/account/agency/organization-provider/offer/{id}/delete",
+ *     summary="Удаление заявки на создание товара",
+ *     description="Удаление запроса товара поставщику по идентификатору",
+ *     tags={"Удаление заявки от организаций поставщикам"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         description="Идентификатор заявки на товар",
+ *         required=true,
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="Заявка успешно удалена",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Product request to supplier deleted successfully.")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Заявка не найдена",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="No query results for model [App\Models\ProductRequestToSupplier] {id}")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Ошибка при удалении заявки",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Failed to delete product request to supplier."),
+ *             @OA\Property(property="error", type="string", example="Error message details")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Не авторизован",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=403,
+ *         description="Доступ запрещен",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Forbidden.")
+ *         )
+ *     )
+ * )
+ */
+public static function deleteProviderOffer(ProductRequestToSupplier $offer)
+{
+    // method implementation
+}
+
+
+
+
+
+}

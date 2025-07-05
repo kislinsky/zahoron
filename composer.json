@@ -40,6 +40,7 @@
         "spatie/laravel-sitemap": "^7.3",
         "staudenmeir/belongs-to-through": "^2.15",
         "tinymce/tinymce": "^7.6",
+        "tymon/jwt-auth": "^2.2",
         "yoomoney/yookassa-sdk-php": "^3.7"
     },
     "require-dev": {

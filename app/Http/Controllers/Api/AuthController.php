@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use session;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 class AuthController extends Controller
@@ -32,7 +34,7 @@ class AuthController extends Controller
         $inn_check=User::where('inn',$request->inn)->first();
 
         if($phone_check!=null || $inn_check!=null){
-            return response()->json(['error' => 'Пользователь с таким номером телефона или инн уже существует.'], 404);
+            return response()->json(['error' => 'Пользователь с таким номером телефона или инн уже существует.'], 409);
         }
 
         // Здесь должна быть проверка ИНН через внешний сервис
@@ -83,8 +85,13 @@ class AuthController extends Controller
             'sms_sent_at' => now(),
         ]);
 
-        // Здесь должен быть вызов сервиса отправки SMS
-        $send_sms=sendSms($session->phone,"Ваш код подтверждения: $code");
+        $appHash = substr(hash('sha256', config('app.name') . microtime()), 0, 11);
+
+        // Формирование сообщения с кодом подтверждения
+        $smsMessage = "<#> {$code} - код подтверждения\n{$appHash}";
+
+        // Отправка SMS
+        $send_sms = sendSms($session->phone, $smsMessage);
 
         return response()->json(['message' => 'SMS отправлен']);
     }
@@ -125,25 +132,47 @@ class AuthController extends Controller
             'okved' => $session->okved,
         ]);
 
-        // Генерируем JWT токен
-        $token = auth('api')->login($account);
+
+        
+        $token = JWTAuth::fromUser($account);
 
         return response()->json([
-            'jwt' => $token,
-        ]);
+            'message' => 'User successfully registered',
+            'user' => $account,
+            'token' => $this->respondWithToken($token)
+        ], 201);
+    }
+
+
+    protected function respondWithToken($token){
+        return [
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => JWTAuth::factory()->getTTL() * 60, // Используем JWTAuth фасад
+            'user' => auth('api')->user()
+        ];
     }
 
     public function authInit(Request $request)
     {
+        
+
         $validator = Validator::make($request->all(), [
-            'phone' => 'required|string|exists:users,phone',
+            'phone' => 'required|string',
         ]);
+
+
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
 
         $account = User::where('phone', normalizePhone($request->phone))->first();
+        
+        if($account==null){
+            return response()->json(['error' => 'Пользователь с таким номером телефона не найден'], 404);
+        }
+        
         $authId = Str::uuid();
         $code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
 
@@ -154,8 +183,13 @@ class AuthController extends Controller
             'sms_sent_at' => now(),
         ]);
 
-        // Здесь должен быть вызов сервиса отправки SMS
-        $send_sms=sendSms($account->phone,"Ваш код подтверждения: $code");
+      $appHash = substr(hash('sha256', config('app.name') . microtime()), 0, 11);
+
+        // Формирование сообщения с кодом подтверждения
+        $smsMessage = "<#> {$code} - код подтверждения\n{$appHash}";
+
+        // Отправка SMS
+        $send_sms = sendSms($account->phone, $smsMessage);
 
         return response()->json([
             'reg_id' => $authId,
@@ -180,7 +214,7 @@ class AuthController extends Controller
         }
 
         $smsSentAt = \Carbon\Carbon::parse($session->sms_sent_at);
-    
+        
         if ($smsSentAt->addMinutes(5)->isPast()) {
             return response()->json(['error' => 'Код истек'], 400);
         }
@@ -188,8 +222,25 @@ class AuthController extends Controller
         $user = $session->user;
         $token = auth('api')->login($user);
 
+        // Удаляем использованную сессию
+        $session->delete();
+
+        // Возвращаем полный ответ с токеном
         return response()->json([
-            'jwt' => $token,
+            'success' => true,
+            'message' => 'Успешная авторизация',
+            'auth_data' => [
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => JWTAuth::factory()->getTTL() * 60,
+            ],
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'phone' => $user->phone,
+                'email' => $user->email,
+                // другие нужные поля пользователя
+            ]
         ]);
     }
 

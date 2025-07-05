@@ -9,6 +9,7 @@ use App\Models\ImageOrganization;
 use App\Models\ImageProduct;
 use App\Models\Organization;
 use App\Models\Product;
+use App\Models\ProductRequestToSupplier;
 use App\Models\RequestsCostProductsSupplier;
 use App\Models\User;
 use App\Models\WorkingHoursOrganization;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Tymon\JWTAuth\Contracts\Providers\Storage;
 
 class AgencyController extends Controller
 {
@@ -940,6 +942,103 @@ class AgencyController extends Controller
                 'message' => 'Заявка успешно удалена.'
             ], 200);
 
+    }
+
+     public function createProviderOffer(Request $request)
+    {
+        // Validate request data
+        $validator = Validator::make($request->all(), [
+            'title' => ['required', 'string', 'max:255'],
+            'content' => ['required', 'string'],
+            'images' => ['required', 'array', 'max:5'],
+            'images.*' => [
+                'required',
+                'image',
+                'mimes:jpeg,jpg,png,gif,svg,webp',
+                'max:2048'
+            ],
+            'category_id' => ['nullable', 'integer'],
+            'delivery_required' => ['nullable', 'integer'],
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            // Get authenticated user's organization
+            $organization = auth()->user()->organization;
+            
+            if (!$organization) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Organization not found for this user'
+                ], 404);
+            }
+
+            // Process and store images
+            $images = [];
+            if (count($request->file('images')) > 0 && count($request->file('images')) < 6) {
+                foreach ($request->file('images') as $image) {
+                    $filename = Str::random(40) . '.jpeg'; // Using Str::random instead of generateRandomString()
+                    $image->storeAs('uploads_product', $filename, 'public');
+                    $images[] = $filename;
+                }
+                $imagePaths = json_encode($images);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You must upload between 1 and 5 images'
+                ], 422);
+            }
+
+            // Create the offer
+            $offer = ProductRequestToSupplier::create([
+                'title' => $request->title,
+                'content' => $request->content,
+                'organization_id' => $organization->id,
+                'images' => json_encode($imagePaths),
+                'category_id' => $request->category_id,
+                'delivery_required' => $request->boolean('delivery_required'),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Offer created successfully',
+                'data' => $offer
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create offer',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+   public static function deleteProviderOffer($id)
+    {
+        $offer = ProductRequestToSupplier::find($id);
+        
+        if (!$offer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Offer not found'
+            ], 404);
+        }
+        
+        $offer->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Product request to supplier deleted successfully.'
+        ], 201);
     }
 }
 

@@ -1748,7 +1748,6 @@ a.text_li:hover{
 .copy_adres{
     max-width: 160px;
     cursor: pointer;
-    margin-top: 16px;
 }
 .title_checkout_form{
 font-family: 'EB Garamond';
@@ -7294,9 +7293,7 @@ text-decoration-skip-ink: none;
 .mobile_choose_organiztion{
     display: none;
 }
-.header_mobile_agency{
-    top: 100px;
-}
+
 .mobile_info_about_decoder{
     display: none;
 }

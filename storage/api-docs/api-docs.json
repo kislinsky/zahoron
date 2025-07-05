@@ -1761,6 +1761,374 @@
                 }
             }
         },
+        "/v1/account/agency/organization-provider/offer/add": {
+            "post": {
+                "tags": [
+                    "Заявки от организаций поставщикам"
+                ],
+                "summary": "Заявка на создание товара",
+                "description": "Создание запроса товара",
+                "operationId": "3a961feee787bf5967530a98b2e20c2a",
+                "requestBody": {
+                    "description": "Offer data with images",
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "content",
+                                    "images[]"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "description": "Title of the offer",
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Request for 50 wooden caskets"
+                                    },
+                                    "content": {
+                                        "description": "Detailed description of the offer",
+                                        "type": "string",
+                                        "example": "We need 50 high-quality wooden caskets by next month"
+                                    },
+                                    "images[]": {
+                                        "description": "Array of image files (1-5 images allowed)",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        },
+                                        "maxItems": 5,
+                                        "minItems": 1
+                                    },
+                                    "category_id": {
+                                        "description": "Category ID (optional)",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "delivery_required": {
+                                        "description": "Whether delivery is required (optional)",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Offer created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Offer created successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Request for 50 wooden caskets"
+                                                },
+                                                "content": {
+                                                    "type": "string",
+                                                    "example": "We need 50 high-quality wooden caskets by next month"
+                                                },
+                                                "images": {
+                                                    "description": "JSON encoded array of image filenames",
+                                                    "type": "string",
+                                                    "example": "[\\u0022filename1.jpeg\\u0022,\\u0022filename2.jpeg\\u0022]"
+                                                },
+                                                "organization_id": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "category_id": {
+                                                    "type": "integer",
+                                                    "example": 3,
+                                                    "nullable": true
+                                                },
+                                                "delivery_required": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "pending",
+                                                        "accepted",
+                                                        "rejected",
+                                                        "completed"
+                                                    ],
+                                                    "example": "pending"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "title": [
+                                                    "The title field is required."
+                                                ],
+                                                "images": [
+                                                    "The images must have between 1 and 5 items."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Organization not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Organization not found for this user"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Image upload error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You must upload between 1 and 5 images"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to create offer"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error message details"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/account/agency/organization-provider/offer/{id}/delete": {
+            "delete": {
+                "tags": [
+                    "Удаление заявки от организаций поставщикам"
+                ],
+                "summary": "Удаление заявки на создание товара",
+                "description": "Удаление запроса товара поставщику по идентификатору",
+                "operationId": "83493836057bd69fc14cc0cddaa73f77",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Идентификатор заявки на товар",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Заявка успешно удалена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product request to supplier deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Заявка не найдена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\ProductRequestToSupplier] {id}"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка при удалении заявки",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to delete product request to supplier."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error message details"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1/register": {
             "post": {
                 "tags": [
@@ -1883,13 +2251,13 @@
                 }
             }
         },
-        "/v1/confirm-info": {
+        "/v1/register/confirm-info": {
             "post": {
                 "tags": [
                     "Авторизация/регистрация"
                 ],
                 "summary": "Подтверждение информации и отправка SMS кода",
-                "operationId": "f94239264f53850c346ce518aa311d57",
+                "operationId": "9fd2ab64d7278663a8fbb7a6913520a0",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1950,13 +2318,13 @@
                 }
             }
         },
-        "/v1/confirm-phone": {
+        "/v1/register/confirm-phone": {
             "post": {
                 "tags": [
                     "Авторизация/регистрация"
                 ],
-                "summary": "Подтверждение телефона по коду из SMS",
-                "operationId": "ca93c0130fc835d807edf9a8a35c857a",
+                "summary": "Подтверждение телефона по коду из SMS (завершение регистрации)",
+                "operationId": "7097f96c38e19ef9ad0d266c5c0c9571",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1985,15 +2353,82 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Успешное подтверждение",
+                    "201": {
+                        "description": "Успешная регистрация",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "jwt": {
+                                        "message": {
                                             "type": "string",
-                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                            "example": "User successfully registered"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "organization"
+                                                },
+                                                "inn": {
+                                                    "type": "string",
+                                                    "example": "123456789012"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "+79991234567"
+                                                },
+                                                "form": {
+                                                    "type": "string",
+                                                    "example": "organization"
+                                                },
+                                                "okved": {
+                                                    "type": "string",
+                                                    "example": "62.01"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "properties": {
+                                                "access_token": {
+                                                    "type": "string",
+                                                    "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                                },
+                                                "token_type": {
+                                                    "type": "string",
+                                                    "example": "bearer"
+                                                },
+                                                "expires_in": {
+                                                    "type": "integer",
+                                                    "example": 3600
+                                                },
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "role": {
+                                                            "type": "string",
+                                                            "example": "organization"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -2002,17 +2437,43 @@
                         }
                     },
                     "400": {
-                        "description": "Неверный код или код истек",
+                        "description": "Ошибка валидации или неверный код",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "example": "Неверный код"
+                                    "oneOf": [
+                                        {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "object",
+                                                    "example": {
+                                                        "reg_id": [
+                                                            "Поле reg_id обязательно для заполнения."
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "Неверный код"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "Код истек"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
-                                    },
-                                    "type": "object"
+                                    ]
                                 }
                             }
                         }
@@ -2128,9 +2589,59 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "jwt": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
                                             "type": "string",
-                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                            "example": "Успешная авторизация"
+                                        },
+                                        "auth_data": {
+                                            "properties": {
+                                                "access_token": {
+                                                    "type": "string",
+                                                    "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                                },
+                                                "token_type": {
+                                                    "type": "string",
+                                                    "example": "bearer"
+                                                },
+                                                "expires_in": {
+                                                    "type": "integer",
+                                                    "example": 3600
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Иван Иванов"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "+79991234567"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "user@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "organization"
+                                                },
+                                                "inn": {
+                                                    "type": "string",
+                                                    "example": "123456789012"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -2139,17 +2650,43 @@
                         }
                     },
                     "400": {
-                        "description": "Неверный код или код истек",
+                        "description": "Ошибка валидации или неверный код",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "example": "Неверный код"
+                                    "oneOf": [
+                                        {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "object",
+                                                    "example": {
+                                                        "reg_id": [
+                                                            "Поле reg_id обязательно для заполнения."
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "Неверный код"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "Код истек"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
-                                    },
-                                    "type": "object"
+                                    ]
                                 }
                             }
                         }
@@ -2550,6 +3087,10 @@
         {
             "name": "Заявки от организаций поставщикам",
             "description": "Заявки от организаций поставщикам"
+        },
+        {
+            "name": "Удаление заявки от организаций поставщикам",
+            "description": "Удаление заявки от организаций поставщикам"
         },
         {
             "name": "Авторизация/регистрация",

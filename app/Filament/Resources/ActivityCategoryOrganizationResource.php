@@ -106,10 +106,18 @@ class ActivityCategoryOrganizationResource extends Resource
                     ->sortable()
                     ->searchable(),
                 
-                Tables\Columns\TextColumn::make('organization.title')
-                    ->label('Организация')
-                    ->sortable()
-                    ->searchable(),
+               Tables\Columns\TextColumn::make('organization.title')
+                ->label('Организация')
+                ->sortable()
+                ->searchable()
+                ->url(function ($record) {
+                    if ($record->organization) {
+                        return OrganizationResource::getUrl('edit', ['record' => $record->organization]);
+                    }
+                    return null;
+                })
+                ->openUrlInNewTab()
+                ->color('primary'),
 
                 Tables\Columns\TextColumn::make('organization.city.area.edge.title')
                     ->label('Край')
