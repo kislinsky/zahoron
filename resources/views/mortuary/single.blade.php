@@ -62,7 +62,7 @@
 
                     {{view('mortuary.components.single.faq',compact('faqs','city','mortuary'))}}
 
-                    {{view('mortuary.components.single.map',compact('mortuary_all','mortuary'))}}
+                    {{view('mortuary.components.single.map',compact('similar_mortuaries','mortuary'))}}
 
                     {{view('mortuary.components.single.characteristics',compact('characteristics','mortuary'))}}
                    

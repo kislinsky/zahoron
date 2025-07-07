@@ -31,13 +31,12 @@ function init() {
             searchControlProvider: 'yandex#search'
         });
 
-@if(count($mortuary_all)>0)
-    @foreach($mortuary_all as $mortuary_one)
-      myMap.geoObjects
+@if(count($similar_mortuaries)>0)
+    @foreach($similar_mortuaries as $mortuary_one)
       myMap.geoObjects
         .add(new ymaps.Placemark(['{{$mortuary_one->width}}', '{{$mortuary_one->longitude}}'], {
             balloonContent: '{!!$mortuary_one->title.'<br> <img src="'.asset('storage/uploads/Frame 334.svg').'" alt="">  '.$mortuary_one->rating.'<br>'.$mortuary_one->countReviews().' отзывов' !!}',
-            iconCaption: '{{$mortuary->title}}'
+            iconCaption: '{{$mortuary_one->title}}'
         },{
             iconLayout: 'default#image',
             iconImageHref: "{{asset('storage/uploads/game-icons_morgue-feet (2).svg')}}",
@@ -45,7 +44,18 @@ function init() {
         }));
     @endforeach
 @endif
+
+  myMap.geoObjects.add(new ymaps.Placemark(['{{$mortuary->width}}', '{{$mortuary->longitude}}'], {
+            balloonContent: '{!!$mortuary->title.'<br> <img src="'.asset('storage/uploads/Frame 334.svg').'" alt="">  '.$mortuary->rating.'<br>'.$mortuary->countReviews().' отзывов' !!}',
+            iconCaption: '{{$mortuary->title}}'
+        },{
+            iconLayout: 'default#image',
+            iconImageHref: "{{asset('storage/uploads/game-icons_morgue-feet (2).svg')}}",
+            iconImageSize: [40,40] // Размер иконки
+        }));
+
 }
+
 
 
 </script>

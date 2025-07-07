@@ -58,7 +58,7 @@
 
                     {{view('mosque.components.single.add-reviews',compact('object'))}}
 
-                    {{view('mosque.components.single.map',compact('objects_all','object'))}}
+                    {{view('mosque.components.single.map',compact('similar_objects','object'))}}
 
                     {{view('mosque.components.single.characteristics',compact('characteristics','object'))}}
                    

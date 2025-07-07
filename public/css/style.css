@@ -7573,3 +7573,31 @@ color: #0080D7;
 .header_admin .item_decoder{
     margin-left: auto;
 }
+
+
+.cookie_consent{
+    position: fixed;
+    box-shadow: 5px 10px 42px 21px rgba(34, 60, 80, 0.2);
+    bottom: 0px;
+    left: 0px;
+    padding: 15px;
+    width: 100%;
+    display: flex;
+    gap: 40px;
+    z-index: 10;
+    background: white;
+}
+.cookie_consent p{
+    margin: 0px;
+}
+.cookie-buttons{
+    gap: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.cookie-buttons button{
+    height: 48px;
+    width: 100%;
+    max-width: 200px;
+}

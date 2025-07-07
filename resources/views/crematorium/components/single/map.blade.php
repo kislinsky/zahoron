@@ -31,12 +31,12 @@ function init() {
             searchControlProvider: 'yandex#search'
         });
 
-@if(count($crematorium_all)>0)
-    @foreach($crematorium_all as $crematorium_one)
+@if(count($similar_crematoriums)>0)
+    @foreach($similar_crematoriums as $crematorium_one)
     myMap.geoObjects
         .add(new ymaps.Placemark(['{{$crematorium_one->width}}', '{{$crematorium_one->longitude}}'], {
             balloonContent: '{!!$crematorium_one->title.'<br> <img src="'.asset('storage/uploads/Frame 334.svg').'" alt="">  '.$crematorium_one->rating.'<br>'.$crematorium_one->countReviews().' отзывов' !!}',
-            iconCaption: '{{$crematorium->title}}'
+            iconCaption: '{{$crematorium_one->title}}'
         },{
             iconLayout: 'default#image',
             iconImageHref: "{{asset('storage/uploads/emojione-monotone_funeral-urn.svg')}}",
@@ -44,6 +44,15 @@ function init() {
         }));
     @endforeach
 @endif
+   myMap.geoObjects
+        .add(new ymaps.Placemark(['{{$crematorium->width}}', '{{$crematorium->longitude}}'], {
+            balloonContent: '{!!$crematorium->title.'<br> <img src="'.asset('storage/uploads/Frame 334.svg').'" alt="">  '.$crematorium->rating.'<br>'.$crematorium->countReviews().' отзывов' !!}',
+            iconCaption: '{{$crematorium->title}}'
+        },{
+            iconLayout: 'default#image',
+            iconImageHref: "{{asset('storage/uploads/emojione-monotone_funeral-urn.svg')}}",
+            iconImageSize: [40,40] // Размер иконки
+        }));
 }
 
 

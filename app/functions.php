@@ -16,6 +16,7 @@ use App\Models\Edge;
 use App\Models\FaqCategoryProduct;
 use App\Models\FaqService;
 use App\Models\ImageService;
+use App\Models\MessageTemplate;
 use App\Models\Mortuary;
 use App\Models\OrderProduct;
 use App\Models\Organization;
@@ -43,6 +44,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use PHPMailer\PHPMailer\PHPMailer;
+
+
 
 
 
@@ -1747,16 +1751,20 @@ function getTheme(){
 
 }
 
-function sendSms($phone,$meassage){
-    $smsService = new SmsService();
-    
-    $response = $smsService->sendSms($phone, $meassage);
-    
-    if ($response['status'] == 'OK') {
-        return true;
-    } else {
-        return null;
+function sendSms($phone,$message){
+    if(env('API_WORK')=='true'){
+        $smsService = new SmsService();
+        
+        $response = $smsService->sendSms($phone, $message);
+        
+        if ($response['status'] == 'OK') {
+            return true;
+        } else {
+            return null;
+        }
     }
+    return null;
+    
 }
 
 function generateSixDigitCode() {
@@ -2225,4 +2233,66 @@ function versionProject(){
 
 function contentCart($content, $model) {
     return str_replace('[Населённый пункт]', $model->city->title ?? '', $content);
+}
+
+function sendMail($to, $subject, $body) {
+    $mail = new PHPMailer(true);
+    try {
+        // Настройки SMTP
+        $mail->isSMTP();
+        $mail->Host = 'connect.smtp.bz';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'main@zahoron.ru';
+        $mail->Password = 'chel192_top';
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
+        $mail->CharSet = 'UTF-8'; // Устанавливаем кодировку UTF-8
+        
+        // Отправитель
+        $mail->setFrom('main@zahoron.ru', 'zahoron.ru', 'UTF-8');
+        
+        // Получатель
+        $mail->addAddress($to);
+        
+        // Тема письма с поддержкой кириллицы
+        $mail->Subject = '=?UTF-8?B?'.base64_encode($subject).'?=';
+        
+        // Тело письма
+        $mail->Body = $body;
+        $mail->Encoding = 'base64'; // Кодировка содержимого
+        
+        // Альтернативное текстовое тело для старых почтовых клиентов
+        $mail->AltBody = strip_tags($body);
+        
+        // Отправка
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        // Логирование ошибки (рекомендуется)
+        error_log('Mailer Error: '.$mail->ErrorInfo);
+        return false;
+    }
+}
+
+
+function sendMessage($name_form,$attributes,$user){
+    $template = MessageTemplate::getBySlug($name_form);
+    if($template->is_active==1){
+        
+        $message = $template->compile($attributes);
+
+        if ($template->type === 'email') {
+            sendMail($user->email,$template->subject,$message);
+        }
+
+        // Для SMS
+        if ($template->type === 'sms') {
+            sendSms($user->phone,$message);
+        }
+        return true;
+    }
+
+    return false;
+   
+
 }

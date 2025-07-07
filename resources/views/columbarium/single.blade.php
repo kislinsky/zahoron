@@ -62,7 +62,7 @@
 
                     {{view('columbarium.components.single.faq',compact('faqs','city','columbarium'))}}
 
-                    {{view('columbarium.components.single.map',compact('columbarium_all','columbarium'))}}
+                    {{view('columbarium.components.single.map',compact('similar_columbariums','columbarium'))}}
 
                     {{view('columbarium.components.single.characteristics',compact('characteristics','columbarium'))}}
                    

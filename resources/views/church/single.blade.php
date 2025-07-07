@@ -58,7 +58,7 @@
 
                     {{view('church.components.single.add-reviews',compact('object'))}}
 
-                    {{view('church.components.single.map',compact('objects_all','object'))}}
+                    {{view('church.components.single.map',compact('similar_objects','object'))}}
 
                     {{view('church.components.single.characteristics',compact('characteristics','object'))}}
                    

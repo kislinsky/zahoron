@@ -104,3 +104,35 @@
         </div>
     </div>
 
+
+@if(!isset($_COOKIE['cookie_consent']))
+    <div id="cookieConsent" class="cookie_consent">
+        <div class="cookie-buttons">
+            <button id="acceptCookies" value='1' class="blue_btn">Принять</button>
+            <button id="rejectCookies" value='0' class="btn_border_blue">Отклонить</button>
+        </div>
+        <p class='text_black'>Мы используем файлы cookie для улучшения вашего опыта. Принимая, вы соглашаетесь с нашей 
+            <a href="{{ route('terms-user') }}">Политикой конфиденциальности</a>.
+        </p>
+    </div>
+@endif
+
+<script>
+     $( ".cookie-buttons button" ).on( "click", function() {
+        val=$(this).attr('value')
+        let filters  = {
+            'value':val
+        };
+        $.ajax({
+            type: 'GET',
+            url: '{{ route('cookie.accept') }}',
+            data: filters,
+            success: function (result) {
+                $('#cookieConsent').fadeOut();
+            },
+            error: function () {
+                $('#cookieConsent').fadeOut();
+            }
+        });
+    });
+</script>

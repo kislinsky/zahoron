@@ -43,7 +43,6 @@ class CrematoriumService {
         $reviews_main=$reviews->take(3);
         $city=selectCity();
         $organizations_our=$city->organizations;
-        $crematorium_all=Crematorium::all();
         $services=$crematorium->services;
         $faqs=FaqCrematorium::orderBy('id','desc')->get();
         $characteristics=json_decode($crematorium->characteristics);
@@ -52,7 +51,7 @@ class CrematoriumService {
         
         $pages_navigation=[['Главная',route('index')],['Крематории',route('crematoriums')],[$crematorium->title]];
 
-        return view('crematorium.single',compact('pages_navigation','title_h1','organizations_our','images','similar_crematoriums','crematorium','reviews','reviews_main','services','city','faqs','crematorium_all','characteristics'));
+        return view('crematorium.single',compact('pages_navigation','title_h1','organizations_our','images','similar_crematoriums','crematorium','reviews','reviews_main','services','city','faqs','characteristics'));
     }
 
     public static function addReview($data){

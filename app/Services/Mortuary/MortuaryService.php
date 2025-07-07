@@ -50,7 +50,6 @@ class MortuaryService {
         $reviews_main=$reviews->take(3);
         $city=selectCity();
         $organizations_our=$city->organizations;
-        $mortuary_all=Mortuary::all();
         $services=$mortuary->services;
         $faqs=FaqMortuary::orderBy('id','desc')->get();
         $characteristics=json_decode($mortuary->characteristics);
@@ -59,7 +58,7 @@ class MortuaryService {
 
         $pages_navigation=[['Главная',route('index')],['Морги',route('mortuaries')],[$mortuary->title]];
 
-        return view('mortuary.single',compact('pages_navigation','title_h1','organizations_our','images','similar_mortuaries','mortuary','reviews','reviews_main','services','city','faqs','mortuary_all','characteristics'));
+        return view('mortuary.single',compact('pages_navigation','title_h1','organizations_our','images','similar_mortuaries','mortuary','reviews','reviews_main','services','city','faqs','characteristics'));
     }
 
     public static function addReview($data){

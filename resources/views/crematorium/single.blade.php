@@ -62,7 +62,7 @@
 
                     {{view('crematorium.components.single.faq',compact('faqs','city','crematorium'))}}
 
-                    {{view('crematorium.components.single.map',compact('crematorium_all','crematorium'))}}
+                    {{view('crematorium.components.single.map',compact('similar_crematoriums','crematorium'))}}
 
                     {{view('crematorium.components.single.characteristics',compact('characteristics','crematorium'))}}
                    

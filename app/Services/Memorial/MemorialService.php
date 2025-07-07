@@ -44,6 +44,9 @@ class MemorialService {
             $time=secondsUntilEndOfTomorrow($time_now);
 
         }
+
+        sendMessage('soobshhenie-pri-zaiavke-pop-up-pominki',['name'=>$user->name],$user);
+
         CloseApplicationJob::dispatch($memorial)->delay($time);
 
         return redirect()->back()->with("message_words_memory", 'Заявка отправлена');

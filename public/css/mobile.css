@@ -378,6 +378,13 @@
 }
 
 @media(max-width:760px){
+    .cookie_consent{
+        gap: 15px;
+        flex-direction: column;
+    }
+    .cookie-buttons button{
+        max-width: 100%;
+    }
     .orders{
         padding: 20px 0px;
     }

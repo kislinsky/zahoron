@@ -40,14 +40,13 @@ class MosqueService {
         $reviews_main=$reviews->take(3);
         $city=selectCity();
         $organizations_our=$city->organizations;
-        $objects_all=Mosque::where('city_id',$city->id)->get();
         $characteristics=json_decode($object->characteristics);
         $images=$object->images;
         $similar_objects=Mosque::where('city_id',$object->city_id)->where('id','!=',$object->id)->get();
 
         $pages_navigation=[['Главная',route('index')],['Мечети',route('mosques')],[$object->title]];
 
-        return view('mosque.single',compact('pages_navigation','title_h1','organizations_our','images','similar_objects','object','reviews','reviews_main','city','objects_all','characteristics'));
+        return view('mosque.single',compact('pages_navigation','title_h1','organizations_our','images','similar_objects','object','reviews','reviews_main','city','characteristics'));
     }
 
     public static function addReview($data){

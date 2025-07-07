@@ -18,26 +18,14 @@ class OrderProductService
 {
     public static function orderAdd($data){
         if(isset($_COOKIE['add_to_cart_product'])){
-            $cart_items = json_decode($_COOKIE['add_to_cart_product']);            
-            if(Auth::check()){ 
-                $user=Auth::user();
+            $cart_items = json_decode($_COOKIE['add_to_cart_product']); 
+            
+            if(Auth::check()){
+            $user=Auth::user();
             }else{
-                $user=User::where('email',$data['email'])->where('phone',$data['phone'])->get();
-                if(!isset($user[0])){
-                        $password=generateRandomString(8);
-                        // mail($data['email'], 'Ваш пароль', $password);
-                        $last_id=User::create([
-                        'name'=>$data['name'],
-                        'surname'=>$data['surname'],
-                        'phone'=>$data['phone'],
-                        'email'=>$data['email'],
-                        'password'=>Hash::make($password),
-                    ]);
-                }
-                else{
-                    return redirect()->back()->with("error", 'Такой пользователь уже существует');
-                }
+                $user=createUserWithPhone($data['phone'],$data['name']); 
             }
+            
             foreach($cart_items as $cart_item){
                 $product=Product::findOrFail($cart_item[0]);
                 if($product->type=='memorial-menu'){
@@ -71,6 +59,9 @@ class OrderProductService
 
             setcookie('add_to_cart_product', '', -1, '/');
             $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
+
+            sendMessage('pokupka-tovara-ili-uslugi-s-marketpleisa',['name'=>$user->name],$user);
+
             return redirect()->back()->with('message_order_burial',$message); 
         }
         return redirect()->back();
@@ -108,8 +99,7 @@ class OrderProductService
             'organization_id'=>$product->organization->id
 
            ]);
-           $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
-            return redirect()->back()->with('message_order_burial',$message); 
+            
         }
         if($product->category->slug=='organizacia-kremacii'){
             $order=OrderProduct::create([
@@ -123,8 +113,7 @@ class OrderProductService
             'organization_id'=>$product->organization->id
 
             ]);
-            $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
-            return redirect()->back()->with('message_order_burial',$message); 
+             
         }
         if($product->category->slug=='otpravka-gruz-200'){
             $order=OrderProduct::create([
@@ -140,8 +129,7 @@ class OrderProductService
             'organization_id'=>$product->organization->id
 
             ]);
-            $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
-            return redirect()->back()->with('message_order_burial',$message); 
+             
         }
         if($product->category->slug=='knopka-mogil' || $product->category->slug=='pominal-nye-zaly'){
             $order=OrderProduct::create([
@@ -155,8 +143,7 @@ class OrderProductService
             'organization_id'=>$product->organization->id
 
             ]);
-            $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
-            return redirect()->back()->with('message_order_burial',$message); 
+             
         }
         else{
             $order=OrderProduct::create([
@@ -170,9 +157,13 @@ class OrderProductService
                 'additional'=>$additionals,
                 'organization_id'=>$product->organization->id
             ]);
-            $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
-            return redirect()->back()->with('message_order_burial',$message); 
+             
         }
+        
+        sendMessage('soobshhenie-pri-zaiavke-pop-up-oblogorazivanie',['name'=>$user->name],$user);
+        
+        $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
+        return redirect()->back()->with('message_order_burial',$message);
         
     }
 

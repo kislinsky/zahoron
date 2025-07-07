@@ -31,6 +31,7 @@ Route::prefix('v1')->group(function () {
     
 
 
+    Route::middleware('jwt.auth')->group(function () {
         Route::group(['prefix'=>'account'], function() {
             Route::group(['prefix'=>'agency'], function() {
 
@@ -64,3 +65,4 @@ Route::prefix('v1')->group(function () {
 
 
 
+});

@@ -19,45 +19,51 @@ class OrderServiceService
     public static function orderAdd($data){
         if(isset($_COOKIE['add_to_cart_service'])){
             $cart_items = json_decode($_COOKIE['add_to_cart_service']);            
-            if(Auth::check()){ 
-                
-                foreach($cart_items as $cart_item){
-                    $order_product=OrderBurial::where('burial_id',$cart_item[0])->where('user_id',Auth::user()->id)->get();
-                    if($order_product->count()>0){
-                        if($order_product[0]->status==1){
-                            $product=getBurial($cart_item[0]);
-                            $services=servicesBurial($cart_item[1]);
-                            $price=0;
-                            foreach($services as $service){
-                                $price+=$service->getPriceForCemetery($product->cemetery->id);
-                            }
-
-                            OrderService::create([
-                                'burial_id'=>$cart_item[0],
-                                'user_id'=>Auth::user()->id,
-                                'services_id'=>json_encode($cart_item[1]),
-                                'size'=>$cart_item[2],
-                                'customer_comment'=>$data['message'],
-                                'cemetery_id'=>$cart_item[3],
-                                'price'=>$price,
-                            ]);
-                           
-                            
-                        }else{
-                            return redirect()->back()->with("error", 'У вас есть не купленные геолокации');
+            if(Auth::check()){
+                $user=Auth::user();
+            }else{
+                $user=createUserWithPhone($data['phone'],$data['name']); 
+                if($user==null){
+                    return redirect()->back()->with('error','Пользователь с таким номером телефона уже существует');           
+                }
+            }
+            foreach($cart_items as $cart_item){
+                $order_product=OrderBurial::where('burial_id',$cart_item[0])->where('user_id',Auth::user()->id)->get();
+                if($order_product->count()>0){
+                    if($order_product[0]->status==1){
+                        $product=getBurial($cart_item[0]);
+                        $services=servicesBurial($cart_item[1]);
+                        $price=0;
+                        foreach($services as $service){
+                            $price+=$service->getPriceForCemetery($product->cemetery->id);
                         }
+
+                        OrderService::create([
+                            'burial_id'=>$cart_item[0],
+                            'user_id'=>Auth::user()->id,
+                            'services_id'=>json_encode($cart_item[1]),
+                            'size'=>$cart_item[2],
+                            'customer_comment'=>$data['message'],
+                            'cemetery_id'=>$cart_item[3],
+                            'price'=>$price,
+                        ]);
+                        
+                        
                     }else{
                         return redirect()->back()->with("error", 'У вас есть не купленные геолокации');
                     }
-
+                }else{
+                    return redirect()->back()->with("error", 'У вас есть не купленные геолокации');
                 }
-                setcookie('add_to_cart_service', '', -1, '/');
-                $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
-                return redirect()->back()->with('message_order_burial',$message);
-            }else{
-                return redirect()->back()->with("error", 'Зарегистрируйтесь  и приобретите геолокации, для которых вы выбрали услуги');
             }
+            
+            sendMessage('pokupka-uslug-po-uxodu-za-zaxoroneniem',['name'=>$user->name],$user);
+
+            setcookie('add_to_cart_service', '', -1, '/');
+            $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
+            return redirect()->back()->with('message_order_burial',$message);
         }
+
         return redirect()->back();
     }
 }

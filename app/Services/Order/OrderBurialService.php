@@ -17,6 +17,9 @@ class OrderBurialService
             $user=Auth::user();
         }else{
             $user=createUserWithPhone($data['phone'],$data['name']); 
+            if($user==null){
+                return redirect()->back()->with('error','Пользователь с таким номером телефона уже существует');           
+            }
         }
         if(isset($_COOKIE['add_to_cart_burial'])){
             $cart_items = json_decode($_COOKIE['add_to_cart_burial']);     
@@ -35,14 +38,16 @@ class OrderBurialService
                 } else{
                     return redirect()->back()->with("error", 'В вашем заказе уже есть купленные геолокации');
                 }
+                sendMessage('pokupka-geolokacii-zaxoroneniia',['name'=>$user->name],$user);
                 setcookie('add_to_cart_burial', '', -1, '/');
                 $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
                 return redirect()->back()->with('message_order_burial',$message);
             }
+
+
         return redirect()->back();
 
     }
-
 
     
     public static function burialDelete($id){

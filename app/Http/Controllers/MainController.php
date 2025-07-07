@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Faq;
 
+use App\Models\MessageTemplate;
 use App\Services\Burial\SearchBurialService;
 use App\Services\OurWork\OurWorkService;
 use App\Services\Page\IndexService;
-
+use Illuminate\Http\Request;
 
 class MainController extends Controller
 {
@@ -15,6 +16,15 @@ class MainController extends Controller
     public static function index(){ 
         return IndexService::index();
     }
+
+    public static function acceptCookie(Request $request){ 
+        $data=request()->validate([
+            'value'=>['required','integer'],
+        ]);
+        return IndexService::acceptCookie($data);
+
+    }
+
 
     public static function contacts(){
         $page=7;

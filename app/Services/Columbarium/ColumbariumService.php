@@ -53,7 +53,6 @@ class ColumbariumService {
         }])->get();
 
         $organizations_our=$city->organizations;
-        $columbarium_all=Columbarium::all();
         $services=$columbarium->services;
         $faqs=FaqColumbarium::orderBy('id','desc')->get();
         $characteristics=json_decode($columbarium->characteristics);
@@ -62,7 +61,7 @@ class ColumbariumService {
         
         $pages_navigation=[['Главная',route('index')],['Колумбарии',route('columbariums')],[$columbarium->title]];
 
-        return view('columbarium.single',compact('pages_navigation','title_h1','organizations_our','images','similar_columbariums','columbarium','reviews','reviews_main','services','city','faqs','columbarium_all','characteristics'));
+        return view('columbarium.single',compact('pages_navigation','title_h1','organizations_our','images','similar_columbariums','columbarium','reviews','reviews_main','services','city','faqs','characteristics'));
     }
 
     public static function addReview($data){

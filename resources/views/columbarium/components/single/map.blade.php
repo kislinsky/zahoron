@@ -31,8 +31,8 @@ function init() {
             searchControlProvider: 'yandex#search'
         });
 
-@if(count($columbarium_all)>0)
-    @foreach($columbarium_all as $columbarium_one)
+@if(count($similar_columbariums)>0)
+    @foreach($similar_columbariums as $columbarium_one)
       myMap.geoObjects
         .add(new ymaps.Placemark(['{{$columbarium_one->width}}', '{{$columbarium_one->longitude}}'], {
             balloonContent: '{!!$columbarium_one->title.'<br> <img src="'.asset('storage/uploads/Frame 334.svg').'" alt="">  '.$columbarium_one->rating.'<br>'.$columbarium_one->countReviews().' отзывов' !!}',
@@ -44,6 +44,16 @@ function init() {
         }));
     @endforeach
 @endif
+
+myMap.geoObjects
+        .add(new ymaps.Placemark(['{{$columbarium->width}}', '{{$columbarium->longitude}}'], {
+            balloonContent: '{!!$columbarium->title.'<br> <img src="'.asset('storage/uploads/Frame 334.svg').'" alt="">  '.$columbarium->rating.'<br>'.$columbarium->countReviews().' отзывов' !!}',
+            iconCaption: '{!!$columbarium->title!!}'
+        },{
+            iconLayout: 'default#image',
+            iconImageHref: "{{asset('storage/uploads/mdi_grave-stone (2).svg')}}",
+            iconImageSize: [40,40] // Размер иконки
+        }));
 }
 
 

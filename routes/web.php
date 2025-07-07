@@ -137,7 +137,10 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
     Auth::routes();
     
     Route::get('/', [MainController::class, 'index'])->name('index');
+    Route::get('/accept-cookie', [MainController::class, 'acceptCookie'])->name('cookie.accept');
+
     Route::get('/speczialist', [MainController::class, 'speczialist'])->name('speczialist');
+
 
     Route::get('/change-theme', [MainController::class, 'changeTheme'])->name('change-theme');
 

@@ -49,7 +49,6 @@ class CemeteryService {
         $reviews_main=$reviews->take(3);
         $organizations_our=$cemetery->cemeteryOrganiaztions();
         $city=selectCity();
-        $cemetery_all=Cemetery::all();
         $services=ServiceCemetery::where('cemetery_id',$id)->get();
         $faqs=FaqCemetery::orderBy('id','desc')->get();
         $characteristics=json_decode($cemetery->characteristics);
@@ -58,7 +57,7 @@ class CemeteryService {
 
         $pages_navigation=[['Главная',route('index')],['Кладбища',route('cemeteries')],[$cemetery->title]];
 
-        return view('cemetery.single',compact('pages_navigation','title_h1','images','similar_cemeteries','cemetery','reviews','reviews_main','organizations_our','services','city','faqs','cemetery_all','characteristics'));
+        return view('cemetery.single',compact('pages_navigation','title_h1','images','similar_cemeteries','cemetery','reviews','reviews_main','organizations_our','services','city','faqs','characteristics'));
     }
 
     public static function ajaxCemetery($city){

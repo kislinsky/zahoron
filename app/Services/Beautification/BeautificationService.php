@@ -52,6 +52,9 @@ class BeautificationService {
             $time=secondsUntilEndOfTomorrow($time_now)+30*60;
         }
         
+        sendMessage('soobshhenie-pri-zaiavke-pop-up-oblogorazivanie',['name'=>$user->name],$user);
+
+
         CloseApplicationJob::dispatch($beautification)->delay($time);
 
         return redirect()->back()->with("message_words_memory", 'В ближайшее время в личном кабинете вы сможете оплатить услугу');

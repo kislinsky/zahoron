@@ -35,4 +35,8 @@ class IndexService
     }
 
    
+    public static function acceptCookie($data){
+        setcookie('cookie_consent',$data['value'],time() + (20 * 24 * 60 ), '/');
+        return true;
+    }
 }

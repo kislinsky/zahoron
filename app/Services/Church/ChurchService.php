@@ -37,14 +37,13 @@ class ChurchService {
         $reviews_main=$reviews->take(3);
         $city=selectCity();
         $organizations_our=$city->organizations;
-        $objects_all=Church::where('city_id',$city->id)->get();
         $characteristics=json_decode($object->characteristics);
         $images=$object->images;
         $similar_objects=Church::where('city_id',$object->city_id)->where('id','!=',$object->id)->get();
 
         $pages_navigation=[['Главная',route('index')],['Церкви',route('churches')],[$object->title]];
 
-        return view('church.single',compact('pages_navigation','title_h1','organizations_our','images','similar_objects','object','reviews','reviews_main','city','objects_all','characteristics'));
+        return view('church.single',compact('pages_navigation','title_h1','organizations_our','images','similar_objects','object','reviews','reviews_main','city','characteristics'));
     }
 
     public static function addReview($data){

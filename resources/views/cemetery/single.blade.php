@@ -65,7 +65,7 @@
 
                     {{view('cemetery.components.single.faq',compact('faqs','city','cemetery'))}}
 
-                    {{view('cemetery.components.single.map',compact('cemetery_all','cemetery'))}}
+                    {{view('cemetery.components.single.map',compact('similar_cemeteries','cemetery'))}}
 
                     {{view('cemetery.components.single.characteristics',compact('characteristics','cemetery'))}}
                    
