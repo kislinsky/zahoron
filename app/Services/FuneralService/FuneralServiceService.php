@@ -98,7 +98,7 @@ class FuneralServiceService {
 
         }
         
-        sendMessage('soobshhenie-pri-zaiavke-pop-up-ritualnye-uslugi',['name'=>$user->name],$user);
+        sendMessage('soobshhenie-pri-zaiavke-pop-up-ritualnye-uslugi',[],$user);
 
         CloseApplicationJob::dispatch($funeral_service)->delay($time);
 

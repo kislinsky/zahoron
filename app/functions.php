@@ -2279,10 +2279,20 @@ function sendMessage($name_form,$attributes,$user){
     $template = MessageTemplate::getBySlug($name_form);
     if($template->is_active==1){
         
+        if($attributes==[]){
+            $attributes=[
+                'LOGIN'=>$user->name,
+                'EMAIL'=>$user->email,
+                'SITENAME'=>'zahoron.ru',
+                'SITELINK'=>'https://zahoron.ru',
+                'ADMINEMAIL'=>User::where('role','admin')->first()->email
+            ];
+        }
+
         $message = $template->compile($attributes);
 
         if ($template->type === 'email') {
-            sendMail($user->email,$template->subject,$message);
+            sendMail('toni.vinogradov.06@inbox.ru',$template->subject,$message);
         }
 
         // Для SMS

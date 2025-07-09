@@ -45,7 +45,7 @@ class MemorialService {
 
         }
 
-        sendMessage('soobshhenie-pri-zaiavke-pop-up-pominki',['name'=>$user->name],$user);
+        sendMessage('soobshhenie-pri-zaiavke-pop-up-pominki',[],$user);
 
         CloseApplicationJob::dispatch($memorial)->delay($time);
 

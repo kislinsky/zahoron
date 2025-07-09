@@ -24,7 +24,7 @@ class CategoryServiceService {
         $city=selectCity();
         $edge=selectCity()->edge;
         $imgs_service=ImageService::where('service_id',$service->id)->get();
-        $stages_service=StageService::orderBy('id','asc')->where('service_id',$service->id)->get();
+        $stages_service=StageService::orderBy('id','asc')->where('product_price_list_id',$service->id)->get();
         return view('service.single.single-one-time-cleaning',compact('imgs_service','stages_service','service','edge','city'));
     }
 
@@ -33,7 +33,8 @@ class CategoryServiceService {
         $edge=selectCity()->edge;
         $reviews=ServiceReviews::orderBy('id','asc')->where('service_id',$service->id)->get();
         $imgs_service=ImageService::where('service_id',$service->id)->get();
-        $stages_service=StageService::orderBy('id','asc')->where('service_id',$service->id)->get();
+        $stages_service=StageService::orderBy('id','asc')->where('product_price_list_id',$service->id)->get();
+        $cemetery=Cemetery::find($service->cemetery_id);
         $faqs=FaqService::orderBy('id','desc')->where('service_id',$service->id)->get();
         return view('service.single.single-painting-fence',compact('imgs_service','reviews','stages_service','service','faqs','cemetery','edge','city'));
     }
@@ -43,7 +44,7 @@ class CategoryServiceService {
         $edge=selectCity()->edge;
         $reviews=ServiceReviews::orderBy('id','asc')->where('service_id',$service->id)->get();
         $imgs_service=ImageService::where('service_id',$service->id)->get();
-        $stages_service=StageService::orderBy('id','asc')->where('service_id',$service->id)->get();
+        $stages_service=StageService::orderBy('id','asc')->where('product_price_list_id',$service->id)->get();
         $faqs=FaqService::orderBy('id','desc')->where('service_id',$service->id)->get();
         return view('service.single.single-departure-brigade-calculation',compact('imgs_service','reviews','stages_service','service','faqs','cemetery','edge','city'));
     }
@@ -54,7 +55,7 @@ class CategoryServiceService {
         $edge=Edge::findOrFail($city->edge_id);
         $reviews=ServiceReviews::orderBy('id','asc')->where('service_id',$service->id)->get();
         $imgs_service=ImageService::where('service_id',$service->id)->get();
-        $stages_service=StageService::orderBy('id','asc')->where('service_id',$service->id)->get();
+        $stages_service=StageService::orderBy('id','asc')->where('product_price_list_id',$service->id)->get();
         $faqs=FaqService::orderBy('id','desc')->where('service_id',$service->id)->get();
         return view('service.single.single-laying-flowers',compact('imgs_service','reviews','stages_service','service','faqs','cemetery','edge','city'));
     }

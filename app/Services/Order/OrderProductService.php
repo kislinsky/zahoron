@@ -60,7 +60,7 @@ class OrderProductService
             setcookie('add_to_cart_product', '', -1, '/');
             $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
 
-            sendMessage('pokupka-tovara-ili-uslugi-s-marketpleisa',['name'=>$user->name],$user);
+            sendMessage('pokupka-tovara-ili-uslugi-s-marketpleisa',[],$user);
 
             return redirect()->back()->with('message_order_burial',$message); 
         }

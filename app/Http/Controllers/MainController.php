@@ -2,9 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cemetery;
+use App\Models\Church;
+use App\Models\Columbarium;
+use App\Models\Crematorium;
 use App\Models\Faq;
-
+use App\Models\ImageCemetery;
+use App\Models\ImageChurch;
+use App\Models\ImageColumbarium;
+use App\Models\ImageCrematorium;
+use App\Models\ImageMortuary;
+use App\Models\ImageMosque;
+use App\Models\ImageOrganization;
 use App\Models\MessageTemplate;
+use App\Models\Mortuary;
+use App\Models\Mosque;
+use App\Models\Organization;
+use App\Models\Product;
 use App\Services\Burial\SearchBurialService;
 use App\Services\OurWork\OurWorkService;
 use App\Services\Page\IndexService;
@@ -14,6 +28,8 @@ class MainController extends Controller
 {
 
     public static function index(){ 
+                sendMessage('soobshhenie-pri-zaiavke-pop-up-ritualnye-uslugi',[],user());
+
         return IndexService::index();
     }
 

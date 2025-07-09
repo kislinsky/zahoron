@@ -57,7 +57,7 @@ class OrderServiceService
                 }
             }
             
-            sendMessage('pokupka-uslug-po-uxodu-za-zaxoroneniem',['name'=>$user->name],$user);
+            sendMessage('pokupka-uslug-po-uxodu-za-zaxoroneniem',[],$user);
 
             setcookie('add_to_cart_service', '', -1, '/');
             $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';

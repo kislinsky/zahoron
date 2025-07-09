@@ -91,22 +91,7 @@ class MessageTemplateResource extends Resource
                             ->columnSpanFull()
                             ->helperText('Используйте {{variable}} для подстановки переменных'),
                             
-                       Forms\Components\TagsInput::make('variables')
-                            ->label('Доступные переменные')
-                            ->placeholder('Например: name, email')
-                            ->helperText('Используйте эти переменные в шаблоне как {{name}}')
-                            ->columnSpanFull()
-                            ->afterStateHydrated(function ($component, $state) {
-                                // Десериализация JSON при загрузке
-                                if (is_string($state)) {
-                                    $state = json_decode($state, true) ?? [];
-                                }
-                                $component->state($state ?: []);
-                            })
-                            ->dehydrateStateUsing(function ($state) {
-                                // Сериализация в JSON перед сохранением
-                                return json_encode(array_filter($state));
-                            }),
+                       
                             
                         Forms\Components\Textarea::make('description')
                             ->label('Описание шаблона')

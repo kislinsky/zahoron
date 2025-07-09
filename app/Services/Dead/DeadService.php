@@ -35,7 +35,7 @@ class DeadService {
                 $dead->update(['call_time'=>date("d.m.Y", $d)]);
             }
 
-            sendMessage('soobshhenie-pri-zaiavke-pop-up-umersii',['name'=>$user->name],$user);
+            sendMessage('soobshhenie-pri-zaiavke-pop-up-umersii',[],$user);
 
         return redirect()->back()->with("message_words_memory", 'Заявка отправлена');
     }

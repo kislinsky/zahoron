@@ -38,7 +38,7 @@ class OrderBurialService
                 } else{
                     return redirect()->back()->with("error", 'В вашем заказе уже есть купленные геолокации');
                 }
-                sendMessage('pokupka-geolokacii-zaxoroneniia',['name'=>$user->name],$user);
+                sendMessage('pokupka-geolokacii-zaxoroneniia',[],$user);
                 setcookie('add_to_cart_burial', '', -1, '/');
                 $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
                 return redirect()->back()->with('message_order_burial',$message);

@@ -52,7 +52,7 @@ class BeautificationService {
             $time=secondsUntilEndOfTomorrow($time_now)+30*60;
         }
         
-        sendMessage('soobshhenie-pri-zaiavke-pop-up-oblogorazivanie',['name'=>$user->name],$user);
+        sendMessage('soobshhenie-pri-zaiavke-pop-up-oblogorazivanie',[],$user);
 
 
         CloseApplicationJob::dispatch($beautification)->delay($time);
