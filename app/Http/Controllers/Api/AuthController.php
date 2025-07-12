@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use session;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 
 class AuthController extends Controller
@@ -85,7 +85,7 @@ class AuthController extends Controller
             'sms_sent_at' => now(),
         ]);
 
-        $appHash = substr(hash('sha256', config('app.name') . microtime()), 0, 11);
+        $appHash = 'XhczEZL+G64';
 
         // Формирование сообщения с кодом подтверждения
         $smsMessage = "<#> {$code} - код подтверждения\n{$appHash}";
@@ -183,7 +183,7 @@ class AuthController extends Controller
             'sms_sent_at' => now(),
         ]);
 
-      $appHash = substr(hash('sha256', config('app.name') . microtime()), 0, 11);
+      $appHash = 'XhczEZL+G64';
 
         // Формирование сообщения с кодом подтверждения
         $smsMessage = "<#> {$code} - код подтверждения\n{$appHash}";
@@ -243,6 +243,9 @@ class AuthController extends Controller
             ]
         ]);
     }
+
+
+    
 
     
 }

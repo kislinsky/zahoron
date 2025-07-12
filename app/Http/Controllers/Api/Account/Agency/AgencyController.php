@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Api\Account\Agency;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityCategoryOrganization;
 use App\Models\CategoryProduct;
+use App\Models\CommentProduct;
 use App\Models\ImageOrganization;
 use App\Models\ImageProduct;
 use App\Models\Organization;
 use App\Models\Product;
 use App\Models\ProductRequestToSupplier;
 use App\Models\RequestsCostProductsSupplier;
+use App\Models\ReviewsOrganization;
 use App\Models\User;
 use App\Models\WorkingHoursOrganization;
 use Illuminate\Http\Request;
@@ -1039,6 +1041,298 @@ class AgencyController extends Controller
             'success' => true,
             'message' => 'Product request to supplier deleted successfully.'
         ], 201);
+    }
+
+
+    public function getOrganizationReviews($organizationId)
+    {
+        // Валидация ID организации (должно быть числом)
+        if (!is_numeric($organizationId)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Некорректный ID организации'
+            ], 400);
+        }
+
+        // Проверяем, существует ли организация
+        $organization = Organization::find($organizationId);
+        if (!$organization) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Организация не найдена'
+            ], 404);
+        }
+
+        // Получаем отзывы
+        $reviews = ReviewsOrganization::where('organization_id', $organizationId)
+            ->with('user') // Загружаем пользователя, если нужно
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'data' => $reviews
+        ]);
+    }
+    
+    
+    public function getProductComments($organizationId)
+    {
+        // Валидация ID организации
+        if (!is_numeric($organizationId)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Некорректный ID организации'
+            ], 400);
+        }
+
+        // Проверяем, существует ли организация
+        $organization = Organization::find($organizationId);
+        if (!$organization) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Организация не найдена'
+            ], 404);
+        }
+
+        // Получаем комментарии к товарам организации
+        $comments = CommentProduct::whereHas('product', function($query) use ($organizationId) {
+                $query->where('organization_id', $organizationId);
+            })
+            ->with(['user', 'product']) // Загружаем пользователя и товар
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'data' => $comments
+        ]);
+    }
+
+
+        /**
+    * Удаление отзыва об организации
+    */
+    public function deleteReview($reviewId)
+    {
+        // Валидация ID отзыва
+        if (!is_numeric($reviewId)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Некорректный ID отзыва'
+            ], 400);
+        }
+
+        // Поиск отзыва
+        $review = ReviewsOrganization::find($reviewId);
+
+        // Проверка существования отзыва
+        if (!$review) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Отзыв не найден'
+            ], 404);
+        }
+
+        // Удаление
+        $review->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Отзыв успешно удален'
+        ]);
+    }
+
+
+        /**
+    * Одобрение отзыва (установка статуса 1)
+    */
+    public function approveReview($reviewId)
+    {
+        // Валидация ID
+        if (!is_numeric($reviewId)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Некорректный ID отзыва'
+            ], 400);
+        }
+
+        // Поиск отзыва
+        $review = ReviewsOrganization::find($reviewId);
+
+        // Проверки
+        if (!$review) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Отзыв не найден'
+            ], 404);
+        }
+
+
+        // Обновление статуса
+        $review->update(['status' => 1]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Отзыв одобрен',
+            'data' => $review
+        ]);
+    }
+
+
+        /**
+    * Редактирование текста отзыва
+    */
+    public function updateReviewContent(Request $request, $reviewId)
+    {
+        // Валидация
+        $validator = Validator::make($request->all(), [
+            'content' => 'required|string|min:10|max:2000'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Поиск отзыва
+        $review = ReviewsOrganization::find($reviewId);
+
+        // Проверки
+        if (!$review) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Отзыв не найден'
+            ], 404);
+        }
+
+
+        // Обновление
+        $review->update([
+            'content' => $request->content,
+            'edited_at' => now() // метка редактирования
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Отзыв обновлен',
+            'data' => $review
+        ]);
+    }
+
+
+
+
+
+    /**
+     * Удаление комментария о товаре
+     */
+    public function deleteProductComment($commentId)
+    {
+        // Валидация ID комментария
+        if (!is_numeric($commentId)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Некорректный ID комментария'
+            ], 400);
+        }
+
+        // Поиск комментария
+        $comment = CommentProduct::find($commentId);
+
+        // Проверка существования
+        if (!$comment) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Комментарий не найден'
+            ], 404);
+        }
+
+        // Удаление
+        $comment->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Комментарий успешно удален'
+        ]);
+    }
+
+
+        /**
+     * Одобрение комментария о товаре
+     */
+    public function approveProductComment($commentId)
+    {
+        // Валидация ID
+        if (!is_numeric($commentId)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Некорректный ID комментария'
+            ], 400);
+        }
+
+        $comment = CommentProduct::find($commentId);
+
+        // Проверки
+        if (!$comment) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Комментарий не найден'
+            ], 404);
+        }
+
+        // Обновление статуса
+        $comment->update(['status' => 1]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Комментарий одобрен',
+            'data' => $comment
+        ]);
+    }
+
+
+        /**
+     * Обновление текста комментария о товаре
+     */
+    public function updateProductCommentContent(Request $request, $commentId)
+    {
+        // Валидация
+        $validator = Validator::make($request->all(), [
+            'content' => 'required|string|min:10|max:2000'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Поиск комментария
+        $comment = CommentProduct::find($commentId);
+
+        // Проверки
+        if (!$comment) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Комментарий не найден'
+            ], 404);
+        }
+
+        // Обновление
+        $comment->update([
+            'content' => $request->content,
+            'edited_at' => now()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Комментарий обновлен',
+            'data' => $comment
+        ]);
     }
 }
 

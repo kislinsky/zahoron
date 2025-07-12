@@ -28,8 +28,6 @@ class MainController extends Controller
 {
 
     public static function index(){ 
-                sendMessage('soobshhenie-pri-zaiavke-pop-up-ritualnye-uslugi',[],user());
-
         return IndexService::index();
     }
 

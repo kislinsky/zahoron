@@ -142,7 +142,7 @@ class AgencyController extends Controller
      */
     public static function products(Request $request)
     {
-        // ... существующий код метода ...
+        //  существующий код метода 
     }
 
 
@@ -1091,7 +1091,7 @@ public static function update(Request $request) {}
 
 public static function addRequestsCostProductSuppliers(Request $request)
 {
-    // ... ваш существующий код ...
+    //  ваш существующий код 
 }
 
 
@@ -1347,6 +1347,445 @@ public static function deleteProviderOffer(ProductRequestToSupplier $offer)
 
 
 
+/**
+ * @OA\Get(
+ *     path="/api/v1/account/agency/reviews/organization/{id}",
+ *     summary="Получение отзывов об организации",
+ *     tags={"Организация: Отзывы и комментарии"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID организации",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешное получение отзывов",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="current_page", type="integer", example=1),
+ *                 @OA\Property(property="data", type="array",
+ *                     @OA\Items(type="object",
+ *                         @OA\Property(property="id", type="integer", example=1),
+ *                         @OA\Property(property="content", type="string", example="Отличная организация"),
+ *                         @OA\Property(property="rating", type="integer", example=5),
+ *                         @OA\Property(property="status", type="integer", example=1),
+ *                         @OA\Property(property="created_at", type="string", format="date-time"),
+ *                         @OA\Property(property="user", type="object",
+ *                             @OA\Property(property="id", type="integer", example=1),
+ *                             @OA\Property(property="name", type="string", example="Иван Иванов")
+ *                         )
+ *                     )
+ *                 ),
+ *                 @OA\Property(property="first_page_url", type="string", example="http://example.com?page=1"),
+ *                 @OA\Property(property="from", type="integer", example=1),
+ *                 @OA\Property(property="last_page", type="integer", example=1),
+ *                 @OA\Property(property="last_page_url", type="string", example="http://example.com?page=1"),
+ *                 @OA\Property(property="links", type="array",
+ *                     @OA\Items(type="object",
+ *                         @OA\Property(property="url", type="string", nullable=true),
+ *                         @OA\Property(property="label", type="string"),
+ *                         @OA\Property(property="active", type="boolean")
+ *                     )
+ *                 ),
+ *                 @OA\Property(property="next_page_url", type="string", nullable=true),
+ *                 @OA\Property(property="path", type="string", example="http://example.com"),
+ *                 @OA\Property(property="per_page", type="integer", example=10),
+ *                 @OA\Property(property="prev_page_url", type="string", nullable=true),
+ *                 @OA\Property(property="to", type="integer", example=1),
+ *                 @OA\Property(property="total", type="integer", example=1)
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Некорректный ID организации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Некорректный ID организации")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Организация не найдена",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Организация не найдена")
+ *         )
+ *     )
+ * )
+ */
+public function getOrganizationReviews($id) {}
 
+/**
+ * @OA\Get(
+ *     path="/api/v1/account/agency/product-comments/organization/{id}",
+ *     summary="Получение комментариев к товарам организации",
+ *     tags={"Организация: Отзывы и комментарии"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID организации",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешное получение комментариев",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="current_page", type="integer", example=1),
+ *                 @OA\Property(property="data", type="array",
+ *                     @OA\Items(type="object",
+ *                         @OA\Property(property="id", type="integer", example=1),
+ *                         @OA\Property(property="content", type="string", example="Хороший товар"),
+ *                         @OA\Property(property="status", type="integer", example=1),
+ *                         @OA\Property(property="created_at", type="string", format="date-time"),
+ *                         @OA\Property(property="user", type="object",
+ *                             @OA\Property(property="id", type="integer", example=1),
+ *                             @OA\Property(property="name", type="string", example="Иван Иванов")
+ *                         ),
+ *                         @OA\Property(property="product", type="object",
+ *                             @OA\Property(property="id", type="integer", example=1),
+ *                             @OA\Property(property="name", type="string", example="Название товара")
+ *                         )
+ *                     )
+ *                 ),
+ *                 @OA\Property(property="first_page_url", type="string", example="http://example.com?page=1"),
+ *                 @OA\Property(property="from", type="integer", example=1),
+ *                 @OA\Property(property="last_page", type="integer", example=1),
+ *                 @OA\Property(property="last_page_url", type="string", example="http://example.com?page=1"),
+ *                 @OA\Property(property="links", type="array",
+ *                     @OA\Items(type="object",
+ *                         @OA\Property(property="url", type="string", nullable=true),
+ *                         @OA\Property(property="label", type="string"),
+ *                         @OA\Property(property="active", type="boolean")
+ *                     )
+ *                 ),
+ *                 @OA\Property(property="next_page_url", type="string", nullable=true),
+ *                 @OA\Property(property="path", type="string", example="http://example.com"),
+ *                 @OA\Property(property="per_page", type="integer", example=10),
+ *                 @OA\Property(property="prev_page_url", type="string", nullable=true),
+ *                 @OA\Property(property="to", type="integer", example=1),
+ *                 @OA\Property(property="total", type="integer", example=1)
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Некорректный ID организации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Некорректный ID организации")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Организация не найдена",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Организация не найдена")
+ *         )
+ *     )
+ * )
+ */
+public function getProductComments($id) {}
+
+/**
+ * @OA\Delete(
+ *     path="/api/v1/account/agency/reviews/{id}",
+ *     summary="Удаление отзыва об организации",
+ *     tags={"Организация: Отзывы и комментарии"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID отзыва",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Отзыв успешно удален",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Отзыв успешно удален")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Некорректный ID отзыва",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Некорректный ID отзыва")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Отзыв не найден",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Отзыв не найден")
+ *         )
+ *     )
+ * )
+ */
+public function deleteReview($id) {}
+
+/**
+ * @OA\Patch(
+ *     path="/api/v1/account/agency/reviews/{id}/approve",
+ *     summary="Одобрение отзыва об организации",
+ *     tags={"Организация: Отзывы и комментарии"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID отзыва",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Отзыв одобрен",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Отзыв одобрен"),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="content", type="string", example="Отличная организация"),
+ *                 @OA\Property(property="rating", type="integer", example=5),
+ *                 @OA\Property(property="status", type="integer", example=1),
+ *                 @OA\Property(property="created_at", type="string", format="date-time")
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Некорректный ID отзыва",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Некорректный ID отзыва")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Отзыв не найден",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Отзыв не найден")
+ *         )
+ *     )
+ * )
+ */
+public function approveReview($id) {}
+
+/**
+ * @OA\Put(
+ *     path="/api/v1/account/agency/reviews/{id}/content",
+ *     summary="Обновление текста отзыва",
+ *     tags={"Организация: Отзывы и комментарии"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID отзыва",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"content"},
+ *             @OA\Property(property="content", type="string", minLength=10, maxLength=2000, example="Обновленный текст отзыва")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Отзыв обновлен",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Отзыв обновлен"),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="content", type="string", example="Обновленный текст отзыва"),
+ *                 @OA\Property(property="rating", type="integer", example=5),
+ *                 @OA\Property(property="status", type="integer", example=1),
+ *                 @OA\Property(property="created_at", type="string", format="date-time"),
+ *                 @OA\Property(property="edited_at", type="string", format="date-time")
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Ошибки валидации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="errors", type="object", example={"content": {"Поле content обязательно для заполнения."}})
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Отзыв не найден",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Отзыв не найден")
+ *         )
+ *     )
+ * )
+ */
+public function updateReviewContent(Request $request, $id) {}
+
+/**
+ * @OA\Delete(
+ *     path="/api/v1/account/agency/product-comments/{id}",
+ *     summary="Удаление комментария о товаре",
+ *     tags={"Организация: Отзывы и комментарии"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID комментария",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Комментарий успешно удален",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Комментарий успешно удален")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Некорректный ID комментария",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Некорректный ID комментария")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Комментарий не найден",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Комментарий не найден")
+ *         )
+ *     )
+ * )
+ */
+public function deleteProductComment($id) {}
+
+/**
+ * @OA\Patch(
+ *     path="/api/v1/account/agency/product-comments/{id}/approve",
+ *     summary="Одобрение комментария о товаре",
+ *     tags={"Организация: Отзывы и комментарии"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID комментария",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Комментарий одобрен",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Комментарий одобрен"),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="content", type="string", example="Хороший товар"),
+ *                 @OA\Property(property="status", type="integer", example=1),
+ *                 @OA\Property(property="created_at", type="string", format="date-time"),
+ *                 @OA\Property(property="user_id", type="integer", example=1),
+ *                 @OA\Property(property="product_id", type="integer", example=1)
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Некорректный ID комментария",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Некорректный ID комментария")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Комментарий не найден",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Комментарий не найден")
+ *         )
+ *     )
+ * )
+ */
+public function approveProductComment($id) {}
+
+/**
+ * @OA\Put(
+ *     path="/api/v1/account/agency/product-comments/{id}/content",
+ *     summary="Обновление текста комментария о товаре",
+ *     tags={"Организация: Отзывы и комментарии"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID комментария",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"content"},
+ *             @OA\Property(property="content", type="string", minLength=10, maxLength=2000, example="Обновленный текст комментария")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Комментарий обновлен",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Комментарий обновлен"),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="content", type="string", example="Обновленный текст комментария"),
+ *                 @OA\Property(property="status", type="integer", example=1),
+ *                 @OA\Property(property="created_at", type="string", format="date-time"),
+ *                 @OA\Property(property="edited_at", type="string", format="date-time"),
+ *                 @OA\Property(property="user_id", type="integer", example=1),
+ *                 @OA\Property(property="product_id", type="integer", example=1)
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Ошибки валидации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="errors", type="object", example={"content": {"Поле content обязательно для заполнения."}})
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Комментарий не найден",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Комментарий не найден")
+ *         )
+ *     )
+ * )
+ */
+public function updateProductCommentContent(Request $request, $id) {}
 
 }

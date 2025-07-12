@@ -33,6 +33,7 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware('jwt.auth')->group(function () {
         Route::group(['prefix'=>'account'], function() {
+
             Route::group(['prefix'=>'agency'], function() {
 
                 Route::group(['prefix'=>'organization'], function() {
@@ -45,7 +46,24 @@ Route::prefix('v1')->group(function () {
                     Route::delete('/delete-requests-cost/{request}', [AgencyController::class, 'deleteRequestCostProductProvider']);
                     Route::post('/offer/add', [AgencyController::class, 'createProviderOffer']);    
                     Route::delete('/offer/{id}/delete', [AgencyController::class, 'deleteProviderOffer']);
- 
+                 });
+
+
+                Route::prefix('product-comments')->group(function() {
+                    Route::get('/organization/{id}', [AgencyController::class, 'getProductComments']);
+                    Route::delete('/{id}', [AgencyController::class, 'deleteProductComment']);
+                    Route::patch('/{id}/approve', [AgencyController::class, 'approveProductComment']);
+                    Route::put('/{id}/content', [AgencyController::class, 'updateProductCommentContent']);
+
+                    });
+                });
+
+
+                Route::prefix('reviews')->group(function() {
+                    Route::get('/organization/{id}', [AgencyController::class, 'getOrganizationReviews']);
+                    Route::delete('/{id}', [AgencyController::class, 'deleteReview']);
+                    Route::patch('/{id}/approve', [AgencyController::class, 'approveReview']);
+                    Route::put('/{id}/content', [AgencyController::class, 'updateReviewContent']);
 
                 });
 
@@ -60,9 +78,7 @@ Route::prefix('v1')->group(function () {
                     
                 });
             });
+
         });
     });
 
-
-
-});
