@@ -127,7 +127,7 @@
     <section class="about_company bac_gray">
         <div class="container">
             <div class="title">О проекте "Цены на ритуальные услуги в г. {{$city->title}}</div>
-            <div class="content_block">{!! $city->text_about_project !!}</div>
+            <div class="content_block">{!! formatContent($city->text_about_project) !!}</div>
 
         </div>
     </section>
@@ -140,7 +140,7 @@
     <section class="about_company bac_gray">
         <div class="container">
             <div class="title">Как правильно оформить{{ $category->title }} в г. {{$city->title}}</div>
-            <div class="content_block">{!!$category->content !!}</div>
+            <div class="content_block">{!! formatContent($category->content) !!}</div>
 
         </div>
     </section>

@@ -6,6 +6,7 @@ use App\Filament\Resources\EdgeResource\Pages;
 use App\Filament\Resources\EdgeResource\RelationManagers;
 use App\Models\Edge;
 use Filament\Forms;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -29,6 +30,13 @@ class EdgeResource extends Resource
                 ->label('Название')
                 ->required()
                 ->maxLength(255),
+
+                Radio::make('is_show')
+                ->label('Отображать на сайте')
+                ->options([
+                    0 => 'Нет',
+                    1 => 'Да'
+                ])
             ]);
     }
 

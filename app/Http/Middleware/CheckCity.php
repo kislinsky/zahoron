@@ -56,7 +56,7 @@ class CheckCity
                 // Поиск города в таблице \cities\
                 $city = City::where('slug', $citySlug)->first();
 
-                if (!$city) {
+                if (!$city ) {
                     $defaultCity = City::where('selected_admin', 1)->first(); // Предположим, что есть поле is_default
                     if ($defaultCity) {
                         setcookie('city', '', -1, '/');

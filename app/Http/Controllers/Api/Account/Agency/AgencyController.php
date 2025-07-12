@@ -1065,7 +1065,6 @@ class AgencyController extends Controller
 
         // Получаем отзывы
         $reviews = ReviewsOrganization::where('organization_id', $organizationId)
-            ->with('user') // Загружаем пользователя, если нужно
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -1099,7 +1098,7 @@ class AgencyController extends Controller
         $comments = CommentProduct::whereHas('product', function($query) use ($organizationId) {
                 $query->where('organization_id', $organizationId);
             })
-            ->with(['user', 'product']) // Загружаем пользователя и товар
+            ->with(['product']) // Загружаем товар
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -1331,6 +1330,72 @@ class AgencyController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Комментарий обновлен',
+            'data' => $comment
+        ]);
+    }
+
+
+    public function addOrganizationReviewResponse(Request $request, $reviewId)
+    {
+        $validator = Validator::make($request->all(), [
+            'response' => 'required|string|min:10|max:3000'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $review = ReviewsOrganization::find($reviewId);
+        
+        if (!$review) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Отзыв не найден'
+            ], 404);
+        }
+
+        $review->organization_response = $request->response;
+        $review->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ответ организации сохранен',
+            'data' => $review
+        ]);
+    }
+
+    
+    public function addProductCommentResponse(Request $request, $commentId)
+    {
+        $validator = Validator::make($request->all(), [
+            'response' => 'required|string|min:10|max:3000'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $comment = CommentProduct::find($commentId);
+        
+        if (!$comment) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Комментарий не найден'
+            ], 404);
+        }
+
+        $comment->organization_response = $request->response;
+        $comment->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ответ организации сохранен',
             'data' => $comment
         ]);
     }

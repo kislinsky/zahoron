@@ -278,6 +278,9 @@ function priceAdditionals($ids){
 
 }
 
+function defaultCity(){
+    return $defaultCity = City::where('selected_admin', 1)->first();
+}
 
 function selectCity(){
     if(isset($_COOKIE['city'])){
@@ -1502,7 +1505,7 @@ function getSeo($page,$column){
     return null;
 }
 
-function formatContent($content,$model){
+function formatContent($content,$model=null){
     $city=selectCity()->title;
     $title='';
     $adres='';

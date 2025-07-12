@@ -6,6 +6,7 @@ use App\Models\Cemetery;
 use App\Models\Church;
 use App\Models\Columbarium;
 use App\Models\Crematorium;
+use App\Models\Edge;
 use App\Models\Faq;
 use App\Models\ImageCemetery;
 use App\Models\ImageChurch;

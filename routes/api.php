@@ -54,7 +54,7 @@ Route::prefix('v1')->group(function () {
                     Route::delete('/{id}', [AgencyController::class, 'deleteProductComment']);
                     Route::patch('/{id}/approve', [AgencyController::class, 'approveProductComment']);
                     Route::put('/{id}/content', [AgencyController::class, 'updateProductCommentContent']);
-
+                    Route::post('/{id}/response', [AgencyController::class, 'addProductCommentResponse']);
                     });
                 });
 
@@ -64,7 +64,7 @@ Route::prefix('v1')->group(function () {
                     Route::delete('/{id}', [AgencyController::class, 'deleteReview']);
                     Route::patch('/{id}/approve', [AgencyController::class, 'approveReview']);
                     Route::put('/{id}/content', [AgencyController::class, 'updateReviewContent']);
-
+                    Route::post('/{id}/response', [AgencyController::class, 'addOrganizationReviewResponse']);
                 });
 
 

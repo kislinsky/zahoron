@@ -206,11 +206,15 @@ class BeautificationResource extends Resource
 
                 Tables\Filters\SelectFilter::make('cemetery_id')
                     ->label('Кладбище')
-                    ->relationship('cemetery', 'title'),
+                    ->relationship('cemetery', 'title')
+                    ->searchable(),
+
 
                 Tables\Filters\SelectFilter::make('organization_id')
                     ->label('Организация')
-                    ->relationship('organization', 'title'),
+                    ->relationship('organization', 'title')
+                    ->searchable(),
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -25,12 +25,15 @@ class CityService {
 
     public static function ajaxCity($city){
         $cities = DB::table('cities')
-            ->join('organizations', 'organizations.city_id', '=', 'cities.id')
-            ->where('cities.title', 'like', '%' . $city . '%')
-            ->select('cities.*')
-            ->groupBy('cities.id')
-            ->orderBy('cities.title', 'asc')
-            ->get();
+    ->select('cities.*')
+    ->join('organizations', 'organizations.city_id', '=', 'cities.id')
+    ->join('areas', 'cities.area_id', '=', 'areas.id')
+    ->join('edges', 'areas.edge_id', '=', 'edges.id')
+    ->where('cities.title', 'like', $city . '%') // Используем начало строки для индекса
+    ->where('edges.is_show', 1)
+    ->groupBy('cities.id')
+    ->orderBy('cities.title', 'asc')
+    ->get();
         return view('components.components_form.cities',compact('cities'));
     }
 
@@ -41,12 +44,15 @@ class CityService {
 
     public static function ajaxCityInInput($city){
          $cities = DB::table('cities')
-            ->join('organizations', 'organizations.city_id', '=', 'cities.id')
-            ->where('cities.title', 'like', '%' . $city . '%')
-            ->select('cities.*')
-            ->groupBy('cities.id')
-            ->orderBy('cities.title', 'asc')
-            ->get();
+    ->select('cities.*')
+    ->join('organizations', 'organizations.city_id', '=', 'cities.id')
+    ->join('areas', 'cities.area_id', '=', 'areas.id')
+    ->join('edges', 'areas.edge_id', '=', 'edges.id')
+    ->where('cities.title', 'like', $city . '%') // Используем начало строки для индекса
+    ->where('edges.is_show', 1)
+    ->groupBy('cities.id')
+    ->orderBy('cities.title', 'asc')
+    ->get();
         return view('components.components_form.cities-input',compact('cities'));
     }
 
@@ -54,10 +60,13 @@ class CityService {
     public static function ajaxCitySearchInInput($data){
         $cities=[];
         if(isset($data['s']) && $data['s']!=null){
-              $cities = DB::table('cities')
-            ->join('organizations', 'organizations.city_id', '=', 'cities.id')
-            ->where('cities.title', 'like', '%' . $data['s'] . '%')
+             $cities = DB::table('cities')
             ->select('cities.*')
+            ->join('organizations', 'organizations.city_id', '=', 'cities.id')
+            ->join('areas', 'cities.area_id', '=', 'areas.id')
+            ->join('edges', 'areas.edge_id', '=', 'edges.id')
+            ->where('cities.title', 'like', $data['s'] . '%') // Используем начало строки для индекса
+            ->where('edges.is_show', 1)
             ->groupBy('cities.id')
             ->orderBy('cities.title', 'asc')
             ->get();

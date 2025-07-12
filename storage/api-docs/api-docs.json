@@ -2129,13 +2129,13 @@
                 ]
             }
         },
-        "/api/v1/account/agency/reviews/organization/{id}": {
+        "/v1/account/agency/reviews/organization/{id}": {
             "get": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Получение отзывов об организации",
-                "operationId": "3238763594e3cee41ae07b1105f05a54",
+                "operationId": "456b10f24180e513c93b7aaef7f4f7c6",
                 "parameters": [
                     {
                         "name": "id",
@@ -2320,13 +2320,13 @@
                 ]
             }
         },
-        "/api/v1/account/agency/product-comments/organization/{id}": {
+        "/v1/account/agency/product-comments/organization/{id}": {
             "get": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Получение комментариев к товарам организации",
-                "operationId": "63a024a286d7a21ad7821b27a2f979ee",
+                "operationId": "15085ca0e7041fe6c6433951a9d72ad7",
                 "parameters": [
                     {
                         "name": "id",
@@ -2520,13 +2520,13 @@
                 ]
             }
         },
-        "/api/v1/account/agency/reviews/{id}": {
+        "/v1/account/agency/reviews/{id}": {
             "delete": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Удаление отзыва об организации",
-                "operationId": "c26b07b1a949a1002569ad5bd880ca7a",
+                "operationId": "154e7e489e41480ce85fa218ed50577d",
                 "parameters": [
                     {
                         "name": "id",
@@ -2607,13 +2607,13 @@
                 ]
             }
         },
-        "/api/v1/account/agency/reviews/{id}/approve": {
+        "/v1/account/agency/reviews/{id}/approve": {
             "patch": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Одобрение отзыва об организации",
-                "operationId": "a2ccb0d4b471cc1aadc49e4387d897df",
+                "operationId": "afd33cada6ab10cff70a0cfd7ec88cd7",
                 "parameters": [
                     {
                         "name": "id",
@@ -2719,13 +2719,13 @@
                 ]
             }
         },
-        "/api/v1/account/agency/reviews/{id}/content": {
+        "/v1/account/agency/reviews/{id}/content": {
             "put": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Обновление текста отзыва",
-                "operationId": "94e6ed3a0201f15218a29fa2497c7d75",
+                "operationId": "cbfeaef12589756cb6217a840c9d7d26",
                 "parameters": [
                     {
                         "name": "id",
@@ -2860,13 +2860,13 @@
                 ]
             }
         },
-        "/api/v1/account/agency/product-comments/{id}": {
+        "/v1/account/agency/product-comments/{id}": {
             "delete": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Удаление комментария о товаре",
-                "operationId": "04d624eda199263b59e3b96c8e8e8e1b",
+                "operationId": "fbd9b46c8224508ebba4681fb2aeeb8d",
                 "parameters": [
                     {
                         "name": "id",
@@ -2947,13 +2947,13 @@
                 ]
             }
         },
-        "/api/v1/account/agency/product-comments/{id}/approve": {
+        "/v1/account/agency/product-comments/{id}/approve": {
             "patch": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Одобрение комментария о товаре",
-                "operationId": "ee2c0a6c99c473a84799fcf27caf7436",
+                "operationId": "053cf4cbb17b5fca34a9b82169ca6b46",
                 "parameters": [
                     {
                         "name": "id",
@@ -3063,13 +3063,13 @@
                 ]
             }
         },
-        "/api/v1/account/agency/product-comments/{id}/content": {
+        "/v1/account/agency/product-comments/{id}/content": {
             "put": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Обновление текста комментария о товаре",
-                "operationId": "04bb496764cbd600ccd7e79b09ab84d8",
+                "operationId": "5ab540e0b4eb4fcb38b59413427e3db1",
                 "parameters": [
                     {
                         "name": "id",
@@ -3171,6 +3171,284 @@
                                             "example": {
                                                 "content": [
                                                     "Поле content обязательно для заполнения."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Комментарий не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Комментарий не найден"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/account/agency/reviews/{id}/response": {
+            "post": {
+                "tags": [
+                    "Организация: Отзывы и комментарии"
+                ],
+                "summary": "Добавление ответа организации на отзыв",
+                "operationId": "125805b6918571370acde1979a010b24",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID отзыва",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "response"
+                                ],
+                                "properties": {
+                                    "response": {
+                                        "type": "string",
+                                        "maxLength": 2000,
+                                        "minLength": 10,
+                                        "example": "Благодарим за ваш отзыв!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ответ организации сохранен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ответ организации сохранен"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "content": {
+                                                    "type": "string",
+                                                    "example": "Отличная организация"
+                                                },
+                                                "organization_response": {
+                                                    "type": "string",
+                                                    "example": "Благодарим за ваш отзыв!"
+                                                },
+                                                "organization_response_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибки валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "response": [
+                                                    "Поле response обязательно для заполнения."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Отзыв не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Отзыв не найден"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/account/agency/product-comments/{id}/response": {
+            "post": {
+                "tags": [
+                    "Организация: Отзывы и комментарии"
+                ],
+                "summary": "Добавление ответа организации на комментарий к товару",
+                "operationId": "992fa2a911a79a3c79444175637d3da1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID комментария",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "response"
+                                ],
+                                "properties": {
+                                    "response": {
+                                        "type": "string",
+                                        "maxLength": 2000,
+                                        "minLength": 10,
+                                        "example": "Спасибо за ваш отзыв о товаре!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ответ организации сохранен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ответ организации сохранен"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "content": {
+                                                    "type": "string",
+                                                    "example": "Хороший товар"
+                                                },
+                                                "organization_response": {
+                                                    "type": "string",
+                                                    "example": "Спасибо за ваш отзыв о товаре!"
+                                                },
+                                                "organization_response_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "product_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибки валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "response": [
+                                                    "Поле response обязательно для заполнения."
                                                 ]
                                             }
                                         }

@@ -202,11 +202,15 @@ class DeadApplicationResource extends Resource
 
                 Tables\Filters\SelectFilter::make('mortuary_id')
                     ->label('Морг')
-                    ->relationship('mortuary', 'title'),
+                    ->relationship('mortuary', 'title')
+                    ->searchable(),
+
 
                 Tables\Filters\SelectFilter::make('organization_id')
                     ->label('Организация')
-                    ->relationship('organization', 'title'),
+                    ->relationship('organization', 'title')
+                    ->searchable(),
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

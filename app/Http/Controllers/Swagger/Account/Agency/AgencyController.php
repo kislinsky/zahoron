@@ -1349,7 +1349,7 @@ public static function deleteProviderOffer(ProductRequestToSupplier $offer)
 
 /**
  * @OA\Get(
- *     path="/api/v1/account/agency/reviews/organization/{id}",
+ *     path="/v1/account/agency/reviews/organization/{id}",
  *     summary="Получение отзывов об организации",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
@@ -1422,7 +1422,7 @@ public function getOrganizationReviews($id) {}
 
 /**
  * @OA\Get(
- *     path="/api/v1/account/agency/product-comments/organization/{id}",
+ *     path="/v1/account/agency/product-comments/organization/{id}",
  *     summary="Получение комментариев к товарам организации",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
@@ -1498,7 +1498,7 @@ public function getProductComments($id) {}
 
 /**
  * @OA\Delete(
- *     path="/api/v1/account/agency/reviews/{id}",
+ *     path="/v1/account/agency/reviews/{id}",
  *     summary="Удаление отзыва об организации",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
@@ -1539,7 +1539,7 @@ public function deleteReview($id) {}
 
 /**
  * @OA\Patch(
- *     path="/api/v1/account/agency/reviews/{id}/approve",
+ *     path="/v1/account/agency/reviews/{id}/approve",
  *     summary="Одобрение отзыва об организации",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
@@ -1587,7 +1587,7 @@ public function approveReview($id) {}
 
 /**
  * @OA\Put(
- *     path="/api/v1/account/agency/reviews/{id}/content",
+ *     path="/v1/account/agency/reviews/{id}/content",
  *     summary="Обновление текста отзыва",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
@@ -1643,7 +1643,7 @@ public function updateReviewContent(Request $request, $id) {}
 
 /**
  * @OA\Delete(
- *     path="/api/v1/account/agency/product-comments/{id}",
+ *     path="/v1/account/agency/product-comments/{id}",
  *     summary="Удаление комментария о товаре",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
@@ -1684,7 +1684,7 @@ public function deleteProductComment($id) {}
 
 /**
  * @OA\Patch(
- *     path="/api/v1/account/agency/product-comments/{id}/approve",
+ *     path="/v1/account/agency/product-comments/{id}/approve",
  *     summary="Одобрение комментария о товаре",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
@@ -1733,7 +1733,7 @@ public function approveProductComment($id) {}
 
 /**
  * @OA\Put(
- *     path="/api/v1/account/agency/product-comments/{id}/content",
+ *     path="/v1/account/agency/product-comments/{id}/content",
  *     summary="Обновление текста комментария о товаре",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
@@ -1788,4 +1788,115 @@ public function approveProductComment($id) {}
  */
 public function updateProductCommentContent(Request $request, $id) {}
 
+
+/**
+ * @OA\Post(
+ *     path="/v1/account/agency/reviews/{id}/response",
+ *     summary="Добавление ответа организации на отзыв",
+ *     tags={"Организация: Отзывы и комментарии"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID отзыва",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"response"},
+ *             @OA\Property(property="response", type="string", minLength=10, maxLength=2000, example="Благодарим за ваш отзыв!")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Ответ организации сохранен",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Ответ организации сохранен"),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="content", type="string", example="Отличная организация"),
+ *                 @OA\Property(property="organization_response", type="string", example="Благодарим за ваш отзыв!"),
+ *                 @OA\Property(property="organization_response_at", type="string", format="date-time"),
+ *                 @OA\Property(property="created_at", type="string", format="date-time")
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Ошибки валидации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="errors", type="object", example={"response": {"Поле response обязательно для заполнения."}})
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Отзыв не найден",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Отзыв не найден")
+ *         )
+ *     )
+ * )
+ */
+public function addOrganizationReviewResponse(Request $request, $id) {}
+
+/**
+ * @OA\Post(
+ *     path="/v1/account/agency/product-comments/{id}/response",
+ *     summary="Добавление ответа организации на комментарий к товару",
+ *     tags={"Организация: Отзывы и комментарии"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID комментария",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"response"},
+ *             @OA\Property(property="response", type="string", minLength=10, maxLength=2000, example="Спасибо за ваш отзыв о товаре!")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Ответ организации сохранен",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Ответ организации сохранен"),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="content", type="string", example="Хороший товар"),
+ *                 @OA\Property(property="organization_response", type="string", example="Спасибо за ваш отзыв о товаре!"),
+ *                 @OA\Property(property="organization_response_at", type="string", format="date-time"),
+ *                 @OA\Property(property="created_at", type="string", format="date-time"),
+ *                 @OA\Property(property="product_id", type="integer", example=1)
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Ошибки валидации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="errors", type="object", example={"response": {"Поле response обязательно для заполнения."}})
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Комментарий не найден",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Комментарий не найден")
+ *         )
+ *     )
+ * )
+ */
+public function addProductCommentResponse(Request $request, $id) {}
 }

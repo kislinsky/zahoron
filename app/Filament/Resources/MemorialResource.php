@@ -208,11 +208,14 @@ class MemorialResource extends Resource
 
                 Tables\Filters\SelectFilter::make('district_id')
                     ->label('Район')
-                    ->relationship('district', 'title'),
+                    ->relationship('district', 'title')
+                    ->searchable(),
 
                 Tables\Filters\SelectFilter::make('organization_id')
                     ->label('Организация')
-                    ->relationship('organization', 'title'),
+                    ->relationship('organization', 'title')
+                    ->searchable(),
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

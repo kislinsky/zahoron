@@ -85,21 +85,28 @@ if($city!='livewire' && $city!='api' ){
     if (!request()->is('storage/*') && !request()->is('css/*') && !request()->is('js/*') && !request()->is('admin/*') && !request()->is('filament*') && $city!='admin' ) {    
         if(city_by_slug($city) == null){
             setcookie('city', '', -1, '/');
-            setcookie("city", first_city_id(), time()+20*24*60*60,'/');
-            header("location: /".first_city_slug());        
+            setcookie("city", defaultCity()->id, time()+20*24*60*60,'/');
+            header("location: /".defaultCity()->slug);      
 
         } else{
             $c_b_s__ = city_by_slug($city);
-            if(!isset($_COOKIE['city'])){
-                setcookie("city", first_city_id(), time()+20*24*60*60,'/');
-                header("Refresh:0");
-                
-            }
-            if(isset($_COOKIE['city']) && $_COOKIE['city'] != $c_b_s__->id){
+            if($c_b_s__->area->edge->is_show==1){
+                if(!isset($_COOKIE['city'])){
+                    setcookie("city", first_city_id(), time()+20*24*60*60,'/');
+                    header("Refresh:0");
+                    
+                }
+                if(isset($_COOKIE['city']) && $_COOKIE['city'] != $c_b_s__->id){
+                    setcookie('city', '', -1, '/');
+                    setcookie("city", $c_b_s__->id, time()+20*24*60*60,'/');
+                    header("Refresh:0");
+                    
+                }
+            }else{
                 setcookie('city', '', -1, '/');
-                setcookie("city", $c_b_s__->id, time()+20*24*60*60,'/');
-                header("Refresh:0");
-                
+                setcookie("city", defaultCity()->id, time()+20*24*60*60,'/');
+                header("location: /".defaultCity()->slug);   
+                die;     
             }
         }
     }

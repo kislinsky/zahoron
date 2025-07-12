@@ -380,7 +380,7 @@
     <section class="about_company bac_gray">
         <div class="container">
             <h2 class="title">О проекте "Цены на ритуальные услуги в г. {{$city->title}}</h2>
-            <div class="content_block">{!! get_acf(15,'content_1') !!}</div>
+            <div class="content_block">{!! formatContent(get_acf(15,'content_1')) !!}</div>
 
         </div>
     </section>
@@ -394,7 +394,7 @@
     <section class="about_company bac_gray">
         <div class="container">
             <h2 class="title">Как правильно оформить ритуальные услуги в г. {{$city->title}}</h2>
-            <div class="content_block">{!!get_acf(15,'content_2') !!}</div>
+            <div class="content_block">{!! formatContent(get_acf(15,'content_2')) !!}</div>
 
         </div>
     </section>
