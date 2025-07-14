@@ -386,11 +386,6 @@ function ddata(){
 }
 
 
-// function sendSms($phone,$message){
-//     $body = file_get_contents("https://sms.ru/sms/send?api_id=ABEA29AD-63BB-1657-6B5D-8F7501A7825C&to=".$phone."&msg=".urlencode($message)."&json=1"); 
-//     return $json = json_decode($body);
-// }
-
 
 function organizationRatingFuneralAgenciesPrices($city){
     $city=City::find($city);
@@ -990,15 +985,18 @@ function allCemetery(){
 
 
 function getCoordinatesCity($city,$area){
-    $apiKey='f85b1a2e01a144d496d767cb921c8b60';
+    $apiKey=env('DADATA_API_KEY');
     $client = new Client();
-    $response = $client->get("https://api.opencagedata.com/geocode/v1/json?q=Город в россии в {$area} - {$city}&key=f85b1a2e01a144d496d767cb921c8b60");
+    $response = $client->get("https://api.opencagedata.com/geocode/v1/json?q=Город в россии в {$area} - {$city}&key={$apiKey}");
     if(isset(json_decode($response->getBody(), true)['results'][0]['geometry'])){
         return $data = json_decode($response->getBody(), true)['results'][0]['geometry'];
     }
     return null;
     
-}  
+} 
+
+
+
 
 function randomProductsPlace($category=null){
     if($category!=null){
