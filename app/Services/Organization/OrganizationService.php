@@ -192,7 +192,6 @@ class OrganizationService
         
         $organizations_category=orgniaztionsFilters($data,$category);
 
-       
         $cemeteries = Cemetery::whereHas('city.area', function($query) use ($city) {
             $query->where('id', $city->area_id);  
         })
@@ -234,9 +233,9 @@ class OrganizationService
             SEOMeta::setRobots('noindex, nofollow');
         }
 
-        SEOTools::setTitle(formatContentCategory(getSeo($category->slug.'-catalog-organization','title'),$category,$organizations_category));
-        SEOTools::setDescription(formatContentCategory(getSeo($category->slug.'-catalog-organization','description'),$category,$organizations_category));
-        $title_h1=formatContentCategory(getSeo($category->slug.'-catalog-organization','h1'),$category,$organizations_category);
+        SEOTools::setTitle(formatContentCategory(getSeo($category->slug.'-catalog-organization','title'),$category,$organizations_category,$organizations_prices));
+        SEOTools::setDescription(formatContentCategory(getSeo($category->slug.'-catalog-organization','description'),$category,$organizations_category,$organizations_prices));
+        $title_h1=formatContentCategory(getSeo($category->slug.'-catalog-organization','h1'),$category,$organizations_category,$organizations_prices);
 
         $pages_navigation=[['Главная',route('index')],['Организации',route('organizations')],[$category->title]];
 

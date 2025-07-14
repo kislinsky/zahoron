@@ -1577,7 +1577,7 @@ function formatContentBurial($content,$model){
     return $result;
 }
 
-function formatContentCategory($content,$category,$models){
+function formatContentCategory($content,$category,$models,$prices=[]){
     $city=selectCity()->title;
     $category=$category->title;
     $count=$models->total();
@@ -1587,9 +1587,9 @@ function formatContentCategory($content,$category,$models){
     if($models->count()>0){
         $city=$models->first()->organization->city->title;
     }
-    $price_min=$models->where('price','>',0)->min('price');
-    $price_middle=round($models->where('price','>',0)->avg('price'));
-    $price_max=$models->max('price');
+    $price_min=$prices[0];
+    $price_middle=$prices[1];
+    $price_max=$prices[2];
 
     $result=str_replace(["{category}","{city}","{count}","{time}","{date}","{Year}","{price_min}","{price_avg}","{price_max}",],[$category,$city,$count,$time,$date,$year,$price_min,$price_middle,$price_max],$content);
     
@@ -2308,4 +2308,18 @@ function sendMessage($name_form,$attributes,$user){
     return false;
    
 
+}
+
+function transformId($num, $mode = 'encode') {
+    $key = 0xABC123; // Произвольный ключ (можете изменить)
+    
+    if ($mode === 'encode') {
+        // Кодирование: XOR и битовый сдвиг
+        return ($num ^ $key) << 1 | 1;
+    } elseif ($mode === 'decode') {
+        // Декодирование: обратные операции
+        return ($num >> 1) ^ $key;
+    }
+    
+    return null;
 }

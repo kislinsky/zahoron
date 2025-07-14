@@ -179,7 +179,8 @@ class ReviewsOrganizationResource extends Resource
                 Tables\Filters\SelectFilter::make('city_id')
                     ->label('Город')
                     ->relationship('city', 'title')
-                    ->hidden(static::isRestrictedUser()),
+                    ->hidden(static::isRestrictedUser())
+                    ->searchable(),
                 
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Статус')
