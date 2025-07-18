@@ -61,9 +61,9 @@
 
         {{view('account.agency.components.settings-organization.cats',compact('categories','categories_children','categories_organization','organization'))}}
         
-        {{view('account.agency.components.settings-organization.contacts',compact('cities','organization'))}}
+        {{view('account.agency.components.settings-organization.contacts',compact('organization'))}}
 
-        {{view('account.agency.components.settings-organization.work-time',compact('cities','organization','days'))}}
+        {{view('account.agency.components.settings-organization.work-time',compact('organization','days'))}}
 
         
         {{view('account.agency.components.settings-organization.cemeteries',compact('cemeteries'))}}

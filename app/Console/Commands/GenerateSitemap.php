@@ -2,18 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Burial; // Модель для захоронений
-use App\Models\Cemetery; // Модель для кладбищ
-use App\Models\City; // Модель для городов
-use App\Models\Columbarium; // Модель для колумбариев
-use App\Models\Crematorium; // Модель для крематориев
-use App\Models\Mortuary; // Модель для моргов
-use App\Models\News; // Модель для новостей
-use App\Models\Organization; // Модель для организаций
-use App\Models\PriceList; // Модель для прайс-листов
-use App\Models\Product; // Модель для продуктов
-use App\Models\ProductPriceList;
-use App\Models\Service; // Модель для услуг
+use App\Models\Cemetery;
+use App\Models\City;
+use App\Models\Columbarium;
+use App\Models\Crematorium;
+use App\Models\Mortuary;
+use App\Models\Organization;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Spatie\Sitemap\Sitemap;
@@ -31,7 +25,7 @@ class GenerateSitemap extends Command
         // Добавляем статические страницы
         $this->addStaticPages($sitemap);
 
-        // Добавляем динамические страницы
+        // Добавляем динамические маршруты
         $this->addDynamicRoutes($sitemap);
 
         // Записываем карту сайта в файл
@@ -42,26 +36,31 @@ class GenerateSitemap extends Command
 
     protected function addStaticPages(Sitemap $sitemap)
     {
+        // Главная страница
         $sitemap->add(Url::create('/')
             ->setLastModificationDate(now())
             ->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY)
             ->setPriority(1.0));
 
+        // Специалисты
         $sitemap->add(Url::create('/speczialist')
             ->setLastModificationDate(now())
             ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
             ->setPriority(0.8));
 
+        // Контакты
         $sitemap->add(Url::create('/kontakty')
             ->setLastModificationDate(now())
             ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
             ->setPriority(0.8));
 
+        // Условия использования
         $sitemap->add(Url::create('/terms-of-use')
             ->setLastModificationDate(now())
             ->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY)
             ->setPriority(0.7));
 
+        // Наши работы
         $sitemap->add(Url::create('/our-works')
             ->setLastModificationDate(now())
             ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
@@ -70,196 +69,119 @@ class GenerateSitemap extends Command
 
     protected function addDynamicRoutes(Sitemap $sitemap)
     {
-        // Получаем все города из базы данных
-        $cities = City::all();
-
-        foreach ($cities as $city) {
-            $citySlug = $city->slug; // Предполагаем, что у модели City есть поле slug
-
-            // Добавляем маршруты для каждого города
-            $this->addOrganizationRoutes($sitemap, $citySlug);
-            $this->addProductRoutes($sitemap, $citySlug);
-            $this->addNewsRoutes($sitemap, $citySlug);
-            $this->addCemeteryRoutes($sitemap, $citySlug);
-            $this->addMortuaryRoutes($sitemap, $citySlug);
-            $this->addCrematoriumRoutes($sitemap, $citySlug);
-            $this->addColumbariumRoutes($sitemap, $citySlug);
-            $this->addBurialRoutes($sitemap, $citySlug);
-            $this->addServiceRoutes($sitemap, $citySlug);
-            $this->addPriceListRoutes($sitemap, $citySlug);
-        }
+        // Добавляем все организации с их городами
+        $this->addOrganizations($sitemap);
+        
+        // Добавляем все кладбища с их городами
+        $this->addCemeteries($sitemap);
+        
+        // Добавляем все морги с их городами
+        $this->addMortuaries($sitemap);
+        
+        // Добавляем все крематории с их городами
+        $this->addCrematoriums($sitemap);
+        
+        // Добавляем все колумбарии с их городами
+        $this->addColumbariums($sitemap);
     }
 
-    protected function addOrganizationRoutes(Sitemap $sitemap, $citySlug)
+    protected function addOrganizations(Sitemap $sitemap)
     {
-        $sitemap->add(Url::create("/{$citySlug}/organizations")
+        // Главная страница организаций
+        $sitemap->add(Url::create('/organizations')
             ->setLastModificationDate(now())
             ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-            ->setPriority(0.9));
+            ->setPriority(0.8));
 
-        // Добавляем маршруты для отдельных организаций
-        $organizations = Organization::where('city_id', City::where('slug', $citySlug)->first()->id)->get();
+        // Все организации с их городами
+        $organizations = Organization::with('city')->get();
         foreach ($organizations as $organization) {
-            $sitemap->add(Url::create("/{$citySlug}/organization/{$organization->slug}")
-                ->setLastModificationDate($organization->updated_at)
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                ->setPriority(0.8));
+            if ($organization->city) {
+                $sitemap->add(Url::create("/{$organization->city->slug}/organization/{$organization->slug}")
+                    ->setLastModificationDate($organization->updated_at)
+                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                    ->setPriority(0.7));
+            }
         }
     }
 
-    protected function addProductRoutes(Sitemap $sitemap, $citySlug)
+    protected function addCemeteries(Sitemap $sitemap)
     {
-        $sitemap->add(Url::create("/{$citySlug}/marketplace")
-            ->setLastModificationDate(now())
-            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-            ->setPriority(0.9));
-
-        // Добавляем маршруты для отдельных продуктов
-        $products = Product::where('city_id', City::where('slug', $citySlug)->first()->id)->get();
-        foreach ($products as $product) {
-            $sitemap->add(Url::create("/{$citySlug}/product/{$product->slug}")
-                ->setLastModificationDate($product->updated_at)
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                ->setPriority(0.8));
-        }
-    }
-
-    protected function addNewsRoutes(Sitemap $sitemap, $citySlug)
-    {
-        $sitemap->add(Url::create("/{$citySlug}/news")
+        // Главная страница кладбищ
+        $sitemap->add(Url::create('/cemeteries')
             ->setLastModificationDate(now())
             ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
             ->setPriority(0.8));
 
-        // Добавляем маршруты для отдельных новостей
-        $news = News::all();
-        foreach ($news as $newsItem) {
-            $sitemap->add(Url::create("/{$citySlug}/news/{$newsItem->slug}")
-                ->setLastModificationDate($newsItem->updated_at)
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                ->setPriority(0.7));
-        }
-    }
-
-    protected function addCemeteryRoutes(Sitemap $sitemap, $citySlug)
-    {
-        $sitemap->add(Url::create("/{$citySlug}/cemeteries")
-            ->setLastModificationDate(now())
-            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-            ->setPriority(0.8));
-
-        // Добавляем маршруты для отдельных кладбищ
-        $cemeteries = Cemetery::where('city_id', City::where('slug', $citySlug)->first()->id)->get();
+        // Все кладбища с их городами
+        $cemeteries = Cemetery::with('city')->get();
         foreach ($cemeteries as $cemetery) {
-            $sitemap->add(Url::create("/{$citySlug}/cemetery/{$cemetery->id}")
-                ->setLastModificationDate($cemetery->updated_at)
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                ->setPriority(0.7));
+            if ($cemetery->city) {
+                $sitemap->add(Url::create("/{$cemetery->city->slug}/cemetery/{$cemetery->id}")
+                    ->setLastModificationDate($cemetery->updated_at)
+                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                    ->setPriority(0.7));
+            }
         }
     }
 
-    protected function addMortuaryRoutes(Sitemap $sitemap, $citySlug)
+    protected function addMortuaries(Sitemap $sitemap)
     {
-        $sitemap->add(Url::create("/{$citySlug}/mortuaries")
+        // Главная страница моргов
+        $sitemap->add(Url::create('/mortuaries')
             ->setLastModificationDate(now())
             ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
             ->setPriority(0.8));
 
-        // Добавляем маршруты для отдельных моргов
-        $mortuaries = Mortuary::where('city_id', City::where('slug', $citySlug)->first()->id)->get();
+        // Все морги с их городами
+        $mortuaries = Mortuary::with('city')->get();
         foreach ($mortuaries as $mortuary) {
-            $sitemap->add(Url::create("/{$citySlug}/mortuary/{$mortuary->id}")
-                ->setLastModificationDate($mortuary->updated_at)
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                ->setPriority(0.7));
+            if ($mortuary->city) {
+                $sitemap->add(Url::create("/{$mortuary->city->slug}/mortuary/{$mortuary->id}")
+                    ->setLastModificationDate($mortuary->updated_at)
+                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                    ->setPriority(0.7));
+            }
         }
     }
 
-    protected function addCrematoriumRoutes(Sitemap $sitemap, $citySlug)
+    protected function addCrematoriums(Sitemap $sitemap)
     {
-        $sitemap->add(Url::create("/{$citySlug}/crematoriums")
+        // Главная страница крематориев
+        $sitemap->add(Url::create('/crematoriums')
             ->setLastModificationDate(now())
             ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
             ->setPriority(0.8));
 
-        // Добавляем маршруты для отдельных крематориев
-        $crematoriums = Crematorium::where('city_id', City::where('slug', $citySlug)->first()->id)->get();
+        // Все крематории с их городами
+        $crematoriums = Crematorium::with('city')->get();
         foreach ($crematoriums as $crematorium) {
-            $sitemap->add(Url::create("/{$citySlug}/crematorium/{$crematorium->id}")
-                ->setLastModificationDate($crematorium->updated_at)
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                ->setPriority(0.7));
+            if ($crematorium->city) {
+                $sitemap->add(Url::create("/{$crematorium->city->slug}/crematorium/{$crematorium->id}")
+                    ->setLastModificationDate($crematorium->updated_at)
+                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                    ->setPriority(0.7));
+            }
         }
     }
 
-    protected function addColumbariumRoutes(Sitemap $sitemap, $citySlug)
+    protected function addColumbariums(Sitemap $sitemap)
     {
-        $sitemap->add(Url::create("/{$citySlug}/columbariums")
+        // Главная страница колумбариев
+        $sitemap->add(Url::create('/columbariums')
             ->setLastModificationDate(now())
             ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
             ->setPriority(0.8));
 
-        // Добавляем маршруты для отдельных колумбариев
-        $columbariums = Columbarium::where('city_id', City::where('slug', $citySlug)->first()->id)->get();
+        // Все колумбарии с их городами
+        $columbariums = Columbarium::with('city')->get();
         foreach ($columbariums as $columbarium) {
-            $sitemap->add(Url::create("/{$citySlug}/columbarium/{$columbarium->id}")
-                ->setLastModificationDate($columbarium->updated_at)
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                ->setPriority(0.7));
+            if ($columbarium->city) {
+                $sitemap->add(Url::create("/{$columbarium->city->slug}/columbarium/{$columbarium->id}")
+                    ->setLastModificationDate($columbarium->updated_at)
+                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                    ->setPriority(0.7));
+            }
         }
     }
-
-    protected function addBurialRoutes(Sitemap $sitemap, $citySlug)
-    {
-        $sitemap->add(Url::create("/{$citySlug}/burial")
-            ->setLastModificationDate(now())
-            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-            ->setPriority(0.9));
-
-        // Добавляем маршруты для отдельных захоронений
-        $burials = Burial::whereIn('cemetery_id', City::where('slug', $citySlug)->first()->cemeteries->pluck('id'))->get();
-        foreach ($burials as $burial) {
-            $sitemap->add(Url::create("/{$citySlug}/burial/{$burial->slug}")
-                ->setLastModificationDate($burial->updated_at)
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                ->setPriority(0.8));
-        }
-    }
-
-    protected function addServiceRoutes(Sitemap $sitemap, $citySlug)
-    {
-        $sitemap->add(Url::create("/{$citySlug}/service")
-            ->setLastModificationDate(now())
-            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-            ->setPriority(0.9));
-
-        // Добавляем маршруты для отдельных услуг
-        $services = Service::all();
-        foreach ($services as $service) {
-            $sitemap->add(Url::create("/{$citySlug}/service/{$service->id}")
-                ->setLastModificationDate($service->updated_at)
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                ->setPriority(0.8));
-        }
-    }
-
-    protected function addPriceListRoutes(Sitemap $sitemap, $citySlug)
-    {
-        $sitemap->add(Url::create("/{$citySlug}/price-list")
-            ->setLastModificationDate(now())
-            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-            ->setPriority(0.8));
-
-        // Добавляем маршруты для отдельных категорий услуг
-        $priceLists = ProductPriceList::all();
-        foreach ($priceLists as $priceList) {
-            $sitemap->add(Url::create("/{$citySlug}/price-list/{$priceList->slug}")
-                ->setLastModificationDate($priceList->updated_at)
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                ->setPriority(0.7));
-        }
-    }
-
-  
-
 }

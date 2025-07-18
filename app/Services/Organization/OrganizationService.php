@@ -190,7 +190,7 @@ class OrganizationService
         $news=News::orderBy('id', 'desc')->take(3)->get();
         $cats=CategoryProduct::orderBy('id','desc')->where('parent_id',null)->get();
         
-        $organizations_category=orgniaztionsFilters($data,$category);
+        $organizations_category=organizationsFilters($data,$category);
 
         $cemeteries = Cemetery::whereHas('city.area', function($query) use ($city) {
             $query->where('id', $city->area_id);  
@@ -232,7 +232,6 @@ class OrganizationService
         if($organizations_category->total()<3){
             SEOMeta::setRobots('noindex, nofollow');
         }
-
         SEOTools::setTitle(formatContentCategory(getSeo($category->slug.'-catalog-organization','title'),$category,$organizations_category,$organizations_prices));
         SEOTools::setDescription(formatContentCategory(getSeo($category->slug.'-catalog-organization','description'),$category,$organizations_category,$organizations_prices));
         $title_h1=formatContentCategory(getSeo($category->slug.'-catalog-organization','h1'),$category,$organizations_category,$organizations_prices);
@@ -245,7 +244,7 @@ class OrganizationService
 
     public static function ajaxFilterCatalog($data){
         $category=CategoryProduct::find($data['category_id']);
-        $organizations_category=orgniaztionsFilters($data,$category);
+        $organizations_category=organizationsFilters($data,$category);
         return  view('organization.components.catalog.organizations-show',compact('organizations_category'));
     }
 
@@ -281,8 +280,9 @@ class OrganizationService
         // }
 
         $city=selectCity();
-        $organizations_category=orgniaztionsFilters($data,$category);
-        $title_h1=formatContentCategory(getSeo($category->slug.'-catalog-organization','h1'),$category,$organizations_category);
+        $organizations_category=organizationsFilters($data,$category);
+        $organizations_prices=organizationsPrices($data,$category);
+        $title_h1=formatContentCategory(getSeo($category->slug.'-catalog-organization','h1'),$category,$organizations_category,$organizations_prices);
 
         return  view('organization.components.catalog.title-page',compact('title_h1'));
     }
@@ -290,7 +290,7 @@ class OrganizationService
     public static function ajaxMapOrganizations($data){
         $category=CategoryProduct::find($data['category_id']);
         $city=selectCity();
-        $organizations_category=orgniaztionsFilters($data,$category);
+        $organizations_category=organizationsFilters($data,$category);
         return view('organization.components.catalog.map-cats',compact('category','organizations_category','city'));
     }
     

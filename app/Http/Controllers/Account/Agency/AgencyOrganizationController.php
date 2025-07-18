@@ -276,5 +276,17 @@ class AgencyOrganizationController extends Controller
         ]);
         return AgencyOrganizationService::payApplication($type_service,$data['count']);
     }
+
+    public static function pageBuyPriority(){
+        return AgencyOrganizationService::pageBuyPriority();
+    }
+
+    public static function buyPriority(Request $request){
+        $data=request()->validate([
+            'type_priority'=>['required','integer'],
+            'priority'=>['required','integer'],
+        ]);
+        return AgencyOrganizationService::buyPriority($data);
+    }
     
 }

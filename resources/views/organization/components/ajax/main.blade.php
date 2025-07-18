@@ -189,8 +189,6 @@ $( ".filter_block_organization select" ).on( "change", function() {
         data: filters,
         success: function (result) {
             $('.block_table_price_orgniaztions').html(result)
-            $('.bac_loader').fadeOut()
-            $('.load_block').fadeOut()
             let strings = [];
             for (const [key, value] of Object.entries(filters)) {
                 strings.push(key+"="+value)
@@ -210,8 +208,6 @@ $( ".filter_block_organization select" ).on( "change", function() {
         data: filters,
         success: function (result) {
            $('.content_order_page').html(result)
-           $('.bac_loader').fadeOut()
-           $('.load_block').fadeOut()
         },
         error: function () {
             alert('Ошибка');

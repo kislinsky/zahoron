@@ -6,6 +6,7 @@ use App\Filament\Resources\FaqProductPriceListResource\Pages;
 use App\Filament\Resources\FaqProductPriceListResource\RelationManagers;
 use App\Models\FaqProductPriceList;
 use Filament\Forms;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -26,15 +27,13 @@ class FaqProductPriceListResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
+               Forms\Components\TextInput::make('title')
                 ->label('Вопрос')
-                ->required()
-                ->maxLength(255),
+                ->required(),
 
-                Textarea::make('content')
+                RichEditor::make('content')
                 ->label('Ответ')
-                ->required()
-                ->maxLength(255),
+                ->required(),
             ]);
     }
 

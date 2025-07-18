@@ -210,9 +210,12 @@ function organizationPages(){
 
         ['Оплаты','storage/uploads/Icon_pay_aplication.svg',
             [
-                ['Заявки','account.agency.applications']
+                ['Заявки','account.agency.applications'],
+                ['Приоритет','account.agency.priority.buy']
             ]
         ],
+
+        
 
 
         ['Товар','storage/uploads/Icon_sidebar_2.svg',
@@ -324,10 +327,12 @@ function mobilePages(){
         // Блок "Информация" - изменяем в зависимости от versionProject()
         [
             ['Информация', ''],
+           
             array_filter([
                 (!versionProject() ? ['Наши работы', route('our.products')] : null),
                 (!versionProject() ? ['Статьи', route('news')] : null),
                 ['Контакты', route('contacts')],
+                 ['Наши работы', route('our.products')],
             ]),
         ],
         
@@ -568,7 +573,11 @@ function mobilePagesAccountAgecny() {
         ],
 
         [
-            ['Оплаты', route('account.agency.applications')],
+            ['Оплаты',''],
+            [
+                ['Зявки',route('account.agency.applications')],
+                ['Приориет',route('account.agency.priority.buy')]
+            ]
         ],
     
 

@@ -23,18 +23,18 @@ class AgencyOrganizationService {
 
     public static function settings($id){
         $organization=Organization::find($id);
-        $cities=City::orderBy('title','asc')->get();
         $cemeteries=[];
         if($organization->cemetery_ids!=null){
             $cemeteries=Cemetery::whereIn('id',array_filter(explode(',',$organization->cemetery_ids)))->get();
         }
+        
         $categories=CategoryProduct::where('parent_id',null)->get();
         $categories_children=childrenCategoryProducts($categories[0]);
         $categories_organization=ActivityCategoryOrganization::where('organization_id',$organization->id)->get();
         $days=WorkingHoursOrganization::where('organization_id',$organization->id)->orderByRaw("FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')")->get();
 
         if($organization->user_id==user()->id){
-            return view('account.agency.organization.settings',compact('days','cemeteries','cities','organization','categories_children','categories','categories_organization'));
+            return view('account.agency.organization.settings',compact('days','cemeteries','organization','categories_children','categories','categories_organization'));
         }
         return redirect()->back()->with('error','Эта организация не принадлежит вам');
     }
@@ -680,7 +680,18 @@ class AgencyOrganizationService {
             // Обработка ошибки
             return redirect()->back()->with('error','Ошибка оплаты');
         }
+    }
 
+    public static function pageBuyPriority(){
+        return view('account.agency.organization.priority.buy');
+    }
+
+    public static function buyPriority($data){
+        if($data['type_priority']=='1'){
+            $organization=user()->organization();
+            $organization->update(['priority'=>$data['priority']]);
+            return redirect()->back()->with('message_cart','Ваш приоритет обновлен');
+        }
     }
     
 }

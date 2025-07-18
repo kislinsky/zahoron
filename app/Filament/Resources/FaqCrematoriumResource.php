@@ -6,6 +6,7 @@ use App\Filament\Resources\FaqCrematoriumResource\Pages;
 use App\Filament\Resources\FaqCrematoriumResource\RelationManagers;
 use App\Models\FaqCrematorium;
 use Filament\Forms;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -28,13 +29,11 @@ class FaqCrematoriumResource extends Resource
             ->schema([
                  Forms\Components\TextInput::make('title')
                 ->label('Вопрос')
-                ->required()
-                ->maxLength(255),
+                ->required(),
 
-                Textarea::make('content')
+                RichEditor::make('content')
                 ->label('Ответ')
-                ->required()
-                ->maxLength(255),
+                ->required(),
             ]);
     }
 

@@ -20,7 +20,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'type' => 'required|in:Ритуальное агенство,Частный агент,Другое',
-            'inn' => 'required|string|size:12',
+            'inn' => 'required|string',
             'phone' => 'required|string|max:15',
             'form' => 'required|in:ООО,ИП,ФЛ',
         ]);

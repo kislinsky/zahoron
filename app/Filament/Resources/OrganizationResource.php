@@ -145,10 +145,21 @@ class OrganizationResource extends Resource
         TextInput::make('slug')
             ->required()
             ->label('Slug')
-            ->maxLength(255)
+            
             ->unique(ignoreRecord: true)
             ->formatStateUsing(fn ($state) => slug($state))
             ->dehydrateStateUsing(fn ($state, $get) => generateUniqueSlug($state, Organization::class, $get('id'))),
+
+
+        Radio::make('priority')
+            ->label('Приоритет')
+            ->options([
+                0 => 'Обычный',
+                2 => 'Средний',
+                1 => 'Высокий'
+            ])
+            ->inline(),
+
 
             TextInput::make('route')
     ->label('Ссылка на организацию')
@@ -189,48 +200,48 @@ class OrganizationResource extends Resource
             Forms\Components\TextInput::make('width')
                 ->label('Ширина')
                 ->required()
-                ->maxLength(255),
+                ,
 
             Forms\Components\TextInput::make('longitude')
                 ->label('Долгота')
                 ->required()
-                ->maxLength(255),
+                ,
 
             Forms\Components\TextInput::make('underground')
                 ->label('Метро')
-                ->maxLength(255),
+                ,
 
             Forms\Components\TextInput::make('next_to')
                 ->label('Рядом с')
-                ->maxLength(255),
+                ,
 
             Forms\Components\TextInput::make('email')
                 ->label('email')
-                ->maxLength(255),
+                ,
 
             Forms\Components\TextInput::make('phone')
                 ->label('Телефон')
-                ->maxLength(255),
+                ,
                 Forms\Components\TextInput::make('adres')
                 ->label('Адрес')
                 ->required()
-                ->maxLength(255),
+                ,
 
             Forms\Components\TextInput::make('name_type')
                 ->label('Тип организации')
-                ->maxLength(255),
+                ,
 
             Forms\Components\TextInput::make('whatsapp')
                 ->label('whatsapp')
-                ->maxLength(255),
+                ,
 
             Forms\Components\TextInput::make('telegram')
                 ->label('telegram')
-                ->maxLength(255),
+                ,
 
             Forms\Components\TextInput::make('link_website')
                 ->label('Ссылка на сайт организации')
-                ->maxLength(255),
+                ,
 
             RichEditor::make('content')
                 ->label('Описание')
@@ -273,7 +284,7 @@ class OrganizationResource extends Resource
                 Forms\Components\TextInput::make('rating')
                 ->label('Рейтинг')
                 ->required()
-                ->maxLength(255),
+                ,
 
                 Select::make('cemetery_ids')
                 ->label('Кладбища, на которых работает организация')

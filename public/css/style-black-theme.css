@@ -549,3 +549,8 @@ color: white;
 .black_theme .img_place .white_img_org{
     display: none;
 }
+
+.black_theme .block_filter_mobile,.black_theme .mobile_filter_option{
+    background: #0F0F0F;
+    color: white;
+}

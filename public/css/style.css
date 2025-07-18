@@ -7566,7 +7566,7 @@ height: 15px;
 color: #0080D7;
 }
 
-.block_filter_mobile .text_black_bold{
+.block_filter_mobile .text_black_bold,.block_input .text_black_bold{
     text-align: start;
 }
 

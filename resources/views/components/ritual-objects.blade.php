@@ -7,6 +7,8 @@
             <a href='{{ route('mortuaries') }}' class="title_news">Морги</a>
             <a href='{{ route('columbariums') }}' class="title_news">Колумбарии</a>
             <a href='{{ route('crematoriums') }}' class="title_news">Крематории</a>
+            <a href='{{ route('churches') }}' class="title_news">Церкви</a>
+            <a href='{{ route('mosques') }}' class="title_news">Мечети</a>
             
         </div>
          

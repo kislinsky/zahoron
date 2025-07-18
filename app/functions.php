@@ -387,74 +387,139 @@ function ddata(){
 
 
 
-function organizationRatingFuneralAgenciesPrices($city){
-    $city=City::find($city);
-    $sorted_organizations_ids=ActivityCategoryOrganization::whereIn('category_children_id',[32,33,34])->where('price','!=',null)->whereHas('organization', function ($query) use ($city) {
-        $query->whereHas('city', function ($q) use ($city) {
-            $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
-        })->where('role', 'organization')->where('status',1);
-    })->pluck('organization_id');
-    $orgainizations=Organization::whereIn('id',$sorted_organizations_ids)->get()->map(function ($organization) {
-        $price_1=ActivityCategoryOrganization::where('category_children_id',32)->where('organization_id',$organization->id)->get();
-        $price_2=ActivityCategoryOrganization::where('category_children_id',33)->where('organization_id',$organization->id)->get();
-        $price_3=ActivityCategoryOrganization::where('category_children_id',34)->where('organization_id',$organization->id)->get();
-        
-        if($price_1->first()!=null && $price_2->first()!=null && $price_3->first()!=null){
-            $organization->all_price=$price_1->first()->price+$price_2->first()->price+$price_3->first()->price;
-            return $organization;
-        }
-         
-        
+function organizationratingEstablishmentsProvidingHallsHoldingCommemorations($city)
+{
+    $city = City::find($city);
 
+    $allOrganizations = ActivityCategoryOrganization::where('category_children_id', 46)
+        ->where('price', '!=', null)
+        ->whereHas('organization', function ($query) use ($city) {
+            $query->whereHas('city', function ($q) use ($city) {
+                $q->where('area_id', $city->area_id);
+            })->where('role', 'organization')->where('status', 1);
+        })
+        ->get();
 
-    });
+    // Разделяем по приоритетам
+    $highPriority = $allOrganizations->filter(function($item) {
+        return $item->organization && $item->organization->priority == 1;
+    })->sortBy('organization.rotation_order');
+
+    $mediumPriority = $allOrganizations->filter(function($item) {
+        return $item->organization && $item->organization->priority == 2;
+    })->sortBy('organization.rotation_order');
+
+    $otherItems = $allOrganizations->filter(function($item) {
+        return !$item->organization || ($item->organization->priority != 1 && $item->organization->priority != 2);
+    })->sortBy('price');
+
+    // Обновляем порядок ротации
+    updateRotationOrders($highPriority, $mediumPriority);
+
+    // Собираем и возвращаем результат
+    return $highPriority->merge($mediumPriority)
+        ->merge($otherItems)
+        ->take(10);
+}
+
+function organizationRatingFuneralAgenciesPrices($city)
+{
+    $city = City::find($city);
+
+    $allOrganizations = ActivityCategoryOrganization::whereIn('category_children_id', [32, 33, 34])
+        ->where('price', '!=', null)
+        ->whereHas('organization', function ($query) use ($city) {
+            $query->whereHas('city', function ($q) use ($city) {
+                $q->where('area_id', $city->area_id);
+            })->where('role', 'organization')->where('status', 1);
+        })
+        ->get()
+        ->groupBy('organization_id');
+
+    $processedOrganizations = collect();
     
-    // Сортируем продукты по минимальной цене
-    $sortedProducts = $orgainizations->sortBy('all_price');
-    // Возвращаем 10 самых выгодных продуктов
-    return $sortedProducts->take(10);
-
-    return null;
-}
-   
-
-
-function organizationRatingUneralBureausRavesPrices($city){
-    $city=City::find($city);
-
-    $sorted_organizations_ids=ActivityCategoryOrganization::whereIn('category_children_id',[29,30,39])->where('price','!=',null)->whereHas('organization', function ($query) use ($city) {
-        $query->whereHas('city', function ($q) use ($city) {
-            $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
-        })->where('role', 'organization')->where('status',1);
-    })->pluck('organization_id');
-    $orgainizations=Organization::whereIn('id',$sorted_organizations_ids)->get()->map(function ($organization) {
-        $price_1=ActivityCategoryOrganization::where('category_children_id',29)->where('organization_id',$organization->id)->get();
-        $price_2=ActivityCategoryOrganization::where('category_children_id',30)->where('organization_id',$organization->id)->get();
-        $price_3=ActivityCategoryOrganization::where('category_children_id',39)->where('organization_id',$organization->id)->get();
-        if(count($price_1)>0 && count($price_2)>0 && count($price_3)>0 ){
-            $organization->all_price=$price_1->first()->price+$price_2->first()->price+$price_3->first()->price;
-            return $organization;
+    foreach ($allOrganizations as $orgId => $categories) {
+        if ($categories->count() == 3) {
+            $organization = $categories->first()->organization;
+            if ($organization) {
+                $organization->all_price = $categories->sum('price');
+                
+                // Устанавливаем приоритет для сортировки
+                $organization->priority = $organization->priority ?? 0;
+                $organization->rotation_order = $organization->rotation_order ?? 0;
+                
+                $processedOrganizations->push($organization);
+            }
         }
+    }
 
-    });
-    // Сортируем продукты по минимальной цене
-    $sortedProducts = $orgainizations->sortBy('all_price');
+    // Разделяем по приоритетам
+    $highPriority = $processedOrganizations->where('priority', 1)
+        ->sortBy('rotation_order');
 
-    // Возвращаем 10 самых выгодных продуктов
-    return $sortedProducts->take(10);
+    $mediumPriority = $processedOrganizations->where('priority', 2)
+        ->sortBy('rotation_order');
+
+    $otherItems = $processedOrganizations->whereNotIn('priority', [1, 2])
+        ->sortBy('all_price');
+
+    // Обновляем порядок ротации
+    updateRotationOrders($highPriority, $mediumPriority);
+
+    // Собираем и возвращаем результат
+    return $highPriority->merge($mediumPriority)
+        ->merge($otherItems)
+        ->take(10);
 }
 
+function organizationRatingUneralBureausRavesPrices($city)
+{
+    $city = City::find($city);
 
+    $allOrganizations = ActivityCategoryOrganization::whereIn('category_children_id', [29, 30, 39])
+        ->where('price', '!=', null)
+        ->whereHas('organization', function ($query) use ($city) {
+            $query->whereHas('city', function ($q) use ($city) {
+                $q->where('area_id', $city->area_id);
+            })->where('role', 'organization')->where('status', 1);
+        })
+        ->get()
+        ->groupBy('organization_id');
 
-function organizationratingEstablishmentsProvidingHallsHoldingCommemorations($city){
-    $city=City::find($city);
+    $processedOrganizations = collect();
+    
+    foreach ($allOrganizations as $orgId => $categories) {
+        if ($categories->count() == 3) {
+            $organization = $categories->first()->organization;
+            if ($organization) {
+                $organization->all_price = $categories->sum('price');
+                
+                // Устанавливаем приоритет для сортировки
+                $organization->priority = $organization->priority ?? 0;
+                $organization->rotation_order = $organization->rotation_order ?? 0;
+                
+                $processedOrganizations->push($organization);
+            }
+        }
+    }
 
-    $sorted_organizations=ActivityCategoryOrganization::where('category_children_id',46)->where('price','!=',null)->orderBy('price','asc')->whereHas('organization', function ($query) use ($city) {
-        $query->whereHas('city', function ($q) use ($city) {
-            $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
-        })->where('role', 'organization')->where('status',1);
-    })->get();
-    return $sorted_organizations->take(10);
+    // Разделяем по приоритетам
+    $highPriority = $processedOrganizations->where('priority', 1)
+        ->sortBy('rotation_order');
+
+    $mediumPriority = $processedOrganizations->where('priority', 2)
+        ->sortBy('rotation_order');
+
+    $otherItems = $processedOrganizations->whereNotIn('priority', [1, 2])
+        ->sortBy('all_price');
+
+    // Обновляем порядок ротации
+    updateRotationOrders($highPriority, $mediumPriority);
+
+    // Собираем и возвращаем результат
+    return $highPriority->merge($mediumPriority)
+        ->merge($otherItems)
+        ->take(10);
 }
 
 
@@ -572,7 +637,7 @@ function countReviewsOrganization($organization){
     return null;
 }
 
-function orgniaztionsFilters($data,$category){
+function organizationsFilters($data,$category){
     $city=selectCity();
 
     $organizations_category = ActivityCategoryOrganization::where('category_children_id', $category->id)
@@ -584,8 +649,7 @@ function orgniaztionsFilters($data,$category){
         ->where('status', 1);
     });
 
-  
-    if(isset($data['cemetery_id']) && $data['cemetery_id']!=null && $data['cemetery_id']!='null'){
+    if(isset($data['cemetery_id']) && $data['cemetery_id']!=null && $data['cemetery_id']!='null' && $data['cemetery_id']!=0){
         $cemetery_id=$data['cemetery_id'];
         $organizations_category=$organizations_category->whereHas('organization', function ($query) use ($cemetery_id) {
             $query->where(function($item) use ($cemetery_id){
@@ -627,9 +691,77 @@ function orgniaztionsFilters($data,$category){
             $organizations_category=$organizations_category->whereIn('id',$organizations_category_ids->where('open',1)->pluck('id'));
         }  
     }
-    return $organizations_category->whereHas('organization', function ($query) use ($city) {$query->where('status',1);})->paginate(getSeo('organizations-catalog','count'));
+$allResults = $organizations_category->get();
+
+    // Разделяем по приоритетам
+    $highPriority = $allResults->filter(function($item) {
+        return $item->organization && $item->organization->priority == 1;
+    })->sortBy('organization.rotation_order');
+
+    $mediumPriority = $allResults->filter(function($item) {
+        return $item->organization && $item->organization->priority == 2;
+    })->sortBy('organization.rotation_order');
+
+    $otherItems = $allResults->filter(function($item) {
+        return !$item->organization || ($item->organization->priority != 1 && $item->organization->priority != 2);
+    });
+
+    // Обновляем порядок ротации для приоритетных
+    updateRotationOrders($highPriority, $mediumPriority);
+
+    // Собираем окончательный результат
+    $sortedResults = $highPriority->merge($mediumPriority)->merge($otherItems);
+
+    // Пагинация
+    $perPage = getSeo('organizations-catalog', 'count');
+    $page = request()->get('page', 1);
+    $offset = ($page - 1) * $perPage;
     
+    $paginatedItems = $sortedResults->slice($offset, $perPage)->values();
+
+    return new \Illuminate\Pagination\LengthAwarePaginator(
+        $paginatedItems,
+        $sortedResults->count(),
+        $perPage,
+        $page,
+        ['path' => request()->url(), 'query' => request()->query()]
+    );    
 }
+
+
+
+function updateRotationOrders($highPriority, $mediumPriority)
+{
+    // Обновляем порядок для высокоприоритетных (1-3 позиции)
+    if ($highPriority->count() > 0) {
+        $first = $highPriority->shift();
+        $highPriority->push($first);
+        
+        $order = 1;
+        foreach ($highPriority as $item) {
+            if ($item->organization) {
+                $item->organization->rotation_order = $order++;
+                $item->organization->save();
+            }
+        }
+    }
+    
+    // Обновляем порядок для среднеприоритетных (4-6 позиции)
+    if ($mediumPriority->count() > 0) {
+        $last = $mediumPriority->pop();
+        $mediumPriority->prepend($last);
+        
+        $order = 4;
+        foreach ($mediumPriority as $item) {
+            if ($item->organization) {
+                $item->organization->rotation_order = $order++;
+                $item->organization->save();
+            }
+        }
+    }
+}
+
+
 
 function organizationsPrices($data){
     $city=selectCity();
@@ -1974,8 +2106,13 @@ function formatPhoneNumber($phone) {
 }
 
 
-function changeContent($content){
-    $result=str_replace(["{city}"],[selectCity()->title],$content);
+function changeContent($content,$model=null){
+    $year= date('Y');
+    $month= date('m');
+    $city=$model->city->title ?? selectCity()->title;
+    $title=$model->title ?? null;
+    
+    $result=str_replace(["{city}","{Year}","{Month}","{title}"],[$city,$year,$month,$title],$content);
     return $result;
 }
 

@@ -6,6 +6,7 @@ use App\Filament\Resources\FaqCategoryProductResource\Pages;
 use App\Filament\Resources\FaqCategoryProductResource\RelationManagers;
 use App\Models\FaqCategoryProduct;
 use Filament\Forms;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -27,15 +28,13 @@ class FaqCategoryProductResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
+               Forms\Components\TextInput::make('title')
                 ->label('Вопрос')
-                ->required()
-                ->maxLength(255),
+                ->required(),
 
-                Textarea::make('content')
+                RichEditor::make('content')
                 ->label('Ответ')
-                ->required()
-                ->maxLength(255),
+                ->required(),
 
                 Forms\Components\Select::make('category_id')
                 ->label('Категория')

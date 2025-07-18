@@ -40,7 +40,7 @@ $reviews = Review::orderBy('id', 'desc')->get();
         </div>
 
         <div class="swiper-button-next swiper_button_next_rewies"><img src='{{asset('storage/uploads/Переключатель.svg')}}'></div>
-        <div class="swiper-button-prev swiper_button_prev_rewies"><img src='{{asset('storage/uploads/Переключатель (1).svg')}}'></div>
+        <div class="swiper-button-prev swiper_button_prev_rewies"><img src='{{asset('storage/uploads/Переключатель (1) copy.svg')}}'></div>
     </div>
 </section>
 @endif

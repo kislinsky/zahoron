@@ -561,6 +561,8 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
                     Route::get('applications', [AgencyOrganizationController::class, 'aplications'])->name('account.agency.applications');     
                     Route::get('applications/{type_service}/pay', [AgencyOrganizationController::class, 'payApplication'])->name('account.agency.applications.pay');     
                     
+                    Route::get('priority/buy', [AgencyOrganizationController::class, 'pageBuyPriority'])->name('account.agency.priority.buy');
+                    Route::post('priority/buy', [AgencyOrganizationController::class, 'buyPriority'])->name('account.agency.priority.pay');
     
                     Route::get('products', [AgencyOrganizationController::class, 'allProducts'])->name('account.agency.products');     
                     Route::get('add-product', [AgencyOrganizationController::class, 'addProduct'])->name('account.agency.add.product');     
@@ -618,6 +620,7 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
                     Route::delete('provider/offer/{offer}/delete', [AgencyOrganizationProviderController::class, 'deleteOffer'])->name('account.agency.provider.offer.delete');     
 
                 });
+                
                 
                 Route::get('settings', [AgencyController::class, 'settings'])->name('account.agency.settings');
                 

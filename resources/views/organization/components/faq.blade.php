@@ -8,14 +8,14 @@ $faqs=FaqOrganization::orderBy('id','desc')->where('organization_id',$organizati
         <section class="faq_organization">
             <h2 class="title_li">Популярные вопросы</h2>
             <div class="ul_faq">
-            
-                    @foreach ($faqs as $faq )    
+            @foreach ($faqs as $faq ) 
+               
                         <div class="li_faq">
                             <div class="flex_li_service">
-                                <div class="title_li">{{ changeContent($faq->title) }}</div>
+                                <div class="title_li">{!! changeContent($faq->title,$organization) !!}</div>
                                 <img class='open_faq'src="{{asset('storage/uploads/Переключатель (2).svg')}}" alt="">
                             </div>
-                            <div class="text_li">{{ changeContent($faq->content) }}</div>
+                            <div class="text_li">{!! changeContent($faq->content,$organization) !!}</div>
                         </div>
                     @endforeach
             

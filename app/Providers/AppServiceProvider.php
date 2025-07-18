@@ -26,6 +26,6 @@ class AppServiceProvider extends ServiceProvider
         // SEOMeta::addMeta('robots', 'noindex,nofollow');
         
         Paginator::useBootstrapFive();
-        // Paginator::useBootstrapFour(); // Выберите одну версию Bootstrap
+         Paginator::useBootstrapFour(); // Выберите одну версию Bootstrap
     }
 }

@@ -2,7 +2,7 @@
     <div class="grid_two">
         <!-- Фильтр категорий -->
         <div class="block_filter_mobile">
-            <div class="text_gray_mini">Выберите категорию</div>
+            <div class="text_gray_mini">Категория</div>
             <div class="info_block">
                 <div class="text_black_bold category-title">
                     
@@ -28,7 +28,7 @@
         
         <!-- Фильтр подкатегорий -->
         <div class="block_filter_mobile">
-            <div class="text_gray_mini">Выберите подкатегорию</div>
+            <div class="text_gray_mini">Подкатегория</div>
             <div class="info_block">
                 <div class="text_black_bold subcategory-title">
                     @if($category)
