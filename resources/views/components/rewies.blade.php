@@ -8,9 +8,7 @@ $reviews = Review::orderBy('id', 'desc')->get();
     <div class="container">
         <div class="flex_block">
             <h2 class="title">Отзывы клиентов</h2>
-            <div class="btn_border_blue">
-                Оставить отзыв
-            </div>
+            
         </div>
 
         <div class="swiper rewies_swiper">

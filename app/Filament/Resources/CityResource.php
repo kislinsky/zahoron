@@ -9,6 +9,7 @@ use App\Models\Area;
 use App\Models\City;
 use App\Models\Edge;
 use Filament\Forms;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -110,6 +111,14 @@ class CityResource extends Resource
                     ->required() // Поле обязательно для заполнения
                     ->default(0), // Значение по умолчанию
                 
+
+                     RichEditor::make('text_about_project')
+                ->label('Текст о проекте')
+                ->required(),
+
+                 RichEditor::make('text_how_properly_arrange_funeral_services')
+                ->label('Текст о том, как оформить ритуальные услуги')
+                ->required(),
            
             ]);
     }

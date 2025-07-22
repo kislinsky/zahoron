@@ -123,15 +123,15 @@
         let filters  = {
             'value':val
         };
+        $('#cookieConsent').hide();
+
         $.ajax({
             type: 'GET',
             url: '{{ route('cookie.accept') }}',
             data: filters,
             success: function (result) {
-                $('#cookieConsent').fadeOut();
             },
             error: function () {
-                $('#cookieConsent').fadeOut();
             }
         });
     });

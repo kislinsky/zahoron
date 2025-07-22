@@ -15,6 +15,17 @@ class Mortuary extends Model
         return $this->hasMany(View::class, 'entity_id')->where('entity_type', 'mortuary');
     }
 
+    public function timeEndWorkingNow(){
+        $day=addHoursAndGetDay($this->time_difference);
+        $get_hours=WorkingHoursMortuary::where('mortuary_id',$this->id)->where('day',$day)->first();
+        if($get_hours!=null){
+            if($get_hours->holiday!=1){
+                return "Открыто до {$get_hours->time_end_work}";
+            }
+            return 'Выходной';
+        }
+    }
+
     public function city(){
         return $this->belongsTo(City::class);
     }

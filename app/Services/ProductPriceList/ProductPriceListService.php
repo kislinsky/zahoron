@@ -10,6 +10,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
 class ProductPriceListService {  
 
     public static function priceList(){
+        return redirect()->back();
         $city=selectCity();
 
         $seo="Товары и услуги г.".$city->title;
@@ -30,7 +31,8 @@ class ProductPriceListService {
         return view('product-pricelist.index',compact('services','page','cats','city','pages_navigation'));
     }
 
-    public static function serviceCategory($slug){        
+    public static function serviceCategory($slug){ 
+        return redirect()->back();       
         $city=selectCity();
         $cat_selected=CategoryProductPriceList::where('slug',$slug)->first();
 
@@ -51,6 +53,7 @@ class ProductPriceListService {
 
 
     public static function singleProduct($slug){
+        return redirect()->back();
         $product=ProductPriceList::where('slug',$slug)->first();
         if($product==null || $product->view!=1){
             return redirect()->back();

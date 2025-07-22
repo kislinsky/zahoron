@@ -88,8 +88,12 @@ class OrganizationService
         $reviews_main=$reviews->take(3);
         $products_our=Product::orderBy('id','desc')->where('view',1)->where('organization_id',$organization->id)->where('type','product')->get()->take(8);
 
+
+        $pages_navigation=[['Главная',route('index')],['Организации',route('organizations')],[$organization->title]];
+
+
         if($organization->role=='organization' ){
-            return view('organization.single.single-agency',compact('title_h1','categories_organization','city','similar_organizations','main_categories','children_categories','rating_reviews','organization','images','reviews','products_our','reviews','reviews_main','ritual_products'));
+            return view('organization.single.single-agency',compact('pages_navigation','title_h1','categories_organization','city','similar_organizations','main_categories','children_categories','rating_reviews','organization','images','reviews','products_our','reviews','reviews_main','ritual_products'));
         }
         
         if($organization->role=='organization-provider' && (Auth::check() && (user()->role=='organization' || user()->role=='organization-provider' || user()->role=='admin'))){
@@ -98,7 +102,7 @@ class OrganizationService
             $price_lists=PriceListOrganization::orderBy('id','desc')->where('organization_id',$id)->where('type','price-list')->get();
             $product_stocks=StockProduct::orderBy('id','desc')->where('organization_id',$id)->get();
 
-            return view('organization.single.single-provider',compact('title_h1','categories_organization','city','similar_organizations','children_categories','main_categories','price_lists','remnants_ritual_goods','rating_reviews','organization','product_stocks','images','reviews','reviews','reviews_main','ritual_products'));
+            return view('organization.single.single-provider',compact('pages_navigation','title_h1','categories_organization','city','similar_organizations','children_categories','main_categories','price_lists','remnants_ritual_goods','rating_reviews','organization','product_stocks','images','reviews','reviews','reviews_main','ritual_products'));
 
         }
         return redirect()->back();

@@ -30,7 +30,7 @@ $sorted_organizations=organizationratingEstablishmentsProvidingHallsHoldingComme
                                     @else
                                         <img  src="{{$organization->urlImg()}}" alt="">   
                                     @endif
-                                    <a href='{{$organization->route()}}'class="title_organization">Ритуальное агентство 
+                                    <a href='{{$organization->route()}}'class="title_organization">{{$organization->name_type}}: 
                                         "{{$organization->title}}"
                                     </a>
                                 </td>

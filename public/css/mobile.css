@@ -1224,6 +1224,15 @@
     .block_search_ul_advantages .grid_4{
         grid-template-columns:  1fr;
     }
+    .html_navigation_org .navigation_pages{
+        padding-bottom: 20px;
+    }   
+    .li_place{
+        flex-direction: column;
+    }
+    .li_place .btn_border_gray{
+        margin: 0px;
+    }
 }
 
 @media(max-width:430px){
@@ -1235,3 +1244,4 @@
         flex-wrap: wrap;
     }
 }
+

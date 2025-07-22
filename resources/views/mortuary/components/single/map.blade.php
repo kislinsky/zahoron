@@ -12,7 +12,7 @@
             </div>
         </div>
         <div class="flex_single_organization">
-            <div class="text_black text_flex"><img src="{{asset('storage/uploads/mdi_clock-outline.svg')}}" alt=""> до {{$mortuary->time_end_work}}</div>
+            <div class="text_black text_flex"><img src="{{asset('storage/uploads/mdi_clock-outline.svg')}}" alt="">  {{$mortuary->timeEndWorkingNow()}}</div>
             <img src="{{asset('storage/uploads/svg.svg')}}" alt="">
         </div>
 

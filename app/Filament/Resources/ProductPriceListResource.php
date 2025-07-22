@@ -31,7 +31,8 @@ class ProductPriceListResource extends Resource
     protected static ?string $model = ProductPriceList::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Продукты прйс-листа'; // Название в меню
+    protected static ?string $navigationLabel = 'Продукты'; // Название в меню
+    protected static ?string $navigationGroup = 'Продукты прайс-листа'; // Указываем группу
 
 
     public static function form(Form $form): Form

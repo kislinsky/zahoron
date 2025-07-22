@@ -68,12 +68,11 @@
  </footer>
  
 
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-<script src="https://cdn.jsdelivr.net/npm/jquery.maskedinput@1.4.1/src/jquery.maskedinput.min.js" type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script type="text/javascript" src="{{asset('js/main.js')}}"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/jquery.maskedinput@1.4.1/src/jquery.maskedinput.min.js" type="text/javascript"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script defer type="text/javascript" src="{{asset('js/main.js')}}"></script>
 
 
 <script>
@@ -98,7 +97,58 @@
             }
         });
    })
-</script>
 
+// Глобальный обработчик reCAPTCHA
+window.initRecaptcha = function() {
+    document.querySelectorAll('.g-recaptcha').forEach(el => {
+        if (!el.dataset.rendered) {
+            grecaptcha.render(el, {
+                sitekey: el.dataset.sitekey,
+                callback: function(response) {
+                    el.closest('form').querySelector('[name="g-recaptcha-response"]').value = response;
+                }
+            });
+            el.dataset.rendered = true;
+        }
+    });
+};
+
+// Ленивая загрузка при первом взаимодействии с любой формой
+function loadRecaptchaOnDemand() {
+    if (!window.recaptchaLoaded) {
+        window.recaptchaLoaded = true;
+        const script = document.createElement('script');
+        script.src = `https://www.google.com/recaptcha/api.js?render=explicit&onload=initRecaptcha`;
+        script.async = true;
+        document.head.appendChild(script);
+        
+        // Отключаем все обработчики
+        document.querySelectorAll('input, textarea, select').forEach(el => {
+            el.removeEventListener('focus', loadRecaptchaOnDemand);
+        });
+    }
+}
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', function() {
+    // Вешаем на все поля форм
+    document.querySelectorAll('form input, form textarea').forEach(el => {
+        el.addEventListener('focus', loadRecaptchaOnDemand, { once: true });
+    });
+    
+    // Альтернатива: загрузка при скролле до любой формы
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                loadRecaptchaOnDemand();
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    document.querySelectorAll('form').forEach(form => {
+        observer.observe(form);
+    });
+});
+</script>
 </body>
 </html>

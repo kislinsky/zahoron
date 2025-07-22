@@ -67,6 +67,12 @@ function adminPages(){
             ],
         ],
 
+        ['Настройки общие','storage/uploads/mdi_grave-stone (2).svg',
+            [
+                ['Robots.txt','account.admin.settings-site.robots-txt']
+            ]
+        ],
+
 
        
 
@@ -270,7 +276,7 @@ function organizationPages(){
 
 function mobilePages(){
     
-   $catalog_organizations = [['Ритуальные агенства', route('organizations')],['Ритуальные товары,услуги', route('pricelist')]];
+   $catalog_organizations = [['Ритуальные агенства', route('organizations')]];
 
     // if (Auth::user() && (user()->role == 'organization' || user()->role == 'organization-provider' || user()->role == 'admin') && versionProject()) {
     //     $catalog_organizations[] = ['Каталог поставщиков', route('organizations.provider')];

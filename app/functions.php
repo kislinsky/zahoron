@@ -144,8 +144,11 @@ function statusOrder($order){
 
 function get_acf($id_page,$name_acf){
     $page=Page::findOrFail($id_page);
-    $acf=Acf::where('name',$name_acf)->where('page_id',$page->id)->get();
-    return $acf[0]->content;
+    $acf=Acf::where('name',$name_acf)->where('page_id',$page->id)->first();
+    if($acf->type=='text'){
+        return $acf->content;
+    }
+    return $acf->file;
 }
 
 function city_by_slug($slug){
@@ -283,11 +286,13 @@ function defaultCity(){
 }
 
 function selectCity(){
-    if(isset($_COOKIE['city'])){
-        return $city=City::findOrFail($_COOKIE['city']);
+    $city=City::where('slug',request()->segment(1))->first();
+    if($city==null){
+        $city=City::where('selected_admin',1)->first();
     }
-    $city=City::where('selected_admin',1)->first();
-    setcookie("city", $city->id, time()+20*24*60*60,'/');
+    if(!isset($_COOKIE['city'])){
+        setcookie("city", $city->id, time()+20*24*60*60,'/');
+    }
     return $city;
 }
 

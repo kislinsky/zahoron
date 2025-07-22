@@ -20,7 +20,7 @@ class CategoryNewsResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Категории блога'; // Название в меню
-    protected static ?string $navigationGroup = 'Категории'; // Указываем группу
+    protected static ?string $navigationGroup = 'Новости'; // Указываем группу
 
     public static function form(Form $form): Form
     {

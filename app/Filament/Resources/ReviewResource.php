@@ -48,14 +48,14 @@ class ReviewResource extends Resource
 
                     FileUpload::make('img_before')
                     ->label('Фото до')
-                    ->directory('/uploads_product_price_list')
+                    ->directory('/uploads_reviews')
                     ->image()
                     ->maxSize(2048)
                     ->required() ,
 
                     FileUpload::make('img_after')
                     ->label('Фото после')
-                    ->directory('/uploads_product_price_list')
+                    ->directory('/uploads_reviews')
                     ->image()
                     ->maxSize(2048)
                     ->required() ,

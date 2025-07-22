@@ -19,9 +19,11 @@ class OurWorkResource extends Resource
     protected static ?string $model = OurWork::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-photo';
-    protected static ?string $navigationLabel = 'Наши работы';
+    protected static ?string $navigationLabel = 'Список';
     protected static ?string $modelLabel = 'Работа';
-    protected static ?string $pluralModelLabel = 'Наши работы';
+    protected static ?string $pluralModelLabel = 'Список';
+    protected static ?string $navigationGroup = 'Наши работы'; // Указываем группу
+
 
     public static function form(Form $form): Form
     {
@@ -32,12 +34,7 @@ class OurWorkResource extends Resource
                     ->relationship('category', 'title') // Assuming 'category' is the relationship name and 'name' is the column to display
                     ->required()
                     ->preload()
-                    ->searchable()
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('title')
-                            ->label('Название категории')
-                            ->required(),
-                    ]),
+                    ->searchable(),
                 
                 Forms\Components\FileUpload::make('img_before')
                     ->label('Изображение "До"')

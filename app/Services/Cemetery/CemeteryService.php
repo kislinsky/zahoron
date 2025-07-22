@@ -2,10 +2,10 @@
 
 namespace App\Services\Cemetery;
 
-
-
+use App\Filament\Resources\FaqRitualObjectResource;
 use App\Models\Cemetery;
 use App\Models\FaqCemetery;
+use App\Models\FaqRitualObject;
 use App\Models\ImageCemetery;
 use App\Models\ReviewCemetery;
 use App\Models\ServiceCemetery;
@@ -29,10 +29,10 @@ class CemeteryService {
         $usefuls=UsefulCemetery::orderBy('id','desc')->get();
         $cemeteries_map=Cemetery::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $cemeteries=Cemetery::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
-
+        $faqs=FaqRitualObject::where('type_object','cemetery')->orderBy('id','desc')->get();
         $pages_navigation=[['Главная',route('index')],['Кладбища']];
         
-        return view('cemetery.index',compact('cemeteries','city','products','usefuls','cemeteries_map','pages_navigation'));
+        return view('cemetery.index',compact('faqs','cemeteries','city','products','usefuls','cemeteries_map','pages_navigation'));
     }
 
     public static function singleCemetery($cemetery){

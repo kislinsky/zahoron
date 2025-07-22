@@ -3,63 +3,74 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AcfResource\Pages;
-use App\Filament\Resources\AcfResource\RelationManagers;
 use App\Models\Acf;
 use Filament\Forms;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class AcfResource extends Resource
 {
     protected static ?string $model = Acf::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Доп поля страниц'; // Название в меню
-    protected static ?string $navigationGroup = 'Страницы сайта'; // Указываем группу
+    protected static ?string $navigationLabel = 'Дополнительные поля страниц';
+    protected static ?string $navigationGroup = 'Страницы сайта';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                ->label('Название')
-                ->required(),
-
-                RichEditor::make('content') // Поле для редактирования HTML-контента
-                ->label('Описание') // Соответствующая подпись
-                ->toolbarButtons([
-                    'attachFiles', // возможность прикрепить файлы
-                    'bold', // жирный текст
-                    'italic', // курсив
-                    'underline', // подчеркивание
-                    'strike', // зачеркнутый текст
-                    'link', // вставка ссылок
-                    'orderedList', // нумерованный список
-                    'bulletList', // маркированный список
-                    'blockquote', // цитата
-                    'h2', 'h3', 'h4', // заголовки второго, третьего и четвертого уровня
-                    'codeBlock', // блок кода
-                    'undo', 'redo', // отмена/возврат действия
-                ])
-                ->disableLabel(false) // Показывать метку
-                ->placeholder('Введите HTML-контент здесь...'),
-
-                Forms\Components\Select::make('page_id')
-                    ->label('Страница')
-                    ->relationship('page', 'title_ru')
-                    ->required()
-                    ->searchable()
-                    ->preload(),
-                
-                // ->maxLength(255),Forms\Components\TextInput::make('title_ru')
-                // ->label('Название')
-                // ->required()
-                // ->maxLength(255),
+                Forms\Components\Section::make('Основная информация')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Название поля')
+                            ->required()
+                            ->maxLength(255),
+                            
+                        Forms\Components\Select::make('page_id')
+                            ->label('Связанная страница')
+                            ->relationship('page', 'title_ru')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                            
+                        Forms\Components\Select::make('type')
+                            ->label('Тип поля')
+                            ->options([
+                                'text' => 'Текст (Rich Editor)',
+                                'file' => 'Файл',
+                            ])
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(fn () => request()->session()->forget('acf_type_change')),
+                    ])->columns(1),
+                    
+                Forms\Components\Section::make('Содержимое поля')
+                    ->schema([
+                        Forms\Components\RichEditor::make('content')
+                            ->label('Текстовое содержимое')
+                            ->toolbarButtons([
+                                'attachFiles', 'bold', 'italic', 'underline', 'strike',
+                                'link', 'orderedList', 'bulletList', 'blockquote',
+                                'h2', 'h3', 'h4', 'codeBlock', 'undo', 'redo',
+                            ])
+                            ->columnSpanFull()
+                            ->required(fn (Forms\Get $get) => $get('type') === 'text')
+                            ->hidden(fn (Forms\Get $get) => $get('type') !== 'text'),
+                            
+                        Forms\Components\FileUpload::make('file') // Изменили на file_path
+                            ->label('Файл')
+                            ->preserveFilenames()
+                            ->directory('/uploads') // Более структурированный путь
+                            ->downloadable()
+                            ->columnSpanFull()
+                            ->required(fn (Forms\Get $get) => $get('type') === 'file')
+                            ->hidden(fn (Forms\Get $get) => $get('type') !== 'file'),
+                    ]),
             ]);
     }
 
@@ -67,40 +78,63 @@ class AcfResource extends Resource
     {
         return $table
             ->columns([
-                 Tables\Columns\TextColumn::make('id')
-                ->label('id')
-                ->searchable()
-                ->sortable(),
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->searchable(),
+                    
                 Tables\Columns\TextColumn::make('name')
-                ->label('Название')
-                ->searchable()
-                ->sortable(),
+                    ->label('Название')
+                    ->sortable()
+                    ->searchable(),
+                    
                 Tables\Columns\TextColumn::make('page.title_ru')
-                ->label('Страница')
-                ->searchable()
-                ->sortable(),
-                // Tables\Columns\TextColumn::make('title_ru')
-                // ->label('Название')
-                // ->searchable()
-                // ->sortable(),
+                    ->label('Страница')
+                    ->sortable()
+                    ->searchable(),
+                    
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Тип')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'text' => 'info',
+                        'file' => 'warning',
+                        default => 'gray',
+                    }),
+                
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('type')
+                    ->label('Тип поля')
+                    ->options([
+                        'text' => 'Текст',
+                        'file' => 'Файл',
+                    ]),
+                    
+                Tables\Filters\SelectFilter::make('page_id')
+                    ->label('Страница')
+                    ->relationship('page', 'title_ru')
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ])
+            ->emptyStateActions([
+                Tables\Actions\CreateAction::make(),
             ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            // При необходимости добавьте отношения
         ];
     }
 
@@ -115,7 +149,7 @@ class AcfResource extends Resource
     
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->role === 'admin' ;
+        return auth()->user()->role === 'admin';
     }
 
     public static function canViewAny(): bool

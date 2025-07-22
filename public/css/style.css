@@ -735,7 +735,7 @@ margin-bottom: 20px;
  }
 
 .faq{
-    padding: 50px 0px;
+    padding: 20px 0px;
 }
 .faq .title{
 margin-bottom: 20px;
@@ -7603,4 +7603,12 @@ color: #0080D7;
 }
 .text-muted{
     margin: 0px;
+}
+
+.share_button{
+    cursor: pointer;
+}
+
+.html_navigation_org .navigation_pages{
+    padding-bottom: 0px;
 }

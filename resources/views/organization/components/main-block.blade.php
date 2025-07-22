@@ -23,7 +23,7 @@
                 <div class="flex_single_organization_2">
                    
                     <div class="flex_stars">
-                        @for($i=0;$i<$rating_reviews;$i++)
+                        @for($i=0;$i<$organization->rating;$i++)
                             <img src="{{asset('storage/uploads/Frame 334.svg')}}" alt="">
                         @endfor
                     </div>
@@ -55,7 +55,12 @@
             @if(versionProject())
                 <div id_organization="{{ $organization->id }}" class="mini_text_blue" >Вы владелец?</div>
             @else
-                <div id_organization="{{ $organization->id }}" class="mini_text_blue open_form_call_organization" >Вы владелец?</div>
+                @if(user()!=null)
+                    <div id_organization="{{ $organization->id }}" class="mini_text_blue open_form_call_organization" >Вы владелец?</div>
+                @else
+                    <a href='{{ route('login') }}' class="mini_text_blue" >Вы владелец?</a>
+                @endif
+
             @endif
         </div>
     </div>

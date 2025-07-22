@@ -3,6 +3,7 @@
 namespace App\Services\Church;
 
 use App\Models\Church;
+use App\Models\FaqRitualObject;
 use App\Models\ReviewChurch;
 use Artesaos\SEOTools\Facades\SEOTools;
 
@@ -19,10 +20,11 @@ class ChurchService {
         $products=randomProductsPlace(32);
         $churches_map=Church::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $churches=Church::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
+        $faqs=FaqRitualObject::where('type_object','churche')->orderBy('id','desc')->get();
 
         $pages_navigation=[['Главная',route('index')],['Церкви']];
 
-        return view('church.index',compact('pages_navigation','churches','city','products','churches_map'));
+        return view('church.index',compact('faqs','pages_navigation','churches','city','products','churches_map'));
     }
 
     public static function single($id){

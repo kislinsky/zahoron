@@ -16,21 +16,20 @@ use Artesaos\SEOTools\Facades\SEOTools;
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
         <!-- Fonts -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        <link  defer href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
         crossorigin="anonymous">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+        <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
+        <link  defer rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
-        <link rel="stylesheet" href="{{asset('css/style.css')}}">
-        <link rel="stylesheet" href="{{asset('css/style-black-theme.css')}}">
-        <link rel="stylesheet" href="{{asset('css/mobile.css')}}">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lightgallery-bundle.min.css" />
+        <link defer rel="stylesheet" href="{{asset('css/style.css')}}">
+        <link defer rel="stylesheet" href="{{asset('css/style-black-theme.css')}}">
+        <link defer rel="stylesheet" href="{{asset('css/mobile.css')}}">
+        <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lightgallery-bundle.min.css" />
 
-        <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/lightgallery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script>
-        <script src="https://api-maps.yandex.ru/1.1/index.xml" type="text/javascript"></script>
-        <script src="https://api-maps.yandex.ru/2.1/?apikey=373ac95d-ec8d-4dfc-a70c-e48083741c72&lang=ru_RU"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/lightgallery.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script>
+        <script  src="https://api-maps.yandex.ru/2.1/?apikey=373ac95d-ec8d-4dfc-a70c-e48083741c72&lang=ru_RU"></script>
 
     </head>
 
@@ -89,7 +88,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
  
             </div>
             <a href='{{route('organizations.category','organizacia-pohoron')}}'class="btn_bac_gray">Ритуальные агенства</a>
-            <a href='{{route('pricelist')}}'class="btn_bac_gray">Товары и услуги</a>
+            <div class="btn_bac_gray">Товары и услуги</div>
 
             
            
@@ -129,7 +128,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
                         <a class='text_black' href='{{route('organizations.category','organizacia-pohoron')}}'>Ритуальные агенства</a>
                     </li>
                     <li>
-                        <a class='text_black' href='{{ route('pricelist') }}'>Ритуальные товары, услуги</a>
+                        <div class='text_black' >Ритуальные товары, услуги</div>
                     </li>
                     
                 </ul>

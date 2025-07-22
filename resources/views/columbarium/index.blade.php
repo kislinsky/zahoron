@@ -63,8 +63,6 @@
 
 </div>
 
-{{view('components.useful',compact('usefuls'))}}
-
 
 @include('components.monuments-grave')
 
@@ -72,6 +70,9 @@
 
 @include('components.rating-uneral-bureaus-raves-prices')
 
+{{view('components.faq-ritual-object',compact('faqs'))}}
+
+{{view('components.useful',compact('usefuls'))}}
 
 @include('columbarium.components.cities-places') 
 

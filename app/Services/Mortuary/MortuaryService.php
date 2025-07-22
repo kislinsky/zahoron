@@ -4,6 +4,7 @@ namespace App\Services\Mortuary;
 
 use App\Models\City;
 use App\Models\FaqMortuary;
+use App\Models\FaqRitualObject;
 use App\Models\Mortuary;
 use App\Models\ReviewMortuary;
 use App\Models\UsefulMortuary;
@@ -32,10 +33,11 @@ class MortuaryService {
         $products=randomProductsPlace(32);
         $mortuaries_map=Mortuary::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $mortuaries=Mortuary::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
+        $faqs=FaqRitualObject::where('type_object','mortuary')->orderBy('id','desc')->get();
 
         $pages_navigation=[['Главная',route('index')],['Морги']];
 
-        return view('mortuary.index',compact('pages_navigation','mortuaries','city','products','usefuls','mortuaries_map'));
+        return view('mortuary.index',compact('faqs','pages_navigation','mortuaries','city','products','usefuls','mortuaries_map'));
     }
 
     public static function single($id){

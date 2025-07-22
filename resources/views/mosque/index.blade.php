@@ -67,6 +67,8 @@
 
 @include('components.rating-uneral-bureaus-raves-prices')
 
+{{view('components.faq-ritual-object',compact('faqs'))}}
+
 @include('mosque.components.cities-places') 
 
 <script>

@@ -68,6 +68,8 @@
 
 @include('components.rating-uneral-bureaus-raves-prices')
 
+{{view('components.faq-ritual-object',compact('faqs'))}}
+
 @include('church.components.cities-places') 
 
 <script>

@@ -37,7 +37,7 @@ $organizations=organizationRatingFuneralAgenciesPrices($city->id);
                                     @else
                                         <img  src="{{$organization->urlImg()}}" alt="">   
                                     @endif
-                                    <a href='{{$organization->route()}}'class="title_organization">Ритуальное агентство 
+                                    <a href='{{$organization->route()}}'class="title_organization">{{$organization->name_type}}: 
                                         "{{$organization->title}}"</a>
                                 </td>
                                 <td><div class="text_black"> {{$price_1}} </div></td>

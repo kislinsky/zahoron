@@ -5,9 +5,10 @@ namespace App\Services\Columbarium;
 
 
 use App\Models\City;
-use App\Models\FaqColumbarium;
-use App\Models\ImageColumbarium;
 use App\Models\Columbarium;
+use App\Models\FaqColumbarium;
+use App\Models\FaqRitualObject;
+use App\Models\ImageColumbarium;
 use App\Models\Organization;
 use App\Models\ReviewColumbarium;
 use App\Models\ServiceColumbarium;
@@ -29,10 +30,11 @@ class ColumbariumService {
         $usefuls=UsefulColumbarium::orderBy('id','desc')->get();
         $columbariums_map=Columbarium::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $columbariums=Columbarium::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
+        $faqs=FaqRitualObject::where('type_object','columbarium')->orderBy('id','desc')->get();
     
         $pages_navigation=[['Главная',route('index')],['Колумбарии']];
 
-        return view('columbarium.index',compact('pages_navigation','columbariums','city','products','usefuls','columbariums_map'));
+        return view('columbarium.index',compact('faqs','pages_navigation','columbariums','city','products','usefuls','columbariums_map'));
     }
 
 

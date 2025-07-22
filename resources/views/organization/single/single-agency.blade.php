@@ -10,7 +10,9 @@
         <img class='img_black_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">        
     </div>
 </section>
-
+<div class="html_navigation_org">
+    {{view('components.navigation',compact('pages_navigation'))}}
+</div>
 @if($organization->urlImgMain()=='default')
     <img class='white_img_org mobile_logo_organization' src="{{$organization->defaultMainImg()[0]}}" alt="">   
     <img class='black_img_org mobile_logo_organization' src="{{$organization->defaultMainImg()[1]}}" alt="">   

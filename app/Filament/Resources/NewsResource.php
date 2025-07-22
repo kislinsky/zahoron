@@ -25,7 +25,8 @@ class NewsResource extends Resource
     protected static ?string $model = News::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Новости'; // Название в меню
+    protected static ?string $navigationLabel = 'Список'; // Название в меню
+    protected static ?string $navigationGroup = 'Новости'; // Указываем группу
 
     public static function form(Form $form): Form
     {

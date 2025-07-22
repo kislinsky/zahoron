@@ -2,79 +2,128 @@
 
 namespace App\Filament\Resources\PageResource\RelationManagers;
 
+use App\Models\Acf;
 use Filament\Forms;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class AcfsRelationManager extends RelationManager
 {
     protected static string $relationship = 'acfs';
-    protected static ?string $title = 'Доп поля страницы';
+    protected static ?string $title = 'Дополнительные поля страницы';
 
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                ->label('Название')
-                ->required(),
-
-                RichEditor::make('content') // Поле для редактирования HTML-контента
-                    ->label('Описание') // Соответствующая подпись
-                    ->toolbarButtons([
-                        'attachFiles', // возможность прикрепить файлы
-                        'bold', // жирный текст
-                        'italic', // курсив
-                        'underline', // подчеркивание
-                        'strike', // зачеркнутый текст
-                        'link', // вставка ссылок
-                        'orderedList', // нумерованный список
-                        'bulletList', // маркированный список
-                        'blockquote', // цитата
-                        'h2', 'h3', 'h4', // заголовки второго, третьего и четвертого уровня
-                        'codeBlock', // блок кода
-                        'undo', 'redo', // отмена/возврат действия
+                Forms\Components\Section::make('Основная информация')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Название поля')
+                            ->required()
+                            ->maxLength(255),
+                            
+                        Forms\Components\Select::make('type')
+                            ->label('Тип поля')
+                            ->options([
+                                'text' => 'Текст (Rich Editor)',
+                                'file' => 'Файл',
+                            ])
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(fn () => request()->session()->forget('acf_type_change')),
                     ])
-                    ->disableLabel(false) // Показывать метку
-                    ->placeholder('Введите HTML-контент здесь...'),
+                    ->columns(1),
+                    
+                Forms\Components\Section::make('Содержимое поля')
+                    ->schema([
+                        // Поле для текста
+                        Forms\Components\RichEditor::make('content')
+                            ->label('Текстовое содержимое')
+                            ->toolbarButtons([
+                                'attachFiles', 'bold', 'italic', 'underline', 'strike',
+                                'link', 'orderedList', 'bulletList', 'blockquote',
+                                'h2', 'h3', 'h4', 'codeBlock', 'undo', 'redo',
+                            ])
+                            ->columnSpanFull()
+                            ->required(fn (Forms\Get $get) => $get('type') === 'text')
+                            ->hidden(fn (Forms\Get $get) => $get('type') !== 'text')
+                            ->helperText('Для текстовых полей используйте это поле'),
+                            
+                        // Поле для файлов
+                        Forms\Components\FileUpload::make('file')
+                            ->label('Файл')
+                            ->preserveFilenames()
+                            ->directory('/uploads')
+                            ->downloadable()
+                            ->columnSpanFull()
+                            ->required(fn (Forms\Get $get) => $get('type') === 'file')
+                            ->hidden(fn (Forms\Get $get) => $get('type') !== 'file')
+                            ->helperText('Загрузите файл для этого поля'),
+                    ]),
             ]);
     }
 
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('acfs')
+            ->recordTitleAttribute('name')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                ->label('id')
-                ->searchable()
-                ->sortable(),
+                    ->label('ID')
+                    ->sortable()
+                    ->searchable(),
+                    
                 Tables\Columns\TextColumn::make('name')
-                ->label('Название')
-                ->searchable()
-                ->sortable(),
+                    ->label('Название')
+                    ->sortable()
+                    ->searchable(),
+                    
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Тип')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'text' => 'info',
+                        'file' => 'warning',
+                        default => 'gray',
+                    }),
+              
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('type')
+                    ->label('Фильтр по типу')
+                    ->options([
+                        'text' => 'Текст',
+                        'file' => 'Файл',
+                    ]),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->label('Добавить поле'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('Редактировать'),
+                    
+                Tables\Actions\DeleteAction::make()
+                    ->label('Удалить')
+                    ->requiresConfirmation(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Удалить выбранные')
+                        ->requiresConfirmation(),
                 ]),
+            ])
+            ->emptyStateHeading('Нет дополнительных полей')
+            ->emptyStateDescription('Нажмите "Добавить поле", чтобы создать новое')
+            ->emptyStateActions([
+                Tables\Actions\CreateAction::make()
+                    ->label('Добавить поле'),
             ]);
     }
 }
- 
-

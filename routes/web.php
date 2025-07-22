@@ -1,12 +1,13 @@
 <?php
 
 use App\Http\Controllers\Account\Admin\AdminBurialController;
+use App\Http\Controllers\Account\Admin\AdminController;
 use App\Http\Controllers\Account\Admin\AdminGeoController;
 use App\Http\Controllers\Account\Admin\AdminOrganizationController;
 use App\Http\Controllers\Account\Admin\AdminRitualObjectsController;
+
+
 use App\Http\Controllers\Account\Admin\AdminSEOController;
-
-
 use App\Http\Controllers\Account\Agency\AgencyController;
 use App\Http\Controllers\Account\Agency\AgencyOrganizationController;
 use App\Http\Controllers\Account\Agency\AgencyOrganizationProviderController;
@@ -20,9 +21,9 @@ use App\Http\Controllers\Account\HomeController;
 use App\Http\Controllers\Account\User\AccountController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+
+
 use App\Http\Controllers\Auth\LoginController;
-
-
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BasketBurialContoller;
 use App\Http\Controllers\BasketProductController;
@@ -66,6 +67,7 @@ use Illuminate\Support\Facades\Route;
 
 
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -82,7 +84,7 @@ use Illuminate\Support\Facades\Route;
 $city = request()->segment(1); // Более безопасный и понятный способ получить первый сегмент URL
 
 if($city!='livewire' && $city!='api' ){
-    if (!request()->is('storage/*') && !request()->is('css/*') && !request()->is('js/*') && !request()->is('admin/*') && !request()->is('filament*') && $city!='admin' ) {    
+    if (!request()->is('storage/*') && !request()->is('css/*') && !request()->is('js/*') && !request()->is('admin/*') && !request()->is('livewire/*') && !request()->is('filament*') && $city!='admin' ) {    
         if(city_by_slug($city) == null){
             setcookie('city', '', -1, '/');
             setcookie("city", defaultCity()->id, time()+20*24*60*60,'/');
@@ -111,19 +113,17 @@ if($city!='livewire' && $city!='api' ){
         }
     }
 }
+
 if (request()->is('docs*')) {
     return $city='';
 }
 
 
-// Route::group(['prefix' => '{city}', 'middleware' => 'check.city'], function () {
-//     Route::get('/', [CityController::class, 'index'])->name('city.index');
-//     Route::get('/change-city/{selectedCity}', [CityController::class, 'changeCity'])->name('city.change');
-// });
 
 
 
-Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
+
+Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
     
 
 
@@ -143,10 +143,12 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
 
     Auth::routes();
     
-    Route::get('/', [MainController::class, 'index'])->name('index');
+    
+    Route::get('/', [MainController::class, 'index'])->name('index')->middleware('cacheResponse:3600');
+
     Route::get('/accept-cookie', [MainController::class, 'acceptCookie'])->name('cookie.accept');
 
-    Route::get('/speczialist', [MainController::class, 'speczialist'])->name('speczialist');
+    Route::get('/speczialist', [MainController::class, 'speczialist'])->name('speczialist')->middleware('cacheResponse:3600');
 
 
     Route::get('/change-theme', [MainController::class, 'changeTheme'])->name('change-theme');
@@ -156,7 +158,7 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
 
     Route::get('/organization/{slug}', [OrganizationController::class, 'single'])->name('organization.single');
     Route::get('/organizations', [OrganizationController::class, 'catalogOrganization'])->name('organizations');
-    Route::get('/organizations/{slug}', [OrganizationController::class, 'catalogOrganizationCategory'])->name('organizations.category');
+    Route::get('/organizations/{slug}', [OrganizationController::class, 'catalogOrganizationCategory'])->name('organizations.category')->middleware('cacheResponse:3600');
 
 
 
@@ -244,7 +246,7 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
         
     });
 
-    Route::group(['prefix'=>'marketplace'], function() {
+    Route::group(['prefix'=>'marketplace','middlware'=>'cacheResponse'], function() {
         Route::get('/', [ProductController::class, 'redirectToCategoryMarketplace'])->name('marketplace');
         Route::get('/{slug}', [ProductController::class, 'marketPlace'])->name('marketplace.category');
     });
@@ -261,8 +263,7 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
         Route::get('/cart/change/count', [BasketProductController::class, 'changeCountCart'])->name('product.cart.count.change');
     });
 
-    Route::get('/mortuaries', [MortuaryController::class, 'index'])->name('mortuaries');
-
+    Route::get('/mortuaries', [MortuaryController::class, 'index'])->name('mortuaries')->middleware('cacheResponse:3600');
 
     Route::group(['prefix'=>'mortuary'], function() {
         Route::get('/{id}', [MortuaryController::class, 'single'])->name('mortuary.single');
@@ -270,14 +271,14 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
 
     });
 
-    Route::get('/crematoriums', [CrematoriumController::class, 'index'])->name('crematoriums');
+    Route::get('/crematoriums', [CrematoriumController::class, 'index'])->name('crematoriums')->middleware('cacheResponse:3600');
 
     Route::group(['prefix'=>'crematorium'], function() {
         Route::get('/{id}', [CrematoriumController::class, 'single'])->name('crematorium.single');
         Route::get('/review/add', [CrematoriumController::class, 'addReview'])->name('crematorium.review.add');
     });
 
-    Route::get('/columbariums', [ColumbariumController::class, 'index'])->name('columbariums');
+    Route::get('/columbariums', [ColumbariumController::class, 'index'])->name('columbariums')->middleware('cacheResponse:3600');
 
     Route::group(['prefix'=>'columbarium'], function() {
         Route::get('/{id}', [ColumbariumController::class, 'single'])->name('columbarium.single');
@@ -302,23 +303,23 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
     Route::group(['prefix'=>'service'], function() {
         Route::get('/{id}/cart/add', [BasketServiceContoller::class, 'addToCart'])->name('burial.service.add');
         Route::get('/cart/delete', [BasketServiceContoller::class, 'deletefromCart'])->name('burial.service.delete');
-        Route::get('/{id}', [ServiceController::class, 'single'])->name('service.single');
+        Route::get('/{id}', [ServiceController::class, 'single'])->name('service.single')->middleware('cacheResponse:3600');
     });
 
 
 
     Route::group(['prefix'=>'price-list'], function() {
-        Route::get('/', [ProductPriceListController::class, 'priceList'])->name('pricelist');
-        Route::get('/{slug}', [ProductPriceListController::class, 'serviceCategory'])->name('service.category');
-        Route::get('/product/{slug}', [ProductPriceListController::class, 'singleProduct'])->name('pricelist.single');
+        Route::get('/', [ProductPriceListController::class, 'priceList'])->name('pricelist')->middleware('cacheResponse:3600');
+        Route::get('/{slug}', [ProductPriceListController::class, 'serviceCategory'])->name('service.category')->middleware('cacheResponse:3600');
+        Route::get('/product/{slug}', [ProductPriceListController::class, 'singleProduct'])->name('pricelist.single')->middleware('cacheResponse:3600');
     });
 
 
 
     Route::group(['prefix'=>'news'], function() {
-        Route::get('/', [NewsController::class, 'index'])->name('news');
-        Route::get('/category/{id}', [NewsController::class, 'newsCat'])->name('news.category');
-        Route::get('/{slug}', [NewsController::class, 'singleNews'])->name('news.single');
+        Route::get('/', [NewsController::class, 'index'])->name('news')->middleware('cacheResponse:3600');
+        Route::get('/category/{id}', [NewsController::class, 'newsCat'])->name('news.category')->middleware('cacheResponse:3600');
+        Route::get('/{slug}', [NewsController::class, 'singleNews'])->name('news.single')->middleware('cacheResponse:3600');
     });
 
 
@@ -328,8 +329,8 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
 
 
 
-    Route::get('/kontakty', [MainController::class, 'contacts'])->name('contacts');
-    Route::get('/terms-of-use', [MainController::class, 'termsIUser'])->name('terms-user');
+    Route::get('/kontakty', [MainController::class, 'contacts'])->name('contacts')->middleware('cacheResponse:3600');
+    Route::get('/terms-of-use', [MainController::class, 'termsIUser'])->name('terms-user')->middleware('cacheResponse:3600');
 
     Route::get('/search-filter', [MainController::class, 'searchProductFilter'])->name('page.search.burial.filter');
     Route::get('/search-filter-who', [BurialController::class, 'searchProductFilter'])->name('search.burial.filter');
@@ -337,14 +338,10 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
     Route::get('/search-request/add', [BurialController::class, 'searchProductRequestAdd'])->name('search.burial.request');
 
 
-    Route::get('/our-works', [MainController::class, 'ourWorks'])->name('our.products');
+    Route::get('/our-works', [MainController::class, 'ourWorks'])->name('our.products')->middleware('cacheResponse:3600');
 
 
-    Route::get('/cemeteries', [CemeteriesController::class, 'index'])->name('cemeteries');
-
-
-
-
+    Route::get('/cemeteries', [CemeteriesController::class, 'index'])->name('cemeteries')->middleware('cacheResponse:3600');
 
     Route::group(['prefix'=>'cemetery'], function() {
         Route::get('/{cemetery}', [CemeteriesController::class, 'singleCemetery'])->name('cemeteries.single');
@@ -352,7 +349,7 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
 
     });
 
-    Route::get('/churches', [ChurchController::class, 'index'])->name('churches');
+    Route::get('/churches', [ChurchController::class, 'index'])->name('churches')->middleware('cacheResponse:3600');
 
     Route::group(['prefix'=>'church'], function() {
         Route::get('/{church}', [ChurchController::class, 'single'])->name('church.single');
@@ -361,14 +358,13 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
 
     });
 
+    Route::get('/mosques', [MosqueController::class, 'index'])->name('mosques')->middleware('cacheResponse:3600');
+
     Route::group(['prefix'=>'mosque'], function() {
         Route::get('/{mosque}', [MosqueController::class, 'single'])->name('mosque.single');
         Route::get('/review/add', [MosqueController::class, 'addReview'])->name('mosque.review.add');
-
-
     });
 
-    Route::get('/mosques', [MosqueController::class, 'index'])->name('mosques');
 
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -702,6 +698,11 @@ Route::group(['prefix' => $city, 'middleware' => 'check.city'], function () {
         Route::group(['prefix'=>'account'], function() {
             Route::group(['prefix'=>'admin-old'], function() {
 
+                Route::group(['prefix'=>'settings-site'], function() {
+                    Route::get('/robots-txt', [AdminController::class, 'pageUpdateRobotsTxt'])->name('account.admin.settings-site.robots-txt');
+                    Route::post('/robots-txt/update', [AdminController::class, 'updateRobotsTxt'])->name('account.admin.settings-site.robots-txt.update');
+
+                });
 
                 Route::group(['prefix'=>'seo'], function() {
                     Route::get('/settings', [AdminSEOController::class, 'settings'])->name('account.admin.seo.settings');
