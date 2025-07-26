@@ -65,8 +65,8 @@ use Illuminate\Support\Facades\Route;
             </div> 
             
             <div class="block_input">
-                <label for="password">Пароль</label>
-                <input id="password" type="password"  name="password_phone" required autocomplete="current-password" placeholder="Пароль">
+                <label for="password_2">Пароль</label>
+                <input id="password_2" type="password"  name="password_phone" required autocomplete="current-password" placeholder="Пароль">
                 @error('password_phone')
                     <div class='error-text'>{{ $message }}</div>
                 @enderror

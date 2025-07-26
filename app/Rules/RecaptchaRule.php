@@ -9,7 +9,7 @@ class RecaptchaRule implements Rule
 {
     public function passes($attribute, $value)
     {
-        $recaptcha = new ReCaptcha(config('recaptcha.secret_key'));
+        $recaptcha = new ReCaptcha(env('RECAPTCHA_SECRET_KEY'));
         $response = $recaptcha->verify($value, request()->ip());
 
         return $response->isSuccess();

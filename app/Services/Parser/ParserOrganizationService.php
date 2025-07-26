@@ -584,18 +584,20 @@ class ParserOrganizationService
                 continue;
             }
             
-            $organizationId = $review[$columnIndexes['organization_id']] ?? null;
+            $organizationId = rtrim($review[$columnIndexes['organization_id']] ?? '', '!') ?? null;
             $reviewerName = $review[$columnIndexes['name']] ?? null;
             $reviewDate = $review[$columnIndexes['date']] ?? null;
             $rating = $review[$columnIndexes['rating']] ?? null;
             $content = $review[$columnIndexes['content']] ?? null;
             
+            $organizationId=transformId($organizationId);
+
             if (empty($organizationId)) {
                 $errors[] = "Строка {$rowNumber}: Не указан ID организации";
                 $skippedReviews++;
                 continue;
             }
-            
+
             $organization = Organization::find($organizationId);
             if (!$organization) {
                 $errors[] = "Строка {$rowNumber}: Организация с ID {$organizationId} не найдена";
@@ -649,7 +651,7 @@ class ParserOrganizationService
                 $reviewDate = now()->format('Y-m-d');
             }
             
-            ReviewsOrganization::create([
+            $review=ReviewsOrganization::create([
                 'name' => $reviewerName,
                 'rating' => $rating,
                 'content' => $content,
@@ -658,7 +660,6 @@ class ParserOrganizationService
                 'status' => 1,
                 'city_id' => $organization->city->id,
             ]);
-            
             $addedReviews++;
             
         } catch (\Exception $e) {
