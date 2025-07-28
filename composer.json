@@ -38,7 +38,6 @@
         "phpoffice/phpspreadsheet": "^3.3",
         "rap2hpoutre/fast-excel": "^5.5",
         "smsaero/smsaero_api": "^1.0",
-        "spatie/laravel-responsecache": "^7.7",
         "spatie/laravel-sitemap": "^7.3",
         "staudenmeir/belongs-to-through": "^2.15",
         "tinymce/tinymce": "^7.6",

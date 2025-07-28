@@ -40,7 +40,6 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            \Spatie\ResponseCache\Middlewares\CacheResponse::class,
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
@@ -85,7 +84,6 @@ class Kernel extends HttpKernel
         'check.city' => CheckCity::class,
         'admin.check'=>CheckRoleAccessMiddleware::class,
         'jwt.auth'=>JwtAuthenticate::class,
-        'cacheResponse' => \Spatie\ResponseCache\Middlewares\CacheResponse::class,
-        'doNotCacheResponse' => \Spatie\ResponseCache\Middlewares\DoNotCacheResponse::class,
+       
     ];
 }
