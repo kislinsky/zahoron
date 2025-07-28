@@ -590,7 +590,6 @@ class ParserOrganizationService
             $rating = $review[$columnIndexes['rating']] ?? null;
             $content = $review[$columnIndexes['content']] ?? null;
             
-            $organizationId=transformId($organizationId);
 
             if (empty($organizationId)) {
                 $errors[] = "Строка {$rowNumber}: Не указан ID организации";
@@ -598,7 +597,7 @@ class ParserOrganizationService
                 continue;
             }
 
-            $organization = Organization::find($organizationId);
+            $organization = Organization::where('two_gis_link','like','%'.$organizationId.'%')->first();
             if (!$organization) {
                 $errors[] = "Строка {$rowNumber}: Организация с ID {$organizationId} не найдена";
                 $skippedReviews++;

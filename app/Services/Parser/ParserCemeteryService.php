@@ -160,7 +160,6 @@ class ParserCemeteryService
                             }    
 
                             $cemetery=Cemetery::create($cemeteryData);
-                            dd($cemetery);
 
                             $createdCemeteries++;
 
@@ -277,13 +276,13 @@ class ParserCemeteryService
     $headers = array_map('strtolower', $headers);
     
     $columnIndexes = [
-        'cemetery_id' => array_search('ID', $headers),
+        'cemetery_id' => array_search('id', $headers),
         'name' => array_search('Имя', $headers),
         'date' => array_search('Дата', $headers),
         'rating' => array_search('Оценка', $headers),
         'content' => array_search('Отзыв', $headers),
     ];
-    
+
     foreach ($columnIndexes as $key => $index) {
         if ($index === false) {
             return redirect()->back()->with("error_cart", "Отсутствует обязательная колонка: " . $key);
@@ -304,7 +303,7 @@ class ParserCemeteryService
                 continue;
             }
             
-            $cemeteryId = $review[$columnIndexes['cemetery_id']] ?? null;
+            $cemeteryId =rtrim($review[$columnIndexes['cemetery_id']] ?? '', '!');
             $reviewerName = $review[$columnIndexes['name']] ?? null;
             $reviewDate = $review[$columnIndexes['date']] ?? null;
             $rating = $review[$columnIndexes['rating']] ?? null;
@@ -315,8 +314,8 @@ class ParserCemeteryService
                 $skippedReviews++;
                 continue;
             }
-            
-            $cemetery = Cemetery::find($cemeteryId);
+
+            $cemetery = Cemetery::find(transformID($cemeteryId));
             if (!$cemetery) {
                 $errors[] = "Строка {$rowNumber}: Кладбище с ID {$cemeteryId} не найдено";
                 $skippedReviews++;

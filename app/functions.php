@@ -44,7 +44,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
+
 
 
 
@@ -285,14 +287,29 @@ function defaultCity(){
     return $defaultCity = City::where('selected_admin', 1)->first();
 }
 
-function selectCity(){
-    $city=City::where('slug',request()->segment(1))->first();
-    if($city==null){
-        $city=City::where('selected_admin',1)->first();
+function selectCity()
+{
+    // Безопасное получение сегмента URL
+    $slug = request()->segment(1) ?? '';
+    
+    // Поиск города с проверкой slug
+    $city = City::where('slug', $slug)->first();
+    
+    // Если город не найден, берём выбранный админом
+    if (!$city) {
+        $city = City::where('selected_admin', 1)->first();
+        
+        // Если нет и выбранного админом - возвращаем null или первый город
+        if (!$city) {
+            $city = City::first();
+        }
     }
-    if(!isset($_COOKIE['city'])){
-        setcookie("city", $city->id, time()+20*24*60*60,'/');
+    
+    // Устанавливаем куки только если город найден
+    if ($city) {
+        setcookie("city", $city->id, time() + 20*24*60*60, '/', null, false, true);
     }
+    
     return $city;
 }
 
@@ -2462,4 +2479,24 @@ function transformId($num, $mode = 'encode') {
     }
     
     return null;
+}
+
+function changeUrl($city, $currentPath = null) {
+    if ($currentPath === null) {
+        $currentPath = request()->path(); // "elizovo/organizations/organizacia-pohoron"
+    }
+    
+    // Убираем начальный и конечный слеши (если есть)
+    $trimmedPath = trim($currentPath, '/');
+    
+    if ($trimmedPath === '') {
+        // Если путь пустой (например, главная страница "/"), просто возвращаем URL с новым городом
+        return url('/') . '/' . $city->slug;
+    }
+    
+    // Заменяем первый сегмент пути
+    $newPath = preg_replace('~^[^/]+~', $city->slug, $trimmedPath);
+    
+    // Собираем URL, избегая дублирования слешей
+    return url('/') . '/' . $newPath;
 }

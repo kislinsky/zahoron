@@ -55,7 +55,7 @@ class City extends Model
 
 
     public function route(){
-        return route('city.select',$this->id);
+        return changeUrl($this);
     }
 
     public function edgeCities($nameObject){

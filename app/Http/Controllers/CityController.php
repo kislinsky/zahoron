@@ -15,8 +15,9 @@ class CityController extends Controller
     public static function ajaxCity(Request $request){
         $data=request()->validate([
             'city_id'=>['required','string'],
+            'url'=>['required','string'],
         ]);
-        return CityService::ajaxCity($data['city_id']);
+        return CityService::ajaxCity($data);
     }
 
     public static function ajaxCityFromEdge(Request $request){

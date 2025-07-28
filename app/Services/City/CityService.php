@@ -23,18 +23,19 @@ class CityService {
         
     }
 
-    public static function ajaxCity($city){
+    public static function ajaxCity($data){
+        $url=$data['url'];
         $cities = DB::table('cities')
-    ->select('cities.*')
-    ->join('organizations', 'organizations.city_id', '=', 'cities.id')
-    ->join('areas', 'cities.area_id', '=', 'areas.id')
-    ->join('edges', 'areas.edge_id', '=', 'edges.id')
-    ->where('cities.title', 'like', $city . '%') // Используем начало строки для индекса
-    ->where('edges.is_show', 1)
-    ->groupBy('cities.id')
-    ->orderBy('cities.title', 'asc')
-    ->get();
-        return view('components.components_form.cities',compact('cities'));
+        ->select('cities.*')
+        ->join('organizations', 'organizations.city_id', '=', 'cities.id')
+        ->join('areas', 'cities.area_id', '=', 'areas.id')
+        ->join('edges', 'areas.edge_id', '=', 'edges.id')
+        ->where('cities.title', 'like', $data['city_id'] . '%') // Используем начало строки для индекса
+        ->where('edges.is_show', 1)
+        ->groupBy('cities.id')
+        ->orderBy('cities.title', 'asc')
+        ->get();
+        return view('components.components_form.cities',compact('cities','url'));
     }
 
     public static function ajaxCityFromEdge($edge_id){

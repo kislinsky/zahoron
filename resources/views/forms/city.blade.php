@@ -23,7 +23,7 @@ $cities=mainCities();
                         @if(count($cities)>0)
                             <div  class="ul_location">
                                 @foreach ($cities as $city)
-                                    <a href='{{ route('city.select',$city->id) }}'  class="li_location city_li">{{ $city->title }}</a>
+                                    <a href="{{changeUrl($city)}}"  class="li_location city_li">{{ $city->title }} </a>
                                 @endforeach
                             </div>
                         @endif
@@ -38,8 +38,10 @@ $cities=mainCities();
     
     $( ".form_city_select input" ).on( "input", function() {
         $('.abs_cities').remove()
+        console.log(window.location.pathname)
         let filters  = {
             'city_id':$(this).val(),
+            'url':window.location.pathname
         };
         $.ajax({
             type: 'GET',
