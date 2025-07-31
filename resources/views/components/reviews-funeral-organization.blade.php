@@ -17,7 +17,8 @@ $reviews_organization=reviewsOrganization($city->id);
                                 <?php 
                                     $organization=$review_organization->organization;
                                 ?>
-                                <img src="{{$organization->urlImg()}}" alt="">
+                                <img class='white_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[0]}}" alt="">   
+                                <img class='black_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[1]}}" alt="">
                                 <a href='{{$organization->route()}}' class="title_organization">Ритуальное агентство 
                                     "{{$organization->title}}"</a>
                             </div>

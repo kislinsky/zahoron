@@ -21,12 +21,13 @@
 body,html{
     font-size: 16px;
         overflow-x: hidden !important;
+
     padding: 0px !important;
     margin: 0px !important;
 }
 
 body{
-
+ overflow-x: auto !important;
     min-height: 100vh;
     scroll-behavior: smooth;
     text-rendering: optimizeSpeed;
@@ -37,7 +38,6 @@ body{
     font-weight: 500;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
 }
 .container{
     position: relative;
@@ -7612,3 +7612,18 @@ color: #0080D7;
 .html_navigation_org .navigation_pages{
     padding-bottom: 0px;
 }
+
+ .one_block_li_product .black_img_org{
+    display: none;
+}
+ .one_block_li_product .white_img_org{
+    display: block;
+}
+
+.img_single_product .black_img_org{
+    display: none;
+}
+.img_single_product .white_img_org{
+    display: block;
+}
+

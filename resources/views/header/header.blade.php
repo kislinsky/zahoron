@@ -31,6 +31,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
         <script defer src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script>
         <script  src="https://api-maps.yandex.ru/2.1/?apikey=373ac95d-ec8d-4dfc-a70c-e48083741c72&lang=ru_RU"></script>
 
+        {!! get_acf(20,'header') !!}
     </head>
 
 <body class='{{getTheme()}}'>

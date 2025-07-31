@@ -554,3 +554,17 @@ color: white;
     background: #0F0F0F;
     color: white;
 }
+
+.black_theme .one_block_li_product .black_img_org{
+    display: block;
+}
+.black_theme .one_block_li_product .white_img_org{
+    display: none;
+}
+
+.black_theme .img_single_product .black_img_org{
+    display: block;
+}
+.black_theme .img_single_product .white_img_org{
+    display: none;
+}

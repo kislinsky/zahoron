@@ -78,7 +78,12 @@
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
                             <div class="img_single_product"> 
-                                <img src="{{$product->urlImg() }}" alt="">
+                                    @if($product->urlImg()=='default')
+                                        <img class='white_img_org' src="{{$product->defaultImg()[0]}}" alt="">   
+                                        <img class='black_img_org' src="{{$product->defaultImg()[1]}}" alt="">
+                                    @else
+                                        <img src="{{$product->urlImg() }}" alt="">
+                                    @endif
                                 <div class="white_btn">{{ $product->who }}</div>
                             </div>
                         </div>

@@ -30,7 +30,12 @@
                         @foreach ($products as $product)
                             <div class="li_product">
                                 <div class="one_block_li_product">
-                                    <img src="{{$product->urlImg() }}" alt="">
+                                    @if($product->urlImg()=='default')
+                                        <img class='white_img_org' src="{{$product->defaultImg()[0]}}" alt="">   
+                                        <img class='black_img_org' src="{{$product->defaultImg()[1]}}" alt="">
+                                    @else
+                                        <img src="{{$product->urlImg() }}" alt="">
+                                    @endif
                                     <div class="btn_gray">{{ $product->who }}</div>
                                 </div>
                                 <div class="two_block_li_product">

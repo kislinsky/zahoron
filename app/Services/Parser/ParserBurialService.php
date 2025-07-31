@@ -104,7 +104,7 @@ class ParserBurialService
                             'href_img' => 1,
                             'url' => $burialRow[$columns['URL']] ?? null,
                             'who' => 'Гражданский',
-                            'img_url' => $burialRow[$columns['Главное фото']] ?? null,
+                            'img_url' => 'default',
                             'width' => str_replace(',', '.', $burialRow[$columns['Широта']]),
                             'longitude' => str_replace(',', '.', $burialRow[$columns['Долгота']]),
                             'cemetery_id' => $cemetery->id,
@@ -117,21 +117,21 @@ class ParserBurialService
                         $burialId = DB::table('burials')->insertGetId($burialData);
                         self::$existingSlugs[] = $slug; // Добавляем новый slug в кеш
                         
-                        if (isset($columns['Фотографии']) && !empty($burialRow[$columns['Фотографии']])) {
-                            $photos = array_filter(array_map('trim', explode(',', $burialRow[$columns['Фотографии']])));
+                        // if (isset($columns['Фотографии']) && !empty($burialRow[$columns['Фотографии']])) {
+                        //     $photos = array_filter(array_map('trim', explode(',', $burialRow[$columns['Фотографии']])));
                             
-                            $imagesData = array_map(function($photo) use ($burialId) {
-                                return [
-                                    'title' => $photo,
-                                    'burial_id' => $burialId,
-                                    'status' => 1,
-                                    'created_at' => now(),
-                                    'updated_at' => now(),
-                                ];
-                            }, $photos);
+                        //     $imagesData = array_map(function($photo) use ($burialId) {
+                        //         return [
+                        //             'title' => $photo,
+                        //             'burial_id' => $burialId,
+                        //             'status' => 1,
+                        //             'created_at' => now(),
+                        //             'updated_at' => now(),
+                        //         ];
+                        //     }, $photos);
                             
-                            DB::table('image_personals')->insert($imagesData);
-                        }
+                        //     DB::table('image_personals')->insert($imagesData);
+                        // }
 
                         $createdBurials++;
 

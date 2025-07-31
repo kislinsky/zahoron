@@ -45,6 +45,11 @@ class Burial extends Model
     }
 
 
+    function defaultImg(){
+        $url_white_theme=asset('storage/uploads/Theme=White (1).svg');
+        $url_black_theme=asset('storage/uploads/Theme=Black (1).svg');
+        return [$url_white_theme,$url_black_theme];
+    }
 
 
     public function urlImg(){

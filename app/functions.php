@@ -148,7 +148,11 @@ function get_acf($id_page,$name_acf){
     $page=Page::findOrFail($id_page);
     $acf=Acf::where('name',$name_acf)->where('page_id',$page->id)->first();
     if($acf->type=='text'){
-        return $acf->content;
+        if($acf->is_plain_text==1){
+            return $acf->content_plain;
+        }
+        return $acf->content_html;
+
     }
     return $acf->file;
 }
@@ -562,11 +566,27 @@ function savingsPrice($id){
     
 }
 
-function reviewsOrganization($city){
-    $reviews_organization=ReviewsOrganization::orderBy('id','desc')->where('status',1)->whereHas('organization', function ($query) use ($city) {
-        $query->where('city_id', $city);
-    })->get()->take(8);
-    return $reviews_organization;
+function reviewsOrganization($city) {
+    // Сначала получаем ID организаций с ограничением по городу
+    $organizationIds = Organization::where('city_id', $city)
+        ->pluck('id')
+        ->toArray();
+    
+    // Затем для каждой организации получаем максимум 2 последних отзыва
+    $reviews = collect();
+    
+    foreach ($organizationIds as $orgId) {
+        $orgReviews = ReviewsOrganization::where('organization_id', $orgId)
+            ->where('status', 1)
+            ->orderBy('id', 'desc')
+            ->take(2)
+            ->get();
+            
+        $reviews = $reviews->merge($orgReviews);
+    }
+    
+    // Сортируем все отзывы по дате и берем 8 последних
+    return $reviews->sortByDesc('id')->take(12);
 }
 
 function priceAdditional($price){

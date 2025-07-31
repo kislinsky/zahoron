@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        SEOMeta::setRobots('noindex,nofollow'); // Правильный метод
+        //SEOMeta::setRobots('noindex,nofollow'); // Правильный метод
         // Или альтернативный вариант:
         // SEOMeta::addMeta('robots', 'noindex,nofollow');
         

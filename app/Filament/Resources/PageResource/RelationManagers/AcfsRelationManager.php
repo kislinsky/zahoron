@@ -38,31 +38,35 @@ class AcfsRelationManager extends RelationManager
                     ])
                     ->columns(1),
                     
-                Forms\Components\Section::make('Содержимое поля')
+                 Forms\Components\Section::make('Содержимое поля')
                     ->schema([
-                        // Поле для текста
-                        Forms\Components\RichEditor::make('content')
-                            ->label('Текстовое содержимое')
-                            ->toolbarButtons([
-                                'attachFiles', 'bold', 'italic', 'underline', 'strike',
-                                'link', 'orderedList', 'bulletList', 'blockquote',
-                                'h2', 'h3', 'h4', 'codeBlock', 'undo', 'redo',
-                            ])
-                            ->columnSpanFull()
-                            ->required(fn (Forms\Get $get) => $get('type') === 'text')
-                            ->hidden(fn (Forms\Get $get) => $get('type') !== 'text')
-                            ->helperText('Для текстовых полей используйте это поле'),
+                        
+Forms\Components\Toggle::make('is_plain_text')
+    ->label('Обычный текст (без форматирования)')
+    ->hidden(fn (Forms\Get $get) =>  $get('type') !== 'text')
+    ->live(),
+Forms\Components\Fieldset::make('Содержимое')
+    ->schema([
+        Forms\Components\RichEditor::make('content_html')
+            ->label('Форматированный текст')
+            ->columnSpanFull()
+            ->hidden(fn (Forms\Get $get) => $get('is_plain_text') || $get('type') !== 'text'),
+            
+        Forms\Components\Textarea::make('content_plain')
+            ->label('Обычный текст')
+            ->columnSpanFull()
+            ->hidden(fn (Forms\Get $get) => !$get('is_plain_text') || $get('type') !== 'text'),
+    ])
+    ->hidden(fn (Forms\Get $get) => $get('type') !== 'text'),
                             
-                        // Поле для файлов
-                        Forms\Components\FileUpload::make('file')
+                        Forms\Components\FileUpload::make('file') // Изменили на file_path
                             ->label('Файл')
                             ->preserveFilenames()
-                            ->directory('/uploads')
+                            ->directory('/uploads') // Более структурированный путь
                             ->downloadable()
                             ->columnSpanFull()
                             ->required(fn (Forms\Get $get) => $get('type') === 'file')
-                            ->hidden(fn (Forms\Get $get) => $get('type') !== 'file')
-                            ->helperText('Загрузите файл для этого поля'),
+                            ->hidden(fn (Forms\Get $get) => $get('type') !== 'file'),
                     ]),
             ]);
     }
