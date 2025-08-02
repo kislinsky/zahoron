@@ -142,7 +142,6 @@ class CemeteryResource extends Resource
 
                     Forms\Components\TextInput::make('adres')
                     ->label('Ориентир')
-                    ->required()
                     ->maxLength(255),
 
                     Forms\Components\TextInput::make('price_burial_location')
@@ -233,7 +232,6 @@ class CemeteryResource extends Resource
                         'codeBlock', // блок кода
                         'undo', 'redo', // отмена/возврат действия
                     ])
-                    ->required() // Опционально: сделать поле обязательным
                     ->disableLabel(false) // Показывать метку
                     ->placeholder('Введите HTML-контент здесь...'),
 

@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
-use YooKassa\Client;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use YooKassa\Client;
 
 class YooMoneyService
 {
@@ -24,48 +25,30 @@ class YooMoneyService
      * @param string $returnUrl URL для возврата после оплаты.
      * @return array Возвращает массив с результатом и информацией о платеже.
      */
-    public function createPayment(float $amount, string $description, string $returnUrl): array
+    
+    public function createPayment($value,$redirect_url='https://zahoron.ru/elizovo',$description,$metadata=[])
     {
-        try {
-            // Параметры платежа
-            $payment = $this->client->createPayment(
-                [
-                    'amount' => [
-                        'value' => number_format($amount, 2, '.', ''), // Форматируем сумму
-                        'currency' => 'RUB', // Валюта
-                    ],
-                    'confirmation' => [
-                        'type' => 'redirect',
-                        'return_url' => $returnUrl, // URL для возврата после оплаты
-                    ],
-                    'capture' => true,
-                    'description' => $description, // Описание платежа
-                ],
-                uniqid('', true) // Уникальный идентификатор платежа
-            );
 
-            // Возвращаем успешный результат и информацию о платеже
-            return [
-                'success' => true,
-                'payment' => [
-                    'id' => $payment->getId(),
-                    'status' => $payment->getStatus(),
-                    'redirect_url' => $payment->getConfirmation()->getConfirmationUrl(), // Убедитесь, что этот ключ присутствует
-                    'confirmation_url' => $payment->getConfirmation()->getConfirmationUrl(),
-                ],
-            ];
+        // Параметры платежа
+        $payment = $this->client->createPayment(
+        [
+            'amount' => [
+                'value' => $value, // Сумма платежа
+                'currency' => 'RUB', // Валюта
+            ],
+            'confirmation' => [
+                'type' => 'redirect',
+                'return_url' => $redirect_url, // URL для возврата после оплаты
+            ],
+            'metadata' => $metadata,
+            'capture' => true,
+            'description' => $description, // Описание платежа
+        ],
+        uniqid('', true) // Уникальный идентификатор платежа
+    );
 
-        } catch (Exception $e) {
-            // Логируем ошибку
-            Log::error('YooMoney payment error: ' . $e->getMessage());
-
-            // Возвращаем ошибку и информацию
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-                'payment' => null,
-            ];
-        }
+        // Перенаправляем пользователя на страницу оплаты
+        return redirect($payment->getConfirmation()->getConfirmationUrl());
     }
 
     /**
@@ -74,45 +57,19 @@ class YooMoneyService
      * @param string $paymentId Идентификатор платежа.
      * @return array Возвращает массив с результатом и информацией о платеже.
      */
-    public function handleCallback(string $paymentId): array
+    public function handleCallback(Request $request)
     {
-        try {
-            // Получаем информацию о платеже
-            $payment = $this->client->getPaymentInfo($paymentId);
+      
+        // Обработка уведомления от YooMoney
+        $paymentId = $request->input('paymentId');
+        $payment = $this->client->getPaymentInfo($paymentId);
 
-            // Проверяем статус платежа
-            if ($payment->getStatus() === 'succeeded') {
-                // Платеж успешен
-                return [
-                    'success' => true,
-                    'payment' => [
-                        'id' => $payment->getId(),
-                        'status' => $payment->getStatus(),
-                        'amount' => $payment->getAmount(),
-                    ],
-                ];
-            } else {
-                // Платеж не удался
-                return [
-                    'success' => false,
-                    'payment' => [
-                        'id' => $payment->getId(),
-                        'status' => $payment->getStatus(),
-                        'amount' => $payment->getAmount(),
-                    ],
-                ];
-            }
-
-        } catch (Exception $e) {
-            // Логируем ошибку
-            Log::error('YooMoney callback error: ' . $e->getMessage());
-
-            // Возвращаем ошибку и информацию
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-                'payment' => null,
-            ];
+        if ($payment->getStatus() === 'succeeded') {
+            // Платеж успешен
+            return response()->json(['status' => 'success', 'payment' => $payment]);
+        } else {
+            // Платеж не удался
+            return response()->json(['status' => 'failed', 'payment' => $payment]);
         }
     }
 }

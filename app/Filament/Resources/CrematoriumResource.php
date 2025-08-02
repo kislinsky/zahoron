@@ -189,7 +189,6 @@ class CrematoriumResource extends Resource
                         'codeBlock', // блок кода
                         'undo', 'redo', // отмена/возврат действия
                     ])
-                    ->required() // Опционально: сделать поле обязательным
                     ->disableLabel(false) // Показывать метку
                     ->placeholder('Введите HTML-контент здесь...'),
 
@@ -236,7 +235,6 @@ class CrematoriumResource extends Resource
                     
                     Forms\Components\TextInput::make('adres')
                     ->label('Адрес')
-                    ->required()
                     ->maxLength(255),
                 
                     Placeholder::make('created_at')

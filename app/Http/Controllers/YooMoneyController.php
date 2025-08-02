@@ -42,9 +42,7 @@ class YooMoneyController extends Controller
 
     public function handleCallback(Request $request)
     {
-        Edge::create([
-            'title'=>'fewrf',
-        ]);
+      
         // Обработка уведомления от YooMoney
         $paymentId = $request->input('paymentId');
         $payment = $this->client->getPaymentInfo($paymentId);

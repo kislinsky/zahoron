@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Account\Agency;
 use App\Http\Controllers\Controller;
 use App\Models\OrderProduct;
 use App\Models\TypeService;
+use App\Models\Wallet;
 use App\Services\Account\Agency\AgencyOrganizationService;
 use Illuminate\Http\Request;
 
@@ -284,9 +285,27 @@ class AgencyOrganizationController extends Controller
     public static function buyPriority(Request $request){
         $data=request()->validate([
             'type_priority'=>['required','integer'],
-            'priority'=>['required','integer'],
+            'priority'=>['required','string'],
         ]);
         return AgencyOrganizationService::buyPriority($data);
     }
+
+    public static function wallets(){
+        return AgencyOrganizationService::wallets();
+    }
+
+    public static function walletDelete(Wallet $wallet){
+        return AgencyOrganizationService::walletDelete($wallet);
+    }
+
+    public static function walletUpdateBalance(Request $request){
+        $data=request()->validate([
+            'wallet_id'=>['required','integer'],
+            'count'=>['required','integer'],
+        ]);
+
+        return AgencyOrganizationService::walletUpdateBalance($data);
+    }
+ 
     
 }

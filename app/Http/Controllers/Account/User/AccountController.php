@@ -8,6 +8,7 @@ use App\Models\OrderBurial;
 use App\Models\OrderProduct;
 use App\Models\OrderService;
 use App\Models\SearchBurial;
+use App\Models\Wallet;
 use App\Services\Account\User\UserService;
 use App\Services\Order\OrderBurialService;
 use Illuminate\Http\Request;
@@ -111,20 +112,22 @@ class AccountController extends Controller
         return UserService::payBurialRequest($order);
     }
     
-    public static function callbackPayBurial(Request $request,OrderBurial $order){
-        return UserService::callbackPayBurial($request,$order);
+    public static function wallets(){
+        return UserService::wallets();
     }
 
-    public static function callbackPayService(Request $request,OrderBurial $order){
-        return UserService::callbackPayService($request,$order);
+    public static function walletDelete(Wallet $wallet){
+        return UserService::walletDelete($wallet);
     }
 
-    public static function callbackPayBurialRequest(Request $request,OrderBurial $order){
-        return UserService::callbackPayBurialRequest($request,$order);
-    }
+    public static function walletUpdateBalance(Request $request){
+        $data=request()->validate([
+            'wallet_id'=>['required','integer'],
+            'count'=>['required','integer'],
+        ]);
 
-   
-    
+        return UserService::walletUpdateBalance($data);
+    }
     
     
 }

@@ -412,6 +412,11 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                 Route::group(['prefix'=>'user'], function() {
 
                     Route::group(['middleware'=>'user.role.check'],function(){
+
+                        Route::get('wallets', [AccountController::class, 'wallets'])->name('account.user.wallets');
+                        Route::delete('wallet/{wallet}/delete', [AccountController::class, 'walletDelete'])->name('account.user.wallet.delete');
+                        Route::post('wallet/update/balance', [AccountController::class, 'walletUpdateBalance'])->name('account.user.wallet.update.balance');
+
                        
                         Route::group(['prefix'=>'products'], function() {
                             Route::get('/', [AccountController::class, 'products'])->name('account.user.products');
@@ -420,13 +425,11 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                         
                         Route::get('/services', [AccountController::class, 'services'])->name('account.user.services.index');       
                         Route::get('/service/{order}/pay', [AccountController::class, 'payService'])->name('account.user.service.pay');       
-                        Route::get('/burial-service/{order}/callback', [AccountController::class, 'callbackPayService'])->name('account.user.service-request.callback');            
 
                         Route::get('/burials', [AccountController::class, 'burials'])->name('account.user.burial');
 
                         Route::get('/burial-requests', [AccountController::class, 'burialRequestIndex'])->name('account.user.burial-request.index');
-                        Route::get('/burial-request/{order}/pay', [AccountController::class, ''])->name('account.user.burial-request.pay');            
-                        Route::get('/burial-request/{order}/callback', [AccountController::class, 'callbackPayBurialRequest'])->name('account.user.burial-request.callback');            
+                        Route::get('/burial-request/{order}/pay', [AccountController::class, 'payBurialRequest'])->name('account.user.burial-request.pay');            
 
                         Route::delete('/burial-request/{burial_request}/delete', [AccountController::class, 'burialRequestDelete'])->name('account.user.burial-request.delete');
                         Route::get('/burial/{order}/pay', [AccountController::class, 'payBurial'])->name('account.user.burial.pay');            
@@ -546,6 +549,12 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                         });
                         
                     });
+                        
+                    Route::get('wallets', [AgencyOrganizationController::class, 'wallets'])->name('account.agency.organization.wallets');
+                    Route::delete('wallet/{wallet}/delete', [AgencyOrganizationController::class, 'walletDelete'])->name('account.agency.organization.wallet.delete');
+                    Route::post('wallet/update/balance', [AgencyOrganizationController::class, 'walletUpdateBalance'])->name('account.agency.organization.wallet.update.balance');
+
+
                     Route::get('organization/create-page', [AgencyOrganizationController::class, 'createPage'])->name('account.agency.organization.create-page');
                     Route::post('organization/create', [AgencyOrganizationController::class, 'create'])->name('account.agency.organization.create');
                     Route::get('organization/settings/{id}', [AgencyOrganizationController::class, 'settings'])->name('account.agency.organization.settings');

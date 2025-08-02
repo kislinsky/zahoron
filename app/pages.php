@@ -120,7 +120,13 @@ function userPages(){
                 ['Список','account.user.burial-request.index'],
             ]
         ],
-        
+
+
+         ['Кошельки','storage/uploads/icon_sidebar.svg',
+            [
+                ['Кошельки','account.user.wallets'],
+            ]
+        ],
         
     ];
     return $pages;
@@ -216,6 +222,7 @@ function organizationPages(){
 
         ['Оплаты','storage/uploads/Icon_pay_aplication.svg',
             [
+                ['Кошельки','account.agency.organization.wallets'],
                 ['Заявки','account.agency.applications'],
                 ['Приоритет','account.agency.priority.buy']
             ]
@@ -373,6 +380,10 @@ function mobilePagesAccountUser(){
             ],
         ],
 
+
+        [
+            ['Кошельки',route('account.user.wallets')],
+        ],
 
         [
             ['Заказаы с маркетплэйса',route('account.user.products')],
@@ -581,6 +592,7 @@ function mobilePagesAccountAgecny() {
         [
             ['Оплаты',''],
             [
+                ['Кошельки',route('account.agency.organization.wallets')],
                 ['Зявки',route('account.agency.applications')],
                 ['Приориет',route('account.agency.priority.buy')]
             ]

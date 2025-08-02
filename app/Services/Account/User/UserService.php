@@ -3,9 +3,10 @@
 namespace App\Services\Account\User;
 
 
-use App\Models\User;
-
 use App\Models\OrderService;
+
+use App\Models\User;
+use App\Services\YooMoneyService;
 use Illuminate\Support\Facades\Hash;
 
 class UserService {
@@ -177,74 +178,52 @@ class UserService {
 
 
     public static function payBurial($order){
-        
-        $result = createPayment($order->price,'Покупка геолокации',route('account.user.burial.callback',$order->id));
-
-        if ($result['success']) { 
-            // Перенаправляем пользователя на страницу оплаты
-            return redirect()->away($result['redirect_url']);
-        } else {
-            // Обработка ошибки
-            return redirect()->back()->with('error','Ошибка оплаты');
+        $balance=user()->currentWallet()->withdraw($order->price,[],'Покупка геолокации');
+        if($balance==false){
+            return redirect()->back()->with('error','Недостаточно средств на балансе');
         }
-
+        $order->update(['status'=>1, 'date_pay'=>now()]);  
+        return redirect()->back()->with('message_cart','Геолокация успешно куплена');
     }
 
-    public static function callbackPayBurial($request,$order){
-        $order->update([
-            'status'=>1,
-            'date_pay'=>now()
-            ]);
-            
-        return redirect()->route('account.user.burial');
-        
-    }
 
     public static function payService($order){
-        
-        $result = createPayment($order->price,'Покупка услуг по облогораживанию',route('account.user.service.callback',$order->id));
-
-        if ($result['success']) { 
-            // Перенаправляем пользователя на страницу оплаты
-            return redirect()->away($result['redirect_url']);
-        } else {
-            // Обработка ошибки
-            return redirect()->back()->with('error','Ошибка оплаты');
+        $balance=user()->currentWallet()->withdraw($order->price,[],'Покупка услуг по облогораживанию');
+        if($balance==false){
+            return redirect()->back()->with('error','Недостаточно средств на балансе');
         }
-
+        $order->update(['status'=>2, 'date_pay'=>now(),'paid'=>1]);  
+        return redirect()->back()->with('message_cart','Услуги успешно куплена');
     }
 
-    public static function callbackPayService($request,$order){
-        $order->update([
-            'status'=>2,
-            'date_pay'=>now()
-            ]);
-            
-        return redirect()->route('account.user.services.index');
-    }
 
     public static function payBurialRequest($order){
-
-        $result = createPayment($order->price,'Покупка геолокации',route('account.user.burial-request.callback',$order->id));
-
-        if ($result['success']) { 
-            // Перенаправляем пользователя на страницу оплаты
-            return redirect()->away($result['redirect_url']);
-        } else {
-            // Обработка ошибки
-            return redirect()->back()->with('error','Ошибка оплаты');
+        $balance=user()->currentWallet()->withdraw($order->price,[],'Покупка геолокации');
+        if($balance==false){
+            return redirect()->back()->with('error','Недостаточно средств на балансе');
         }
+        $order->update(['paid'=>1]);  
+        return redirect()->back()->with('message_cart','Геолокация успешно куплена');
     }
 
-    public static function callbackPayBurialRequest($request,$order){
-        $order->update([
-            'status'=>4,
-            'date_pay'=>now()
-            ]);
-            
-        return redirect()->route('account.user.burial-request.index');
+    public static function wallets(){
+        $wallets=user()->wallets;
+        return view('account.user.pay.wallets',compact('wallets'));
     }
 
+    public static function walletDelete($wallet){
+        if($wallet->user_id==user()->id){
+            $wallet->delete();
+            return redirect()->back()->with('message_cart','Кошелек успешно удален'); 
+        }
+        return redirect()->back()->with('error','Кошелек не принадлежит вам'); 
+    }
+
+    public static function walletUpdateBalance($data){
+        $object=new YooMoneyService();
+        return $object->createPayment($data['count'],route('account.user.wallets'),'Пополнение баланса',$data);
+    }
+  
     
 }
 

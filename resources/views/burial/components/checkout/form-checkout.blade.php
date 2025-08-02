@@ -33,7 +33,7 @@
         <div class="title_middle">Способ оплаты</div>
         <label>
             <input class='input_choose' value='1' type="radio" name="choose_pay" selected id="" checked>
-            Оплата картой онлайн
+            Оплата со счета на сайте
         </label>
         @error('choose_pay')
         <div class='error-text'>{{ $message }}</div>

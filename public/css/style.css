@@ -20,14 +20,16 @@
 
 body,html{
     font-size: 16px;
-        overflow-x: hidden !important;
 
     padding: 0px !important;
     margin: 0px !important;
 }
 
+html{
+            overflow-x: hidden !important;
+
+}
 body{
- overflow-x: auto !important;
     min-height: 100vh;
     scroll-behavior: smooth;
     text-rendering: optimizeSpeed;
@@ -7627,3 +7629,22 @@ color: #0080D7;
     display: block;
 }
 
+.li_wallet{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    border: 3px solid #CACACA;
+    padding: 10px;
+}
+
+.ul_wallets{
+    margin:20px 0px ;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.li_wallet .block_input{
+    max-width: 200px;
+}

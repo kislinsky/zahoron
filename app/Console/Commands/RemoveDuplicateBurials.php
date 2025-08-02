@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\Burial; // Предполагается, что у вас есть модель Burial
+use App\Models\Burial;
 use Illuminate\Support\Facades\DB;
 
 class RemoveDuplicateBurials extends Command
@@ -13,8 +13,16 @@ class RemoveDuplicateBurials extends Command
 
     public function handle()
     {
-        // Находим дубликаты
-        $duplicates = Burial::query()
+        // Отключаем логирование запросов для ускорения
+        DB::disableQueryLog();
+        
+        $this->info('Поиск дубликатов...');
+
+        // Используем chunkById для обработки больших объемов данных
+        $totalDeleted = 0;
+        
+        // Сначала находим ID дубликатов одним запросом
+        $duplicateGroups = DB::table('burials')
             ->select([
                 'name',
                 'surname',
@@ -22,7 +30,7 @@ class RemoveDuplicateBurials extends Command
                 'date_birth',
                 'date_death',
                 'cemetery_id',
-                DB::raw('COUNT(*) as count')
+                DB::raw('GROUP_CONCAT(id ORDER BY id) as ids')
             ])
             ->groupBy([
                 'name',
@@ -32,44 +40,25 @@ class RemoveDuplicateBurials extends Command
                 'date_death',
                 'cemetery_id'
             ])
-            ->having('count', '>', 1)
-            ->get();
+            ->havingRaw('COUNT(*) > 1')
+            ->cursor();
 
-        if ($duplicates->isEmpty()) {
-            $this->info('Дубликаты не найдены.');
-            return;
-        }
-
-        $this->info('Найдено ' . $duplicates->count() . ' групп дубликатов.');
-
-        $totalDeleted = 0;
-
-        foreach ($duplicates as $duplicate) {
-            $this->line("Обработка: {$duplicate->surname} {$duplicate->name} {$duplicate->patronymic}");
-
-            // Находим все записи с этими данными
-            $records = Burial::where([
-                'name' => $duplicate->name,
-                'surname' => $duplicate->surname,
-                'patronymic' => $duplicate->patronymic,
-                'date_birth' => $duplicate->date_birth,
-                'date_death' => $duplicate->date_death,
-                'cemetery_id' => $duplicate->cemetery_id,
-            ])->orderBy('id')->get();
-
-            // Оставляем первую запись, остальные удаляем
-            $recordsToDelete = $records->slice(1);
+        foreach ($duplicateGroups as $group) {
+            $ids = explode(',', $group->ids);
+            // Оставляем первый ID, остальные удаляем
+            $idsToDelete = array_slice($ids, 1);
             
-            $deletedCount = count($recordsToDelete);
-            $totalDeleted += $deletedCount;
-
-            $this->info("Удалено {$deletedCount} дубликатов.");
-
-            foreach ($recordsToDelete as $record) {
-                $record->delete();
+            $count = count($idsToDelete);
+            if ($count > 0) {
+                // Массовое удаление
+                Burial::whereIn('id', $idsToDelete)->delete();
+                $totalDeleted += $count;
             }
         }
 
         $this->info("Готово! Всего удалено {$totalDeleted} дубликатов.");
+        
+        // Включаем логирование обратно
+        DB::enableQueryLog();
     }
 }

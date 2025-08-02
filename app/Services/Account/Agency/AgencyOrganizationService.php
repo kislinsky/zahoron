@@ -3,8 +3,8 @@
 namespace App\Services\Account\Agency;
 
 use App\Models\ActivityCategoryOrganization;
-use App\Models\Cemetery;
 use App\Models\CategoryProduct;
+use App\Models\Cemetery;
 use App\Models\City;
 use App\Models\CommentProduct;
 use App\Models\ImageOrganization;
@@ -18,6 +18,7 @@ use App\Models\TypeApplication;
 use App\Models\TypeService;
 use App\Models\UserRequestsCount;
 use App\Models\WorkingHoursOrganization;
+use App\Services\YooMoneyService;
 
 class AgencyOrganizationService {
 
@@ -671,15 +672,28 @@ class AgencyOrganizationService {
     public static function payApplication($type_service,$count){
         $price=$type_service->price*$count;
         $description="Покупка заявок {$type_service->title_ru}";
-        $result = createPayment($price,$description,route('home'));
 
-        if ($result['success']) { 
-            // Перенаправляем пользователя на страницу оплаты
-            return redirect()->away($result['redirect_url']);
-        } else {
-            // Обработка ошибки
-            return redirect()->back()->with('error','Ошибка оплаты');
+        $balance=user()->currentWallet()->withdraw($price,[],$description);
+        if($balance==false){
+            return redirect()->back()->with('error','Недостаточно средств на балансе');
         }
+        
+        $count_requests=UserRequestsCount::where('organization_id',user()->organization()->id)->where('type_service_id',$type_service->id)->get();
+        if(isset($count_requests[0])){
+             $count_requests->first()->update(['count'=>$count_requests->first()->count+$count]);
+        }else{
+            UserRequestsCount::create([
+                'organization_id'=>user()->organization()->id,
+                'type_service_id'=>$type_service->id,
+                'count'=>$count,
+                'type_application_id'=>$type_service->type_application_id
+            ]);
+        }
+
+        return redirect()->back()->with('message_cart','Заявки успешно куплены'); 
+
+
+        
     }
 
     public static function pageBuyPriority(){
@@ -689,10 +703,41 @@ class AgencyOrganizationService {
     public static function buyPriority($data){
         if($data['type_priority']=='1'){
             $organization=user()->organization();
-            $organization->update(['priority'=>$data['priority']]);
+            $price=getTypeService($data['priority'])->price;
+            $description="Покупка приоритета организации в списках";
+            $balance=user()->currentWallet()->withdraw($price,[],$description);
+            if($balance==false){
+                return redirect()->back()->with('error','Недостаточно средств на балансе');
+            }
+            $priority=0;
+            if($data['priority']=='priority-list-companies-1-3'){
+                $priority=1;
+            }
+            if($data['priority']=='priority-list-companies-4-6'){
+                $priority=2;
+            }
+            $organization->update(['priority'=>$priority]);
             return redirect()->back()->with('message_cart','Ваш приоритет обновлен');
         }
     }
     
+
+    public static function wallets(){
+        $wallets=user()->wallets;
+        return view('account.agency.organization.pay.wallets',compact('wallets'));
+    }
+
+    public static function walletDelete($wallet){
+        if($wallet->user_id==user()->id){
+            $wallet->delete();
+            return redirect()->back()->with('message_cart','Кошелек успешно удален'); 
+        }
+        return redirect()->back()->with('error','Кошелек не принадлежит вам'); 
+    }
+
+    public static function walletUpdateBalance($data){
+        $object=new YooMoneyService();
+        return $object->createPayment($data['count'],route('account.agency.organization.wallets'),'Пополнение баланса',$data);
+    }
 }
 

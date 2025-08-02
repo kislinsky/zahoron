@@ -2001,31 +2001,6 @@ function normalizePhone($phone) {
 }
 
 
-function createPayment($amount, $description = 'Оплата на сайте', $returnUrl = 'https://zahoron.ru/elizovo')
-{
-    // Создаем экземпляр сервиса
-    $yooMoneyService = new YooMoneyService();
-
-    // Создаем платеж через сервис
-    $paymentResult = $yooMoneyService->createPayment($amount, $description, $returnUrl);
-
-    // Проверяем результат
-    if (!$paymentResult['success']) {
-        // Если создание платежа не удалось, возвращаем ошибку
-        return [
-            'success' => false,
-            'error' => 'Ошибка при создании платежа',
-            'details' => $paymentResult,
-        ];
-    }
-
-    // Возвращаем URL для редиректа на страницу оплаты
-    return [
-        'success' => true,
-        'redirect_url' => $paymentResult['redirect_url'],
-        'payment' => $paymentResult['payment'],
-    ];
-}
 
 function callbackPayment($request) {
     $client = new YooKassa\Client();
@@ -2061,6 +2036,7 @@ function callbackPayment($request) {
 function getTypeService($name){
     return  TypeService::where('title',$name)->first();
 }
+
 
 function getCemeteriesOptions($get)
 {
@@ -2465,7 +2441,7 @@ function sendMessage($name_form,$attributes,$user){
                 'EMAIL'=>$user->email,
                 'SITENAME'=>'zahoron.ru',
                 'SITELINK'=>'https://zahoron.ru',
-                'ADMINEMAIL'=>User::where('role','admin')->first()->email
+                'ADMINEMAIL'=>User::where('role','admin')->first()->email ?? null
             ];
         }
 
@@ -2520,3 +2496,4 @@ function changeUrl($city, $currentPath = null) {
     // Собираем URL, избегая дублирования слешей
     return url('/') . '/' . $newPath;
 }
+

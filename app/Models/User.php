@@ -137,6 +137,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(OrderService::class);
     }
 
+    function wallets(){
+        return $this->hasMany(Wallet::class,'user_id');
+    }
+
+    function currentWallet(){
+        return $this->wallets->where('current',1)->first();
+    }
+
     function searchBurials($status=null){
         if($status!=null){
             return $this->hasMany(SearchBurial::class)->where('status',$status);

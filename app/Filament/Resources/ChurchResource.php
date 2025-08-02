@@ -176,7 +176,6 @@ class ChurchResource extends Resource
                         'codeBlock',
                         'undo', 'redo',
                     ])
-                    ->required()
                     ->disableLabel(false)
                     ->placeholder('Введите описание...'),
 
@@ -214,7 +213,6 @@ class ChurchResource extends Resource
 
                 Forms\Components\TextInput::make('address')
                     ->label('Адрес')
-                    ->required()
                     ->maxLength(255),
                 
                 Placeholder::make('created_at')

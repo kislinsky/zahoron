@@ -181,7 +181,6 @@ class MortuaryResource extends Resource
                         'codeBlock', // блок кода
                         'undo', 'redo', // отмена/возврат действия
                     ])
-                    ->required() // Опционально: сделать поле обязательным
                     ->disableLabel(false) // Показывать метку
                     ->placeholder('Введите HTML-контент здесь...'),
 
@@ -190,7 +189,6 @@ class MortuaryResource extends Resource
                     
                     Forms\Components\TextInput::make('adres')
                     ->label('Адрес')
-                    ->required()
                     ->maxLength(255),
                     
                     Radio::make('href_img')
