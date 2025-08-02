@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\OtpCodes;
 use App\Models\User;
+use App\Models\Wallet;
 use App\Providers\RouteServiceProvider;
 use App\Rules\RecaptchaRule;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -88,6 +89,7 @@ class RegisterController extends Controller
         // Если роль 'user', создаем пользователя и авторизуем
         if ($data['role'] === 'user') {
             $user = $this->create($data);
+            Wallet::create(['user_id'=>$user->id]);
             Auth::login($user);
             return redirect()->route('home'); // Замените на маршрут после входа
         }
@@ -166,6 +168,8 @@ class RegisterController extends Controller
             'organization_form'=>$data['organization_form'],
             'role'=>$data['role'],
         ]);
+
+        Wallet::create(['user_id'=>$user->id]);
 
         Auth::login($user);
         return redirect()->route('home');

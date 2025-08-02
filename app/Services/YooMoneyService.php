@@ -59,17 +59,57 @@ class YooMoneyService
      */
     public function handleCallback(Request $request)
     {
-      
-        // Обработка уведомления от YooMoney
-        $paymentId = $request->input('paymentId');
-        $payment = $this->client->getPaymentInfo($paymentId);
+        try {
+            $paymentId = $request->input('object.id') ?? $request->input('paymentId');
+            
+            if (empty($paymentId)) {
+                throw new \InvalidArgumentException('Не передан идентификатор платежа');
+            }
 
-        if ($payment->getStatus() === 'succeeded') {
-            // Платеж успешен
-            return response()->json(['status' => 'success', 'payment' => $payment]);
-        } else {
-            // Платеж не удался
-            return response()->json(['status' => 'failed', 'payment' => $payment]);
+            $payment = $this->client->getPaymentInfo($paymentId);
+
+            return response()->json([
+                'status' => $payment->getStatus(),
+                'payment' => [
+                    'id' => $payment->getId(),
+                    'status' => $payment->getStatus(),
+                    'amount' => $payment->getAmount()->getValue(),
+                    'currency' => $payment->getAmount()->getCurrency(),
+                    'description' => $payment->getDescription(),
+                    'metadata' => $payment->getMetadata(),
+                    'created_at' => $payment->getCreatedAt()->format('Y-m-d H:i:s'),
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('YooMoney Callback Error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Проверяет статус платежа
+     * 
+     * @param string $paymentId
+     * @return array
+     */
+    public function checkPaymentStatus(string $paymentId): array
+    {
+        try {
+            $payment = $this->client->getPaymentInfo($paymentId);
+            
+            return [
+                'status' => $payment->getStatus(),
+                'paid' => $payment->getPaid(),
+                'amount' => $payment->getAmount()->getValue(),
+                'currency' => $payment->getAmount()->getCurrency(),
+            ];
+        } catch (\Exception $e) {
+            Log::error('YooMoney Check Status Error: ' . $e->getMessage());
+            return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
 }

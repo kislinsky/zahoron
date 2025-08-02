@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Account\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\Burial;
 use App\Models\OrderBurial;
 use App\Models\OrderProduct;
 use App\Models\OrderService;

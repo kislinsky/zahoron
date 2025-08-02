@@ -31,6 +31,7 @@ use App\Models\TypeService;
 use App\Models\User;
 use App\Models\UserRequestsCount;
 use App\Models\View;
+use App\Models\Wallet;
 use App\Models\WorkingHoursCemetery;
 use App\Services\Auth\SmsService;
 use App\Services\YooMoneyService;
@@ -46,6 +47,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
+
 
 
 
@@ -1949,6 +1951,8 @@ function generateSixDigitCode() {
 function createUserWithPhone($phone,$name='',$role='user',$inn='',$organization_form=''){
 
     $user=User::where('phone',$phone)->get();
+    Wallet::create(['user_id'=>$user->id]);
+
     if(isset($user[0])){
         return null;
     }
