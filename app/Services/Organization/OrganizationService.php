@@ -28,7 +28,10 @@ class OrganizationService
     public static function sendCode($data){
         $organization=Organization::find($data['organization_id']);
         $code=generateRandomNumber();
-        sendCode($organization->phone,$code);
+        $send_code=sendCode($organization->phone,$code);
+        if($send_code['tell_code_result']['status']!='ok'){
+            sendSms($organization->phone,$code);
+        }
         setcookie("code", Hash::make($code), time() + (20 * 24 * 60 * 60), '/');
         return true;
     }

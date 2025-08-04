@@ -15,9 +15,7 @@ use Illuminate\Http\Request;
 use App\Models\Beautification;
 use App\Models\City;
 use App\Models\Edge;
-use App\Models\FavouriteBurial;
-use App\Models\ImageAgency;
-use App\Models\ImageOrganization;
+
 use App\Models\Organization;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;

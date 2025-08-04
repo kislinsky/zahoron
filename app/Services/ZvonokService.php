@@ -20,18 +20,34 @@ class ZvonokService
 
     public function addCall($phoneNumber, $code)
     {
-        if(env('API_WORK')=='true'){
+        if (env('API_WORK') == 'true') {
             try {
-                $url = 'https://zvonok.com/manager/cabapi_external/api/v1/phones/tellcode/' . '?' . http_build_query([
+                // Сначала делаем запрос на инициализацию звонка с кодом
+                $tellCodeUrl = 'https://zvonok.com/manager/cabapi_external/api/v1/phones/tellcode/' . '?' . http_build_query([
                     'public_key' => $this->apiKey,
                     'phone' => normalizePhone($phoneNumber),
                     'campaign_id' => $this->campaignId,
-                    'pincode'=> $code,
+                    'pincode' => $code,
                 ]);
-    
-                $response = $this->client->get($url);
-    
-                return json_decode($response->getBody()->getContents(), true);
+
+                $response = $this->client->get($tellCodeUrl);
+                $tellCodeResult = json_decode($response->getBody()->getContents(), true);
+
+                // Затем проверяем статус звонка
+                $statusUrl = 'https://zvonok.com/manager/cabapi_external/api/v1/phones/calls_by_phone/?' . http_build_query([
+                    'campaign_id' => $this->campaignId,
+                    'phone' => normalizePhone($phoneNumber),
+                    'public_key' => $this->apiKey,
+                ]);
+
+                $statusResponse = $this->client->get($statusUrl);
+                $statusResult = json_decode($statusResponse->getBody()->getContents(), true);
+
+                return [
+                    'tell_code_result' => $tellCodeResult,
+                    'call_status' => $statusResult,
+                ];
+
             } catch (RequestException $e) {
                 return [
                     'error' => true,
@@ -40,5 +56,9 @@ class ZvonokService
             }
         }
         
+        return [
+            'error' => true,
+            'message' => 'API is disabled',
+        ];
     }
 }

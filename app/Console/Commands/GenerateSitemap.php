@@ -37,7 +37,7 @@ class GenerateSitemap extends Command
         $this->info('Starting sitemap generation...');
         
         $this->cleanupOldSitemaps();
-        $this->citySlugs = City::pluck('slug', 'id')->all();
+        $this->loadVisibleCities();
         
         $index = SitemapIndex::create();
         $this->newSitemap();
@@ -50,6 +50,19 @@ class GenerateSitemap extends Command
         $index->writeToFile(public_path('sitemap.xml'));
         
         $this->info("Sitemap successfully generated with {$this->currentSitemapCount} parts!");
+    }
+    
+    protected function loadVisibleCities()
+    {
+        $this->citySlugs = City::with(['area.edge'])
+            ->whereHas('area.edge', function($query) {
+                $query->where('is_show', 1);
+            })
+            ->whereHas('organizations')
+            ->pluck('slug', 'id')
+            ->all();
+        
+        $this->info('Loaded ' . count($this->citySlugs) . ' visible cities');
     }
     
     protected function cleanupOldSitemaps()
@@ -149,7 +162,11 @@ class GenerateSitemap extends Command
             ->setPriority(0.8));
 
         // City organization routes
-        $cityIdsWithOrgs = Organization::select('city_id')->distinct()->pluck('city_id');
+        $cityIdsWithOrgs = Organization::whereIn('city_id', array_keys($this->citySlugs))
+            ->select('city_id')
+            ->distinct()
+            ->pluck('city_id');
+            
         foreach ($cityIdsWithOrgs as $cityId) {
             if (isset($this->citySlugs[$cityId])) {
                 $this->addUrl(Url::create("/{$this->citySlugs[$cityId]}/organizations")
@@ -173,7 +190,8 @@ class GenerateSitemap extends Command
         }
 
         // Individual organization pages
-        Organization::select(['slug', 'city_id', 'updated_at'])
+        Organization::whereIn('city_id', array_keys($this->citySlugs))
+            ->select(['slug', 'city_id', 'updated_at'])
             ->orderBy('id')
             ->chunk(5000, function($organizations) {
                 foreach ($organizations as $organization) {
@@ -258,7 +276,11 @@ class GenerateSitemap extends Command
             ->setPriority(0.8));
 
         // City routes
-        $cityIds = $model::select('city_id')->distinct()->pluck('city_id');
+        $cityIds = $model::whereIn('city_id', array_keys($this->citySlugs))
+            ->select('city_id')
+            ->distinct()
+            ->pluck('city_id');
+            
         foreach ($cityIds as $cityId) {
             if (isset($this->citySlugs[$cityId])) {
                 $this->addUrl(Url::create("/{$this->citySlugs[$cityId]}{$baseUrl}")
@@ -269,7 +291,8 @@ class GenerateSitemap extends Command
         }
 
         // Individual entity pages
-        $model::select(['id', 'city_id', 'updated_at'])
+        $model::whereIn('city_id', array_keys($this->citySlugs))
+            ->select(['id', 'city_id', 'updated_at'])
             ->orderBy('id')
             ->chunk(5000, function($items) use ($itemUrlTemplate, $name) {
                 foreach ($items as $item) {

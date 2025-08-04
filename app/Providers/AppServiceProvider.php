@@ -23,15 +23,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //SEOMeta::setRobots('noindex,nofollow'); // Правильный метод
-        // Или альтернативный вариант:
-        // SEOMeta::addMeta('robots', 'noindex,nofollow');
+        $city = selectCity();
+        if ($city && $city->area && $city->area->edge && $city->area->edge->is_show != 1) {
+            SEOMeta::setRobots('noindex,nofollow');
+        }
         
         Paginator::useBootstrapFive();
-         Paginator::useBootstrapFour(); // Выберите одну версию Bootstrap
+        //Paginator::useBootstrapFour(); // Выберите одну версию Bootstrap
 
 
-         Validator::extend('recaptcha', function ($attribute, $value, $parameters, $validator) {
+        Validator::extend('recaptcha', function ($attribute, $value, $parameters, $validator) {
         if (app()->environment('local')) return true;
         
         $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
