@@ -12,8 +12,8 @@ class ColumbariumController extends Controller
         return ColumbariumService::index();
     }
 
-    public static function single($id){
-        return ColumbariumService::single($id);
+    public static function single($slug){
+        return ColumbariumService::single($slug);
     }
 
     public static function addReview(Request $request){

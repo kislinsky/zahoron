@@ -40,15 +40,15 @@ class MortuaryService {
         return view('mortuary.index',compact('faqs','pages_navigation','mortuaries','city','products','usefuls','mortuaries_map'));
     }
 
-    public static function single($id){
-        $mortuary=Mortuary::find($id);
+    public static function single($slug){
+        $mortuary=Mortuary::where('slug',$slug)->first();
         addView('mortuary',$mortuary->id,user()->id ?? null,'site');
 
         SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$mortuary));
         SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$mortuary));
         $title_h1=formatContent(getSeo('ritual-object','h1'),$mortuary);
 
-        $reviews=ReviewMortuary::orderBy('id','desc')->where('status',1)->where('mortuary_id',$id)->get();
+        $reviews=ReviewMortuary::orderBy('id','desc')->where('status',1)->where('mortuary_id',$mortuary->id)->get();
         $reviews_main=$reviews->take(3);
         $city=selectCity();
         $organizations_our=$city->organizations;

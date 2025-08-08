@@ -13,8 +13,8 @@ class ChurchController extends Controller
     }
 
     
-    public static function single($id){
-        return ChurchService::single($id);
+    public static function single($slug){
+        return ChurchService::single($slug);
     }
 
     public static function addReview(Request $request){

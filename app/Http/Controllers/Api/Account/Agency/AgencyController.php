@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Account\Agency;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityCategoryOrganization;
 use App\Models\CategoryProduct;
+use App\Models\City;
 use App\Models\CommentProduct;
 use App\Models\ImageOrganization;
 use App\Models\ImageProduct;
@@ -13,10 +14,16 @@ use App\Models\Product;
 use App\Models\ProductRequestToSupplier;
 use App\Models\RequestsCostProductsSupplier;
 use App\Models\ReviewsOrganization;
+use App\Models\TypeApplication;
+use App\Models\TypeService;
 use App\Models\User;
+use App\Models\UserRequestsCount;
+use App\Models\Wallet;
 use App\Models\WorkingHoursOrganization;
+use App\Services\YooMoneyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -337,13 +344,16 @@ class AgencyController extends Controller
             'name' => 'string|nullable',
             'surname' => 'string|nullable',
             'patronymic' => 'string|nullable',
-            'ogrn' => 'nullable|string',
+            'ogrnip' => 'nullable|string',
         ];
 
         // Правила для организаций
         $orgRules = [
             'in_face' => 'required|string',
             'regulation' => 'required|string',
+            'ogrn' => 'nullable|string',
+            'kpp' => 'nullable|string',
+
         ];
 
         $user=null;
@@ -439,10 +449,14 @@ class AgencyController extends Controller
             $updateData['name'] = $data['name'] ?? null;
             $updateData['surname'] = $data['surname'] ?? null;
             $updateData['patronymic'] = $data['patronymic'] ?? null;
-            $updateData['ogrn'] = $data['ogrn'] ?? null;
+            $updateData['ogrnip'] = $data['ogrnip'] ?? null;
+            
         } else {
             $updateData['in_face'] = $data['in_face'];
             $updateData['regulation'] = $data['regulation'];
+            $updateData['ogrn'] = $data['ogrn'] ?? null;
+            $updateData['kpp'] = $data['kpp'] ?? null;
+
         }
 
         // Обновление пароля
@@ -1399,6 +1413,294 @@ class AgencyController extends Controller
             'data' => $comment
         ]);
     }
+
+    public static function organizationsCity(City $city){
+        $organizations=$city->organizations;
+        return response()->json([
+            'success' => true,
+            'message' => 'Организации успешно найдены',
+            'organizations' => $organizations,
+            'city' => $city,
+        ]);
+    }
+
+    public static function citySearch(Request $request){
+        $validator = Validator::make($request->all(), [
+            'city' => 'required|string|max:3000'
+        ]);
+
+        $cities = DB::table('cities')
+        ->select('cities.*')
+        ->join('organizations', 'organizations.city_id', '=', 'cities.id')
+        ->join('areas', 'cities.area_id', '=', 'areas.id')
+        ->join('edges', 'areas.edge_id', '=', 'edges.id')
+        ->where('cities.title', 'like', $request->city . '%') // Используем начало строки для индекса
+        ->where('edges.is_show', 1)
+        ->groupBy('cities.id')
+        ->orderBy('cities.title', 'asc')
+        ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Города успешно найдены',
+            'cities' => $cities,
+        ]);
+    }
+
+    public function sendCode(Request $request)
+    {
+        $request->validate([
+            'organization_id' => 'required|exists:organizations,id',
+        ]);
+
+        $organization = Organization::find($request->organization_id);
+        $code = generateRandomNumber(); // Генерация кода (например, 4-6 цифр)
+
+        // Отправка кода (первый способ)
+        $sendCodeResult = sendCode($organization->phone, $code);
+
+        // Если первый способ не сработал, пробуем SMS
+        if ($sendCodeResult['tell_code_result']['status'] != 'ok') {
+            sendSms($organization->phone, $code);
+        }
+
+        // Сохраняем хеш кода в кеш (вместо куки) на 20 минут
+        $cacheKey = "verification_code:{$organization->id}";
+        Cache::put($cacheKey, Hash::make($code), now()->addMinutes(20));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Код отправлен',
+        ]);
+    }
+
+
+    public function acceptCode(Request $request)
+    {
+        $request->validate([
+            'organization_id' => 'required|exists:organizations,id',
+            'code' => 'required|string|min:4|max:6',
+        ]);
+
+        $cacheKey = "verification_code:{$request->organization_id}";
+        $hashedCode = Cache::get($cacheKey);
+
+        // Если код не найден или неверный
+        if (!$hashedCode || !Hash::check($request->code, $hashedCode)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Неверный или устаревший код',
+            ], 422);
+        }
+
+        // Обновляем организацию
+        Organization::find($request->organization_id)
+            ->update(['user_id' => auth()->id()]);
+
+        // Удаляем код из кеша после успешной проверки
+        Cache::forget($cacheKey);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Код подтвержден, организация привязана',
+        ]);
+    }
+
+
+    public static function userWallets(){
+        $wallets = auth()->user()->wallets; 
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Кошельки успешно найдены',
+            'wallets' => $wallets
+        ]);
+    }
+    
+    public static function deleteWallet(Wallet $wallet){
+        $wallet->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Кошелек успешно удален',
+        ]);
+    }
+    
+
+    public static function walletUpdateBalance(Request $request)
+    {
+        $data = $request->validate([
+            'wallet_id' => 'required|exists:wallets,id',
+            'count' => 'required|integer|min:1',
+            'deep_link' => 'required|url' // Ссылка для возврата в приложение
+        ]);
+
+        $service = new YooMoneyService();
+        $metadata = [
+            'wallet_id' => $data['wallet_id'],
+            'count' => $data['count'],
+            'deep_link' => $data['deep_link']
+        ];
+
+        try {
+            $payment = $service->createMobilePayment(
+                $data['count'],
+                $data['deep_link'],
+                'Пополнение баланса',
+                $metadata
+            );
+
+            return response()->json([
+                'success' => true,
+                'payment_url' => $payment['confirmation_url'],
+                'payment_id' => $payment['id']
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public static function getApplicationsForBuy()
+    {
+        // Получаем активные типы заявок, доступные для покупки организациями
+        $applicationTypes = TypeApplication::where('buy_for_organization', 1)
+            ->with(['services' => function($query) {
+                $query->where('is_show', 1)
+                    ->select('id', 'type_application_id', 'title', 'title_ru');
+            }])
+            ->select('id', 'title', 'title_ru')
+            ->get();
+
+        $userId = auth()->id();
+        $result = [];
+
+        foreach ($applicationTypes as $appType) {
+            $typeData = [
+                'id' => $appType->id,
+                'title' => $appType->title,
+                'title_ru' => $appType->title_ru,
+                'services' => []
+            ];
+
+            foreach ($appType->services as $service) {
+                // Проверяем купленные заявки пользователя
+                $purchased = UserRequestsCount::where('user_id', $userId)
+                    ->where('type_service_id', $service->id)
+                    ->first();
+
+                $typeData['services'][] = [
+                    'id' => $service->id,
+                    'title' => $service->title,
+                    'title_ru' => $service->title_ru,
+                    'purchased_count' => $purchased ? $purchased->count : 0,
+                    'last_purchased_at' => $purchased ? $purchased->created_at->toDateTimeString() : null
+                ];
+            }
+
+            if (count($typeData['services']) > 0) {
+                $result[] = $typeData;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $result
+        ]);
+    }
+
+
+    public static function payApplication(Request $request)
+    {
+        $data = $request->validate([
+            'count' => ['required', 'integer', 'min:1'],
+            'type_service_id' => ['required', 'exists:type_services,id']
+        ]);
+
+        $typeService = TypeService::findOrFail($data['type_service_id']);
+        $user = auth()->user();
+        $price = $typeService->price * $data['count'];
+        $description = "Покупка заявок {$typeService->title_ru}";
+
+        // Проверка и списание баланса
+        if (!$user->currentWallet()->balanceCanBeReduced($price)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Недостаточно средств на балансе'
+            ], 402);
+        }
+
+        DB::transaction(function () use ($user, $typeService, $data, $price, $description) {
+            // Списание средств
+            $balance = $user->currentWallet()->withdraw($price, [], $description);
+            
+            // Обновление или создание счетчика заявок
+            UserRequestsCount::updateOrCreate(
+                [
+                    'organization_id' => $user->organization()->id,
+                    'type_service_id' => $typeService->id
+                ],
+                [
+                    'count' => DB::raw("count + {$data['count']}"),
+                    'type_application_id' => $typeService->type_application_id
+                ]
+            );
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Заявки успешно приобретены',
+            'balance' => $user->currentWallet()->fresh()->balance,
+            'purchased_count' => $data['count']
+        ]);
+    }
+
+
+    public static function buyPriority(Request $request)
+    {
+        $validated = $request->validate([
+            'type_priority' => 'required|string|in:1',
+            'priority' => 'required|string|in:priority-list-companies-1-3,priority-list-companies-4-6'
+        ]);
+
+        $user = auth()->user();
+        $organization = $user->organization();
+        $typeService = getTypeService($validated['priority']);
+        $price = $typeService->price;
+        
+        // Проверка баланса
+        if (!$user->currentWallet()->hasSufficientBalance($price)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Недостаточно средств на балансе'
+            ], 402);
+        }
+
+        // Определение уровня приоритета
+        $priorityLevel = match($validated['priority']) {
+            'priority-list-companies-1-3' => 1,
+            'priority-list-companies-4-6' => 2,
+            default => 0
+        };
+
+        DB::transaction(function () use ($user, $organization, $price, $priorityLevel) {
+            // Списание средств
+            $user->currentWallet()->withdraw($price, [], 'Покупка приоритета организации');
+            
+            // Обновление приоритета
+            $organization->update(['priority' => $priorityLevel]);
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Приоритет организации успешно обновлен',
+            'new_priority' => $priorityLevel,
+            'balance' => $user->currentWallet()->fresh()->balance
+        ]);
+    }
+    
 }
 
 

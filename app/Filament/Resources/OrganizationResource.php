@@ -423,130 +423,39 @@ class OrganizationResource extends Resource
                 Tables\Actions\DeleteAction::make(),
             ])
             ->headerActions([
-                \Filament\Tables\Actions\Action::make('export')
-                    ->label('Экспорт в Excel')
-                    ->action(function (HasTable $livewire) {
-                        $query = Organization::query();
+    \Filament\Tables\Actions\Action::make('export')
+        ->label('Экспорт в Excel')
+        ->action(function ($livewire) {
+            $fileName = 'organizations_'.now()->format('Y-m-d_H-i-s').'.xlsx';
+            $query = $livewire->getFilteredTableQuery()->with(['city.area.edge']);
+            
+            // Уменьшаем нагрузку на память
+            ini_set('memory_limit', '512M');
+            set_time_limit(300); // 5 минут
+            
+            return response()->streamDownload(function () use ($query) {
+                $exporter = new \Rap2hpoutre\FastExcel\FastExcel(
+                    $query->get() 
+                );
                 
-                        if (auth()->user()->role === 'deputy-admin'|| auth()->user()->role === 'manager') {
-                            $userCityIds = json_decode(auth()->user()->city_ids);
-                            $query->whereIn('city_id', $userCityIds);
-                        }
-                
-                        if (property_exists($livewire, 'tableFilters') && !empty($livewire->tableFilters)) {
-                            foreach ($livewire->tableFilters as $filterName => $filterValue) {
-                                if (!empty($filterValue['value'])) {
-                                    $filterValue = $filterValue['value'];
-                
-                                    switch ($filterName) {
-                                        case 'city_id':
-                                            $query->whereHas('city', function ($q) use ($filterValue) {
-                                                $q->where('id', $filterValue);
-                                            });
-                                            break;
-                                        case 'area_id':
-                                            $query->whereHas('city.area', function ($q) use ($filterValue) {
-                                                $q->where('id', $filterValue);
-                                            });
-                                            break;
-                                        case 'edge_id':
-                                            $query->whereHas('city.area.edge', function ($q) use ($filterValue) {
-                                                $q->where('id', $filterValue);
-                                            });
-                                            break;
-                                        case 'cemetery_id':
-                                            $query->whereRaw("FIND_IN_SET(?, cemetery_ids)", [$filterValue]);
-                                            break;
-                                        case 'user_id':
-                                            if ($filterValue === 'yes') {
-                                                $query->whereNotNull('user_id');
-                                            } elseif ($filterValue === 'no') {
-                                                $query->whereNull('user_id');
-                                            }
-                                            break;
-                                        default:
-                                            if (!empty($filterValue)) {
-                                                $query->where($filterName, $filterValue);
-                                            }
-                                            break;
-                                    }
-                                }
-                            }
-                        }
-                
-                        if (property_exists($livewire, 'tableSortColumn') && $livewire->tableSortColumn) {
-                            $query->orderBy($livewire->tableSortColumn, $livewire->tableSortDirection ?? 'asc');
-                        }
-                
-                        $organizations = $query->with(['city.area.edge', 'user'])
-                            ->get()
-                            ->map(function ($organization) {
-                                return [
-                                    'ID' => (string)$organization->id,
-                                    'Название' => $organization->title,
-                                    'Город' => $organization->city->title ?? 'Не указано',
-                                    'Край' => $organization->city->area->edge->title ?? 'Не указано',
-                                    'Округ' => $organization->city->area->title ?? 'Не указано',
-                                    'Кладбища' => $organization->cemetery_ids,
-                                    'Широта' => $organization->width,
-                                    'Долгота' => $organization->longitude,
-                                    'Метро' => $organization->underground,
-                                    'Рядом с' => $organization->next_to,
-                                    'Email' => $organization->email,
-                                    'Телефон' => $organization->phone,
-                                    'Адрес' => $organization->adres,
-                                    'Тип организации' => $organization->name_type,
-                                    'Slug' => $organization->slug,
-                                    'WhatsApp' => $organization->whatsapp,
-                                    'Telegram' => $organization->telegram,
-                                    'Краткое описание' => $organization->mini_content,
-                                    'Описание' => $organization->content,
-                                    'ID пользователя' => $organization->user_id,
-                                    'Дата создания' => $organization->created_at?->format('d.m.Y H:i:s'),
-                                    'Рейтинг' => $organization->rating,
-                                ];
-                            });
-                
-                        if ($organizations->isEmpty()) {
-                            $organizations = Organization::query()
-                                ->when(auth()->user()->role === 'deputy-admin' ?? auth()->user()->role === 'manager', function ($query) {
-                                    $userCityIds = json_decode(auth()->user()->city_ids);
-                                    $query->whereIn('city_id', $userCityIds);
-                                })
-                                ->with(['city.area.edge', 'user'])
-                                ->orderBy('title')
-                                ->get()
-                                ->map(function ($organization) {
-                                    return [
-                                        'ID' => (string)$organization->id,
-                                        'Название' => $organization->title,
-                                        'Город' => $organization->city->title ?? 'Не указано',
-                                        'Край' => $organization->city->area->edge->title ?? 'Не указано',
-                                        'Округ' => $organization->city->area->title ?? 'Не указано',
-                                        'Кладбища' => $organization->cemetery_ids,
-                                        'Широта' => $organization->width,
-                                        'Долгота' => $organization->longitude,
-                                        'Метро' => $organization->underground,
-                                        'Рядом с' => $organization->next_to,
-                                        'Email' => $organization->email,
-                                        'Телефон' => $organization->phone,
-                                        'Адрес' => $organization->adres,
-                                        'Тип организации' => $organization->name_type,
-                                        'Slug' => $organization->slug,
-                                        'WhatsApp' => $organization->whatsapp,
-                                        'Telegram' => $organization->telegram,
-                                        'Краткое описание' => $organization->mini_content,
-                                        'Описание' => $organization->content,
-                                        'ID пользователя' => $organization->user_id,
-                                        'Дата создания' => $organization->created_at?->format('d.m.Y H:i:s'),
-                                        'Рейтинг' => $organization->rating,
-                                    ];
-                                });
-                        }
-                
-                        return (new FastExcel($organizations))->download('organizations.xlsx');
-                    })
-            ])
+                $exporter->export('php://output', function ($record) {
+                    return [
+                        'ID' => $record->id,
+                        'Название' => $record->title,
+                        'Город' => optional($record->city)->title ?? null,
+                        'Адрес' => $record->adres,
+                        'Широта' => $record->width,
+                        'Долгота' => $record->longitude,
+                        'Email' => $record->email,
+                        'Телефон' => $record->phone,
+                        'Год основания' => $record->date_foundation,
+                        'Рейтинг' => $record->rating,
+                        'Дата создания' => $record->created_at->format('d.m.Y H:i:s')
+                    ];
+                });
+            }, $fileName);
+        })
+    ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

@@ -53,7 +53,7 @@ class Church extends Model
 
     public function route()
     {
-        return route('church.single', $this->id);
+        return route('church.single', $this->slug);
     }
 
     public function openOrNot()

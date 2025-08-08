@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Swagger\Account\Agency;
 
 use App\Http\Controllers\Controller;
 
+use App\Models\City;
 use App\Models\ProductRequestToSupplier;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
 
 class AgencyController extends Controller
@@ -16,7 +18,7 @@ class AgencyController extends Controller
      *     path="/v1/account/agency/products",
      *     tags={"Продукты организации"},
      *     summary="Получение списка продуктов агентства",
-     *     description="Возвращает отфильтрованный список продуктов организации с пагинацией",
+     *     description="Возвращает отфильтрованный список продуктов организации с пагинацией (страница товаров)",
      *     operationId="getAgencyProducts",
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
@@ -151,6 +153,7 @@ class AgencyController extends Controller
  *     path="/v1/account/agency/products",
  *     summary="Добавить новый товар",
  *     tags={"Продукты организации"},
+ *     description="(страница добавления товаров)",
  *     @OA\RequestBody(
  *         required=true,
  *         @OA\MediaType(
@@ -191,7 +194,7 @@ class AgencyController extends Controller
  * @OA\Post(
  *     path="/v1/account/agency/products/{productId}/update",
  *     summary="Обновление товара",
- *     description="Обновляет информацию о товаре. Требуется ID организации для проверки владельца. Все поля, кроме organization_id, являются необязательными.",
+ *     description="Обновляет информацию о товаре. Требуется ID организации для проверки владельца. Все поля, кроме organization_id, являются необязательными. (страница обновления товара)",
  *     tags={"Продукты организации"},
  *     security={{"bearerAuth": {}}},
  *     @OA\Parameter(
@@ -305,6 +308,7 @@ class AgencyController extends Controller
  * @OA\Delete(
  *     path="/v1/account/agency/products/{productId}",
  *     summary="Удалить товар",
+ *     description="(страница товаров)",
  *     tags={"Продукты организации"},
  *     security={{"bearerAuth": {}}},
  *     @OA\Parameter(
@@ -313,16 +317,6 @@ class AgencyController extends Controller
  *         description="ID товара",
  *         required=true,
  *         @OA\Schema(type="integer")
- *     ),
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\MediaType(
- *             mediaType="application/json",
- *             @OA\Schema(
- *                 required={"organization_id"},
- *                 @OA\Property(property="organization_id", type="integer", example=1)
- *             )
- *         )
  *     ),
  *     @OA\Response(
  *         response=200,
@@ -367,6 +361,7 @@ class AgencyController extends Controller
  *     summary="Обновление настроек организации/ИП",
  *     description="Обновляет профиль организации или индивидуального предпринимателя",
  *     tags={"Профиль организации"},
+ *     description="(страница настроек пользователя)",
  *     security={{"bearerAuth": {}}},
  *     @OA\RequestBody(
  *         required=true,
@@ -422,6 +417,9 @@ class AgencyController extends Controller
  *     @OA\Property(property="inn", type="string", example="123456789012", pattern="^\d{10,12}$"),
  *     @OA\Property(property="name_organization", type="string", example="ИП Иванов", maxLength=255),
  *     @OA\Property(property="ogrn", type="string", example="1234567890123", pattern="^\d{13}$"),
+ *     @OA\Property(property="in_face", type="string", example="начальника"),
+ *     @OA\Property(property="ogrnip", type="string", example="1234567890123", pattern="^\d{13}$"),
+ *     @OA\Property(property="kpp", type="string", example="1234567890123", pattern="^\d{13}$"),
  *     @OA\Property(property="city_id", type="integer", example=1),
  *     @OA\Property(property="edge_id", type="integer", example=1)
  * )
@@ -508,7 +506,7 @@ public static function settingsUserUpdate(Request $request){}
  *     path="/v1/account/agency/organization/create",
  *     tags={"Организация"},
  *     summary="Создание новой организации",
- *     description="Создает новую организацию с категориями, рабочими часами и изображениями",
+ *     description="Создает новую организацию с категориями, рабочими часами и изображениями (страница создания организации)",
  *     operationId="createOrganization",
  *     security={{"bearerAuth": {}}},
  *     @OA\RequestBody(
@@ -805,6 +803,7 @@ public static function createOrganization(Request $request) {}
  *     path="/v1/account/agency/organization/update",
  *     summary="Обновление данных организации",
  *     tags={"Организация"},
+ *     description="(страница настроек организации)",
  *     security={{"bearerAuth": {}}},
  *     @OA\RequestBody(
  *         required=true,
@@ -1018,7 +1017,7 @@ public static function createOrganization(Request $request) {}
  *             )
  *         )
  *     ),
- *     @OA\Response(
+*     @OA\Response(
  *         response=422,
  *         description="Ошибка валидации",
  *         @OA\JsonContent(
@@ -1028,7 +1027,10 @@ public static function createOrganization(Request $request) {}
  *                 property="errors",
  *                 type="object",
  *                 additionalProperties={
- *                     @OA\Property(type="array", @OA\Items(type="string"))
+ *                     "type": "array",
+ *                     "items": {
+ *                         "type": "string"
+ *                     }
  *                 }
  *             )
  *         )
@@ -1054,6 +1056,7 @@ public static function update(Request $request) {}
  *     path="/v1/account/agency/organization-provider/create-requests-cost",
  *     summary="Создание заявки на расчет стоимости",
  *     tags={"Заявки от организаций поставщикам"},
+ *     description="(страница создания заявки поставщику на расчет стоимости)",
  *     security={{"bearerAuth": {}}},
  *     @OA\RequestBody(
  *         required=true,
@@ -1089,16 +1092,14 @@ public static function update(Request $request) {}
  * )
  */
 
-public static function addRequestsCostProductSuppliers(Request $request)
-{
-    //  ваш существующий код 
-}
+public static function addRequestsCostProductSuppliers(Request $request){}
 
 
 /**
  * @OA\Delete(
  *     path="/v1/account/agency/organization-provider/delete-requests-cost/{request}",
  *     summary="Удаление заявки на стоимость товара поставщика",
+ *     description="(страница заявок поставщикам на расчет стоимости)",
  *     tags={"Заявки от организаций поставщикам"},
  *     @OA\Parameter(
  *         name="request",
@@ -1146,7 +1147,7 @@ public static function addRequestsCostProductSuppliers(Request $request)
  * @OA\Post(
  *     path="/v1/account/agency/organization-provider/offer/add",
  *     summary="Заявка на создание товара",
- *     description="Создание запроса товара",
+ *     description="Создание запроса товара (страница на создание запроса на товар)",
  *     tags={"Заявки от организаций поставщикам"},
  *     security={{"bearerAuth": {}}},
  *     @OA\RequestBody(
@@ -1290,8 +1291,8 @@ public function createProviderOffer(Request $request)
  * @OA\Delete(
  *     path="/v1/account/agency/organization-provider/offer/{id}/delete",
  *     summary="Удаление заявки на создание товара",
- *     description="Удаление запроса товара поставщику по идентификатору",
- *     tags={"Удаление заявки от организаций поставщикам"},
+ *     description="Удаление запроса товара поставщику по идентификатору (страница заявок поставщикам на создание товара)",
+ *     tags={"Заявки от организаций поставщикам"},
  *     security={{"bearerAuth": {}}},
  *     @OA\Parameter(
  *         name="id",
@@ -1351,6 +1352,7 @@ public static function deleteProviderOffer(ProductRequestToSupplier $offer)
  * @OA\Get(
  *     path="/v1/account/agency/reviews/organization/{id}",
  *     summary="Получение отзывов об организации",
+ *     description="(страница отзывов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
  *     @OA\Parameter(
@@ -1424,6 +1426,7 @@ public function getOrganizationReviews($id) {}
  * @OA\Get(
  *     path="/v1/account/agency/product-comments/organization/{id}",
  *     summary="Получение комментариев к товарам организации",
+ *     description="(страница отзывов продуктов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
  *     @OA\Parameter(
@@ -1500,6 +1503,7 @@ public function getProductComments($id) {}
  * @OA\Delete(
  *     path="/v1/account/agency/reviews/{id}",
  *     summary="Удаление отзыва об организации",
+ *     description="(страница отзывов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
  *     @OA\Parameter(
@@ -1541,6 +1545,7 @@ public function deleteReview($id) {}
  * @OA\Patch(
  *     path="/v1/account/agency/reviews/{id}/approve",
  *     summary="Одобрение отзыва об организации",
+ *     description="(страница отзывов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
  *     @OA\Parameter(
@@ -1589,6 +1594,7 @@ public function approveReview($id) {}
  * @OA\Put(
  *     path="/v1/account/agency/reviews/{id}/content",
  *     summary="Обновление текста отзыва",
+ *     description="(страница отзывов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
  *     @OA\Parameter(
@@ -1645,6 +1651,7 @@ public function updateReviewContent(Request $request, $id) {}
  * @OA\Delete(
  *     path="/v1/account/agency/product-comments/{id}",
  *     summary="Удаление комментария о товаре",
+ *     description="(страница отзывов продуктов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
  *     @OA\Parameter(
@@ -1686,6 +1693,7 @@ public function deleteProductComment($id) {}
  * @OA\Patch(
  *     path="/v1/account/agency/product-comments/{id}/approve",
  *     summary="Одобрение комментария о товаре",
+ *     description="(страница отзывов продуктов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
  *     @OA\Parameter(
@@ -1735,6 +1743,7 @@ public function approveProductComment($id) {}
  * @OA\Put(
  *     path="/v1/account/agency/product-comments/{id}/content",
  *     summary="Обновление текста комментария о товаре",
+ *     description="(страница отзывов продуктов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
  *     @OA\Parameter(
@@ -1793,6 +1802,7 @@ public function updateProductCommentContent(Request $request, $id) {}
  * @OA\Post(
  *     path="/v1/account/agency/reviews/{id}/response",
  *     summary="Добавление ответа организации на отзыв",
+ *     description="(страница отзывов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
  *     @OA\Parameter(
@@ -1848,6 +1858,7 @@ public function addOrganizationReviewResponse(Request $request, $id) {}
  * @OA\Post(
  *     path="/v1/account/agency/product-comments/{id}/response",
  *     summary="Добавление ответа организации на комментарий к товару",
+ *     description="(страница отзывов продуктов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
  *     security={{"bearerAuth": {}}},
  *     @OA\Parameter(
@@ -1899,4 +1910,472 @@ public function addOrganizationReviewResponse(Request $request, $id) {}
  * )
  */
 public function addProductCommentResponse(Request $request, $id) {}
+
+
+/**
+ * @OA\Post(
+ *     path="/v1/organizations/{city}",
+ *     summary="Получить организации по городу",
+ *     description="(страница привязки организаций)",
+ *     tags={"Города"},
+ *     @OA\Parameter(
+ *         name="city",
+ *         in="path",
+ *         required=true,
+ *         description="ID города",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешный ответ",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Организации успешно найдены"),
+ *             @OA\Property(
+ *                 property="organizations",
+ *                 type="array",
+ *                 @OA\Items(
+ *                     type="object",
+ *                     @OA\Property(property="id", type="integer", example=1),
+ *                     @OA\Property(property="name", type="string", example="Название организации"),
+ *                     @OA\Property(property="phone", type="string", example="+79991234567"),
+ *                     @OA\Property(property="city_id", type="integer", example=1)
+ *                 )
+ *             ),
+ *             @OA\Property(
+ *                 property="city",
+ *                 type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="title", type="string", example="Москва"),
+ *                 @OA\Property(property="area_id", type="integer", example=1)
+ *             )
+ *         )
+ *     )
+ * )
+ */
+public static function organizationsCity(City $city) {  }
+
+/**
+ * @OA\Post(
+ *     path="/v1/cities/search",
+ *     summary="Поиск городов",
+ *     description="(страница привязки организаций)",
+ *     tags={"Города"},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"city"},
+ *             @OA\Property(property="city", type="string", example="Москва")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешный ответ",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Города успешно найдены"),
+ *             @OA\Property(
+ *                 property="cities",
+ *                 type="array",
+ *                 @OA\Items(
+ *                     type="object",
+ *                     @OA\Property(property="id", type="integer", example=1),
+ *                     @OA\Property(property="title", type="string", example="Москва"),
+ *                     @OA\Property(property="area_id", type="integer", example=1)
+ *                 )
+ *             )
+ *         )
+ *     )
+ * )
+ */
+public static function citySearch(Request $request) {  }
+
+/**
+ * @OA\Post(
+ *     path="/v1/send-code",
+ *     summary="Отправить код подтверждения, страница привязывания организации",
+ *     description="(страница привязки организаций)",
+ *     tags={"Организация"},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"organization_id"},
+ *             @OA\Property(property="organization_id", type="integer", example=1)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешный ответ",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Код отправлен")
+ *         )
+ *     )
+ * )
+ */
+public function sendCode(Request $request) {  }
+
+/**
+ * @OA\Post(
+ *     path="/v1/accept-code",
+ *     summary="Подтвердить код, страница привязывания организации",
+ *     description="(страница привязки организаций)",
+ *     tags={"Организация"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"organization_id", "code"},
+ *             @OA\Property(property="organization_id", type="integer", example=1),
+ *             @OA\Property(property="code", type="string", example="123456")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешный ответ",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Код подтвержден, организация привязана")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Ошибка валидации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Неверный или устаревший код")
+ *         )
+ *     )
+ * )
+ */
+public function acceptCode(Request $request) {  }
+
+
+/**
+ * @OA\Get(
+ *     path="/v1/account/agency/wallets",
+ *     summary="Получить кошельки пользователя",
+ *     description="(страница кошельки пользователя)",
+ *     tags={"Кошелек пользователя"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешный ответ",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Кошельки успешно найдены"),
+ *             @OA\Property(
+ *                 property="wallets",
+ *                 type="array",
+ *                 @OA\Items(
+ *                     type="object",
+ *                     @OA\Property(property="id", type="integer", example=1),
+ *                     @OA\Property(property="balance", type="number", format="float", example=100.50),
+ *                     @OA\Property(property="currency", type="string", example="RUB"),
+ *                     @OA\Property(property="created_at", type="string", format="date-time"),
+ *                     @OA\Property(property="updated_at", type="string", format="date-time")
+ *                 )
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Неавторизованный доступ",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Unauthenticated")
+ *         )
+ *     )
+ * )
+ */
+public static function userWallets(){}
+
+
+/**
+ * @OA\Delete(
+ *     path="/v1/account/agency/wallet/{wallet}/delete",
+ *     summary="Удаление кошелька",
+ *     description="(страница кошельки пользователя)",
+ *     tags={"Кошелек пользователя"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="wallet",
+ *         in="path",
+ *         required=true,
+ *         description="ID кошелька",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешное удаление",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Кошелек успешно удален")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Кошелек не найден",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Wallet not found")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Неавторизованный доступ",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Unauthenticated")
+ *         )
+ *     )
+ * )
+ */
+public static function deleteWallet(Wallet $wallet) {}
+
+/**
+ * @OA\Post(
+ *     path="/v1/account/agency/wallet/balance/update",
+ *     summary="Пополнение баланса кошелька",
+ *     description="(страница кошельки пользователя)",
+ *     tags={"Кошелек пользователя"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"wallet_id", "count", "deep_link"},
+ *             @OA\Property(
+ *                 property="wallet_id",
+ *                 type="integer",
+ *                 example=1,
+ *                 description="ID кошелька"
+ *             ),
+ *             @OA\Property(
+ *                 property="count",
+ *                 type="integer",
+ *                 example=1000,
+ *                 description="Сумма пополнения в копейках"
+ *             ),
+ *             @OA\Property(
+ *                 property="deep_link",
+ *                 type="string",
+ *                 format="url",
+ *                 example="myapp://payment/success",
+ *                 description="Ссылка для возврата в приложение после оплаты"
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешный запрос на оплату",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(
+ *                 property="payment_url",
+ *                 type="string",
+ *                 format="url",
+ *                 example="https://yoomoney.ru/checkout/payments/v2/contract?orderId=123"
+ *             ),
+ *             @OA\Property(
+ *                 property="payment_id",
+ *                 type="string",
+ *                 example="23d93cac-000f-5000-8000-126628f15141"
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Ошибка валидации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Validation error"),
+ *             @OA\Property(
+ *                 property="errors",
+ *                 type="object",
+ *                 @OA\Property(
+ *                     property="wallet_id",
+ *                     type="array",
+ *                     @OA\Items(type="string", example="The wallet_id field is required.")
+ *                 )
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Неавторизованный доступ",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Unauthenticated")
+ *         )
+ *     )
+ * )
+ */
+public static function walletUpdateBalance(Request $request) {}
+
+/**
+ * @OA\Get(
+ *     path="/v1/account/agency/aplications/buy",
+ *     summary="Покупка заявок",
+ *     description="Заявки доступные для покупки (страница покупки заявок)",
+ *     tags={"Покупка заявок"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Response(
+ *         response=200,
+ *         description="Successful operation",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(
+ *                 property="success",
+ *                 type="boolean",
+ *                 example=true
+ *             ),
+ *             @OA\Property(
+ *                 property="data",
+ *                 type="array",
+ *                 @OA\Items(
+ *                     type="object",
+ *                     @OA\Property(property="id", type="integer", example=1),
+ *                     @OA\Property(property="title", type="string", example="Popup"),
+ *                     @OA\Property(property="title_ru", type="string", example="Попап"),
+ *                     @OA\Property(
+ *                         property="services",
+ *                         type="array",
+ *                         @OA\Items(
+ *                             type="object",
+ *                             @OA\Property(property="id", type="integer", example=1),
+ *                             @OA\Property(property="title", type="string", example="Event organization"),
+ *                             @OA\Property(property="title_ru", type="string", example="Организация мероприятия"),
+ *                             @OA\Property(property="purchased_count", type="integer", example=2),
+ *                             @OA\Property(
+ *                                 property="last_purchased_at",
+ *                                 type="string",
+ *                                 format="date-time",
+ *                                 example="2023-07-15 10:00:00"
+ *                             )
+ *                         )
+ *                     )
+ *                 )
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthenticated",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Unauthenticated")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=403,
+ *         description="Forbidden",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Forbidden")
+ *         )
+ *     )
+ * )
+ */
+public static function getApplicationsForBuy(){}
+
+/**
+ * @OA\Post(
+ *     path="/v1/applications/purchase",
+ *     summary="Покупка заявок",
+ *     description="(страница покупки заявок)",
+ *     tags={"Покупка заявок"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"count", "type_service_id"},
+ *             @OA\Property(property="count", type="integer", example=10),
+ *             @OA\Property(property="type_service_id", type="integer", example=1)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешная покупка",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Заявки успешно приобретены"),
+ *             @OA\Property(property="balance", type="number", format="float", example=5000.50),
+ *             @OA\Property(property="purchased_count", type="integer", example=10)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Ошибка валидации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Validation error"),
+ *             @OA\Property(property="errors", type="object")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=402,
+ *         description="Недостаточно средств",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Недостаточно средств на балансе")
+ *         )
+ *     )
+ * )
+ */
+public static function payApplication(Request $request){}
+
+
+/**
+ * @OA\Post(
+ *     path="/v1/priority/buy",
+ *     summary="Покупка приоритета для организации",
+ *     tags={"Приоритет"},
+ *     description="(страница покупки приоритета организации)",
+ *     security={{"bearerAuth": {}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"type_priority", "priority"},
+ *             @OA\Property(property="type_priority", type="string", enum={"1"}, example="1"),
+ *             @OA\Property(
+ *                 property="priority", 
+ *                 type="string",
+ *                 enum={"priority-list-companies-1-3", "priority-list-companies-4-6"},
+ *                 example="priority-list-companies-1-3"
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешная покупка приоритета",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Приоритет организации успешно обновлен"),
+ *             @OA\Property(property="new_priority", type="integer", example=1),
+ *             @OA\Property(property="balance", type="number", format="float", example=15000.50)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=402,
+ *         description="Недостаточно средств",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Недостаточно средств на балансе")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Ошибка валидации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="The given data was invalid"),
+ *             @OA\Property(property="errors", type="object")
+ *         )
+ *     )
+ * )
+ */
+public static function buyPriority(Request $request){}
+
 }

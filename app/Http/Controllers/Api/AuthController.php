@@ -4,14 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuthSession;
+use App\Models\Organization;
 use App\Models\RegistrationSession;
 use App\Models\User;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use session;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use session;
 
 
 class AuthController extends Controller
@@ -132,6 +136,8 @@ class AuthController extends Controller
             'okved' => $session->okved,
         ]);
 
+        $wallet=Wallet::create(['user_id'=>$account->id]);
+
 
         
         $token = JWTAuth::fromUser($account);
@@ -245,7 +251,72 @@ class AuthController extends Controller
     }
 
 
-    
+    public static function deleteAccountTest(User $user){
+        $user->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Аккаунт успешно удален',
+        ]);
+    }
+
+
+    public function sendCode(Request $request)
+    {
+        $request->validate([
+            'organization_id' => 'required|exists:organizations,id',
+        ]);
+
+        $organization = Organization::find($request->organization_id);
+        $code = generateRandomNumber(); // Генерация кода (например, 4-6 цифр)
+
+        // Отправка кода (первый способ)
+        $sendCodeResult = sendCode($organization->phone, $code);
+
+        // Если первый способ не сработал, пробуем SMS
+        if ($sendCodeResult['tell_code_result']['status'] != 'ok') {
+            sendSms($organization->phone, $code);
+        }
+
+        // Сохраняем хеш кода в кеш (вместо куки) на 20 минут
+        $cacheKey = "verification_code:{$organization->id}";
+        Cache::put($cacheKey, Hash::make($code), now()->addMinutes(20));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Код отправлен',
+        ]);
+    }
+
+    public function acceptCode(Request $request)
+    {
+        $request->validate([
+            'organization_id' => 'required|exists:organizations,id',
+            'code' => 'required|string|min:4|max:6',
+        ]);
+
+        $cacheKey = "verification_code:{$request->organization_id}";
+        $hashedCode = Cache::get($cacheKey);
+
+        // Если код не найден или неверный
+        if (!$hashedCode || !Hash::check($request->code, $hashedCode)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Неверный или устаревший код',
+            ], 422);
+        }
+
+        // Обновляем организацию
+        Organization::find($request->organization_id)
+            ->update(['user_id' => auth()->id()]);
+
+        // Удаляем код из кеша после успешной проверки
+        Cache::forget($cacheKey);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Код подтвержден, организация привязана',
+        ]);
+    }
 
     
 }

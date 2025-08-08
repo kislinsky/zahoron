@@ -61,7 +61,7 @@ class Cemetery extends Model
     }
 
     public function route(){
-        return route('cemeteries.single',$this->id);
+        return route('cemeteries.single',$this->slug);
     }
 
     public function openOrNot(){

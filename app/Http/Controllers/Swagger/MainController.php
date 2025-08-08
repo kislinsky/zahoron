@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 /**
  * @OA\OpenApi(
- *     openapi="3.1.0",
+ *     openapi="3.0.0",
  *     @OA\Info(
  *         title="API documentation",
  *         version="1.0"

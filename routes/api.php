@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\Api\Account\Agency\AgencyController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Swagger\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
+
 
 
 
@@ -12,7 +14,7 @@ use App\Http\Controllers\Api\AuthController;
 Route::prefix('v1')->group(function () {
 
 
-
+    Route::post('/delete/{user}', [AuthController::class, 'deleteAccountTest']);
 
     // Защищенные маршруты
     Route::middleware('auth:api')->group(function () {
@@ -29,12 +31,34 @@ Route::prefix('v1')->group(function () {
     Route::post('/auth', [AuthController::class, 'authInit']);
     Route::post('/auth/confirm', [AuthController::class, 'authConfirm']);
     
+    Route::post('/organizations/{city}', [AgencyController::class, 'organizationsCity']);
+    Route::post('/cities/search', [AgencyController::class, 'citySearch']);
 
 
     Route::middleware('jwt.auth')->group(function () {
         Route::group(['prefix'=>'account'], function() {
 
             Route::group(['prefix'=>'agency'], function() {
+
+                Route::get('/wallets', [AgencyController::class, 'userWallets']);
+                Route::group(['prefix'=>'wallet'], function() {
+                    Route::delete('/{wallet}/delete', [AgencyController::class, 'deleteWallet']);
+                    Route::delete('/balance/update', [AgencyController::class, 'walletUpdateBalance']);
+                });
+
+                Route::group(['prefix'=>'aplications'], function() {
+                    Route::get('/buy', [AgencyController::class, 'getApplicationsForBuy']);
+                    Route::post('/purchase', [AgencyController::class, 'payApplication']);
+                });
+
+                
+                
+
+
+                Route::post('/send-code', [AgencyController::class, 'sendCode']);
+                Route::post('/accept-code', [AgencyController::class, 'acceptCode']);
+
+                
 
                 Route::group(['prefix'=>'organization'], function() {
                     Route::post('/create', [AgencyController::class, 'createOrganization']);

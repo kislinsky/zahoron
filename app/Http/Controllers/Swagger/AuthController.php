@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Swagger;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
@@ -251,4 +252,56 @@ public function confirmPhone()
 public function authConfirm()
 {
 }
+
+
+/**
+ * @OA\Post(
+ *     path="/v1/delete/{user}",
+ *     summary="Удаление аккаунта пользователя",
+ *     tags={"Авторизация/регистрация"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="user",
+ *         in="path",
+ *         required=true,
+ *         description="ID пользователя для удаления",
+ *         @OA\Schema(
+ *             type="integer"
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Аккаунт успешно удален",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Аккаунт успешно удален")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Неавторизованный доступ",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Unauthenticated")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=403,
+ *         description="Доступ запрещен",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Forbidden")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Пользователь не найден",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="User not found")
+ *         )
+ *     )
+ * )
+ */
+public static function deleteAccountTest(User $user) {}
  }

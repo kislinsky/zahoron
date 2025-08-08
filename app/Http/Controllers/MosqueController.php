@@ -12,8 +12,8 @@ class MosqueController extends Controller
         return MosqueService::index();
     }
 
-    public static function single($id){
-        return MosqueService::single($id);
+    public static function single($slug){
+        return MosqueService::single($slug);
     }
 
     public static function addReview(Request $request){

@@ -27,15 +27,16 @@ class ChurchService {
         return view('church.index',compact('faqs','pages_navigation','churches','city','products','churches_map'));
     }
 
-    public static function single($id){
-        $object=Church::find($id);
+    public static function single($slug){
+        $object=Church::where('slug',$slug)->first();
+
         addView('church',$object->id,user()->id ?? null,'site');
 
         SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$object));
         SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$object));
         $title_h1=formatContent(getSeo('ritual-object','h1'),$object);
 
-        $reviews=ReviewChurch::orderBy('id','desc')->where('status',1)->where('church_id',$id)->get();
+        $reviews=ReviewChurch::orderBy('id','desc')->where('status',1)->where('church_id',$object->id)->get();
         $reviews_main=$reviews->take(3);
         $city=selectCity();
         $organizations_our=$city->organizations;

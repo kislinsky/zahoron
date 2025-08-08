@@ -30,15 +30,15 @@ class MosqueService {
     }
 
 
-    public static function single($id){
-        $object=Mosque::find($id);
+    public static function single($slug){
+        $object=Mosque::where('slug',$slug)->first();
         addView('mosque',$object->id,user()->id ?? null,'site');
 
         SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$object));
         SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$object));
         $title_h1=formatContent(getSeo('ritual-object','h1'),$object);
 
-        $reviews=ReviewMosque::orderBy('id','desc')->where('status',1)->where('mosque_id',$id)->get();
+        $reviews=ReviewMosque::orderBy('id','desc')->where('status',1)->where('mosque_id',$object->id)->get();
         $reviews_main=$reviews->take(3);
         $city=selectCity();
         $organizations_our=$city->organizations;

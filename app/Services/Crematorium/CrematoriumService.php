@@ -33,15 +33,15 @@ class CrematoriumService {
         return view('crematorium.index',compact('faqs','pages_navigation','crematoriums','city','products','usefuls','crematoriums_map'));
     }
 
-    public static function single($id){
-        $crematorium=Crematorium::find($id);
+    public static function single($slug){
+        $crematorium=Crematorium::where('slug',$slug)->first();
         addView('crematorium',$crematorium->id,user()->id ?? null,'site');
 
         SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$crematorium));
         SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$crematorium));
         $title_h1=formatContent(getSeo('ritual-object','h1'),$crematorium);
 
-        $reviews=ReviewCrematorium::orderBy('id','desc')->where('status',1)->where('crematorium_id',$id)->get();
+        $reviews=ReviewCrematorium::orderBy('id','desc')->where('status',1)->where('crematorium_id',$crematorium->id)->get();
         $reviews_main=$reviews->take(3);
         $city=selectCity();
         $organizations_our=$city->organizations;

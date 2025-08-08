@@ -1,6 +1,7 @@
 <?php
 namespace App\Filament\Resources;
 
+use App\Filament\Exports\CemeteryExporter;
 use App\Filament\Resources\CemeteryResource\Pages;
 use App\Filament\Resources\CemeteryResource\RelationManagers\ImagesRelationManager;
 use App\Filament\Resources\CemeteryResource\RelationManagers\PriceServiceRelationManager;
@@ -25,6 +26,7 @@ use Filament\Forms\Components\View;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -354,132 +356,47 @@ class CemeteryResource extends Resource
                 Tables\Actions\DeleteAction::make(), // Удалить продукт
 
             ])
-           
-            ->headerActions([
-                // Другие действия
-                \Filament\Tables\Actions\Action::make('export')
-                    ->label('Экспорт в Excel')
-                    ->action(function (HasTable $livewire) {
-        // Получаем текущий запрос таблицы
-        $query = Cemetery::query();
-
-        // Применяем фильтры таблицы, если они есть
-        if (property_exists($livewire, 'tableFilters') && !empty($livewire->tableFilters)) {
-            foreach ($livewire->tableFilters as $filterName => $filterValue) {
-                if (!empty($filterValue['value'])) {
-                    $filterValue=$filterValue['value'];
-                    switch ($filterName) {
-                        case 'edge_id':
-                            $query->whereHas('city.area.edge', function ($q) use ($filterValue) {
-                                $q->where('id', $filterValue);
-                            });
-                            break;
-                        case 'area_id':
-                            $query->whereHas('city.area', function ($q) use ($filterValue) {
-                                $q->where('id', $filterValue);
-                            });
-                            break;
-                        case 'city_id':
-                            $query->whereHas('city', function ($q) use ($filterValue) {
-                                $q->where('id', $filterValue);
-                            });
-                            break;
-                        case 'has_phone':
-                            if ($filterValue === 'no') {
-                                $query->whereNotNull('phone');
-                            } elseif ($filterValue === 'yes') {
-                                $query->whereNull('phone');
-                            }
-                            break;
-                        case 'has_cadastral':
-                            if ($filterValue === 'no') {
-                                $query->whereNotNull('cadastral_number');
-                            } elseif ($filterValue === 'yes') {
-                                $query->whereNull('cadastral_number');
-                            }
-                            break;
-                        case 'has_burials':
-                            if ($filterValue === 'yes') {
-                                $query->whereDoesntHave('burials');
-                            } elseif ($filterValue === 'no') {
-                                $query->whereHas('burials');
-                            }
-                            break;
-                    }
-                }
-            }
-        }
-
-        // Применяем сортировку таблицы, если она есть
-        if (property_exists($livewire, 'tableSortColumn') && $livewire->tableSortColumn) {
-            $query->orderBy($livewire->tableSortColumn, $livewire->tableSortDirection ?? 'asc');
-        }
-
-        // Получаем данные с учётом фильтров и сортировки
-        $cemeteries = $query->with(['city.area.edge', 'city.area', 'city'])
-            ->get()
-            ->map(function ($cemetery) {
-                return [
-                    'ID' => $cemetery->id,
-                    'Название' => $cemetery->title,
-                    'Ширина' => $cemetery->width,
-                    'Долгота' => $cemetery->longitude,
-                    'Ссылка на карту' => $cemetery->map_link,
-                    'Край' => $cemetery->city->area->edge->title ?? 'Не указано',
-                    'Округ' => $cemetery->city->area->title ?? 'Не указано',
-                    'Город' => $cemetery->city->title ?? 'Не указано',
-                    'Ориентир' => $cemetery->adres,
-                    'Цена за геопозицию' => $cemetery->price_burial_location,
-                    'Площадь' => $cemetery->square,
-                    'Ответственный' => $cemetery->responsible,
-                    'Кадастровый номер' => $cemetery->cadastral_number,
-                    'Стоимость спонсорства звонка' => $cemetery->cost_sponsorship_call,
-                    'Email' => $cemetery->email,
-                    'Телефон' => $cemetery->phone,
-                    'Рейтинг' => $cemetery->rating,
-                    'Год основания' => $cemetery->date_foundation,
-                ];
-            });
-
-        // Если данные пустые, возвращаем все записи
-        if ($cemeteries->isEmpty()) {
-            $cemeteries = Cemetery::query()
-                ->with(['city.area.edge', 'city.area', 'city'])
-                ->orderBy('title')
-                ->get()
-                ->map(function ($cemetery) {
+           ->headerActions([
+    \Filament\Tables\Actions\Action::make('export')
+        ->label('Экспорт в Excel')
+        ->action(function ($livewire) {
+            $fileName = 'cemeteries_'.now()->format('Y-m-d_H-i-s').'.xlsx';
+            $query = $livewire->getFilteredTableQuery()->with(['city.area.edge']);
+            
+            // Уменьшаем нагрузку на память
+            ini_set('memory_limit', '512M');
+            set_time_limit(300); // 5 минут
+            
+            return response()->streamDownload(function () use ($query) {
+                $exporter = new \Rap2hpoutre\FastExcel\FastExcel(
+                    $query->get() 
+                );
+                
+                $exporter->export('php://output', function ($record) {
                     return [
-                        'ID' => $cemetery->id,
-                        'Название' => $cemetery->title,
-                        'Ширина' => $cemetery->width,
-                        'Долгота' => $cemetery->longitude,
-                        'Ссылка на карту' => $cemetery->map_link,
-                        'Край' => $cemetery->city->area->edge->title ?? 'Не указано',
-                        'Округ' => $cemetery->city->area->title ?? 'Не указано',
-                        'Город' => $cemetery->city->title ?? 'Не указано',
-                        'Ориентир' => $cemetery->adres,
-                        'Цена за геопозицию' => $cemetery->price_burial_location,
-                        'Площадь' => $cemetery->square,
-                        'Ответственный' => $cemetery->responsible,
-                        'Кадастровый номер' => $cemetery->cadastral_number,
-                        'Стоимость спонсорства звонка' => $cemetery->cost_sponsorship_call,
-                        'Email' => $cemetery->email,
-                        'Телефон' => $cemetery->phone,
-                        'Рейтинг' => $cemetery->rating,
-                        'Год основания' => $cemetery->date_foundation,
+                        'ID' => $record->id,
+                        'Название' => $record->title,
+                        'Край' => optional($record->city->area->edge)->title,
+                        'Округ' => optional($record->city->area)->title,
+                        'Город' => optional($record->city)->title,
+                        'Адрес' => $record->adres,
+                        'Широта' => $record->width,
+                        'Долгота' => $record->longitude,
+                        'Площадь' => $record->square,
+                        'Цена за геопозицию' => $record->price_burial_location,
+                        'Ответственный' => $record->responsible,
+                        'Адрес ответственного' => $record->responsible_person_address,
+                        'Кадастровый номер' => $record->cadastral_number,
+                        'Email' => $record->email,
+                        'Телефон' => $record->phone,
+                        'Год основания' => $record->date_foundation,
+                        'Рейтинг' => $record->rating,
+                        'Дата создания' => $record->created_at->format('d.m.Y H:i:s')
                     ];
                 });
-        }
-
-        // Экспорт в Excel
-        return (new FastExcel($cemeteries))->download('cemeteries.xlsx');
-    }),
-])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            }, $fileName);
+        })
+    ]);
     }
 
     public static function getRelations(): array

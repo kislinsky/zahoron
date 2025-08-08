@@ -47,7 +47,7 @@ class Mortuary extends Model
     }
 
     public function route(){
-        return route('mortuary.single',$this->id);
+        return route('mortuary.single',$this->slug);
     }
 
     public function openOrNot(){

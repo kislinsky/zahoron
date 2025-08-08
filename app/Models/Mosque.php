@@ -50,7 +50,7 @@ class Mosque extends Model
 
     public function route()
     {
-        return route('mosque.single', $this->id);
+        return route('mosque.single', $this->slug);
     }
 
     public function openOrNot()

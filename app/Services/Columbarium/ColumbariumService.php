@@ -38,15 +38,15 @@ class ColumbariumService {
     }
 
 
-    public static function single($id){
-        $columbarium=Columbarium::find($id);
+    public static function single($slug){
+        $columbarium=Columbarium::where('slug',$slug)->first();
         addView('columbarium',$columbarium->id,user()->id ?? null,'site');
 
         SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$columbarium));
         SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$columbarium));
         $title_h1=formatContent(getSeo('ritual-object','h1'),$columbarium);
 
-        $reviews=ReviewColumbarium::orderBy('id','desc')->where('status',1)->where('columbarium_id',$id)->get();
+        $reviews=ReviewColumbarium::orderBy('id','desc')->where('status',1)->where('columbarium_id',$columbarium->id)->get();
         $reviews_main=$reviews->take(3);
         $city=selectCity();
         

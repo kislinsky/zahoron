@@ -13,8 +13,8 @@ class CrematoriumController extends Controller
         return CrematoriumService::index();
     }
 
-    public static function single($id){
-        return CrematoriumService::single($id);
+    public static function single($slug){
+        return CrematoriumService::single($slug);
     }
 
     public static function addReview(Request $request){

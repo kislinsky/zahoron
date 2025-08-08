@@ -6,6 +6,7 @@ use App\Filament\Resources\TypeServiceResource\Pages;
 use App\Filament\Resources\TypeServiceResource\RelationManagers;
 use App\Models\TypeService;
 use Filament\Forms;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -47,6 +48,14 @@ class TypeServiceResource extends Resource
                 ->required()
                 ->searchable()
                 ->preload(),
+
+            Radio::make('is_show')
+                ->label('Показывать возможность покупки организациям')
+                ->options([
+                    0 => 'Нет',
+                    1 => 'Да'
+                ])
+                ->inline()
             ]);
     }
 

@@ -112,4 +112,30 @@ class YooMoneyService
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+
+
+ 
+    public function createMobilePayment($amount, $deepLink, $description, $metadata = [])
+    {
+        $payment = $this->client->createPayment([
+            'amount' => [
+                'value' => $amount,
+                'currency' => 'RUB',
+            ],
+            'confirmation' => [
+                'type' => 'redirect',
+                'return_url' => $deepLink, // Deep link для возврата в приложение
+            ],
+            'metadata' => $metadata,
+            'capture' => true,
+            'description' => $description,
+        ], uniqid('', true));
+
+        return [
+            'id' => $payment->getId(),
+            'status' => $payment->getStatus(),
+            'confirmation_url' => $payment->getConfirmation()->getConfirmationUrl(),
+            'amount' => $payment->getAmount()->getValue()
+        ];
+    }
 }

@@ -104,6 +104,10 @@ return [
         AdminMiddleware::class, // Ваш middleware
     ],
     
-
+'exports' => [
+    'disk' => 'public', // Используем public disk
+    'path' => 'exports',
+    'timeout' => 60 * 30,
+],
     
 ];

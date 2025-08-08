@@ -35,7 +35,8 @@ class CemeteryService {
         return view('cemetery.index',compact('faqs','cemeteries','city','products','usefuls','cemeteries_map','pages_navigation'));
     }
 
-    public static function singleCemetery($cemetery){
+    public static function singleCemetery($slug){
+        $cemetery=Cemetery::where('slug',$slug)->first();
 
         addView('cemetery',$cemetery->id,user()->id ?? null,'site');
 
@@ -43,13 +44,11 @@ class CemeteryService {
         SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$cemetery));
         $title_h1=formatContent(getSeo('ritual-object','h1'),$cemetery);
 
-
-        $id=$cemetery->id;
-        $reviews=ReviewCemetery::orderBy('id','desc')->where('status',1)->where('cemetery_id',$id)->get();
+        $reviews=ReviewCemetery::orderBy('id','desc')->where('status',1)->where('cemetery_id',$cemetery->id)->get();
         $reviews_main=$reviews->take(3);
         $organizations_our=$cemetery->cemeteryOrganiaztions();
         $city=selectCity();
-        $services=ServiceCemetery::where('cemetery_id',$id)->get();
+        $services=ServiceCemetery::where('cemetery_id',$cemetery->id)->get();
         $faqs=FaqCemetery::orderBy('id','desc')->get();
         $characteristics=json_decode($cemetery->characteristics);
         $images=ImageCemetery::where('cemetery_id',$cemetery->id)->get();
@@ -79,6 +78,8 @@ class CemeteryService {
         ]);
         return redirect()->back()->with('message_words_memory','Сообщение отправлено на проверку.');
     }
+    
+
     
 
 }

@@ -36,7 +36,7 @@ class Columbarium extends Model
     }
 
     public function route(){
-        return route('columbarium.single',$this->id);
+        return route('columbarium.single',$this->slug);
     }
 
     public function images(){

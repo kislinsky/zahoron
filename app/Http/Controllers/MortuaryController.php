@@ -20,8 +20,8 @@ class MortuaryController extends Controller
         return MortuaryService::ajaxMortuary($data['city_id']);
     }
     
-    public static function single($id){
-        return MortuaryService::single($id);
+    public static function single($slug){
+        return MortuaryService::single($slug);
     }
    
     public static function addReview(Request $request){

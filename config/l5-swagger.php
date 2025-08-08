@@ -10,6 +10,8 @@ return [
 
             'routes' => [
                 'api' => 'api/documentation',
+                'docs' => 'api/docs.json',    // URL для JSON-спецификации
+
             ],
             'paths' => [
                 'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),

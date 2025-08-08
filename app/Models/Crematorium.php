@@ -48,7 +48,7 @@ class Crematorium extends Model
 
 
     public function route(){
-        return route('crematorium.single',$this->id);
+        return route('crematorium.single',$this->slug);
     }
 
     public function openOrNot(){
