@@ -85,7 +85,7 @@ use Illuminate\Support\Facades\Storage;
 
 
 #убирать die когда нужно использовать artisan 
-$city = request()->segment(1); // Более безопасный и понятный способ получить первый сегмент URL
+$city = selectCity()->slug; // Более безопасный и понятный способ получить первый сегмент URL
 
 // if($city!='livewire' && $city!='api' ){
 //     if (!request()->is('storage/*') && !request()->is('css/*') && !request()->is('js/*') && !request()->is('admin/*') && !request()->is('livewire/*') && !request()->is('filament*') && $city!='admin' ) {    
@@ -125,10 +125,12 @@ $city = request()->segment(1); // Более безопасный и понят�
 
 
 
+Route::get('/', [MainController::class, 'index'])->name('index');
 
 
 Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
     
+    Route::get('/', [MainController::class, 'index'])->name('index');
 
 
     Route::post('/reset-password/phone', [ForgotPasswordController::class, 'resetPasswordWithPhone'])->name('reset-password.phone');
@@ -148,7 +150,6 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
     Auth::routes();
     
     
-    Route::get('/', [MainController::class, 'index'])->name('index');
 
     Route::get('/accept-cookie', [MainController::class, 'acceptCookie'])->name('cookie.accept');
 

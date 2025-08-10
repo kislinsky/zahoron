@@ -47,6 +47,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
+use Stevebauman\Location\Facades\Location;
+
 
 
 
@@ -293,30 +295,76 @@ function defaultCity(){
     return $defaultCity = City::where('selected_admin', 1)->first();
 }
 
+
+
 function selectCity()
 {
-    // Безопасное получение сегмента URL
+    // Для локального окружения
+    if (app()->environment('local')) {
+
+
+        $slug = request()->segment(1) ?? '';
+        if (!empty($slug)) {
+            $city = City::where('slug', $slug)->first();
+            if ($city) {
+                setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
+                return $city;
+            }
+        }
+
+        $defaultCity = City::where('selected_admin', 1)->first();
+        if (!$defaultCity) {
+            $defaultCity = City::whereHas('organization')->first();
+        }
+        if (!$defaultCity) {
+            $defaultCity = City::first() ?? new City(['title' => 'Москва']);
+        }
+        setcookie('city', $defaultCity->id, time() + (20 * 24 * 60 * 60), '/');
+        return $defaultCity;
+    }
+
+    try {
+        if ($position = Location::get()) {
+            $ipCity = City::where('title', 'like', '%'.$position->cityName.'%')
+                         ->orWhere('title_eng', 'like', '%'.$position->cityName.'%')
+                         ->first();
+            
+            if ($ipCity) {
+                setcookie('city', $ipCity->id, time() + (20 * 24 * 60 * 60), '/');
+                return $ipCity;
+            }
+        }
+    } catch (\Exception $e) {
+        logger()->error('Failed to detect city by IP: ' . $e->getMessage());
+    }
+
     $slug = request()->segment(1) ?? '';
-    
-    // Поиск города с проверкой slug
-    $city = City::where('slug', $slug)->first();
-    
-    // Если город не найден, берём выбранный админом
-    if (!$city) {
-        $city = City::where('selected_admin', 1)->first();
-        
-        // Если нет и выбранного админом - возвращаем null или первый город
-        if (!$city) {
-            $city = City::first();
+    if (!empty($slug)) {
+        $city = City::where('slug', $slug)->first();
+        if ($city) {
+            setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
+            return $city;
         }
     }
-    
-    // Устанавливаем куки только если город найден
-    if ($city) {
-        setcookie("city", $city->id, time() + 20*24*60*60, '/', null, false, true);
+
+    $cityId = $_COOKIE['city'] ?? null;
+    if ($cityId) {
+        $city = City::find($cityId);
+        if ($city) {
+            return $city;
+        }
+    }
+
+    $defaultCity = City::where('selected_admin', 1)->first();
+    if (!$defaultCity) {
+        $defaultCity = City::whereHas('organization')->first();
+    }
+    if (!$defaultCity) {
+        $defaultCity = City::first() ?? new City(['title' => 'Москва']);
     }
     
-    return $city;
+    setcookie('city', $defaultCity->id, time() + (20 * 24 * 60 * 60), '/');
+    return $defaultCity;
 }
 
 function priceProductOrder($cart_item){

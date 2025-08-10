@@ -62,6 +62,7 @@ class MainController extends Controller
     //     'total_updated' => $totalUpdated,
     //     'details' => $results
     // ];
+
         return IndexService::index();
     }
 
