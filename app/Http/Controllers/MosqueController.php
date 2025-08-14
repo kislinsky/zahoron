@@ -9,10 +9,12 @@ use Illuminate\Http\Request;
 class MosqueController extends Controller
 {
    public static function index(){
+    return abort('404');
         return MosqueService::index();
     }
 
     public static function single($slug){
+        return abort('404');
         return MosqueService::single($slug);
     }
 

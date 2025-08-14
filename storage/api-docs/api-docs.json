@@ -4189,14 +4189,14 @@
                 ]
             }
         },
-        "/v1/applications/purchase": {
+        "/v1/account/agency/aplications/purchase": {
             "post": {
                 "tags": [
                     "Покупка заявок"
                 ],
                 "summary": "Покупка заявок",
                 "description": "(страница покупки заявок)",
-                "operationId": "21873bb0f33a49344175a18bedd424e0",
+                "operationId": "a24d30958d9b6cbcb34b637c1cb8e215",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -4302,14 +4302,14 @@
                 ]
             }
         },
-        "/v1/priority/buy": {
+        "/v1/account/agency/priority/buy": {
             "post": {
                 "tags": [
                     "Приоритет"
                 ],
                 "summary": "Покупка приоритета для организации",
                 "description": "(страница покупки приоритета организации)",
-                "operationId": "eab96161239fd97f2dc9b07a7b274ac0",
+                "operationId": "3df24c30d56b2199e0e4c87caff8de3a",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -4407,6 +4407,121 @@
                                         },
                                         "errors": {
                                             "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/account/agency/user/{user}/find": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Find user by ID",
+                "description": "Finds a user by their ID in the path",
+                "operationId": "de8ebee8dae62c56e885fb90c2b921b8",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "ID of the user to find",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User found successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Пользователь успешно найден"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Иван Иванов"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "user@example.com"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Пользователь не найден"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Не авторизован"
                                         }
                                     },
                                     "type": "object"
@@ -5521,6 +5636,10 @@
         {
             "name": "Приоритет",
             "description": "Приоритет"
+        },
+        {
+            "name": "Users",
+            "description": "Users"
         },
         {
             "name": "Авторизация/регистрация",

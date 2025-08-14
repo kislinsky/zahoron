@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 use App\Models\City;
 use App\Models\ProductRequestToSupplier;
+use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 
@@ -2282,7 +2283,7 @@ public static function getApplicationsForBuy(){}
 
 /**
  * @OA\Post(
- *     path="/v1/applications/purchase",
+ *     path="/v1/account/agency/aplications/purchase",
  *     summary="Покупка заявок",
  *     description="(страница покупки заявок)",
  *     tags={"Покупка заявок"},
@@ -2329,7 +2330,7 @@ public static function payApplication(Request $request){}
 
 /**
  * @OA\Post(
- *     path="/v1/priority/buy",
+ *     path="/v1/account/agency/priority/buy",
  *     summary="Покупка приоритета для организации",
  *     tags={"Приоритет"},
  *     description="(страница покупки приоритета организации)",
@@ -2377,5 +2378,58 @@ public static function payApplication(Request $request){}
  * )
  */
 public static function buyPriority(Request $request){}
+
+
+
+/**
+ * @OA\Post(
+ *     path="/v1/account/agency/user/{user}/find",
+ *     summary="Find user by ID",
+ *     description="Finds a user by their ID in the path",
+ *     tags={"Users"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(
+ *         name="user",
+ *         in="path",
+ *         required=true,
+ *         description="ID of the user to find",
+ *         @OA\Schema(type="integer", format="int64", example=1)
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="User found successfully",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Пользователь успешно найден"),
+ *             @OA\Property(
+ *                 property="data",
+ *                 type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="name", type="string", example="Иван Иванов"),
+ *                 @OA\Property(property="email", type="string", example="user@example.com"),
+ *                 @OA\Property(property="created_at", type="string", format="date-time"),
+ *                 @OA\Property(property="updated_at", type="string", format="date-time")
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="User not found",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Пользователь не найден")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Не авторизован")
+ *         )
+ *     )
+ * )
+ */
+public static function findUser(User $user){}
 
 }

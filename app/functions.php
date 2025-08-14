@@ -299,46 +299,11 @@ function defaultCity(){
 
 function selectCity()
 {
-    // Для локального окружения
-    if (app()->environment('local')) {
+    $city = null;
+    $isHomepage = request()->path() === '/';
 
-
-        $slug = request()->segment(1) ?? '';
-        if (!empty($slug)) {
-            $city = City::where('slug', $slug)->first();
-            if ($city) {
-                setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
-                return $city;
-            }
-        }
-
-        $defaultCity = City::where('selected_admin', 1)->first();
-        if (!$defaultCity) {
-            $defaultCity = City::whereHas('organization')->first();
-        }
-        if (!$defaultCity) {
-            $defaultCity = City::first() ?? new City(['title' => 'Москва']);
-        }
-        setcookie('city', $defaultCity->id, time() + (20 * 24 * 60 * 60), '/');
-        return $defaultCity;
-    }
-
-    try {
-        if ($position = Location::get()) {
-            $ipCity = City::where('title', 'like', '%'.$position->cityName.'%')
-                         ->orWhere('title_eng', 'like', '%'.$position->cityName.'%')
-                         ->first();
-            
-            if ($ipCity) {
-                setcookie('city', $ipCity->id, time() + (20 * 24 * 60 * 60), '/');
-                return $ipCity;
-            }
-        }
-    } catch (\Exception $e) {
-        logger()->error('Failed to detect city by IP: ' . $e->getMessage());
-    }
-
-    $slug = request()->segment(1) ?? '';
+    // 1. Проверяем город из URL (работает на всех страницах)
+    $slug = request()->segment(1);
     if (!empty($slug)) {
         $city = City::where('slug', $slug)->first();
         if ($city) {
@@ -347,24 +312,50 @@ function selectCity()
         }
     }
 
-    $cityId = $_COOKIE['city'] ?? null;
-    if ($cityId) {
-        $city = City::find($cityId);
+    // 2. Для локального окружения
+    if (env('API_WORK')=='false') {
+        $city = City::where('selected_admin', 1)->first();
+        
+        if (!$city) {
+            $city = City::first() ?? new City(['title' => 'Москва']);
+        }
+        
+        setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
+        return $city;
+    }
+
+     // 3. Определение по IP (ТОЛЬКО на главной странице)
+    if ($isHomepage && !isset($_COOKIE['ip'])) {
+       $response = Http::get("http://www.geoplugin.net/json.gp?ip=" . request()->ip());
+        if ( !empty($response['geoplugin_city'])) {
+            $city = City::where('slug', 'like', '%'.str_replace("'", '', $response['geoplugin_city']).'%')
+                        ->first();
+            
+            if ($city) {
+                setcookie('ip', 'true', time() + (20 * 24 * 60 * 60), '/');
+                setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
+                return $city;
+            }
+        } 
+    }
+
+    // 4. Проверяем город из куки (работает на всех страницах)
+    if (isset($_COOKIE['city'])) {
+        $city = City::find($_COOKIE['city']);
         if ($city) {
             return $city;
         }
     }
 
-    $defaultCity = City::where('selected_admin', 1)->first();
-    if (!$defaultCity) {
-        $defaultCity = City::whereHas('organization')->first();
-    }
-    if (!$defaultCity) {
-        $defaultCity = City::first() ?? new City(['title' => 'Москва']);
+    // 5. Город по умолчанию (работает на всех страницах)
+    $city = City::where('selected_admin', 1)->first();
+    
+    if (!$city) {
+        $city = City::first() ?? new City(['title' => 'Москва']);
     }
     
-    setcookie('city', $defaultCity->id, time() + (20 * 24 * 60 * 60), '/');
-    return $defaultCity;
+    setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
+    return $city;
 }
 
 function priceProductOrder($cart_item){
@@ -2119,6 +2110,8 @@ function getCemeteriesOptions($get)
 
 
 
+
+
 function generateUniqueSlug(string $title, string $modelClass, int $ignoreId = null): string
 {
     // Проверяем, является ли переданный класс допустимой моделью Laravel
@@ -2126,19 +2119,30 @@ function generateUniqueSlug(string $title, string $modelClass, int $ignoreId = n
         throw new InvalidArgumentException("Передан неверный класс модели: {$modelClass}");
     }
 
-    $baseSlug = slug($title); // Преобразуем название в slug
+    $baseSlug = Str::slug($title); // Используем Str::slug вместо пользовательской функции
     $slug = $baseSlug;
     $i = 1;
 
-    while ($modelClass::where('slug', $slug)
-        ->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))
-        ->exists()) 
-    {
-        $slug = $baseSlug . '-' . $i;
+    // Максимальное количество попыток (защита от бесконечного цикла)
+    $maxAttempts = 100;
+    
+    while ($i <= $maxAttempts) {
+        $query = $modelClass::where('slug', $slug);
+        
+        if ($ignoreId) {
+            $query->where('id', '!=', $ignoreId);
+        }
+        
+        if (!$query->exists()) {
+            return $slug;
+        }
+        
+        // Генерируем новый slug с таймстампом для большей уникальности
+        $slug = $baseSlug . '-' . time() . '-' . $i;
         $i++;
     }
 
-    return $slug;
+    throw new RuntimeException("Не удалось сгенерировать уникальный slug после {$maxAttempts} попыток");
 }
 
 function sendCode($phone,$code){

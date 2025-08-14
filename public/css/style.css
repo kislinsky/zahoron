@@ -3215,6 +3215,10 @@ text-align: left;
     display: flex;
     cursor: pointer;
     gap: 10px;
+        font-family: Golos Text;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1A1A1A;
     align-items: center;
     position: relative;
 }
@@ -7647,4 +7651,9 @@ color: #0080D7;
 
 .li_wallet .block_input{
     max-width: 200px;
+}
+
+.header_main .btn_bac_gray{
+    padding: 10px 12px;
+    font-size: 16px;
 }

@@ -10,10 +10,12 @@ class CrematoriumController extends Controller
 {
      
     public static function index(){
+        return abort('404');
         return CrematoriumService::index();
     }
 
     public static function single($slug){
+        return abort('404');
         return CrematoriumService::single($slug);
     }
 

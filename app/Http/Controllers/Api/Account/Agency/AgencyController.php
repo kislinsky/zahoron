@@ -1700,6 +1700,15 @@ class AgencyController extends Controller
             'balance' => $user->currentWallet()->fresh()->balance
         ]);
     }
+
+    public static function findUser(User $user)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Пользователь успешно найден',
+            'data' => $user
+        ]);
+    }
     
 }
 

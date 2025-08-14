@@ -73,7 +73,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script defer type="text/javascript" src="{{asset('js/main.js')}}"></script>
-
+<script async src="//widgets.mango-office.ru/site/36238"></script>
 
 <script>
    $( ".block_ajax_input_search_cities .input_search_cities" ).on( "input", function() {

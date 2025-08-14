@@ -1,19 +1,13 @@
 <?php
 
 return [
-    'driver' => env('LOCATION_DRIVER', 'null'), // Используем 'null' драйвер для локального окружения
-
+    'driver' => env('LOCATION_DRIVER', 'null'),
     'drivers' => [
-        'null' => [
-            // Пустая конфигурация для тестов
-        ],
-        
         'ipapi' => [
             'token' => env('IPAPI_TOKEN'),
             'secure' => true,
         ],
     ],
-
     'fallbacks' => [
         'ipapi' => 'null',
     ],

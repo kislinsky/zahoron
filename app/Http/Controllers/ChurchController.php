@@ -9,11 +9,13 @@ use Illuminate\Http\Request;
 class ChurchController extends Controller
 {
     public static function index(){
+        return abort('404');
         return ChurchService::index();
     }
 
     
     public static function single($slug){
+        return abort('404');
         return ChurchService::single($slug);
     }
 

@@ -17,22 +17,62 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Регистрируем мок-драйвер для локального окружения
-        if ($this->app->environment('local')) {
-            $this->app->bind('location', function() {
-                return new class {
-                    public function get($ip) {
-                        return (object) [
-                            'cityName' => 'Москва',
-                            'countryName' => 'Россия',
-                            'regionName' => 'Московская область',
-                            'latitude' => '55.7558',
-                            'longitude' => '37.6176'
-                        ];
-                    }
-                };
-            });
-        }
+        // // Регистрируем мок-драйвер для локального окружения
+        // if (env('API_WORK'=='false')) {
+        //     $this->app->bind('location', function() {
+        //         return new class {
+        //             public function get($ip) {
+        //                 return (object) [
+        //                     'cityName' => 'Москва',
+        //                     'countryName' => 'Россия',
+        //                     'regionName' => 'Московская область',
+        //                     'latitude' => '55.7558',
+        //                     'longitude' => '37.6176'
+        //                 ];
+        //             }
+        //         };
+        //     });
+        // }
+        // // Регистрируем реальный драйвер для production
+        // else {
+        //     $this->app->bind('location', function() {
+        //         $driver = config('location.driver');
+                
+        //         if ($driver === 'ipapi') {
+        //             return new class(config('location.drivers.ipapi')) {
+        //                 protected $token;
+        //                 protected $secure;
+                        
+        //                 public function __construct(array $config) {
+        //                     $this->token = $config['token'] ?? null;
+        //                     $this->secure = $config['secure'] ?? false;
+        //                 }
+                        
+        //                 public function get($ip) {
+        //                     $protocol = $this->secure ? 'https' : 'http';
+        //                     $url = "{$protocol}://ipinfo.io/{$ip}/json/";
+                            
+        //                     if ($this->token) {
+        //                         $url .= "?key={$this->token}";
+        //                     }
+                            
+        //                     $response = file_get_contents($url);
+        //                     $data = json_decode($response);
+                            
+        //                     return (object) [
+        //                         'cityName' => $data->city ?? null,
+        //                         'countryName' => $data->country_name ?? null,
+        //                         'regionName' => $data->region ?? null,
+        //                         'latitude' => $data->latitude ?? null,
+        //                         'longitude' => $data->longitude ?? null
+        //                     ];
+        //                 }
+        //             };
+        //         }
+                
+        //         throw new \RuntimeException("The location driver [{$driver}] does not exist.");
+        //     });
+        // }
     }
 
     /**

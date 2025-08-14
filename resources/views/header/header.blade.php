@@ -71,12 +71,34 @@ use Artesaos\SEOTools\Facades\SEOTools;
             <?php $page=null;?>
         @endif
         <div class='pages'>
-            <a href='{{route('index')}}'class="btn_bac_gray">Главная</a>
             <div id_city_selected='{{ $city->id }}' class="btn_bac_gray city_selected">
                 <img class='img_light_theme'src='{{ asset('storage/uploads/Group (22).svg') }}'>
                 <img class='img_black_theme'src='{{ asset('storage/uploads/Group_black_theme.svg') }}'>
                 {{ $city->title }}
             </div>
+
+            <div class="btn_bac_gray open_children_pages">
+               Ритуальные услуги
+                <div class='children_pages'>
+                    <a href='{{ route('organizations.category','organizacia-pohoron') }}'class="btn_bac_gray">Ритуальные агенства </a>
+                    <a href=''class="btn_bac_gray">Ритуальные товары, услуги </a>
+                </div>
+                <img class='img_light_theme' src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>
+                <img class='img_black_theme' src='{{asset('storage/uploads/Vector 9_black.svg')}}'>
+            </div>
+
+            <div class="btn_bac_gray open_children_pages">
+               Ритуальные обьекты
+                <div class='children_pages'>
+                    <a href='{{ route('cemeteries') }}'class="btn_bac_gray">Кладбища </a>
+                    <a href='{{ route('mortuaries') }}'class="btn_bac_gray">Морги </a>
+                   
+                </div>
+                <img class='img_light_theme' src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>
+                <img class='img_black_theme' src='{{asset('storage/uploads/Vector 9_black.svg')}}'>
+            </div>
+
+
             <div class="btn_bac_gray open_children_pages">
                 Поиск могил
                 <div class='children_pages'>
@@ -88,93 +110,30 @@ use Artesaos\SEOTools\Facades\SEOTools;
                 <img class='img_black_theme' src='{{asset('storage/uploads/Vector 9_black.svg')}}'>
  
             </div>
-            <a href='{{route('organizations.category','organizacia-pohoron')}}'class="btn_bac_gray">Ритуальные агенства</a>
-            <div class="btn_bac_gray">Товары и услуги</div>
+           
 
-            
+            <div class="btn_bac_gray open_children_pages">
+               Информация
+                <div class='children_pages'>
+                    <a href='{{ route('our.products') }}'class="btn_bac_gray">Наши работы </a>
+                    <a href='{{ route('news') }}'class="btn_bac_gray">Статьи </a>
+                    <a href='{{ route('contacts') }}'class="btn_bac_gray">Контакты </a>
+                   
+                </div>
+                <img class='img_light_theme' src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>
+                <img class='img_black_theme' src='{{asset('storage/uploads/Vector 9_black.svg')}}'>
+            </div>
            
         </div> 
        
         
         <div class='flex_icon_header'>
-            <img class='open_big_header img_light_theme' src="{{asset('storage/uploads/menu-svgrepo-com.svg')}}" alt="">
-            <img class='open_big_header img_black_theme'src="{{asset('storage/uploads/Group 29 (1)_black.svg')}}" alt="">
-            <div class='change_theme icon_header'><img class='img_light_theme' src='{{asset('storage/uploads/Group 23.svg')}}'><img class='img_black_theme' src='{{asset('storage/uploads/Group 23_black_theme.svg')}}'></div>
+           <div class='change_theme icon_header'><img class='img_light_theme' src='{{asset('storage/uploads/Group 23.svg')}}'><img class='img_black_theme' src='{{asset('storage/uploads/Group 23_black_theme.svg')}}'></div>
             <a href='{{ route('login') }}' class='icon_header icon_login'><img class='img_black_theme' src='{{asset('storage/uploads/Group 1_black_theme.svg')}}'><img class='img_light_theme' src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
         </div>
     </div>
 </header>
 
-<div class="header_big">
-    <div class="container">
-        <div class="ul_pages_header_big">
-            <div class="block_pages_header_big">
-                <div class="title_li">Поиск и уход</div>
-                <ul>
-                    <li>
-                        <a href='{{ route('search.burial') }}'class="text_black">Поиск могил </a>
-                    </li>
-                    <li>
-                        <a href='{{ route('page.search.burial.filter') }}'class="text_black">Герои </a>
-                    </li>
-                    <li>
-                        <a href='{{ route('page.search.burial.request') }}'class="text_black">Заявка на поиск </a>
-                    </li>
-                </ul>
-            </div>
-            <div class="block_pages_header_big">
-                <div class="title_li">Ритуальные услуги</div>
-                <ul>
-                    <li>
-                        <a class='text_black' href='{{route('organizations.category','organizacia-pohoron')}}'>Ритуальные агенства</a>
-                    </li>
-                    <li>
-                        <div class='text_black' >Ритуальные товары, услуги</div>
-                    </li>
-                    
-                </ul>
-            </div>
-             <div class="block_pages_header_big">
-                <div class="title_li">Ритуальные обьекты</div>
-                <ul>
-                    <li>
-                        <a class='text_black' href='{{ route('cemeteries') }}'>Кладбища</a>
-                    </li>
-                    <li>
-                        <a class='text_black' href='{{ route('mortuaries') }}'>Морги</a>
-                    </li>
-                    <li>
-                        <a class='text_black' href='{{ route('columbariums') }}'>Колумабрии</a>
-                    </li>
-                    <li>
-                        <a class='text_black' href='{{ route('crematoriums') }}'>Крематории</a>
-                    </li>
-                    <li>
-                        <a class='text_black' href='{{ route('churches') }}'>Церкви</a>
-                    </li>
-                    <li>
-                        <a class='text_black' href='{{ route('mosques') }}'>Мечети</a>
-                    </li>
-
-                </ul>
-            </div>
-            <div class="block_pages_header_big">
-                <div class="title_li">Информация</div>
-                <ul>
-                    <li>
-                        <a class='text_black' href='{{ route('our.products') }}'>Наши работы</a>
-                    </li>
-                    <li>
-                        <a class='text_black' href='{{ route('news') }}'>Статьи</a>
-                    </li>
-                    <li>
-                        <a class='text_black' href='{{ route('contacts') }}'>Контакты</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div class="mobile_header_mini_info">
     @if(versionProject())

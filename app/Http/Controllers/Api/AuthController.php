@@ -23,7 +23,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'type' => 'required|in:Ритуальное агенство,Частный агент,Другое',
+            'type' => 'required|in:Ритуальное агентство,Частный агент,Другое',
             'inn' => 'required|string',
             'phone' => 'required|string|max:15',
             'form' => 'required|in:ООО,ИП,ФЛ',

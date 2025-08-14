@@ -9,10 +9,12 @@ use Illuminate\Http\Request;
 class ColumbariumController extends Controller
 {
     public static function index(){
+        return abort('404');
         return ColumbariumService::index();
     }
 
     public static function single($slug){
+        return abort('404');
         return ColumbariumService::single($slug);
     }
 

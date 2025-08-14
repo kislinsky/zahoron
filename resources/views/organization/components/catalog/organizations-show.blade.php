@@ -3,7 +3,7 @@
 
     <?php $category=$organizations_category->first()->categoryProduct;?>
 
-    @foreach ($organizations_category as $organization_category)
+    @foreach ($organizations_category as $key=>$organization_category)
 
         <?php $organization=$organization_category->organization;?>
     
@@ -70,7 +70,15 @@
             </div>
 
             <div class="li_flex_btn_organization">
-                <a href='tel:{{$organization->phone}}'class="blue_btn">Позвонить</a>
+                 <a href='javascript:void(0)' class="blue_btn mgo-call-button" 
+                   data-key="{{ $key }}"
+                   data-org-id="{{ $organization->id }}"
+                   data-phone="{{ str_replace('+', '', $organization->phone) }}"
+                   data-default-number="{{ $organization->phone }}"
+                   data-calls="{{ $organization->calls }}"
+                  > 
+                    Позвонить
+                </a>
                 <a href='{{$organization->route()}}' class="btn_border_blue">Подробнее</a>
             </div>
 
@@ -203,7 +211,106 @@
   document.head.appendChild(style);
 });
 </script>
+
+
+
+
+
+<script>
+  // Глобальная очередь для вызовов Mango Office
+  window.mangoQueue = window.mangoQueue || [];
+  
+  // Функция для загрузки скрипта Mango Office
+  function loadMangoScript(callback) {
+    if (window.mgo) {
+      callback(window.mgo);
+      return;
+    }
     
+    // Добавляем callback в очередь
+    window.mangoQueue.push(callback);
+    
+    // Если скрипт уже загружается, не инициализируем повторно
+    if (window.mangoScriptLoading) return;
+    window.mangoScriptLoading = true;
+    
+    (function(w, d, u, i, o, s, p) {
+      if (d.getElementById(i)) return;
+      w['MangoObject'] = o;
+      w[o] = w[o] || function() { (w[o].q = w[o].q || []).push(arguments) };
+      s = d.createElement('script');
+      s.async = 1;
+      s.id = i;
+      s.src = u;
+      p = d.getElementsByTagName('script')[0];
+      p.parentNode.insertBefore(s, p);
+      
+      s.onload = function() {
+        // Инициализируем Mango Office
+        window.mgo({calltracking: {id: 36238}});
+        
+        // Выполняем все ожидающие callback'и
+        while (window.mangoQueue.length) {
+          let callback = window.mangoQueue.shift();
+          window.mgo(function(mgo) {
+            callback(mgo);
+          });
+        }
+      };
+    })(window, document, '//widgets.mango-office.ru/widgets/mango.js', 'mango-js', 'mgo');
+  }
+
+  // Обработчик для кнопок "Позвонить"
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.mgo-call-button').forEach(function(button) {
+      button.addEventListener('click', function() {
+        let key = this.getAttribute('data-key');
+        let calls = this.getAttribute('data-calls');
+        let orgId = this.getAttribute('data-org-id');
+        let phone = this.getAttribute('data-phone');
+        let defaultNumber = this.getAttribute('data-default-number');
+        
+        // Показываем загрузку
+        this.innerHTML = 'Загрузка...';
+        this.style.pointerEvents = 'none';
+        
+
+
+
+        if(calls!=0){
+          // Загружаем скрипт Mango Office и получаем номер
+          loadMangoScript(function(mgo) {
+            mgo.getNumber({
+              hash: orgId,
+              redirectNumber: phone
+            }, function(result) {
+              if (result && result.number) {
+                let n = result.number;
+                let formattedNumber = '8 (' + n.substr(1, 3) + ') ' + n.substr(4, 3) + '-' + n.substr(7, 2) + '-' + n.substr(9, 2);
+                
+                // Обновляем кнопку
+                button.innerHTML = formattedNumber;
+                button.setAttribute('href', 'tel:+' + n);
+                button.style.pointerEvents = 'auto';
+                
+                // Инициируем звонок
+                window.location.href = 'tel:+' + n;
+              } else {
+                
+              }
+            });
+          });
+        }else{
+          setTimeout(function() {
+            button.innerHTML = 'Ошибка';
+            console.log('Недостаточно звонков')
+          }, 1500);
+        }
+        
+      });
+    });
+  });
+</script>
 @endif
 
 

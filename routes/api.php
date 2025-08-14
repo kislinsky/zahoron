@@ -15,6 +15,7 @@ Route::prefix('v1')->group(function () {
 
 
     Route::post('/delete/{user}', [AuthController::class, 'deleteAccountTest']);
+    Route::post('/user/{user}/find', [AgencyController::class, 'findUser']);
 
     // Защищенные маршруты
     Route::middleware('auth:api')->group(function () {
@@ -35,6 +36,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/cities/search', [AgencyController::class, 'citySearch']);
 
 
+
     Route::middleware('jwt.auth')->group(function () {
         Route::group(['prefix'=>'account'], function() {
 
@@ -51,7 +53,9 @@ Route::prefix('v1')->group(function () {
                     Route::post('/purchase', [AgencyController::class, 'payApplication']);
                 });
 
-                
+                Route::group(['prefix'=>'priority'], function() {
+                    Route::post('/buy', [AgencyController::class, 'buyPriority']);
+                });
                 
 
 
@@ -93,6 +97,9 @@ Route::prefix('v1')->group(function () {
 
 
                 Route::post('/settings/update', [AgencyController::class, 'settingsUserUpdate']);
+                Route::post('/delete/{user}', [AuthController::class, 'deleteAccountTest']);
+                Route::post('/user/{user}/find', [AgencyController::class, 'findUser']);
+
 
                 Route::prefix('products')->group(function () {
                     Route::get('/', [AgencyController::class, 'products']);
