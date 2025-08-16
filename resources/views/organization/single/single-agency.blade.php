@@ -26,7 +26,7 @@
         <div class="grid_organization_single">
             <div class="main_content_organization_single">
 
-                {{view('organization.components.main-block',compact('organization','rating_reviews','reviews'))}}
+                {{view('organization.components.main-block',compact('random_organizations_with_calls','organization','rating_reviews','reviews'))}}
 
 
                 <div class="block_menu_single_organization">

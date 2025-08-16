@@ -94,9 +94,16 @@ class OrganizationService
 
         $pages_navigation=[['Главная',route('index')],['Организации',route('organizations')],[$organization->title]];
 
+        $random_organizations_with_calls=Organization::where('city_id', $organization->city_id)
+        ->where('id', '!=', $organization->id) // если нужно исключить текущую
+        ->where('calls', '>', 0) // если haveCalls() проверяет это поле
+        ->inRandomOrder()
+        ->limit(3)
+        ->get();
+
 
         if($organization->role=='organization' ){
-            return view('organization.single.single-agency',compact('pages_navigation','title_h1','categories_organization','city','similar_organizations','main_categories','children_categories','rating_reviews','organization','images','reviews','products_our','reviews','reviews_main','ritual_products'));
+            return view('organization.single.single-agency',compact('random_organizations_with_calls','pages_navigation','title_h1','categories_organization','city','similar_organizations','main_categories','children_categories','rating_reviews','organization','images','reviews','products_our','reviews','reviews_main','ritual_products'));
         }
         
         if($organization->role=='organization-provider' && (Auth::check() && (user()->role=='organization' || user()->role=='organization-provider' || user()->role=='admin'))){
@@ -105,7 +112,7 @@ class OrganizationService
             $price_lists=PriceListOrganization::orderBy('id','desc')->where('organization_id',$id)->where('type','price-list')->get();
             $product_stocks=StockProduct::orderBy('id','desc')->where('organization_id',$id)->get();
 
-            return view('organization.single.single-provider',compact('pages_navigation','title_h1','categories_organization','city','similar_organizations','children_categories','main_categories','price_lists','remnants_ritual_goods','rating_reviews','organization','product_stocks','images','reviews','reviews','reviews_main','ritual_products'));
+            return view('organization.single.single-provider',compact('random_organizations_with_calls','pages_navigation','title_h1','categories_organization','city','similar_organizations','children_categories','main_categories','price_lists','remnants_ritual_goods','rating_reviews','organization','product_stocks','images','reviews','reviews','reviews_main','ritual_products'));
 
         }
         return redirect()->back();
@@ -199,6 +206,9 @@ class OrganizationService
         
         $organizations_category=organizationsFilters($data,$category);
 
+        
+        $random_organizations_with_calls=getRandomOrganizationsWithCalls($organizations_category);
+
         $cemeteries = Cemetery::whereHas('city.area', function($query) use ($city) {
             $query->where('id', $city->area_id);  
         })
@@ -245,7 +255,7 @@ class OrganizationService
 
         $pages_navigation=[['Главная',route('index')],['Организации',route('organizations')],[$category->title]];
 
-        return view('organization.catalog.catalog-organization',compact('pages_navigation','title_h1','filter_work','category_main','news_video','district_choose','districts','cemetery_choose','cemeteries','city','cats','news','organizations_category','price_min','price_middle','price_max','category','sort'));
+        return view('organization.catalog.catalog-organization',compact('random_organizations_with_calls','pages_navigation','title_h1','filter_work','category_main','news_video','district_choose','districts','cemetery_choose','cemeteries','city','cats','news','organizations_category','price_min','price_middle','price_max','category','sort'));
     }
     
 

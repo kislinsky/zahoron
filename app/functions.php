@@ -2553,3 +2553,18 @@ function changeUrl($city, $currentPath = null) {
     return url('/') . '/' . $newPath;
 }
 
+function getRandomOrganizationsWithCalls($organizationsCategory)
+{
+    // Сначала фильтруем организации, оставляя только те, у которых есть звонки
+    $filtered = $organizationsCategory->filter(function($item) {
+        return $item->organization->haveCalls() == 1;
+    });
+    
+    // Если организаций с звонками меньше 3, возвращаем все доступные
+    if ($filtered->count() <= 3) {
+        return $filtered->shuffle();
+    }
+    
+    // Возвращаем 3 случайные организации
+    return $filtered->random(3);
+}

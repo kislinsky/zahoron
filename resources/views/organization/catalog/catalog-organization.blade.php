@@ -25,7 +25,7 @@
                 {{view('organization.components.catalog.filters',compact('filter_work','sort','cemeteries','cemetery_choose','districts','district_choose','cats','category'))}}
                 
                 <div class="ul_organizaiotns">
-                    {{view('organization.components.catalog.organizations-show',compact('organizations_category'))}}
+                    {{view('organization.components.catalog.organizations-show',compact('organizations_category','random_organizations_with_calls'))}}
                 </div>
                 
 

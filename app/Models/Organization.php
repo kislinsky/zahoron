@@ -213,4 +213,11 @@ class Organization extends Model
         });
     }
     
+
+    function haveCalls(){
+        if($this->calls>0){
+            return 1;
+        }
+        return 0;
+    }
 }
