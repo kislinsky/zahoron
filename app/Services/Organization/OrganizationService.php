@@ -262,7 +262,8 @@ class OrganizationService
     public static function ajaxFilterCatalog($data){
         $category=CategoryProduct::find($data['category_id']);
         $organizations_category=organizationsFilters($data,$category);
-        return  view('organization.components.catalog.organizations-show',compact('organizations_category'));
+        $random_organizations_with_calls=getRandomOrganizationsWithCalls($organizations_category);
+        return  view('organization.components.catalog.organizations-show',compact('random_organizations_with_calls','organizations_category'));
     }
 
     

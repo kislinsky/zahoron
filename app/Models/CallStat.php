@@ -1,0 +1,193 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
+class CallStat extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'organization_id',
+        'uid',
+        'ga_cid',
+        'ya_cid',
+        'rs_cid',
+        'utm_source',
+        'utm_medium',
+        'utm_campaign',
+        'utm_content',
+        'utm_term',
+        'country_code',
+        'region_code',
+        'city',
+        'device',
+        'ip',
+        'url',
+        'first_url',
+        'custom_params',
+        'is_duplicate',
+        'is_quality',
+        'is_new',
+        'call_id',
+        'webhook_type',
+        'last_group',
+        'record_url',
+        'date_start',
+        'caller_number',
+        'call_type',
+        'date_end',
+        'call_status',
+        'duration',
+        'number_hash',
+        'wait_time',
+        'called_number'
+    ];
+
+    protected $casts = [
+        'date_start' => 'datetime',
+        'date_end' => 'datetime',
+        'is_duplicate' => 'boolean',
+        'is_quality' => 'boolean',
+        'is_new' => 'boolean',
+    ];
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
+    public static function callback(Request $request)
+    {
+        // Валидация входящих данных
+        $validated = $request->validate([
+            // Обязательные поля
+            'callId' => 'required|string',
+            
+            // Параметры коллтрекинга
+            'uid' => 'nullable|string',
+            'gaCid' => 'nullable|string',
+            'yaCid' => 'nullable|string',
+            'rsCid' => 'nullable|string',
+            'utmSource' => 'nullable|string',
+            'utmMedium' => 'nullable|string',
+            'utmCampaign' => 'nullable|string',
+            'utmContent' => 'nullable|string',
+            'utmTerm' => 'nullable|string',
+            
+            // Гео данные
+            'countryCode' => 'nullable|string|max:2',
+            'regionCode' => 'nullable|string|max:10',
+            'city' => 'nullable|string|max:100',
+            
+            // Данные устройства
+            'device' => 'nullable|string|in:desktop,tablet,mobile',
+            'ip' => 'nullable|ip',
+            
+            // URL данные
+            'url' => 'nullable|url',
+            'firstUrl' => 'nullable|url',
+            'customParam' => 'nullable|string|max:4000',
+            
+            // Флаги
+            'isDuplicate' => 'nullable|boolean',
+            'isQuality' => 'nullable|boolean',
+            'isNew' => 'nullable|boolean',
+            
+            // Данные звонка
+            'webhookType' => 'nullable|string',
+            'lastGroup' => 'nullable|string',
+            'recordUrl' => 'nullable|url',
+            'dateStart' => 'nullable|date',
+            'callerNumber' => 'nullable|string',
+            'callType' => 'nullable|string',
+            'dateEnd' => 'nullable|date',
+            'callStatus' => 'nullable|string',
+            'duration' => 'nullable|integer',
+            'numberHash' => 'nullable|string',
+            'waitTime' => 'nullable|integer',
+            'calledNumber' => 'nullable|string',
+            
+            // Дополнительные параметры
+            'organization_id' => 'nullable|integer|exists:organizations,id',
+        ]);
+
+        try {
+            // Создаем запись о звонке
+            $callStat = self::create([
+                'organization_id' => $validated['organization_id'] ?? null,
+                
+                // Параметры коллтрекинга
+                'uid' => $validated['uid'] ?? null,
+                'ga_cid' => $validated['gaCid'] ?? null,
+                'ya_cid' => $validated['yaCid'] ?? null,
+                'rs_cid' => $validated['rsCid'] ?? null,
+                'utm_source' => $validated['utmSource'] ?? null,
+                'utm_medium' => $validated['utmMedium'] ?? null,
+                'utm_campaign' => $validated['utmCampaign'] ?? null,
+                'utm_content' => $validated['utmContent'] ?? null,
+                'utm_term' => $validated['utmTerm'] ?? null,
+                
+                // Гео данные
+                'country_code' => $validated['countryCode'] ?? null,
+                'region_code' => $validated['regionCode'] ?? null,
+                'city' => $validated['city'] ?? null,
+                
+                // Данные устройства
+                'device' => $validated['device'] ?? null,
+                'ip' => $validated['ip'] ?? null,
+                
+                // URL данные
+                'url' => $validated['url'] ?? null,
+                'first_url' => $validated['firstUrl'] ?? null,
+                'custom_params' => $validated['customParam'] ?? null,
+                
+                // Флаги
+                'is_duplicate' => $validated['isDuplicate'] ?? false,
+                'is_quality' => $validated['isQuality'] ?? false,
+                'is_new' => $validated['isNew'] ?? false,
+                
+                // Данные звонка
+                'call_id' => $validated['callId'],
+                'webhook_type' => $validated['webhookType'] ?? null,
+                'last_group' => $validated['lastGroup'] ?? null,
+                'record_url' => $validated['recordUrl'] ?? null,
+                'date_start' => $validated['dateStart'] ?? null,
+                'caller_number' => $validated['callerNumber'] ?? null,
+                'call_type' => $validated['callType'] ?? null,
+                'date_end' => $validated['dateEnd'] ?? null,
+                'call_status' => $validated['callStatus'] ?? null,
+                'duration' => $validated['duration'] ?? null,
+                'number_hash' => $validated['numberHash'] ?? null,
+                'wait_time' => $validated['waitTime'] ?? null,
+                'called_number' => $validated['calledNumber'] ?? null,
+            ]);
+
+            // Можно добавить дополнительные действия:
+            // - Отправка уведомлений
+            // - Обновление статистики организации
+            // - Логирование
+
+            return response()->json([
+                'status' => 'success',
+                'call_id' => $callStat->call_id,
+                'message' => 'Call stat saved successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Call stat save error', [
+                'error' => $e->getMessage(),
+                'request' => $request->all()
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to save call stat'
+            ], 500);
+        }
+    }
+}

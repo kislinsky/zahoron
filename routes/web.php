@@ -42,6 +42,7 @@ use App\Http\Controllers\FuneralController;
 use App\Http\Controllers\InfoEditBurialController;
 use App\Http\Controllers\LifeStoryBurialController;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\MangoOfficeController;
 use App\Http\Controllers\MemorialController;
 use App\Http\Controllers\MortuaryController;
 use App\Http\Controllers\MosqueController;
@@ -57,6 +58,7 @@ use App\Http\Controllers\WordsMemoryController;
 use App\Http\Controllers\YooMoneyController;
 use App\Http\Middleware\Authenticate;
 use App\Models\City;
+use App\Models\Edge;
 use App\Models\Mosque;
 use Filament\Actions\Exports\Models\Export;
 use Filament\Facades\Filament;
@@ -66,6 +68,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+
+
 
 
 
@@ -130,13 +134,9 @@ $city = selectCity()->slug; // Более безопасный и понятны
 
 
 Route::get('/', [MainController::class, 'index'])->name('index');
-
+Route::get('/call-callback', [MangoOfficeController::class, 'callback'])->name('index');
 
 Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
-    
-
-
-
 
 
     Route::get('/', [MainController::class, 'index'])->name('index');

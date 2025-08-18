@@ -36,6 +36,10 @@ class AreaResource extends Resource
                     ->required()
                     ->searchable()
                     ->preload(),
+
+            Forms\Components\TextInput::make('limit_calls')
+                    ->label('Лимит звонков')
+                    ->maxLength(255),
             ]);
     }
 

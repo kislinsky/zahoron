@@ -300,6 +300,11 @@ class OrganizationResource extends Resource
 
                 Forms\Components\Textarea::make('comment_admin')
                 ->label('Комментарий админа'),
+
+
+                 Forms\Components\TextInput::make('calls')
+                    ->label('Лимит звонков')
+                    ->maxLength(255),
             ]);
     }
 

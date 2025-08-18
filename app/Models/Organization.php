@@ -214,10 +214,33 @@ class Organization extends Model
     }
     
 
-    function haveCalls(){
-        if($this->calls>0){
+   public function haveCalls()
+    {
+
+        
+        // Если есть звонки (больше 0) или стоит unlimited
+        if ($this->calls > 0 ) {
             return 1;
         }
+
+        // Если звонков 0
+        if ($this->calls === 0) {
+            return 0;
+        }
+
+        // Если значение null, проверяем иерархию лимитов
+        if ($this->calls === null ||  $this->calls === 'unlimited') {
+            $limit = optional($this->city)->limit_calls
+                ?? optional($this->city)->area->limit_calls
+                ?? optional($this->city)->area->edge->limit_calls
+                ?? 'unlimited';
+
+            $this->calls = $limit;
+            $this->save();
+
+            return $limit === 'unlimited' || $limit > 0 ? 1 : 0;
+        }
+
         return 0;
     }
 }

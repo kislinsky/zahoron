@@ -36,7 +36,11 @@ class EdgeResource extends Resource
                 ->options([
                     0 => 'Нет',
                     1 => 'Да'
-                ])
+                ]),
+
+                 Forms\Components\TextInput::make('limit_calls')
+                    ->label('Лимит звонков')
+                    ->maxLength(255),
             ]);
     }
 

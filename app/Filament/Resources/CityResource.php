@@ -93,6 +93,7 @@ class CityResource extends Resource
                         }
                     }), // Не сохранять значение в базу данных
                 
+                    
                 Select::make('selected_admin') // Поле для статуса
                     ->label('Выбрать город по умолчанию') // Название поля
                     ->options([
@@ -119,7 +120,10 @@ class CityResource extends Resource
                  RichEditor::make('text_how_properly_arrange_funeral_services')
                 ->label('Текст о том, как оформить ритуальные услуги')
                 ->required(),
-           
+                
+            Forms\Components\TextInput::make('limit_calls')
+                    ->label('Лимит звонков')
+                    ->maxLength(255),
             ]);
     }
 

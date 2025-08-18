@@ -24,6 +24,7 @@ use Illuminate\Http\Request;
 class ProductService
 {
     public static function singleProduct($slug){
+        return abort('404');
         $product=Product::where('slug',$slug)->first();
         if($product==null || $product->view!=1){
             return redirect()->back();
@@ -108,6 +109,8 @@ class ProductService
 
 
     public static function marketplace($slug,$data){
+                return abort('404');
+
 
         addView('page',Page::where('title','marketplace')->first()->id,user()->id ?? null,'site');
 

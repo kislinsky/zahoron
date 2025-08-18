@@ -2587,7 +2587,6 @@ text-align: left;
 .ul_location{
     transition: all 0.3s ease;
     max-height: 500px;
-    overflow-y: scroll;
     position: relative;
     display: grid;
     grid-template-columns: 1fr 1fr;
