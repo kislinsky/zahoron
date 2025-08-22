@@ -49,22 +49,23 @@ class ParserOrganizationService
         
             foreach($organizations as $organization) {
                 $orgId = rtrim($organization[$columns['ID']] ?? '', '!');
-                $orgTitle = $organization[$columns['Название организации']] ?? null;
-                $address = $organization[$columns['Адрес']] ?? null;
-                $latitude = $organization[$columns['Latitude']] ?? null;
-                $two_gis_link = $organization[$columns['URL']] ?? null;
-                $longitude = $organization[$columns['Longitude']] ?? null;
-                $phones = $organization[$columns['Телефоны']] ?? null;
-                $workHours = $organization[$columns['Режим работы']] ?? null;
-                $logoUrl = $organization[$columns['Логотип']] ?? 'default';
-                $mainPhotoUrl = $organization[$columns['Главное фото']] ?? 'default';
-                $photos = $organization[$columns['Фотографии']] ?? null;
-                $services = $organization[$columns['Подраздел']] ?? null;
-                $region = $organization[$columns['Регион']] ?? null;
-                $cityName = $organization[$columns['Населённый пункт']] ?? null;
-                $district = $organization[$columns['Район']] ?? null;
-                $nameType = $organization[$columns['Вид деятельности']] ?? null;
-                $urlSite = $organization[$columns['Сайт']] ?? null;
+                $orgTitle = $organization[$columns['Название'] ?? null] ?? null;
+                $address = $organization[$columns['Адрес']?? null?? null] ?? null;
+                $latitude = $organization[$columns['Latitude']?? null] ?? null;
+                $two_gis_link = $organization[$columns['URL']?? null] ?? null;
+                $longitude = $organization[$columns['Longitude']?? null] ?? null;
+                $phones = $organization[$columns['Телефон']?? null] ?? null;
+                $workHours = $organization[$columns['Режим работы']?? null] ?? null;
+                $logoUrl = $organization[$columns['Логотип']?? null] ?? 'default';
+                $mainPhotoUrl = $organization[$columns['Главное фото']?? null] ?? 'default';
+                $photos = $organization[$columns['Фотографии']?? null] ?? null;
+                $services = $organization[$columns['Подраздел']?? null] ?? null;
+                $region = $organization[$columns['Регион']?? null] ?? null;
+                $cityName = $organization[$columns['Населённый пункт']?? null] ?? null;
+                $district = $organization[$columns['Район']?? null] ?? null;
+                $nameType = $organization[$columns['Вид деятельности']?? null] ?? null;
+                $urlSite = $organization[$columns['Сайт']?? null] ?? null;
+                $innOrg = $organization[$columns['inn']?? null] ?? null;
     
                 if($importType != 'update') {
                     if(empty($cityName)) continue;
@@ -79,8 +80,7 @@ class ParserOrganizationService
                 if(empty($orgId)) continue;
         
                 // Ищем организацию в базе с загрузкой связанных данных
-                $existingOrg = Organization::find($orgId);
-                
+                $existingOrg = Organization::where('phone',$phones)->first();
                 // Применяем фильтры по местоположению
                 if ($filterRegion || $filterDistrict || $filterCity) {
                     $locationMatch = true;
@@ -120,6 +120,17 @@ class ParserOrganizationService
                         if($orgTitle) {
                             $updateData['title'] = $orgTitle;
                             $updateData['slug'] = slugOrganization($orgTitle);
+                        }
+                    }
+
+                    if(in_array('inn', $columnsToUpdate) && isset($columns['inn'])) {
+                        if($innOrg) {
+                             $cleaned = preg_replace('/[^0-9]/', '', (string)$innOrg);
+    
+                                // Проверяем длину (ИНН может быть 10 или 12 цифр)
+                                if (strlen($cleaned) === 10 || strlen($cleaned) === 12) {
+                            $updateData['inn'] = $cleaned;
+                                }
                         }
                     }
                     

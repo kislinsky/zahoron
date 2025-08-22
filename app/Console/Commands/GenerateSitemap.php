@@ -28,6 +28,7 @@ class GenerateSitemap extends Command
     protected $now;
     protected $citySlugs = [];
     protected $processedUrls = [];
+    protected $baseUrl = 'https://zahoron.ru';
 
     public function handle()
     {
@@ -46,9 +47,9 @@ class GenerateSitemap extends Command
         
         $this->finalizeCurrentSitemap();
         
-        // Add all sitemap parts to the index
+        // Add all sitemap parts to the index with correct domain
         for ($i = 1; $i <= $this->currentSitemapCount; $i++) {
-            $index->add("sitemap_part{$i}.xml");
+            $index->add("{$this->baseUrl}/sitemap_part{$i}.xml");
         }
         
         $index->writeToFile(public_path('sitemap.xml'));
@@ -111,7 +112,11 @@ class GenerateSitemap extends Command
     
     protected function addUrlWithStrictCounting(Url $url)
     {
+        // Ensure URL starts with our domain
         $urlString = $url->url;
+        if (!preg_match('/^https?:\/\//', $urlString)) {
+            $urlString = $this->baseUrl . $urlString;
+        }
         
         if (isset($this->processedUrls[$urlString])) {
             return false;
@@ -132,7 +137,6 @@ class GenerateSitemap extends Command
         $this->urlsCount++;
         $this->processedUrls[$urlString] = true;
         
-        // Immediately check if we've hit the limit after this addition
         if ($this->urlsCount >= $this->maxUrlsPerSitemap) {
             $this->createNewSitemapFile();
         }
@@ -151,7 +155,7 @@ class GenerateSitemap extends Command
         ];
 
         foreach ($staticRoutes as $route => $params) {
-            $url = Url::create($route)
+            $url = Url::create($this->baseUrl . $route)
                 ->setLastModificationDate($this->now)
                 ->setChangeFrequency($params['freq'])
                 ->setPriority($params['priority']);
@@ -159,7 +163,7 @@ class GenerateSitemap extends Command
             $this->addUrlWithStrictCounting($url);
             
             foreach ($this->citySlugs as $slug) {
-                $url = Url::create("/{$slug}{$route}")
+                $url = Url::create($this->baseUrl . "/{$slug}{$route}")
                     ->setLastModificationDate($this->now)
                     ->setChangeFrequency($params['freq'])
                     ->setPriority($params['priority'] - 0.1);
@@ -172,6 +176,8 @@ class GenerateSitemap extends Command
     protected function addDynamicRoutes()
     {
         $this->addOrganizations();
+        $this->addCemeteries();
+        $this->addMortuaries();
        
     }
 
@@ -181,7 +187,7 @@ class GenerateSitemap extends Command
         
         // Base organization routes
         $this->addUrlWithStrictCounting(
-            Url::create('/organizations')
+            Url::create($this->baseUrl . '/organizations')
                 ->setLastModificationDate($this->now)
                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
                 ->setPriority(0.8)
@@ -196,7 +202,7 @@ class GenerateSitemap extends Command
         foreach ($cityIdsWithOrgs as $cityId) {
             if (isset($this->citySlugs[$cityId])) {
                 $this->addUrlWithStrictCounting(
-                    Url::create("/{$this->citySlugs[$cityId]}/organizations")
+                    Url::create($this->baseUrl . "/{$this->citySlugs[$cityId]}/organizations")
                         ->setLastModificationDate($this->now)
                         ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
                         ->setPriority(0.8)
@@ -213,7 +219,7 @@ class GenerateSitemap extends Command
             if (isset($this->citySlugs[$cityId])) {
                 foreach ($categories as $categorySlug) {
                     $this->addUrlWithStrictCounting(
-                        Url::create("/{$this->citySlugs[$cityId]}/organizations/{$categorySlug}")
+                        Url::create($this->baseUrl . "/{$this->citySlugs[$cityId]}/organizations/{$categorySlug}")
                             ->setLastModificationDate($this->now)
                             ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
                             ->setPriority(0.7)
@@ -230,10 +236,57 @@ class GenerateSitemap extends Command
                 foreach ($organizations as $organization) {
                     if (isset($this->citySlugs[$organization->city_id])) {
                         $this->addUrlWithStrictCounting(
-                            Url::create("/{$this->citySlugs[$organization->city_id]}/organization/{$organization->slug}")
+                            Url::create($this->baseUrl . "/{$this->citySlugs[$organization->city_id]}/organization/{$organization->slug}")
                                 ->setLastModificationDate($organization->updated_at)
                                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
                                 ->setPriority(0.7)
+                        );
+                    }
+                }
+            });
+    }
+
+    protected function processEntityWithPreciseCounting($model, $listRoute, $detailRoutePattern, $name)
+    {
+        $this->info("Processing {$name} with strict counting...");
+        
+        // Add list route
+        $this->addUrlWithStrictCounting(
+            Url::create($this->baseUrl . $listRoute)
+                ->setLastModificationDate($this->now)
+                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                ->setPriority(0.7)
+        );
+        
+        // Add city list routes
+        foreach ($this->citySlugs as $citySlug) {
+            $this->addUrlWithStrictCounting(
+                Url::create($this->baseUrl . "/{$citySlug}{$listRoute}")
+                    ->setLastModificationDate($this->now)
+                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                    ->setPriority(0.6)
+            );
+        }
+        
+        // Add detail pages
+        $model::whereHas('city', function($query) {
+                $query->whereIn('id', array_keys($this->citySlugs));
+            })
+            ->select(['id', 'city_id', 'updated_at'])
+            ->orderBy('id')
+            ->chunk(1000, function($entities) use ($detailRoutePattern, $name) {
+                foreach ($entities as $entity) {
+                    if (isset($this->citySlugs[$entity->city_id])) {
+                        $url = sprintf($this->baseUrl . $detailRoutePattern, 
+                            $this->citySlugs[$entity->city_id], 
+                            $entity->id
+                        );
+                        
+                        $this->addUrlWithStrictCounting(
+                            Url::create($url)
+                                ->setLastModificationDate($entity->updated_at)
+                                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                                ->setPriority(0.5)
                         );
                     }
                 }

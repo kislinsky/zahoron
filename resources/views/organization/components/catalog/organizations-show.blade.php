@@ -219,47 +219,39 @@
 
 
 <script>
-  // Глобальная очередь для вызовов Mango Office
-  window.mangoQueue = window.mangoQueue || [];
-  
-  // Функция для загрузки скрипта Mango Office
-  function loadMangoScript(callback) {
-    if (window.mgo) {
-      callback(window.mgo);
-      return;
-    }
+  // Загрузка виджета Mango Office
+  (function(w, d, u, i, o, s, p) {
+      if (d.getElementById(i)) { return; } w['MangoObject'] = o;
+      w[o] = w[o] || function() { (w[o].q = w[o].q || []).push(arguments) }; w[o].u = u; w[o].t = 1 * new Date();
+      s = d.createElement('script'); s.async = 1; s.id = i; s.src = u;
+      p = d.getElementsByTagName('script')[0]; p.parentNode.insertBefore(s, p);
+  }(window, document, '//widgets.mango-office.ru/widgets/mango.js', 'mango-js', 'mgo'));
+
+  // Функция для инициализации и получения номера при каждом клике
+  function getMangoNumberOnClick(orgId, phone, callback) {
+    // Создаем уникальный хэш для каждого запроса
+    const uniqueHash = 'org_' + orgId + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     
-    // Добавляем callback в очередь
-    window.mangoQueue.push(callback);
+    // Инициализируем Mango Office с уникальными параметрами для каждого вызова
+    mgo({
+      calltracking: {
+        id: 36238,
+        elements: [{selector: '.mgo-number'}],
+        customParam: 'organization_id=' + orgId + '&hash=' + uniqueHash
+      }
+    });
     
-    // Если скрипт уже загружается, не инициализируем повторно
-    if (window.mangoScriptLoading) return;
-    window.mangoScriptLoading = true;
-    
-    (function(w, d, u, i, o, s, p) {
-      if (d.getElementById(i)) return;
-      w['MangoObject'] = o;
-      w[o] = w[o] || function() { (w[o].q = w[o].q || []).push(arguments) };
-      s = d.createElement('script');
-      s.async = 1;
-      s.id = i;
-      s.src = u;
-      p = d.getElementsByTagName('script')[0];
-      p.parentNode.insertBefore(s, p);
-      
-      s.onload = function() {
-        // Инициализируем Mango Office
-        window.mgo({calltracking: {id: 36238}});
-        
-        // Выполняем все ожидающие callback'и
-        while (window.mangoQueue.length) {
-          let callback = window.mangoQueue.shift();
-          window.mgo(function(mgo) {
-            callback(mgo);
-          });
-        }
-      };
-    })(window, document, '//widgets.mango-office.ru/widgets/mango.js', 'mango-js', 'mgo');
+    // Запрашиваем номер
+    mgo.getNumber({
+      hash: uniqueHash,
+      redirectNumber: phone
+    }, function(result) {
+      if (result && result.number) {
+        callback(result.number);
+      } else {
+        callback(phone);
+      }
+    });
   }
 
   // Функция для проверки мобильного устройства
@@ -269,6 +261,18 @@
 
   // Функция для копирования текста в буфер обмена
   function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function() {
+        showNotification('Номер скопирован!');
+      }).catch(function() {
+        fallbackCopyToClipboard(text);
+      });
+    } else {
+      fallbackCopyToClipboard(text);
+    }
+  }
+
+  function fallbackCopyToClipboard(text) {
     const input = document.createElement('input');
     input.style.position = 'fixed';
     input.style.opacity = 0;
@@ -277,8 +281,10 @@
     input.select();
     document.execCommand('copy');
     document.body.removeChild(input);
-    
-    // Показываем уведомление
+    showNotification('Номер скопирован!');
+  }
+
+  function showNotification(message) {
     const notification = document.createElement('div');
     notification.style.position = 'fixed';
     notification.style.bottom = '20px';
@@ -289,7 +295,7 @@
     notification.style.padding = '10px 20px';
     notification.style.borderRadius = '5px';
     notification.style.zIndex = '10000';
-    notification.textContent = 'Номер скопирован!';
+    notification.textContent = message;
     document.body.appendChild(notification);
     
     setTimeout(() => {
@@ -297,14 +303,10 @@
     }, 2000);
   }
 
-  // Создаем стили для модального окна
-  const style = document.createElement('style');
-
-  document.head.appendChild(style);
-
   // Создаем модальное окно
   const modalOverlay = document.createElement('div');
   modalOverlay.className = 'mgo-modal-overlay';
+  modalOverlay.style.display = 'none';
   
   const modal = document.createElement('div');
   modal.className = 'mgo-modal';
@@ -326,7 +328,9 @@
   
   function closeModal() {
     modal.classList.remove('active');
-    modalOverlay.style.display = 'none';
+    setTimeout(() => {
+      modalOverlay.style.display = 'none';
+    }, 300);
   }
 
   function showModal(number) {
@@ -360,74 +364,81 @@
     return '8 (' + n.substr(1, 3) + ') ' + n.substr(4, 3) + '-' + n.substr(7, 2) + '-' + n.substr(9, 2);
   }
 
+  // Основная функция обработки клика
+  function handleCallButtonClick(button) {
+    let calls = parseInt(button.getAttribute('data-calls'));
+    let orgId = button.getAttribute('data-org-id');
+    let phone = button.getAttribute('data-phone');
+    
+
+    // Показываем загрузку
+    const originalText = button.innerHTML;
+    button.innerHTML = 'Загрузка...';
+    button.style.pointerEvents = 'none';
+    
+    if (calls == 1) {
+      // Получаем номер через Mango Office (инициализация + запрос каждый раз)
+      getMangoNumberOnClick(orgId, phone, function(mangoNumber) {
+        if (mangoNumber) {
+          showModal(mangoNumber);
+        } else {
+          showModal(phone);
+        }
+        
+        // Восстанавливаем кнопку
+        button.innerHTML = originalText;
+        button.style.pointerEvents = 'auto';
+      });
+    } else {
+      setTimeout(function() {
+        button.innerHTML = originalText;
+        button.style.pointerEvents = 'auto';
+        showAltModal();
+      }, 1500);
+    }
+  }
+
   // Обработчик для кнопок "Позвонить"
   document.addEventListener('DOMContentLoaded', function() {
+    // Обработчик для существующих кнопок
     document.querySelectorAll('.mgo-call-button').forEach(function(button) {
       button.addEventListener('click', function() {
-        let key = this.getAttribute('data-key');
-        let calls = parseInt(this.getAttribute('data-calls'));
-        let orgId = this.getAttribute('data-org-id');
-        let phone = this.getAttribute('data-phone');
-        let defaultNumber = this.getAttribute('data-default-number');
-        
-        // Показываем загрузку
-        const originalText = this.innerHTML;
-        this.innerHTML = 'Загрузка...';
-        this.style.pointerEvents = 'none';
-        
-        if (calls == 1) {
-          // Загружаем скрипт Mango Office и получаем номер
-          loadMangoScript(function(mgo) {
-            mgo.getNumber({
-              hash: orgId,
-              redirectNumber: phone
-            }, function(result) {
-              if (result && result.number) {
-                // Показываем модальное окно с номером
-                showModal(result.number);
-                
-                // Восстанавливаем кнопку
-                button.innerHTML = originalText;
-                button.style.pointerEvents = 'auto';
-              } else {
-                // Если не удалось получить подменный номер, используем стандартный
-                showModal(phone);
-                
-                // Восстанавливаем кнопку
-                button.innerHTML = originalText;
-                button.style.pointerEvents = 'auto';
-              }
+        handleCallButtonClick(this);
+      });
+    });
+    
+    // Для динамически добавляемых кнопок через AJAX
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        mutation.addedNodes.forEach(function(node) {
+          if (node.nodeType === 1) {
+            const newButtons = node.querySelectorAll ? node.querySelectorAll('.mgo-call-button') : [];
+            newButtons.forEach(function(button) {
+              button.addEventListener('click', function() {
+                handleCallButtonClick(this);
+              });
             });
-          });
-        } else {
-          setTimeout(function() {
-            button.innerHTML = originalText;
-            button.style.pointerEvents = 'auto';
-          showAltModal(); // Показываем окно с альтернативами вместо alert
-          }, 1500);
-        }
-         const altStyle = document.createElement('style');
-  document.head.appendChild(altStyle);
+          }
+        });
+      });
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  });
 
-  // Создаем модальное окно для альтернативных организаций
+  // Код для альтернативного модального окна
   const altModalOverlay = document.createElement('div');
   altModalOverlay.className = 'mgo-modal-overlay';
+  altModalOverlay.style.display = 'none';
   
   const altModal = document.createElement('div');
   altModal.className = 'mgo-alternatives-modal';
   
-  // Данные альтернативных организаций (можно заменить на реальные данные)
   const alternativeOrgs = [
-    @foreach ($random_organizations_with_calls as $random_organization)
-      {
-        id: {{ $random_organization->organization->id }},
-        name: "{{ $random_organization->organization->name_type }}: {{ $random_organization->organization->title }}",
-        logo: "{{ $random_organization->organization->defaultLogoImg()[0] }}",
-        phone: "{{ str_replace('+', '', $random_organization->organization->phone) }}",
-        url: "{{ $random_organization->organization->route() }}",
-      },
-    @endforeach
-   
+    // Ваш массив альтернативных организаций
   ];
 
   function renderAlternativeOrgs() {
@@ -456,21 +467,21 @@
     
     altModal.innerHTML = html;
     
-    // Добавляем обработчики для кнопок "Позвонить" в альтернативных организациях
     altModal.querySelectorAll('.mgo-alternative-call').forEach(btn => {
       btn.addEventListener('click', function() {
         const phone = this.getAttribute('data-phone');
         const orgId = this.getAttribute('data-org-id');
-        
-        // Закрываем текущее модальное окно
         closeAltModal();
         
-        // Инициируем звонок через основную систему
-        initiateCall(phone, orgId);
+        // Создаем временную кнопку для обработки вызова
+        const tempButton = document.createElement('button');
+        tempButton.setAttribute('data-calls', '1');
+        tempButton.setAttribute('data-org-id', orgId);
+        tempButton.setAttribute('data-phone', phone);
+        handleCallButtonClick(tempButton);
       });
     });
     
-    // Обработчик закрытия окна
     altModal.querySelector('.mgo-alternatives-close').addEventListener('click', closeAltModal);
   }
 
@@ -489,20 +500,10 @@
     }, 300);
   }
 
-  function initiateCall(phone, orgId) {
-    // Здесь можно добавить логику для инициации звонка
-    // Например, открыть основное модальное окно с номером
-    showModal(phone);
-  }
-
-  // Добавляем элементы в DOM
   document.body.appendChild(altModalOverlay);
   document.body.appendChild(altModal);
-      });
-    });
-  });
-</script>
 
+</script>
 
 
 @endif

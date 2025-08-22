@@ -20,6 +20,7 @@ class ViewResource extends Resource
     protected static ?string $model = View::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Статистика';
     protected static ?string $navigationLabel = 'Просмотры'; // Название в меню
 
     public static function form(Form $form): Form

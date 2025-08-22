@@ -41,6 +41,7 @@
                     <option value="working_hours">Режим работы</option>
                     <option value="gallery">Галлерея</option>
                     <option value="services">Виды услуг</option>
+                    <option value="inn">Инн</option>
 
                 </select>  
             </div>

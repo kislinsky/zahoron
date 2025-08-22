@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Edge;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -63,11 +64,11 @@ class CallStat extends Model
 
     public static function callback(Request $request)
     {
+
+        Edge::create(['title'=>json_encode($request->all())]);
         // Валидация входящих данных
         $validated = $request->validate([
-            // Обязательные поля
-            'callId' => 'required|string',
-            
+            'callId'=> 'nullable',
             // Параметры коллтрекинга
             'uid' => 'nullable|string',
             'gaCid' => 'nullable|string',
@@ -119,6 +120,8 @@ class CallStat extends Model
         try {
             // Создаем запись о звонке
             $callStat = self::create([
+
+                'call_id' => $validated['callId'] ?? null,
                 'organization_id' => $validated['organization_id'] ?? null,
                 
                 // Параметры коллтрекинга
@@ -152,7 +155,6 @@ class CallStat extends Model
                 'is_new' => $validated['isNew'] ?? false,
                 
                 // Данные звонка
-                'call_id' => $validated['callId'],
                 'webhook_type' => $validated['webhookType'] ?? null,
                 'last_group' => $validated['lastGroup'] ?? null,
                 'record_url' => $validated['recordUrl'] ?? null,
@@ -174,7 +176,6 @@ class CallStat extends Model
 
             return response()->json([
                 'status' => 'success',
-                'call_id' => $callStat->call_id,
                 'message' => 'Call stat saved successfully'
             ]);
 
