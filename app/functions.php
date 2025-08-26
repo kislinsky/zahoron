@@ -45,9 +45,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
 use Stevebauman\Location\Facades\Location;
+
 
 
 
@@ -312,31 +314,38 @@ function selectCity()
         }
     }
 
-    // 2. Для локального окружения
-    if (env('API_WORK')=='false') {
+    // 2. Для локального окружения - ПРЕРЫВАЕМ выполнение
+    if (env('API_WORK') == 'false') {
         $city = City::where('selected_admin', 1)->first();
-        
         if (!$city) {
             $city = City::first() ?? new City(['title' => 'Москва']);
         }
         
         setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
-        return $city;
+        return $city; // ВОЗВРАЩАЕМ город и выходим из функции
     }
 
-     // 3. Определение по IP (ТОЛЬКО на главной странице)
+    // 3. Определение по IP (ТОЛЬКО на главной странице и только если API работает)
     if ($isHomepage && !isset($_COOKIE['ip'])) {
-       $response = Http::get("http://www.geoplugin.net/json.gp?ip=" . request()->ip());
-        if ( !empty($response['geoplugin_city'])) {
-            $city = City::where('slug', 'like', '%'.str_replace("'", '', $response['geoplugin_city']).'%')
-                        ->first();
+        try {
+            $response = Http::timeout(3)->get("http://www.geoplugin.net/json.gp?ip=" . request()->ip());
             
-            if ($city) {
-                setcookie('ip', 'true', time() + (20 * 24 * 60 * 60), '/');
-                setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
-                return $city;
+            if ($response->successful() && !empty($response['geoplugin_city'])) {
+                $cityName = str_replace("'", '', $response['geoplugin_city']);
+                $city = City::where('slug', 'like', '%'.$cityName.'%')
+                            ->orWhere('title', 'like', '%'.$cityName.'%')
+                            ->first();
+                
+                if ($city) {
+                    setcookie('ip', 'true', time() + (20 * 24 * 60 * 60), '/');
+                    setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
+                    return $city;
+                }
             }
-        } 
+        } catch (\Exception $e) {
+            // Логируем ошибку, но не прерываем выполнение
+            Log::warning('Geoplugin API error: ' . $e->getMessage());
+        }
     }
 
     // 4. Проверяем город из куки (работает на всех страницах)
@@ -357,6 +366,7 @@ function selectCity()
     setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
     return $city;
 }
+
 
 function priceProductOrder($cart_item){
     $product=Product::findOrFail($cart_item[0]);
@@ -1718,98 +1728,185 @@ function getSeo($page,$column){
     return null;
 }
 
-function formatContent($content,$model=null){
-    $city=selectCity()->title;
-    $title='';
-    $adres='';
-    $organization='';
-    if($model!=null){
-        $title=$model->title;
-        $adres=$model->adres;
-        if($model->city!=null){
-            $city=$model->city->title;
+
+
+
+function formatCityName($cityName) {
+    // Убираем все точки и лишние пробелы
+    $cityName = trim(str_replace('.', '', $cityName));
+    
+    // Список исключений и особых случаев
+    $exceptions = [
+        // Города, оканчивающиеся на -ов, -ев, -ин, -ын (склоняются)
+        'Москва' => 'Москве',
+        'Тула' => 'Туле',
+        'Казань' => 'Казани',
+        'Рязань' => 'Рязани',
+        'Пермь' => 'Перми',
+        'Тверь' => 'Твери',
+        'Ярославль' => 'Ярославле',
+        'Владивосток' => 'Владивостоке',
+        'Новосибирск' => 'Новосибирске',
+        'Петропавловск-Камчатский'=>'Петропавловске-Камчатском',
+        'Екатеринбург' => 'Екатеринбурге',
+        'Нижний Новгород' => 'Нижнем Новгороде',
+        'Ростов-на-Дону' => 'Ростове-на-Дону',
+        'Санкт-Петербург' => 'Санкт-Петербурге',
+        'Набережные Челны' => 'Набережных Челнах',
+        
+        // Города, оканчивающиеся на -о (не склоняются)
+        'Орлово' => 'Орлово',
+        'Кемерово' => 'Кемерово',
+        'Кирово' => 'Кирово',
+        
+        // Иностранные города (обычно не склоняются)
+        'Париж' => 'Париже',
+        'Лондон' => 'Лондоне',
+        'Нью-Йорк' => 'Нью-Йорке',
+    ];
+    
+    // Проверяем, есть ли город в списке исключений
+    if (isset($exceptions[$cityName])) {
+        return $exceptions[$cityName];
+    }
+    
+    // Общие правила склонения
+    $lastChar = mb_substr($cityName, -1);
+    $lastTwoChars = mb_substr($cityName, -2);
+    
+    // Правила склонения для разных окончаний
+    if ($lastChar === 'а' || $lastChar === 'я') {
+        // Города на -а, -я: заменяем на -е, -ье
+        if ($lastTwoChars === 'ка') {
+            return mb_substr($cityName, 0, -2) . 'ке';
+        } elseif ($lastTwoChars === 'га' || $lastTwoChars === 'ха') {
+            return mb_substr($cityName, 0, -1) . 'е';
+        } else {
+            return mb_substr($cityName, 0, -1) . 'е';
+        }
+    } 
+    elseif ($lastChar === 'ь') {
+        // Города на мягкий знак: заменяем на -и
+        return mb_substr($cityName, 0, -1) . 'и';
+    }
+    elseif ($lastChar === 'й') {
+        // Города на -й: заменяем на -е
+        return mb_substr($cityName, 0, -1) . 'e';
+    }
+    elseif ($lastChar === 'о') {
+        // Города на -о обычно не склоняются
+        return $cityName;
+    }
+    else {
+        // Для остальных случаев добавляем -е
+        return $cityName . 'е';
+    }
+}
+
+function formatContent($content, $model = null) {
+    $city = formatCityName(selectCity()->title);
+    $title = '';
+    $adres = '';
+    $organization = '';
+    
+    if ($model != null) {
+        $title = $model->title;
+        $adres = $model->adres;
+        if ($model->city != null) {
+            $city = formatCityName($model->city->title);
         }
     }
     
-    $time=date('H:i');
-    $date=date('Y-m-d');
-    $year= date('Y');
+    $time = date('H:i');
+    $date = date('Y-m-d');
+    $year = date('Y');
  
-    $result=str_replace(["{title}","{city}","{adres}","{time}","{date}","{Year}","{organization}"],[$title,$city,$adres,$time,$date,$year,$organization],$content);
+    $result = str_replace(
+        ["{title}", "{city}", "{adres}", "{time}", "{date}", "{Year}", "{organization}"],
+        [$title, $city, $adres, $time, $date, $year, $organization],
+        $content
+    );
+    
     return $result;
-
 }
 
-
-function formatContentCategoryProduct($content,$model){
-    $city=selectCity()->title;
-    $title='';
-    $adres='';
-    $organization='';
-    if($model!=null){
-        $title=$model->title;
-        $adres=$model->adres;
-        if($model->city!=null){
-            $city=$model->city->title;
+function formatContentCategoryProduct($content, $model) {
+    $city = formatCityName(selectCity()->title);
+    $title = '';
+    $adres = '';
+    $organization = '';
+    
+    if ($model != null) {
+        $title = $model->title;
+        $adres = $model->adres;
+        if ($model->city != null) {
+            $city = formatCityName($model->city->title);
         }
     }
     
-    $time=date('H:i');
-    $date=date('Y-m-d');
-    $year= date('Y');
+    $time = date('H:i');
+    $date = date('Y-m-d');
+    $year = date('Y');
  
-    $result=str_replace(["{title}","{city}","{adres}","{time}","{date}","{Year}","{organization}"],[$title,$city,$adres,$time,$date,$year,$organization],$content);
-    
-    return $result;
-
-}
-
-
-function formatContentBurial($content,$model){
-    $city=selectCity()->title;
-    $name='';
-    $surname='';
-    $date_birth='';
-    $date_death='';
-    $patronymic='';
-    $adres='';
-    $cemetery='';
-    if($model!=null){
-        $name=$model->name;
-        $surname=$model->surname;
-        $date_birth=$model->date_birth;
-        $date_death=$model->date_death;
-        $patronymic=$model->patronymic;
-        $adres=$model->location_death;
-        $cemetery=$model->cemetery->title;
-    }
-    
-    $result=str_replace(["{name}","{surname}","{patronymic}","{city}","{adres}","{cemetery}","{date_birth}","{date_death}"],[$name,$surname,$patronymic,$city,$adres,$cemetery,$date_birth,$date_death],$content);
-    
+    $result = str_replace(
+        ["{title}", "{city}", "{adres}", "{time}", "{date}", "{Year}", "{organization}"],
+        [$title, $city, $adres, $time, $date, $year, $organization],
+        $content
+    );
     
     return $result;
 }
 
-function formatContentCategory($content,$category,$models,$prices=[]){
-    $city=selectCity()->title;
-    $category=$category->title;
-    $count=$models->total();
-    $time=date('H:i');
-    $date=date('Y-m-d');
-    $year= date('Y');
-    if($models->count()>0){
-        $city=$models->first()->organization->city->title;
-    }
-    $price_min=$prices[0];
-    $price_middle=$prices[1];
-    $price_max=$prices[2];
-
-    $result=str_replace(["{category}","{city}","{count}","{time}","{date}","{Year}","{price_min}","{price_avg}","{price_max}",],[$category,$city,$count,$time,$date,$year,$price_min,$price_middle,$price_max],$content);
+function formatContentBurial($content, $model) {
+    $city = formatCityName(selectCity()->title);
+    $name = '';
+    $surname = '';
+    $date_birth = '';
+    $date_death = '';
+    $patronymic = '';
+    $adres = '';
+    $cemetery = '';
     
+    if ($model != null) {
+        $name = $model->name;
+        $surname = $model->surname;
+        $date_birth = $model->date_birth;
+        $date_death = $model->date_death;
+        $patronymic = $model->patronymic;
+        $adres = $model->location_death;
+        $cemetery = $model->cemetery->title;
+    }
+    
+    $result = str_replace(
+        ["{name}", "{surname}", "{patronymic}", "{city}", "{adres}", "{cemetery}", "{date_birth}", "{date_death}"],
+        [$name, $surname, $patronymic, $city, $adres, $cemetery, $date_birth, $date_death],
+        $content
+    );
     
     return $result;
+}
 
-} 
+function formatContentCategory($content, $category, $models, $prices = []) {
+    $city = formatCityName(selectCity()->title);
+    $category = $category->title;
+    $count = $models->total();
+    $time = date('H:i');
+    $date = date('Y-m-d');
+    $year = date('Y');
+    
+
+    $price_min = $prices[0];
+    $price_middle = $prices[1];
+    $price_max = $prices[2];
+
+    $result = str_replace(
+        ["{category}", "{city}", "{count}", "{time}", "{date}", "{Year}", "{price_min}", "{price_avg}", "{price_max}"],
+        [$category, $city, $count, $time, $date, $year, $price_min, $price_middle, $price_max],
+        $content
+    );
+    
+    return $result;
+}
 
 function statusBurial($status){
     if($status==0){
@@ -2567,4 +2664,33 @@ function getRandomOrganizationsWithCalls($organizationsCategory)
     
     // Возвращаем 3 случайные организации
     return $filtered->random(3);
+}
+
+
+function generateBreadcrumbMicrodata($pages_navigation)
+{
+    $microdata = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => []
+    ];
+    
+    foreach ($pages_navigation as $index => $item) {
+        $listItem = [
+            '@type' => 'ListItem',
+            'position' => $index + 1,
+            'name' => $item[0]
+        ];
+        
+        // Добавляем URL только если он есть и это не последний элемент
+        if (isset($item[1]) && $item[1] && $index < count($pages_navigation) - 1) {
+            $listItem['item'] = $item[1];
+        }
+        
+        $microdata['itemListElement'][] = $listItem;
+    }
+    
+    return '<script type="application/ld+json">' . 
+           json_encode($microdata, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . 
+           '</script>';
 }

@@ -231,70 +231,26 @@ class CallStatResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('caller_number')
-                    ->label('Номер')
+                    ->label('Номер звонящего')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('call_type')
-                    ->label('Тип')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'inbound' => 'success',
-                        'outbound' => 'info',
-                        default => 'gray',
-                    }),
-
-                Tables\Columns\TextColumn::make('call_status')
-                    ->label('Статус')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'answered' => 'success',
-                        'no_answer' => 'danger',
-                        'busy' => 'warning',
-                        'failed' => 'gray',
-                        default => 'secondary',
-                    }),
-
-                Tables\Columns\TextColumn::make('date_start')
-                    ->label('Время начала')
-                    ->dateTime()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('duration')
-                    ->label('Длительность')
-                    ->formatStateUsing(fn ($state) => $state ? gmdate('H:i:s', $state) : '-')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('wait_time')
-                    ->label('Ожидание')
-                    ->formatStateUsing(fn ($state) => $state ? $state . ' сек' : '-')
-                    ->sortable(),
-
-                Tables\Columns\IconColumn::make('is_quality')
-                    ->label('Качество')
-                    ->boolean()
-                    ->trueIcon('heroicon-o-check-badge')
-                    ->falseIcon('heroicon-o-x-mark'),
-
-                Tables\Columns\TextColumn::make('utm_source')
-                    ->label('Source')
+                Tables\Columns\TextColumn::make('called_number')
+                    ->label('Номер на который звонят')
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                Tables\Columns\TextColumn::make('utm_medium')
-                    ->label('Medium')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                Tables\Columns\TextColumn::make('city')
-                    ->label('Город')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('device')
                     ->label('Устройство')
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('ip')
+                    ->label('ip')
+                    ->searchable()
+                    ->sortable(),
+
+
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('call_type')

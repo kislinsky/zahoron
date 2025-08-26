@@ -252,8 +252,7 @@ class OrganizationService
         SEOTools::setTitle(formatContentCategory(getSeo($category->slug.'-catalog-organization','title'),$category,$organizations_category,$organizations_prices));
         SEOTools::setDescription(formatContentCategory(getSeo($category->slug.'-catalog-organization','description'),$category,$organizations_category,$organizations_prices));
         $title_h1=formatContentCategory(getSeo($category->slug.'-catalog-organization','h1'),$category,$organizations_category,$organizations_prices);
-
-        $pages_navigation=[['Главная',route('index')],['Организации',route('organizations')],[$category->title]];
+        $pages_navigation=[['Главная',route('index')],[$category->title]];
 
         return view('organization.catalog.catalog-organization',compact('random_organizations_with_calls','pages_navigation','title_h1','filter_work','category_main','news_video','district_choose','districts','cemetery_choose','cemeteries','city','cats','news','organizations_category','price_min','price_middle','price_max','category','sort'));
     }

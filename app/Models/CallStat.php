@@ -65,7 +65,6 @@ class CallStat extends Model
     public static function callback(Request $request)
     {
 
-        Edge::create(['title'=>json_encode($request->all())]);
         // Валидация входящих данных
         $validated = $request->validate([
             'callId'=> 'nullable',
@@ -111,7 +110,7 @@ class CallStat extends Model
             'duration' => 'nullable|integer',
             'numberHash' => 'nullable|string',
             'waitTime' => 'nullable|integer',
-            'calledNumber' => 'nullable|string',
+            'number' => 'nullable|string',
             
             // Дополнительные параметры
             'organization_id' => 'nullable|integer|exists:organizations,id',
@@ -166,7 +165,7 @@ class CallStat extends Model
                 'duration' => $validated['duration'] ?? null,
                 'number_hash' => $validated['numberHash'] ?? null,
                 'wait_time' => $validated['waitTime'] ?? null,
-                'called_number' => $validated['calledNumber'] ?? null,
+                'called_number' => $validated['number'] ?? null,
             ]);
 
             // Можно добавить дополнительные действия:

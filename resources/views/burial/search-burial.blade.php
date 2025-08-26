@@ -132,7 +132,7 @@
     <section class="about_company bac_gray">
         <div class="container">
             <div class="title">О проекте "Цены на ритуальные услуги в г. {{selectCity()->title}}</div>
-            <div class="content_block">{!! get_acf(15,'content_1') !!}</div>
+            <div class="content_block">{!! formatContent(get_acf(15,'content_1')) !!}</div>
 
         </div>
     </section>

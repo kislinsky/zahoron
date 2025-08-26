@@ -19,11 +19,11 @@ $reviews = Review::orderBy('id', 'desc')->get();
                             <div class="li_rewies">
                                 <div class="grid_img_rewies">
                                     <div class="item_grid_rewies">
-                                        <img src="{{ $review->urlImgBefore()}}" alt="">
+                                        <img loading="lazy" src="{{ $review->urlImgBefore()}}" alt="">
                                         <div class="title_rewies">До уборки</div>
                                     </div>
                                     <div class="item_grid_rewies">
-                                        <img src="{{$review->urlImgAfter()}}" alt="">
+                                        <img loading="lazy" src="{{$review->urlImgAfter()}}" alt="">
                                         <div class="title_rewies">После уборки</div>
                                     </div>
                                 </div>

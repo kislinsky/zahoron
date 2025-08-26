@@ -7,3 +7,6 @@
         @endif
     @endforeach
 </div>
+
+
+{!! generateBreadcrumbMicrodata($pages_navigation) !!}

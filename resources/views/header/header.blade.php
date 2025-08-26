@@ -13,6 +13,12 @@ use Artesaos\SEOTools\Facades\SEOTools;
 
 
         {!! SEOTools::generate() !!}
+
+        @if(request()->has('page') && request()->get('page') > 1)
+            <link rel="canonical" href="{{ url()->current() }}?{{ http_build_query(request()->except('page')) }}">
+        @else
+            <link rel="canonical" href="{{ url()->current() }}?{{ http_build_query(request()->all()) }}">
+        @endif
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
         <!-- Fonts -->
@@ -22,8 +28,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
         <link  defer rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
         <link defer rel="stylesheet" href="{{asset('css/style.css')}}">
-        <link defer rel="stylesheet" href="{{asset('css/style-black-theme.css')}}">
-        <link defer rel="stylesheet" href="{{asset('css/mobile.css')}}">
+       
         <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lightgallery-bundle.min.css" />
 
         <script defer src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/lightgallery.min.js"></script>
@@ -150,10 +155,10 @@ use Artesaos\SEOTools\Facades\SEOTools;
     
     <div class="flex_icon_header">
         <a href='{{ route('login') }}' class='icon_header icon_login'><img class='img_black_theme' src='{{asset('storage/uploads/Group 1_black_theme.svg')}}'><img class='img_light_theme' src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
-        <a class='gray_circle icon_header open_mobile_header' >
+        <div class='gray_circle icon_header open_mobile_header' >
             <img class='img_light_theme'src="{{asset('storage/uploads/Group 29.svg')}}" alt="">
             <img class='img_black_theme'src="{{asset('storage/uploads/Group 29 (1)_black.svg')}}" alt="">
-        </a>
+        </div>
     </div>
 </div>
 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">

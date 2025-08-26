@@ -17,7 +17,6 @@ use Artesaos\SEOTools\Facades\SEOTools;
 class CemeteryService {
     
     public static function index(){
-        
         $city=selectCity();
         
         $seo="Кладбища г.".$city->title;
@@ -31,7 +30,9 @@ class CemeteryService {
         $cemeteries=Cemetery::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
         $faqs=FaqRitualObject::where('type_object','cemetery')->orderBy('id','desc')->get();
         $pages_navigation=[['Главная',route('index')],['Кладбища']];
-        
+       
+
+
         return view('cemetery.index',compact('faqs','cemeteries','city','products','usefuls','cemeteries_map','pages_navigation'));
     }
 

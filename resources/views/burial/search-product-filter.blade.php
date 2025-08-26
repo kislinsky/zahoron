@@ -38,7 +38,7 @@
 
 <section class="price_service">
     <div class="container grid_two_page">
-        <div class="text_block">{!! get_acf(18,'content') !!}</div>
+        <div class="text_block">{!! formatContent(get_acf(18,'content')) !!}</div>
         
         <div class="sidebar">
             <div class="btn_border_blue"  data-bs-toggle="modal" data-bs-target="#beautification_form"><img src="{{asset('storage/uploads/Frame (20).svg')}}" alt="">Облагородить могилу</div>

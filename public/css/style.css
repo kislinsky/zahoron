@@ -7814,3 +7814,1836 @@ color: #0080D7;
       cursor: pointer;
       color: #666;
     }
+    .img_index_service{
+        max-width: 200px;
+    }
+
+
+
+
+    .black_theme{
+    color: white;
+    background: #050505;
+}
+
+.black_theme .order_page.bac_gray{
+    background: #0F0F0F;
+}
+
+
+.black_theme header{
+    background: #050505;
+}
+.black_theme .block_border_gray .title_checkout_form{
+    color:white;
+}
+
+.black_theme .btn_bac_gray {
+    background: #0F0F0F;
+    color: white;
+}
+
+.black_theme .comment{
+    border: 1px solid #4E4E4E;
+    color: white;
+}
+
+.black_theme .li_organization_provider{
+    background: #0F0F0F;
+    border: none;
+}
+.black_theme .search_organization_input{
+    background: #050505;
+}
+.black_theme .li_rewies,.black_theme .li_care{
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .bac_loader{
+    background: #050505;
+}
+
+.black_theme .title_parametr,.black_theme .black_text{
+    color: white;
+}
+
+.black_theme .block_input_product_menu input,.black_theme .count_product_single input{
+    background: #0F0F0F;
+    color: white;
+    border: none;
+}
+
+.black_theme .title_404,.black_theme .title_404_middle{
+    color: white;
+}
+
+.black_theme .text_single_product{
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .header_big, .black_theme footer, .black_theme .modal-body.message,.black_theme .li_product_monuments_grave,.black_theme .li_memorial_dinner,.black_theme .li_memorial_hall,.black_theme .li_faq,.black_theme .bac_gray,.black_theme .li_cat_product{
+    background-color: #0F0F0F;
+}
+
+.black_theme .message{
+    background: #0F0F0F;
+}
+
+.black_theme a.li_cat_news:hover, .black_theme a.title_label:hover, .black_theme a.text_li:hover, .black_theme a.title_rewies:hover, .black_theme a.content_block:hover, .black_theme a.title_memorial_hall:hover, .black_theme a.title_text_block:hover, .black_theme a.title_memorial_dinner:hover, .black_theme a.title_organization:hover, .black_theme a.mini_text_product:hover, .black_theme .price_product_monuments_grave:hover, .black_theme a.title_li:hover, .black_theme a.text_middle_index:hover, .black_theme a.title:hover, .black_theme a.mini_text:hover, .black_theme a.text_black:hover, .black_theme .li_location:hover, .black_theme a.title_news:hover, .black_theme a.text_block:hover, .black_theme .raiting_table th{
+    color: #0080D7;
+}
+
+.black_theme .gray_index_block_service{
+    background: #4E4E4E;
+}
+.black_theme .title_middle, .black_theme .title a, .black_theme .li_cat_main_marketplace,.black_theme .li_cat_children_marketplace,.black_theme .li_cat_children_marketplace a, .black_theme .content_news_single li, .black_theme .li_cat_news, .black_theme .text_search_application,.black_theme .block_inpit_form_search input, .black_theme .text_block_mini, .black_theme .title_cart, .black_theme .title_product_market, .black_theme .content_product, .black_theme .input_additional, .black_theme .index_title, .black_theme .title_label ,.black_theme .text_li, .black_theme .title_rewies,.black_theme .content_block, .black_theme .title_memorial_hall,.black_theme .title_text_block,.black_theme .title_memorial_dinner,.black_theme .title_organization,.black_theme .mini_text_product,.black_theme .price_product_monuments_grave,.black_theme .title_li,.black_theme .text_middle_index, .black_theme .title,.black_theme .mini_text,.black_theme .text_black,.black_theme .li_location,.black_theme .title_news,.black_theme .text_block,.black_theme .raiting_table th{
+    color: white;
+}
+.black_theme a.title_label:hover,.black_theme .li_cat_children_marketplace a:hover{
+    color: #0080D7;
+}
+.black_theme .li_news .text_li{
+    color: #808080;
+}
+
+.black_theme .title_before_our_works,.black_theme .title_after_our_works{
+    color: #1A1A1A;
+}
+
+.black_theme .li_memorial_dinner,.black_theme .li_memorial_hall,.black_theme .li_faq,.black_theme .li_news,.black_theme .cats_news{
+    border:1px solid #4E4E4E;
+}
+.black_theme .btn_border_blue{
+    background: #050505;
+    color: #0080D7;
+}
+
+.black_theme footer .pages .no_bac_btn{
+    background: #050505;
+    color: white;
+}
+
+.black_theme .flex_footer_2,.black_theme .aplication p,.black_theme .btn_gray{
+    color: white;
+}
+
+.black_theme footer .pages .no_bac_btn:hover{
+    background: #0080D7;
+}
+
+.black_theme .block_form_form_words_memory textarea,  .black_theme .form_services_add select, .black_theme .checkout_form input,.black_theme .checkout_form textarea,  .black_theme .select, .black_theme .form_city_select input, .black_theme .block_input input,.black_theme .block_input select,.black_theme .block_input textarea{
+    border:1px solid #4E4E4E;
+    background: none;
+    color: white;
+}
+.black_theme .checkout_form label,.black_theme .checkout_form label a{
+    color: white;
+}
+.black_theme .abs_cities_input,.black_theme .abs_cities_input_search,.black_theme .call_time,.black_theme .call_time input[type="time"]{
+    background: #0F0F0F;
+}
+.black_theme .city_li_input,.black_theme .city_li_input_seacrh{
+    color: white;
+    border:1px solid #4E4E4E;
+}
+.black_theme .text_middle{
+    color: white;
+}
+.black_theme .city_li_input:hover,.black_theme .city_li_input_seacrh:hover{
+    color: #0080D7;
+}
+.black_theme option,.black_theme .input__wrapper{
+    background: #0F0F0F;
+}
+
+.black_theme .form_login{
+    background: #0F0F0F;
+}
+
+.black_theme .input_print_form .message{
+    background: #0F0F0F;
+}
+
+.black_theme .li_organization{
+    background: #0F0F0F;
+}
+
+.black_theme .info_li_organization .title_li_organiaztion{
+    color: white;
+}
+
+.black_theme .info_li_organization a.title_li_organiaztion:hover{
+    color: #0080D7;
+}
+
+.black_theme .filter_block_organization .checkbox,.black_theme .filter_sort,.black_theme .filter_block_organization select.active_select_filter_organiaztion_2{
+    background: #0F0F0F;
+    border: none;
+    color: white;
+}
+
+.black_theme .filter_block select,.black_theme .filter_block input{
+    background: #0F0F0F;
+    border: none;
+    color: white;
+}
+.black_theme .ul_sort {
+    border: 1px solid #4E4E4E;
+    background: #0F0F0F;
+}
+.black_theme .abs_cities a,.black_theme .abs_cities,.black_theme .gos_block{
+    background: #0F0F0F;
+    color: white;
+}
+.black_theme .li_cat_children_marketplace:hover{
+    color: #0080D7;
+}
+.black_theme .border_gray,.black_theme .block_table_price_orgniaztions td,.black_theme .block_table_price_orgniaztions th,.black_theme .block_product_cats{
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .abs_cities a:hover{
+    color: #0080D7;
+}
+.black_theme .li_place .btn_border_gray{
+    color: white;
+    border: 1px solid #4E4E4E;
+}
+.black_theme .sidebar_place,.black_theme .li_city_place{
+    border: 1px solid #4E4E4E;
+    color: white;
+
+}
+.black_theme .li_review_organization, .black_theme .btn_border_gray, .black_theme .content_product,.black_theme .icon_btn_single_organization,.black_theme .block_content_organization_single,.black_theme .block_menu_single_organization{
+    border: 1px solid #4E4E4E;
+    color: white;
+}
+
+.black_theme .text_black_mini,.black_theme .text_gray_mini{
+    color: white;
+}
+.black_theme .block_content_organization_single .item_memorial_menu{
+    background: #050505;
+}
+.black_theme .block_border_gray_map_organization_single{
+    border-top: 1px solid #4E4E4E;
+    border-right: 1px solid #4E4E4E;
+    border-left: 1px solid #4E4E4E;
+
+}
+.black_theme .li_place{
+    border: 1px solid #4E4E4E;
+}
+
+
+.black_theme .mobile_header ul::-webkit-scrollbar,.black_theme .block_menu_single_organization::-webkit-scrollbar{
+    width: 7px; /* Ширина вертикальной полосы прокрутки */
+    height: 7px; /* Высота горизонтальной полосы прокрутки */
+}
+
+.black_theme .mobile_header ul::-webkit-scrollbar-track,.black_theme .block_menu_single_organization::-webkit-scrollbar-track{
+    background: #4E4E4E; /* Фон трека (полоса под ползунком) */
+    border-radius: 6px; /* Скругление углов */
+}
+
+.black_theme .mobile_header ul::-webkit-scrollbar-thumb,.black_theme .block_menu_single_organization::-webkit-scrollbar-thumb{
+    background: #808080; /* Цвет ползунка */
+    border-radius: 6px; /* Скругление углов */
+}
+
+.black_theme .mobile_header ul::-webkit-scrollbar-thumb:hover,.black_theme .block_menu_single_organization::-webkit-scrollbar-thumb:hover{
+    background: #808080; /* Цвет ползунка при наведении */
+
+}
+
+.black_theme .header_decoder .flex_icon_header .icon_header{
+    background: #050505;
+}
+
+
+
+.black_theme .header_user_mini_info {
+    background: #050505;
+    border-top: 1px solid #4E4E4E;
+}
+.black_theme .mobile_choose_organiztion{
+    background: #050505;
+}
+
+.black_theme .header_decoder .flex_icon_header .logout{
+    background: #050505;
+    color: white;
+}
+.black_theme .mobile_info_about_decoder{
+    background: #050505;
+}
+
+.black_theme .block_menu_single_organization{
+    border: none;
+}
+  /* Весь scrollbar */
+.black_theme  .table_rating_block::-webkit-scrollbar ,.black_theme .flex_label_block::-webkit-scrollbar,.black_theme .abs_cities::-webkit-scrollbar{
+    width: 8px; /* Ширина вертикальной полосы прокрутки */
+    height: 8px; /* Высота горизонтальной полосы прокрутки */
+  }
+  
+  /* Полоса прокрутки (фон scrollbar) */
+.black_theme  .table_rating_block::-webkit-scrollbar-track,.black_theme .flex_label_block::-webkit-scrollbar-track,.black_theme .abs_cities::-webkit-scrollbar-track {
+    background: #4E4E4E; /* Фон трека (полоса под ползунком) */
+    border-radius: 6px; /* Скругление углов */
+  }
+  
+  /* Ползунок (scrollbar thumb) */
+.black_theme  .table_rating_block::-webkit-scrollbar-thumb,.black_theme .flex_label_block:-webkit-scrollbar-thumb,.black_theme .abs_cities::-webkit-scrollbar-thumb {
+    background: #808080; /* Цвет ползунка */
+    border-radius: 6px; /* Скругление углов */
+  }
+  
+  /* Ползунок при наведении */
+.black_theme .table_rating_block::-webkit-scrollbar-thumb:hover,.black_theme .flex_label_block::-webkit-scrollbar-thumb:hover,.black_theme .abs_cities::-webkit-scrollbar-thumb:hover {
+    background: #808080; /* Цвет ползунка при наведении */
+}
+
+.black_theme .gray_btn{
+    color: #E9E8EA;
+    transition: all ease-in-out 0.2s;
+    background: #808080;
+}
+
+.black_theme .ul_childern_cats_marketplace{
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .blue_input::placeholder{
+    color: #E9E8EA;
+}
+.black_theme .blue_input{
+    background: #808080;
+color: white;
+}
+.black_theme a.gray_btn:hover{
+    color: #0080D7;
+}
+
+
+.black_theme .navigation span,.black_theme .navigation_pages span ,.black_theme .text_single_product{
+    color: white;
+}
+
+
+.black_theme .li_product_market {
+    background: #0F0F0F;
+    border:1px solid #4E4E4E;
+}
+.black_theme a.text_block_mini:hover{
+    color: #0080D7;
+}
+.black_theme .form_search input,.black_theme .content_order_page form input,.black_theme .content_order_page select{
+    background: #050505;
+    border: none;
+}
+
+.black_theme .li_product{
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .li_cat_news.active_cat{
+    color: #0080D7;
+}
+
+.black_theme .li_service{
+    background: #0F0F0F;
+}
+
+.black_theme .index_title a,.black_theme .form_services_add .title_middle{
+    color: white;
+}
+.black_theme .cats_news{
+    background: #050505;
+}
+
+.black_theme .li_label_block{
+    background: #0F0F0F;
+    color: white;
+}
+.black_theme .li_label_block:hover,.black_theme .active_label_product{
+    background: #0080D7;
+}
+
+.black_theme .sidebar_account{
+    background: #0F0F0F;
+}
+.black_theme .header_decoder{
+    background: #0F0F0F;
+}
+.black_theme .title_page_sidebar{
+    color: white;
+}
+
+.black_theme .form_settings input,.black_theme .form_settings select{
+    background: #0F0F0F;
+    border: 1px solid #4E4E4E;
+    color: white;
+}
+.black_theme .label_input{
+    color: white;
+}
+.black_theme .ul_agency_organizations{
+    background: #0F0F0F;
+}
+.black_theme .comments_burial{
+    background: #1A1A1A;
+}
+.black_theme .comment_burial{
+    color: white;
+    border-bottom: 1px solid #4E4E4E;
+}
+.black_theme .comment_burial:hover{
+    color: #0080D7;
+}
+
+.black_theme .item_3_decoder{
+    background: #0F0F0F;
+}
+.black_theme .all_money_decoder,.black_theme .li_payment_decoder,.black_theme .title_training_materials,.black_theme .li_training_materials{
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .li_children_page_sidebar{
+    color: white;
+}
+.black_theme .li_children_page_sidebar_active,.black_theme .li_children_page_sidebar:hover{
+    background: #050505;
+    border-left:5px solid #0080D7;
+
+}
+
+.black_theme .li_children_page_sidebar{
+    border-left:5px solid #0F0F0F;
+}
+.black_theme .li_children_page_sidebar_active{
+    border-left:5px solid #0080D7;
+}
+
+.black_theme .input_location_settings{
+    background: #0F0F0F;
+}
+
+.black_theme .li_aplication,.black_theme .li_product_organization,.black_theme .li_order,.black_theme .box_width_border_gray{
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .text_black_bold{
+    color: white;
+}
+
+.black_theme .input_price_update_product_organization{
+    background: #0F0F0F;
+    color: white;
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .table_answer_from_provider th{
+    background: #050505;
+}
+
+.black_theme .block_table_price_organization_ritual_services th,.black_theme  .block_table_price_organization_ritual_services td{
+    background: #0F0F0F;
+    border: 1px solid #4E4E4E;
+}
+
+.black_theme .ul_working_days,.black_theme .default_admin_form{
+    background: #0F0F0F;
+    color: white;
+    border: 1px solid #4E4E4E;
+}
+.black_theme .li_working_day{
+    border-left: 5px solid #4E4E4E;
+}
+.black_theme .li_service{
+    border: 1px solid #4E4E4E;
+
+}
+.black_theme .li_working_day_active,.black_theme .li_working_day:hover{
+    background: #4E4E4E;
+    border-left: 5px solid #0080D7;
+}
+
+.black_theme .admin_table th,.black_theme .admin_table td{
+    color: white;
+}
+.black_theme .page-link{
+    border: 1px solid #4E4E4E;
+    color: white;
+    background: #0F0F0F;
+}
+.black_theme .page-link:hover{
+    background: #0080D7;
+}
+
+.black_theme .active>.page-link,.black_theme .page-link.active{
+    background: #0080D7;
+}
+
+.black_theme .default_admin_form input{
+    background: #0F0F0F;
+    color: white;
+}
+
+.black_theme .list-group-item{
+    background: #0F0F0F;
+} 
+
+.black_theme .reason_failure_btn .text_black{
+    color: #050505;
+}
+
+.black_theme .img_light_theme{
+    display: none;
+}
+.black_theme .img_black_theme{
+    display: block;
+}
+
+.black_theme .icon_header{
+    background-color: #0F0F0F;
+}
+.gray_index_block_service .gray_btn{
+    border-radius: 5px;
+}
+
+.black_theme .mobile_header_mini_info{
+    background: #050505;
+    border-top: 1px solid #4E4E4E;
+}
+
+.open_big_header.img_black_theme{
+    width: 25px;
+}
+
+.black_theme .mobile_header{
+    background: #0F0F0F;
+}
+.black_theme .mobile_header a{
+    color: white;
+}
+
+.black_theme .mobile_header a:hover{
+    color: #0080D7;
+}
+
+.black_theme .logo_organization_single .black_img_org{
+    display: block;
+}
+.black_theme .logo_organization_single .white_img_org{
+    display: none;
+}
+
+
+.name_organization .logo_organization_single .black_img_org{
+    display: block;
+}
+.name_organization .logo_organization_single .white_img_org{
+    display: none;
+}
+
+.black_theme .item_memorial_menu a{
+    color: white;
+}
+
+.black_theme .img_logo_organization.white_img_org{
+    display: none;
+}
+.black_theme .img_logo_organization.black_img_org{
+    display: block ;
+}
+
+
+.black_theme .logo_organization_similar.black_img_org{
+    display: block;
+}
+.black_theme .logo_organization_similar.white_img_org{
+    display: none;
+}
+
+.black_theme .img_place .black_img_org{
+    display: block;
+}
+.black_theme .img_place .white_img_org{
+    display: none;
+}
+
+.black_theme .block_filter_mobile,.black_theme .mobile_filter_option{
+    background: #0F0F0F;
+    color: white;
+}
+
+.black_theme .one_block_li_product .black_img_org{
+    display: block;
+}
+.black_theme .one_block_li_product .white_img_org{
+    display: none;
+}
+
+.black_theme .img_single_product .black_img_org{
+    display: block;
+}
+.black_theme .img_single_product .white_img_org{
+    display: none;
+}
+
+
+/**
+ * Theme Name: zahoron
+ */
+
+
+@media(max-width:1100px){
+    .container.grid_two_page{
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+@media(max-width:1100px){
+    .margin_top_for_header{
+        margin-top: 132px ;
+    }
+    header .pages{
+        display: none;
+    }
+    header .container{
+        display: flex;
+        justify-content: space-between;
+    }
+    .header_main .open_big_header,.header_main .icon_login{
+        display: none;
+    }
+    .title{
+        line-height: 37.8px;
+        font-size: 35px;
+    }
+    .title_our_works{
+        font-size: 28px;
+    }
+    .li_review_organization .content_block{
+        max-width: 100%;
+    }
+    .flex_footer{
+        flex-direction: column;
+    }
+    .mobile_header_mini_info{
+        display: flex;
+    }
+
+    .black_theme .open_big_header.img_black_theme{
+        display: none;
+    }
+    .black_theme .header_decoder .flex_icon_header .icon_header{
+        background: #050505 ;
+    }
+    .black_theme .header_decoder,.black_theme .header_decoder {
+        background: #050505 !important;
+    }
+
+    .black_theme .header_decoder.header_decoder_account .flex_icon_header .icon_header{
+        background: #0F0F0F;
+    }
+    .black_theme .header_decoder.header_admin .flex_icon_header .logout,.black_theme .header_decoder.header_admin .icon_header{
+        background: #0F0F0F !important;
+    }
+
+    .black_theme .header_decoder.header_agency .flex_icon_header .icon_header{
+        background: #0F0F0F !important;
+
+    }
+
+    .block_search_ul_advantages .grid_4{
+        grid-template-columns: 1fr 1fr;
+    }
+   
+
+}
+
+
+@media(max-width:960px){
+    .header_user_mini_info.header_user_mini_info_2{
+        display:flex;
+    }
+    .header_decoder.header_user .icon_header.icon_login,.header_decoder.header_user .no_bac_btn{
+        display: none;
+    }
+
+    .blue_block_all_price{
+        display: none;
+    }
+    .organization_marketplace .grid_product_two{
+        display: flex;
+        flex-direction: column-reverse;
+    }
+    
+    .title_middle{
+        font-size: 24px;
+    }
+    .index_block_grid{
+        grid-template-columns: 1fr;
+    }
+    .blue_btn, .border_blue_btn,.green_btn,.red_btn,.gray_btn{
+        font-size: 14px;
+    }
+
+    .swiper-button-next, .swiper-rtl .swiper-button-prev{
+        right: 14px;
+    }
+
+    .swiper-button-prev, .swiper-rtl .swiper-button-next{
+        left: 14px;
+    }
+
+
+    .flex_footer .pages{
+        width: 100%;
+        flex-direction: column;
+    }
+    .flex_footer .pages .no_bac_btn{
+        min-width: 100%;
+
+    }
+    .block_info_footer{
+        text-align: center;
+        font-size: 14px;
+    }
+    .li_review_organization{
+        min-height: auto;
+    }
+    .li_news{
+        min-height: 270px;
+    }
+    .ul_news{
+        grid-template-columns: 1fr 1fr;
+    }
+    .text_li{
+        font-size: 14px;
+    }
+    .title_news{
+        font-size: 18px;
+    }
+    .li_memorial_hall .grid_two{
+        grid-template-columns: 1fr;
+    }
+    .li_memorial_dinner{
+        gap: 20px;
+    }
+    .title_li{
+        font-size: 24px;
+    }
+
+    .main_index_block .grid_two{
+        grid-template-columns: 1fr;
+    }
+
+    .flex_text_service_index img{
+        max-height: 110px;
+        max-width: 100px;
+    }
+    .ul_products{
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    .grid_organization_single{
+        grid-template-columns: 1fr;
+    }
+    .map_single_organization img{
+        object-fit: cover;
+    }
+
+    .blue_block_all_price{
+        font-size: 20px;
+    }
+
+    .product_market .grid_product_two{
+        display: flex;
+        flex-direction: column-reverse;     
+    }
+    .ul_how_work_search{
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+   .block_places{
+    grid-template-columns: 1fr;
+   }
+   .ul_products_sidebar_places{
+    grid-template-columns: 1fr 1fr;
+    display: grid;
+    gap: 12px;
+   }
+   .sidebar_place{
+    align-items:normal;
+   }
+   .gray_index_block_service{
+    min-height: 260px;
+   }
+   .text_middle_index{
+    font-size: 20px;
+   }
+   .sidebar_account{
+    display: none;
+   }
+
+
+   .header_agency .choose_organization_block{
+    display: none;
+   }
+
+   .header_agency{
+    padding: 20px;
+    background: white;
+    justify-content: space-between;
+   }
+   .header_agency .open_mobile_header{
+        display: flex;
+    }
+   .header_agency .flex_icon_header .text_black_bold{
+        display: none;
+   }
+   .mobile_choose_organiztion{
+        display: flex;
+        width: 100%;
+        background: #F7F7F8;
+        padding: 10px 0px;
+   }
+   .mobile_choose_organiztion .choose_organization_block{
+        margin: 0px;
+        width: 100%;
+        position: relative;
+        z-index: 99;
+   }
+   .header_decoder_account .open_mobile_header{
+        display: flex;
+    }
+
+    .header_decoder_account .item_decoder,.header_decoder_account .all_money_decoder,.header_decoder_account .logout{
+        display: none;
+    }
+    .header_decoder_account {
+        background: white;
+        justify-content: space-between;
+        padding: 20px;
+    }
+    .mobile_info_about_decoder{
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 10px;
+        background: #F7F7F8;
+    }
+    .title_memorial_dinner{
+        font-size: 16px;
+    }
+    .all_money_decoder{
+        font-size: 14px;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+    }
+    .ul_variants{
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    .ul_advice{
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media(max-width:820px){
+    .table_admin{
+        overflow-x: scroll;
+    }
+    .header_admin {
+        justify-content: space-between;
+    }
+    .header_admin .item_decoder,.header_admin .login_icon,.header_admin .logout{
+        display: none;
+    }
+    .header_user_mini_info_2{
+        display: flex;
+    }
+    .flex_titles_account{
+        flex-wrap: wrap;
+    }
+    .comments_burial{
+        min-width: 0px;
+    }
+    .ul_info_edit_burial{
+        padding: 10px;
+    }
+    .ul_info_edit_burial .text_black_big_bold{
+        font-size: 18px;
+    }
+    .container{
+        padding: 0px 10px;
+    }
+    .raiting_table th{
+        font-size: 18px;
+        font-weight: 500;
+    }
+    .raiting_table td, .raiting_table th{
+        padding: 10px 0px;
+    }
+    .grid_two_our_works,.block_our_works .ul_our_products{
+        grid-template-columns: 1fr;
+    }
+    .ul_products,.ul_how_work_search{
+        grid-template-columns: 1fr  1fr;
+    }
+    .price_product_market{
+        font-size: 16px;
+    }
+    .flex_btn_li_product_market{
+        flex-direction: column;
+        align-items: start;
+        gap: 5px;
+    }
+    .li_product_market{
+        min-height: 300px;
+    }
+    .img_market_product{
+        padding-bottom: 0px;
+    }
+    .flex_btn_li_product_market .blue_btn{
+        width: 100%;
+    }
+    .grid_two_single_product,.main_block_organization_single{
+        grid-template-columns: 1fr;
+    }
+    .main_block_organization_single{
+        gap: 10px;
+    }
+ 
+    .flex_info_main_single_organization{
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .index_title{
+        font-size: 35px;
+    }
+    .form_services_add label{
+        flex-wrap: wrap;
+    }
+    .form_services_add label .title_middle{
+        margin-left: 0px;
+        text-align: start;
+        width: 100%;
+    }
+    .product_single .grid_two_page{
+        flex-direction: column-reverse;
+        display: flex;
+    }
+    .withdraw_decoder{
+        flex-wrap: wrap;
+    }
+    .li_payment_decoder{
+        padding: 10px;
+    }
+    .text_black_big{
+        font-size: 18px;
+    }
+    .li_payment_decoder{
+        flex-direction: column;
+        gap: 10px;
+        align-items: start;
+    }
+    .block_answer_from_provider{
+        grid-template-columns: 1fr;
+    }
+    .ul_btn_answer_from_provider_mobile{
+        flex-direction: row;
+    }
+    .block_edit_burial_decoder{
+        grid-template-columns: 1fr;
+    }
+    .title_basket_burial{
+        display: none;
+    }
+    .mobile_basket_burial,.checkout_table  .mobile_basket_burial .delete_cart{
+        display: block  ;
+    }
+    .checkout_table .title_middle{
+        white-space: nowrap;
+        margin-bottom: 0px;
+    }
+}
+
+@media(max-width:760px){
+    .cookie_consent{
+        gap: 15px;
+        flex-direction: column;
+    }
+    .cookie-buttons button{
+        max-width: 100%;
+    }
+    .orders{
+        padding: 20px 0px;
+    }
+    .ul_products_organizations{
+        grid-template-columns: 1fr;
+    }
+    .mobile_sidebar_ritual_object{
+        display: block;
+        margin-top: 20px;
+    }
+    .mobile_title_ritual_object{
+        display: block;
+        margin-bottom: 20px ;
+
+    }
+    .mobile_title_ritual_object .title_middle,.mobile_sidebar_ritual_object .title_middle{
+        margin-bottom: 20px ;
+
+    }
+    .flex_inputs_filters_organiaztions{
+        flex-direction: column;
+        align-items: start;
+    }
+    .input_search_products_organizations ,.input_search_products_organizations  input{
+        width: 100%;
+    }
+    .text_black_bold{
+        font-size: 14px;
+    }
+    .dekstop_sidebar_ritual_object{
+        display: none;
+    }
+    .block_ritual_objects{
+        display: flex;
+        flex-direction: column-reverse;
+    }
+    .ul_variants{
+        grid-template-columns: 1fr 1fr ;
+    }
+    .table_busket_th_count,.table_busket_th_delete,.checkout_table .count_product_checkout,.checkout_table .delete_cart{
+        display: none;
+    }
+    
+    .change_count_busket,.checkout_table .delete_cart.mobile_delete_cart{
+        display: block;
+        margin: 10px 0px;
+    }
+    .price_cart_checkout .count_product_checkout{
+        display: block;
+    }
+
+    .checkout_table .delete_cart.mobile_delete_cart{
+        color: #CACACA;
+    }
+
+    .checkout_table th, .checkout_table td{
+        padding: 10px;
+    }
+
+    .title_burial_basket{
+        display: none;
+    }
+
+    .title_cart .grid_two_cart{
+        flex-direction: column;
+    }
+    .table_answer_from_provider{
+        display: none;
+    }
+    .mobile_block_answer_from_provider{
+        display: flex;
+        flex-direction: column;
+    }
+    .grid_training_materials{
+        grid-template-columns: 1fr;
+    }
+    .ul_cities_places{
+        grid-template-columns: 1fr 1fr;
+    }
+    .li_city_place{
+        padding: 15px;
+        font-size: 18px;
+    }
+    .li_organization_provider{
+        padding: 15px;
+    }
+    .li_provider_flex{
+        flex-direction: column;
+    }
+    .mobile_block_info_1_grid{
+        grid-template-columns: 1fr;
+    }
+    .li_provider_btn_flex{
+        display: grid;
+        gap: 5px;
+        grid-template-columns: 1fr 1fr;
+    }
+    .li_provider_btn_flex .blue_btn:last-child{
+        display: none;
+    }
+    .li_organization_provider .mobile_btn_li_organization_provider{
+        display: block;
+        margin-top: 5px;
+        width: 100%;
+    }
+    .li_flex_btn_organization a{
+        min-width: auto;
+        padding: 10px 15px;
+        font-size: 16px;
+    }
+    .li_organization .info_li_organization .text_black_bold{
+        text-align: start;
+    }
+    .li_organization .title_li_organiaztion{
+        font-size: 18px;
+        width: 100%;
+        line-height: 1.4;
+    }
+    .li_flex_icon_organization{
+        flex-direction: column;
+    }
+    .li_flex_icon_organization img{
+        width: 24px;
+        height: 24px;
+    }
+    .img_logo_organization{
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+    }
+    .li_org_mobile{
+        display: block;
+    }
+    .info_li_org_mobile{
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    .li_organization .info_li_org_mobile.li_org_mobile:first-child{
+        justify-content: start;
+    }
+    .li_flex_btn_organization{
+        flex-direction: row;
+        gap: 15px;
+    }
+    .li_flex_btn_organization div{
+        font-size: 18px;
+    }
+    .li_organization{
+        flex-direction: column;
+        padding: 15px;
+    }
+    .li_org_dekstop{
+        display: none;
+    }
+    
+    
+    .img_memorial_hall{
+        height: 250px;
+    }
+    .faq{
+        padding: 30px 0px;
+    }
+    .flex_filters_organizaitons{
+     flex-direction: column;  
+    }
+    .text_middle_index{
+        font-size: 18px;
+       }
+    .text_page_marketplace{
+        font-size: 22px;
+    }
+    .flex_filters_products.marketplace_filters{
+        flex-wrap: wrap;
+    }
+    .ritual_products,.ul_product_market{
+        grid-template-columns: 1fr 1fr ;
+    }
+    .flex_select_products_organization{
+        flex-wrap: wrap;
+    }
+    .li_cat_main_marketplace{
+        padding: 10px ;
+    }
+    .form_search .container{
+        padding:  20px;
+    }
+    .form_search form{
+        flex-direction: column;
+    }
+    .ul_cats_product{
+        grid-template-columns: 1fr;
+        margin: 20px 0px;
+    }
+    .title_product_content{
+        font-size: 28px;
+        line-height: 1.4;
+    }
+    .galerey_swiper .img_market_product{
+        min-height: 230px;
+    }
+    .block_content_organization_single{
+        padding: 10px;
+    }
+    .title_li{
+        font-size: 20px;
+    }
+    .search{
+        flex-direction: column;
+    }
+    .search .blue_btn{
+        margin-top: 10px;
+        font-size: 16px;
+        padding: 10px 15px;
+    }
+    .block_input input, .block_input select, .block_input textarea,.block_input input::placeholder,  .block_input textarea::placeholder{
+        font-size: 14px;
+    }
+    .block_input label{
+        font-size: 16px;
+    }
+    
+    .flex_search_form{
+        flex-direction: column;
+    }
+    .block_table_price_orgniaztions .main_table_price{
+        display: none;
+    }
+    .block_table_price_orgniaztions .title_blue{
+        font-size: 16px;
+        padding: 10px;
+    }
+    .block_table_price_orgniaztions td, .block_table_price_orgniaztions th{
+        font-size: 16px;
+        padding: 10px;
+    }
+    .text_middle_blue{
+        font-size: 18px;
+    }
+    .li_memorial_dinner .grid_btn{
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .our_works .ul_our_products,.videos_products_price_list .ul_our_products{
+        grid-template-columns: 1fr;
+    }
+    .search_application .grid_3{
+        grid-template-columns: 1fr;
+    }
+    .flex_filters_organizaitons_mobile{
+        display: flex;
+    }
+
+    .organization_marketplace .sidebar{
+         display: none;
+    }
+    .filter_place{
+        display: none;
+    }
+    .filter_sort,.filter_work {
+        width: auto;
+        min-width: 230px;
+        justify-content: start;
+        padding: 8px;
+        font-size: 15px;
+    }
+    .filter_work{
+        padding: 0px;
+    }
+    .flex_filters_organizaitons{
+        gap: 10px;
+        align-items: start;
+
+    }
+    .one_block_market .ul_organizaiotns{
+        order: 3;
+    }
+    .one_block_market .block_table_price_orgniaztions{
+        order: 1;
+    }
+}
+
+@media(max-width:560px){
+
+    .mgo-alternative-item{
+        flex-direction: column;
+        align-items: start;
+        gap: 8px;
+    }
+
+    .title_404_middle{
+        font-size: 30px;
+    }
+    .page_404 a{
+        width: 100%;
+        min-width: 100%;
+    }
+    .flex_404_page{
+        min-width: 100%;
+    }
+
+    .ul_variants{
+        grid-template-columns:   1fr;
+    }
+    .content_main_block_organization_single .text_black.margin_top_single_organization{
+        display: none;
+    }
+    .marketplace_filters .filter_block, .marketplace_filters .filter_sort{
+        max-width: 100%;
+    }
+    .li_review_organization{
+        padding: 15px;
+    }
+    .reviews_organizations {
+        padding: 0px;
+    }
+    .reviews_funeral_agencies_swiper {
+        padding-bottom: 0px;
+    }
+    #map_mortuary,#map,#map_organization_single,.karta_contacts iframe,#map_cemetery_single,#map-cats{
+        height: 400px !important;
+    }
+    
+    .text_black{
+        line-height: normal;
+        font-size: 15px;
+    }
+    .li_memorial_dinner .flex_info_memorial_dinner{
+        flex-direction: column;
+    }
+    .li_memorial_dinner{
+        gap: 10px;
+        padding: 10px;
+    }
+    .dekstop_index_block{
+        display: none;
+    }
+    .main_index_block .container{
+        padding: 20px 10px;
+        gap: 20px;
+    }
+    .mobile_index_block{
+        display: flex;
+    }
+
+    .main_index_block .mobile_index_block_grid  {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .mobile_grid_index .title_li,.mobile_grid_index .mini_text,.mobile_index_block_grid .title_li,.mobile_index_block_grid .mini_text{
+        display: none;
+    }
+    .mobile_grid_index .title_li.title_li_mobile,.mobile_index_block_grid .title_li.title_li_mobile{
+        line-height: normal;
+        display: block;
+        font-size: 13px;
+    }
+    .gray_index_block_service .blue_input{
+        line-height: normal;
+        padding: 8px 10px;
+    }
+    .gray_index_block_service .text_middle_index{
+        line-height: normal;
+    }
+
+    .gray_index_block_service .index_search,.gray_index_block_service .grid_btn{
+        gap: 10px;
+    }
+    .mobile_grid_index img, .mobile_index_block_grid img{
+        width: 32px;
+        height: 32px;
+    }
+    .main_index_block .grid_two.mobile_grid_index{
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .message .flex_btn{
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .content_li_provider .text_flex,.flex_answer_from_provider{
+        flex-direction: column;
+    }
+
+    .content_li_provider .text_flex div{
+        width: 100%;
+    }
+    .li_review_in_panel .flex_single_organization{
+        flex-direction: column-reverse;
+        align-items: start;
+    }
+    .li_review_in_panel .flex_single_organization .flex_btn{
+        flex-direction: column;
+        align-items: start;
+        width: 100%;
+    }
+    .li_review_in_panel .flex_single_organization .flex_btn div,.li_review_in_panel .flex_single_organization .flex_btn a{
+        width: 100%;
+    }
+
+    .header_decoder_account {
+        padding: 10px;
+    }
+    .block_inpit_form_search .flex_btn{
+        flex-direction: column;
+    }
+    .block_inpit_form_search .flex_btn div{
+        width: 100%;
+        max-width: 100%;
+    }
+    .header_user_mini_info{
+        display: flex;
+    }
+    .header_decoder{
+        padding: 10px;
+    }
+    .header_user .open_big_header,.header_user .icon_login,.header_user .logout{
+        display: none;
+    }
+    .marketplace_filters {
+        flex-direction: column;
+    }
+    .marketplace_filters .filter_block{
+        width: 100%;
+        max-width: 100%;
+    }
+    #filter_1 .filter_sort{
+        width: 100%;
+        max-width: 100%;
+    }
+    .flex_info_review_in_panel{
+        flex-direction: column;
+        align-items: start;
+    }
+    .li_request_created_to_provider{
+        flex-direction: column;
+    }
+    .grid_mobile_1{
+        grid-template-columns: 1fr;
+    }
+    .flex_titles_account{
+        flex-direction: column;
+    }
+    .flex_titles_account div,.flex_titles_account a{
+        width: 100%;
+    }
+    .ul_cities_places{
+        grid-template-columns:  1fr;
+    }
+    .gos_block{
+        padding: 15px;
+    }
+    .gos_block img{
+        display: none;
+    }
+    .title_blue_big,.title_green_big{
+        font-size: 22px;
+    }
+    .img_logo_organization{
+        width: 76px;
+        height: 70px;
+    }
+    .ul_advanyages_service{
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+    .faq{
+        padding: 20px 0px;
+    }
+
+    .img_memorial_hall {
+        height: 150px;
+        object-fit: cover;
+    }
+    .li_memorial_hall{
+        padding: 15px;
+    }
+    .karta_contacts .container{
+        padding: 0px;
+    }
+    .ul_news_page{
+        grid-template-columns: 1fr;
+    }
+    .li_news{
+        padding: 15px;
+    }
+    .form_popup .blue_btn,#beautification_form .blue_btn{
+        max-width: none;
+    }
+    .block_checkout_form .checkbox {
+        flex-direction: column;
+        align-items: start;
+    }
+    .checkout_form .flex_checkout_form{
+        flex-direction: column;
+    }
+    .title_checkout_form{
+        font-size: 20px;
+    }
+    .ul_how_work_search{
+        grid-template-columns: 1fr;
+    }
+    .modal  .flex_title_message .title_middle,.modal .flex_title_message .text_block{
+        text-align: start;
+    }
+    .modal  .flex_title_message {
+        align-items: start;
+    }
+    .reviews_products .li_review_organization{
+        padding: 15px;
+        min-height: 280px;
+    }
+    .text_page_marketplace{
+        font-size: 20px;
+    }
+    .flex_btn_li_product_market .blue_btn{
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+
+
+    .flex_btn.block_call_time{
+        flex-wrap: wrap;
+    }
+    .flex_btn.block_call_time .btn_bac_gray ,.flex_btn.block_call_time .blue_btn{
+        width: 100%;
+        font-size: 15px;
+    }
+    .call_time{
+        top: -98%;
+    }
+    
+    .block_content_organization_single .flex_center_single_organization{
+        align-items: start;
+    }
+    .title_li{
+        font-size: 18px;
+    }
+    .open_faq{
+        width: 20px;
+        height: 10px;
+    }
+    .li_faq{
+        padding: 15px;
+    }
+    .li_faq .text_li{
+        margin-top: 15px;
+    }
+    .text_gray{
+        font-size: 14px;
+    }
+    .block_menu_single_organization{
+        justify-content: start;
+        overflow-x: scroll;
+        padding: 0px;
+        border: none;
+        gap: 10px;
+    }
+    .aplication {
+        gap: 8px;
+    }
+    .block_content_organization_single  .flex_single_organization{
+        flex-wrap: wrap;
+    }
+    .menu_single_organization {
+        min-width: auto;
+        border: 1px solid #E9E8EA;
+        padding: 15px;
+        white-space: nowrap;
+    }
+    .menu_single_organization:hover{
+        background-color: #0080D7;
+    }
+
+    .menu_single_organization:hover .text_black{
+        color: white;
+    }
+    .menu_single_organization:hover::before{
+        display: none;
+    }
+    .aplication p{
+        font-size: 12px;
+    }
+    .menu_single_organization_active{
+        background-color: #0080D7;
+        color: white;
+    }
+    .menu_single_organization_active .text_black{
+        color: white;
+    }
+    .menu_single_organization_active::before {
+        display: none;
+    }
+
+    .ritual_products .li_our_product img{
+        min-height: 110px;
+    }
+    .title_blue{
+        font-size: 18px;
+    }
+    .flex_raiting .flex_stars img{
+        min-height: 13px;
+    }
+    .title_product_content{
+        font-size: 24px;
+    }
+    .cats_news.product_sidebar_block .title_news{
+        font-size: 18px;
+    }
+    .index_title{
+        font-size: 30px;
+        line-height: 1.4;
+    }
+    .ul_products{
+        grid-template-columns:   1fr;
+    }
+    .ul_products .img_market_product{
+        height: 140px;
+    }
+    .ul_similar_graves .li_product{
+        flex-direction: column;
+    }
+    .title_middle{
+        font-size: 22px;
+    }
+    .text_block{
+        font-size: 15px;
+        line-height: 1.4;
+    }
+    .li_memory_words{
+        flex-direction: column;
+    }
+    .form_words_memory{
+        grid-template-columns: 1fr;
+    }
+    .flex_label_block{
+        flex-direction: column;
+        overflow-y: visible;
+
+    }
+    .blue_btn,.btn_border_blue, .border_blue_btn, .green_btn, .red_btn,.gray_btn{
+        font-size: 16px;
+        line-height: 1.4;
+    }
+    .karta_all{
+        padding: 20px 0px;
+    }
+    .karta_all .container{
+        padding: 0px;
+    }
+    .karta_all .title{
+        padding: 0px 20px;
+    }
+    .main_index_block .blue_btn,.main_index_block .btn_border_blue, .main_index_block .border_blue_btn,.main_index_block .green_btn,.main_index_block .red_btn,.main_index_block .gray_btn{
+        padding: 7px 10px;
+        font-size: 12px;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+    }
+    .flex_monuments_grave{
+        flex-wrap: wrap;
+    }
+    .li_product_monuments_grave .add_to_cart_product,.li_product_monuments_grave .blue_btn{
+        width: 100%;
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+    .procent_sale_product{
+        padding: 6px;
+    }
+    .price_product_monuments_grave{
+        font-size: 15px;
+    }
+    .ul_cats_product{
+        grid-template-columns: 1fr;
+        margin: 20px 0px;
+    }
+    .gray_index_block_service{
+        min-height: auto;
+    }
+    .text_middle_index{
+        font-size: 18px;
+    }
+    .title_text_block{
+        font-size: 18px;
+        line-height: 25px;
+    }
+    .ul_advice{
+        grid-template-columns: 1fr ;
+    }
+    .li_variant img{
+        height: 180px;
+        object-fit: cover;
+    }
+    .videos_products_price_list .li_our_work{
+        grid-template-columns: 1fr;
+    }
+    .videos_products_price_list .title_before_our_works{
+        bottom: 51%;
+    }
+    .li_product{
+        flex-direction: column;
+    }
+    .li_product .flex_btn_li_product{
+        flex-wrap: wrap;
+    }
+    .logo_organization_single .blue_btn{
+        display: none;
+    }
+    .mobile_title_organization {
+        display: block;
+    }
+    .ul_news{
+        grid-template-columns:  1fr;
+    }
+    .news,.cats_product,.products_monuments_grave,.block,.memorial_dinners,.rewies,.reviews_organizations{
+        padding: 20px 0px;
+    }
+    .flex_block{
+        flex-direction: column;
+    }
+    .title{
+        font-size: 30px;
+    }
+    .black_theme .menu_single_organization {
+        border: 1px solid #4E4E4E;
+    }
+    .order_page .container{
+        padding: 40px 20px;
+    }
+    .rose_order_page {
+        width: 271px;
+    }
+    .text_middle_index{
+        font-size: 14px;
+    }
+   
+    .ul_location{
+        grid-template-columns: 1fr;
+        gap: 0px;
+    }
+    .flex_input_form_contacts{
+        flex-direction: column;
+    }
+
+    .img_market_product{
+        height: 110px;
+    }
+    .blue_input{
+        font-size:12px ;
+    }
+    .gray_index_block_service .flex_btn{
+        gap: 8px;
+    }
+    .title_news {
+        line-height: 1.4;
+        font-size: 18px;
+    }
+    .content_block{
+        font-size: 14px;
+    }
+    .open_video {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    .flex_footer_2{
+        flex-direction: column;
+    }
+    .block_single_product .img_single_product img {
+        max-height: 320px;
+    }
+
+    .ul_similar_graves .li_product .flex_btn_li_product{
+        flex-wrap: wrap;
+    }
+    .ul_similar_graves .li_product .flex_btn_li_product .blue_btn{
+        width: 100%;
+    }
+    .btn_border_blue.img_mini_star{
+        height: 40px;
+    }
+    .li_our_product .title_blue{
+        font-size: 20px;
+        padding: 10px 0px;
+    }
+    .logo_organization_single img{
+        height: 125px;
+    }
+    .content_product {
+        padding:10px;
+    }
+    .dekstop_index_block_gray,.main_block_organization_single .logo_organization_single,.content_main_block_organization_single .flex_single_organization .title_li{
+        display: none;
+    }
+    .mobile_title_organization{
+        display: block;
+        line-height: 1.4;
+        margin-bottom: 10px;
+    }
+    .mobile_logo_organization{
+        display: block;
+        margin-bottom: 20px;
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+    .black_theme .mobile_logo_organization.white_img_org{
+        display: none;
+    }
+    .black_theme .mobile_logo_organization.black_img_org{
+        display: block ;
+    }
+    .mobile_logo_organization.white_img_org{
+        display: block;
+    }
+    .mobile_logo_organization.black_img_org{
+        display: none;
+    }
+    .mobile_padding_top_0{
+        padding-top: 0px;
+    }
+    .main_block_organization_single .logo_organization_single.logo_organization_single_ritual_object{
+        display: block;
+    }
+
+    .block_search_organization_add form{
+        flex-direction: column;
+    }
+    .search_organization_input{
+        max-width: 100%;
+    }
+    .block_search_organization_add form .blue_btn{
+        width: 100%;
+    }
+    .block_search_ul_advantages .grid_4{
+        grid-template-columns:  1fr;
+    }
+    .html_navigation_org .navigation_pages{
+        padding-bottom: 20px;
+    }   
+    .li_place{
+        flex-direction: column;
+    }
+    .li_place .btn_border_gray{
+        margin: 0px;
+    }
+}
+
+@media(max-width:430px){
+    .flex_li_service{
+        flex-wrap: wrap;
+    }
+
+    .li_place{
+        flex-wrap: wrap;
+    }
+}
+
