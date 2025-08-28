@@ -24,10 +24,10 @@ class MortuaryService {
     public static function index(){
         $city=selectCity();
 
-        $seo="Морги г.".$city->title;
+        SEOTools::setTitle(formatContent(getSeo('mortuary-catalog','title')));
+        SEOTools::setDescription(formatContent(getSeo('mortuary-catalog','description')));
+        $title_h1=formatContent(getSeo('mortuary-catalog','h1'));
 
-        SEOTools::setTitle($seo);
-        SEOTools::setDescription($seo);
 
         $usefuls=UsefulMortuary::orderBy('id','desc')->get();
         $products=randomProductsPlace(32);
@@ -37,16 +37,16 @@ class MortuaryService {
 
         $pages_navigation=[['Главная',route('index')],['Морги']];
 
-        return view('mortuary.index',compact('faqs','pages_navigation','mortuaries','city','products','usefuls','mortuaries_map'));
+        return view('mortuary.index',compact('faqs','pages_navigation','mortuaries','city','products','usefuls','mortuaries_map','title_h1'));
     }
 
     public static function single($slug){
         $mortuary=Mortuary::where('slug',$slug)->first();
         addView('mortuary',$mortuary->id,user()->id ?? null,'site');
 
-        SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$mortuary));
-        SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$mortuary));
-        $title_h1=formatContent(getSeo('ritual-object','h1'),$mortuary);
+        SEOTools::setTitle(formatContent(getSeo('mortuary-single','title'),$mortuary));
+        SEOTools::setDescription(formatContent(getSeo('mortuary-single','description'),$mortuary));
+        $title_h1=formatContent(getSeo('mortuary-single','h1'),$mortuary);
 
         $reviews=ReviewMortuary::orderBy('id','desc')->where('status',1)->where('mortuary_id',$mortuary->id)->get();
         $reviews_main=$reviews->take(3);

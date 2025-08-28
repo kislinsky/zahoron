@@ -85,18 +85,18 @@ class AppServiceProvider extends ServiceProvider
         if ($city) {
             $shouldNoIndex = false;
             
-            if ($city->area && $city->area->edge && $city->area->edge->is_show != 1) {
-                $shouldNoIndex = true;
-            }
+            // if ($city->area && $city->area->edge && $city->area->edge->is_show != 1) {
+            //     $shouldNoIndex = true;
+            // }
             
-            $organizationsCount = Organization::where('city_id', $city->id)->count();
-            if ($organizationsCount < 3) {
-                $shouldNoIndex = true;
-            }
+            // $organizationsCount = Organization::where('city_id', $city->id)->count();
+            // if ($organizationsCount < 3) {
+            //     $shouldNoIndex = true;
+            // }
             
-            if ($shouldNoIndex) {
-                SEOMeta::setRobots('noindex,nofollow');
-            }
+            // if ($shouldNoIndex) {
+            //     SEOMeta::setRobots('noindex,nofollow');
+            // }
         }
 
         Paginator::useBootstrapFive();

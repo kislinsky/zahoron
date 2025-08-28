@@ -49,7 +49,7 @@ class ProductService
         $sales=ActivityCategoryOrganization::where('organization_id',$organization->id)->where('category_children_id',$category->id)->where('sales','!=',null)->get();
         $city=selectCity();  
 
-        $cemeteries=Cemetery::whereIn('id',explode(',', rtrim($product->organization->cemetery_ids,',')))->get();
+        $cemeteries=Cemetery::orderBy('priority', 'desc')->whereIn('id',explode(',', rtrim($product->organization->cemetery_ids,',')))->get();
         
         $cities=$city->area->edge->area->flatMap(function($area_one) {
             return $area_one->cities; // Здесь предполагается, что есть связь mortuaries
@@ -134,7 +134,7 @@ class ProductService
         $cats=CategoryProduct::orderBy('id','desc')->where('parent_id',null)->get();
         $products=filterProducts($data);
         $faqs=faqCatsProduct($data);
-        $cemeteries_all=$city->cemeteries;
+        $cemeteries_all=$city->cemeteries->orderBy('priority', 'desc');
         $cemetery=cemeteryProduct($data);
         $district=null;
         if(isset($data['district_id'])  && $data['district_id']!='undefined'){

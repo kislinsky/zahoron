@@ -31,7 +31,6 @@ class UsefulCemeteryResource extends Resource
                 Textarea::make('content')
                 ->label('Описание')
                 ->required()
-                ->maxLength(255),
             ]);
     }
 

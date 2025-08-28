@@ -38,7 +38,7 @@ class CheckCity
             return Organization::where('city_id', $city->id)->count();
         });
 
-        return $orgCount >= 3;
+        return $orgCount >= 1;
     }
 
     public function handle(Request $request, Closure $next)

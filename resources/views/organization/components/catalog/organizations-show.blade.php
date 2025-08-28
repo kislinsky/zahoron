@@ -231,15 +231,7 @@
   function getMangoNumberOnClick(orgId, phone, callback) {
     // Создаем уникальный хэш для каждого запроса
     const uniqueHash = 'org_' + orgId + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    
-    // Инициализируем Mango Office с уникальными параметрами для каждого вызова
-    mgo({
-      calltracking: {
-        id: 36238,
-        elements: [{selector: '.mgo-number'}],
-        customParam: 'organization_id=' + orgId + '&hash=' + uniqueHash
-      }
-    });
+  
     
     // Запрашиваем номер
     mgo.getNumber({
@@ -252,6 +244,16 @@
         callback(phone);
       }
     });
+
+// Инициализируем Mango Office с уникальными параметрами для каждого вызова
+    mgo({
+      calltracking: {
+        id: 36238,
+        elements: [{selector: '.mgo-number'}],
+        customParam: 'organization_id=' + orgId + '&hash=' + uniqueHash
+      }
+    });
+
   }
 
   // Функция для проверки мобильного устройства

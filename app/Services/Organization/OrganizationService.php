@@ -209,7 +209,7 @@ class OrganizationService
         
         $random_organizations_with_calls=getRandomOrganizationsWithCalls($organizations_category);
 
-        $cemeteries = Cemetery::whereHas('city.area', function($query) use ($city) {
+        $cemeteries = Cemetery::orderBy('priority', 'desc')->whereHas('city.area', function($query) use ($city) {
             $query->where('id', $city->area_id);  
         })
         ->get();

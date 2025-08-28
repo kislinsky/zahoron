@@ -19,21 +19,21 @@ class CemeteryService {
     public static function index(){
         $city=selectCity();
         
-        $seo="Кладбища г.".$city->title;
+        SEOTools::setTitle(formatContent(getSeo('cemetery-catalog','title')));
+        SEOTools::setDescription(formatContent(getSeo('cemetery-catalog','description')));
+        $title_h1=formatContent(getSeo('cemetery-catalog','h1'));
 
-        SEOTools::setTitle($seo);
-        SEOTools::setDescription($seo);
 
         $products=randomProductsPlace(29);
         $usefuls=UsefulCemetery::orderBy('id','desc')->get();
         $cemeteries_map=Cemetery::orderBy('id', 'asc')->where('city_id',$city->id)->get();
-        $cemeteries=Cemetery::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
+        $cemeteries=Cemetery::orderBy('priority', 'desc')->where('city_id',$city->id)->paginate(6);
         $faqs=FaqRitualObject::where('type_object','cemetery')->orderBy('id','desc')->get();
         $pages_navigation=[['Главная',route('index')],['Кладбища']];
        
 
 
-        return view('cemetery.index',compact('faqs','cemeteries','city','products','usefuls','cemeteries_map','pages_navigation'));
+        return view('cemetery.index',compact('faqs','cemeteries','city','products','usefuls','cemeteries_map','pages_navigation','title_h1'));
     }
 
     public static function singleCemetery($slug){
@@ -41,9 +41,9 @@ class CemeteryService {
 
         addView('cemetery',$cemetery->id,user()->id ?? null,'site');
 
-        SEOTools::setTitle(formatContent(getSeo('ritual-object','title'),$cemetery));
-        SEOTools::setDescription(formatContent(getSeo('ritual-object','description'),$cemetery));
-        $title_h1=formatContent(getSeo('ritual-object','h1'),$cemetery);
+        SEOTools::setTitle(formatContent(getSeo('cemetery-single','title'),$cemetery));
+        SEOTools::setDescription(formatContent(getSeo('cemetery-single','description'),$cemetery));
+        $title_h1=formatContent(getSeo('cemetery-single','h1'),$cemetery);
 
         $reviews=ReviewCemetery::orderBy('id','desc')->where('status',1)->where('cemetery_id',$cemetery->id)->get();
         $reviews_main=$reviews->take(3);
@@ -53,7 +53,7 @@ class CemeteryService {
         $faqs=FaqCemetery::orderBy('id','desc')->get();
         $characteristics=json_decode($cemetery->characteristics);
         $images=ImageCemetery::where('cemetery_id',$cemetery->id)->get();
-        $similar_cemeteries=Cemetery::where('city_id',$cemetery->city_id)->where('id','!=',$cemetery->id)->get();
+        $similar_cemeteries=Cemetery::orderBy('priority', 'desc')->where('city_id',$cemetery->city_id)->where('id','!=',$cemetery->id)->get();
 
         $pages_navigation=[['Главная',route('index')],['Кладбища',route('cemeteries')],[$cemetery->title]];
 

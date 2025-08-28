@@ -1731,99 +1731,119 @@ function getSeo($page,$column){
 
 
 
-function formatCityName($cityName) {
+function formatCityName($cityName, $content) {
     // Убираем все точки и лишние пробелы
     $cityName = trim(str_replace('.', '', $cityName));
     
     // Список исключений и особых случаев
     $exceptions = [
-        // Города, оканчивающиеся на -ов, -ев, -ин, -ын (склоняются)
-        'Москва' => 'Москве',
-        'Тула' => 'Туле',
-        'Казань' => 'Казани',
-        'Рязань' => 'Рязани',
-        'Пермь' => 'Перми',
-        'Тверь' => 'Твери',
-        'Ярославль' => 'Ярославле',
-        'Владивосток' => 'Владивостоке',
-        'Новосибирск' => 'Новосибирске',
-        'Петропавловск-Камчатский'=>'Петропавловске-Камчатском',
-        'Екатеринбург' => 'Екатеринбурге',
-        'Нижний Новгород' => 'Нижнем Новгороде',
-        'Ростов-на-Дону' => 'Ростове-на-Дону',
-        'Санкт-Петербург' => 'Санкт-Петербурге',
-        'Набережные Челны' => 'Набережных Челнах',
-        
-        // Города, оканчивающиеся на -о (не склоняются)
-        'Орлово' => 'Орлово',
-        'Кемерово' => 'Кемерово',
-        'Кирово' => 'Кирово',
-        
-        // Иностранные города (обычно не склоняются)
-        'Париж' => 'Париже',
-        'Лондон' => 'Лондоне',
-        'Нью-Йорк' => 'Нью-Йорке',
+        'Москва' => ['prepositional' => 'Москве', 'genitive' => 'Москвы', 'nominative' => 'Москва'],
+        'Тула' => ['prepositional' => 'Туле', 'genitive' => 'Тулы', 'nominative' => 'Тула'],
+        'Казань' => ['prepositional' => 'Казани', 'genitive' => 'Казани', 'nominative' => 'Казань'],
+        'Рязань' => ['prepositional' => 'Рязани', 'genitive' => 'Рязани', 'nominative' => 'Рязань'],
+        'Пермь' => ['prepositional' => 'Перми', 'genitive' => 'Перми', 'nominative' => 'Пермь'],
+        'Тверь' => ['prepositional' => 'Твери', 'genitive' => 'Твери', 'nominative' => 'Тверь'],
+        'Ярославль' => ['prepositional' => 'Ярославле', 'genitive' => 'Ярославля', 'nominative' => 'Ярославль'],
+        'Владивосток' => ['prepositional' => 'Владивостоке', 'genitive' => 'Владивостока', 'nominative' => 'Владивосток'],
+        'Новосибирск' => ['prepositional' => 'Новосибирске', 'genitive' => 'Новосибирска', 'nominative' => 'Новосибирск'],
+        'Петропавловск-Камчатский' => ['prepositional' => 'Петропавловске-Камчатском', 'genitive' => 'Петропавловска-Камчатского', 'nominative' => 'Петропавловск-Камчатский'],
+        'Екатеринбург' => ['prepositional' => 'Екатеринбурге', 'genitive' => 'Екатеринбурга', 'nominative' => 'Екатеринбург'],
+        'Нижний Новгород' => ['prepositional' => 'Нижнем Новгороде', 'genitive' => 'Нижнего Новгорода', 'nominative' => 'Нижний Новгород'],
+        'Ростов-на-Дону' => ['prepositional' => 'Ростове-на-Дону', 'genitive' => 'Ростова-на-Дону', 'nominative' => 'Ростов-на-Дону'],
+        'Санкт-Петербург' => ['prepositional' => 'Санкт-Петербурге', 'genitive' => 'Санкт-Петербурга', 'nominative' => 'Санкт-Петербург'],
+        'Набережные Челны' => ['prepositional' => 'Набережных Челнах', 'genitive' => 'Набережных Челнов', 'nominative' => 'Набережные Челны'],
+        'Орлово' => ['prepositional' => 'Орлово', 'genitive' => 'Орлово', 'nominative' => 'Орлово'],
+        'Кемерово' => ['prepositional' => 'Кемерово', 'genitive' => 'Кемерово', 'nominative' => 'Кемерово'],
+        'Кирово' => ['prepositional' => 'Кирово', 'genitive' => 'Кирово', 'nominative' => 'Кирово'],
+        'Париж' => ['prepositional' => 'Париже', 'genitive' => 'Парижа', 'nominative' => 'Париж'],
+        'Лондон' => ['prepositional' => 'Лондоне', 'genitive' => 'Лондона', 'nominative' => 'Лондон'],
+        'Нью-Йорк' => ['prepositional' => 'Нью-Йорке', 'genitive' => 'Нью-Йорка', 'nominative' => 'Нью-Йорк'],
     ];
+    
+    // Определяем контекст
+    $context = 'genitive'; // по умолчанию родительный падеж
+    
+    if (preg_match('/\bв городе\s+\{city\}/iu', $content)) {
+        $context = 'nominative'; // именительный падеж после "в городе"
+    } elseif (preg_match('/\b(в|во)\s+\{city\}/iu', $content)) {
+        $context = 'prepositional'; // предложный падеж после "в/во"
+    } elseif (preg_match('/\bгорода\s+\{city\}/iu', $content)) {
+        $context = 'genitive'; // родительный падеж после "города"
+    }
     
     // Проверяем, есть ли город в списке исключений
     if (isset($exceptions[$cityName])) {
-        return $exceptions[$cityName];
+        return $exceptions[$cityName][$context];
     }
     
     // Общие правила склонения
     $lastChar = mb_substr($cityName, -1);
-    $lastTwoChars = mb_substr($cityName, -2);
     
-    // Правила склонения для разных окончаний
-    if ($lastChar === 'а' || $lastChar === 'я') {
-        // Города на -а, -я: заменяем на -е, -ье
-        if ($lastTwoChars === 'ка') {
-            return mb_substr($cityName, 0, -2) . 'ке';
-        } elseif ($lastTwoChars === 'га' || $lastTwoChars === 'ха') {
-            return mb_substr($cityName, 0, -1) . 'е';
-        } else {
-            return mb_substr($cityName, 0, -1) . 'е';
-        }
-    } 
-    elseif ($lastChar === 'ь') {
-        // Города на мягкий знак: заменяем на -и
-        return mb_substr($cityName, 0, -1) . 'и';
-    }
-    elseif ($lastChar === 'й') {
-        // Города на -й: заменяем на -е
-        return mb_substr($cityName, 0, -1) . 'e';
-    }
-    elseif ($lastChar === 'о') {
-        // Города на -о обычно не склоняются
-        return $cityName;
-    }
-    else {
-        // Для остальных случаев добавляем -е
-        return $cityName . 'е';
+    switch ($context) {
+        case 'nominative': // именительный падеж (в городе Москва)
+            return $cityName;
+            
+        case 'prepositional': // предложный падеж (в Москве)
+            if ($lastChar === 'а' || $lastChar === 'я') {
+                return mb_substr($cityName, 0, -1) . 'е';
+            } 
+            elseif ($lastChar === 'ь') {
+                return mb_substr($cityName, 0, -1) . 'и';
+            }
+            elseif ($lastChar === 'й') {
+                return mb_substr($cityName, 0, -1) . 'е';
+            }
+            elseif ($lastChar === 'о') {
+                return $cityName;
+            }
+            else {
+                return $cityName . 'е';
+            }
+            
+        case 'genitive': // родительный падеж (Москвы)
+        default:
+            if ($lastChar === 'а') {
+                return mb_substr($cityName, 0, -1) . 'ы';
+            }
+            elseif ($lastChar === 'я') {
+                return mb_substr($cityName, 0, -1) . 'и';
+            }
+            elseif ($lastChar === 'ь') {
+                return mb_substr($cityName, 0, -1) . 'и';
+            }
+            elseif ($lastChar === 'й') {
+                return mb_substr($cityName, 0, -1) . 'я';
+            }
+            elseif ($lastChar === 'о') {
+                return $cityName;
+            }
+            else {
+                return $cityName . 'а';
+            }
     }
 }
 
 function formatContent($content, $model = null) {
-    $city = formatCityName(selectCity()->title);
+    $city = formatCityName(selectCity()->title,$content);
     $title = '';
     $adres = '';
-    $organization = '';
+    $type_organization = '';
     
     if ($model != null) {
         $title = $model->title;
         $adres = $model->adres;
+        $type_organization=$model->name_type;
         if ($model->city != null) {
-            $city = formatCityName($model->city->title);
+            $city = formatCityName($model->city->title,$content);
         }
     }
     
     $time = date('H:i');
     $date = date('Y-m-d');
     $year = date('Y');
- 
     $result = str_replace(
-        ["{title}", "{city}", "{adres}", "{time}", "{date}", "{Year}", "{organization}"],
-        [$title, $city, $adres, $time, $date, $year, $organization],
+        ["{title}", "{city}", "{adres}", "{time}", "{date}", "{Year}","{type-org}"],
+        [$title, $city, $adres, $time, $date, $year,$type_organization,],
         $content
     );
     
@@ -1831,7 +1851,7 @@ function formatContent($content, $model = null) {
 }
 
 function formatContentCategoryProduct($content, $model) {
-    $city = formatCityName(selectCity()->title);
+    $city = formatCityName(selectCity()->title,$content);
     $title = '';
     $adres = '';
     $organization = '';
@@ -1840,7 +1860,7 @@ function formatContentCategoryProduct($content, $model) {
         $title = $model->title;
         $adres = $model->adres;
         if ($model->city != null) {
-            $city = formatCityName($model->city->title);
+            $city = formatCityName($model->city->title,$content);
         }
     }
     
@@ -1858,7 +1878,7 @@ function formatContentCategoryProduct($content, $model) {
 }
 
 function formatContentBurial($content, $model) {
-    $city = formatCityName(selectCity()->title);
+    $city = formatCityName(selectCity()->title,$content);
     $name = '';
     $surname = '';
     $date_birth = '';
@@ -1887,7 +1907,7 @@ function formatContentBurial($content, $model) {
 }
 
 function formatContentCategory($content, $category, $models, $prices = []) {
-    $city = formatCityName(selectCity()->title);
+    $city = formatCityName(selectCity()->title,$content);
     $category = $category->title;
     $count = $models->total();
     $time = date('H:i');
