@@ -6,6 +6,7 @@ use App\Filament\Resources\OrganizationResource\Pages;
 use App\Filament\Resources\OrganizationResource\RelationManagers;
 use App\Filament\Resources\OrganizationResource\RelationManagers\ActivityCategoriesRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\BeatificationsRelationManager;
+use App\Filament\Resources\OrganizationResource\RelationManagers\CallStatsRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\DeadAplicationsRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\FuneralServicesRelationManager;
 use App\Filament\Resources\OrganizationResource\RelationManagers\ImagesRelationManager;
@@ -471,6 +472,7 @@ class OrganizationResource extends Resource
     public static function getRelations(): array
     {
         return [
+            CallStatsRelationManager::class,
             ImagesRelationManager::class,
             ActivityCategoriesRelationManager::class,
             WorkingHoursRelationManager::class,
@@ -482,6 +484,7 @@ class OrganizationResource extends Resource
             FuneralServicesRelationManager::class,
             MemorialsRelationManager::class,
             OrderPorductsRelationManager::class
+            
         ];
     }
 

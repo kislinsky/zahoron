@@ -11,7 +11,7 @@
         }
     ],
     "paths": {
-        "/v1/account/agency/products": {
+        "/app/organization/account/agency/products": {
             "get": {
                 "tags": [
                     "Продукты организации"
@@ -237,7 +237,7 @@
                 ],
                 "summary": "Добавить новый товар",
                 "description": "(страница добавления товаров)",
-                "operationId": "5bdc37e6b774986b24f0fe66cc4e1a19",
+                "operationId": "1097f954e4820e7aa42038debed3e7af",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -311,14 +311,14 @@
                 }
             }
         },
-        "/v1/account/agency/products/{productId}/update": {
+        "/app/organization/account/agency/products/{productId}/update": {
             "post": {
                 "tags": [
                     "Продукты организации"
                 ],
                 "summary": "Обновление товара",
                 "description": "Обновляет информацию о товаре. Требуется ID организации для проверки владельца. Все поля, кроме organization_id, являются необязательными. (страница обновления товара)",
-                "operationId": "58baa61fb9e12060577911b1453dbb7f",
+                "operationId": "a568d1fd76708f898a91f7a04eba5f7a",
                 "parameters": [
                     {
                         "name": "productId",
@@ -606,14 +606,14 @@
                 ]
             }
         },
-        "/v1/account/agency/products/{productId}": {
+        "/app/organization/account/agency/products/{productId}": {
             "delete": {
                 "tags": [
                     "Продукты организации"
                 ],
                 "summary": "Удалить товар",
                 "description": "(страница товаров)",
-                "operationId": "f4540ac5b06227a113b6d264e41164c7",
+                "operationId": "c75bf1251998e09a8e6d0e11d9dd4b7f",
                 "parameters": [
                     {
                         "name": "productId",
@@ -717,14 +717,14 @@
                 ]
             }
         },
-        "/v1/account/agency/settings/update": {
+        "/app/organization/account/agency/settings/update": {
             "post": {
                 "tags": [
                     "Профиль организации"
                 ],
                 "summary": "Обновление настроек организации/ИП",
                 "description": "(страница настроек пользователя)",
-                "operationId": "3b88dfa27debe90c9d79fa4d70360183",
+                "operationId": "a219afe8cac4ac5c48c7518a96671572",
                 "requestBody": {
                     "description": "Данные для обновления профиля",
                     "required": true,
@@ -792,7 +792,7 @@
                 ]
             }
         },
-        "/v1/account/agency/organization/create": {
+        "/app/organization/account/agency/organization/create": {
             "post": {
                 "tags": [
                     "Организация"
@@ -1242,14 +1242,14 @@
                 ]
             }
         },
-        "/v1/account/agency/organization/update": {
+        "/app/organization/account/agency/organization/update": {
             "post": {
                 "tags": [
                     "Организация"
                 ],
                 "summary": "Обновление данных организации",
                 "description": "(страница настроек организации)",
-                "operationId": "c605a550b7a63242c2d9aaccd0fedf91",
+                "operationId": "4c181d0c11b5ddda4fd0d0cd8ce39d23",
                 "requestBody": {
                     "description": "Данные для обновления организации",
                     "required": true,
@@ -1610,14 +1610,14 @@
                 ]
             }
         },
-        "/v1/account/agency/organization-provider/create-requests-cost": {
+        "/app/organization/account/agency/organization-provider/create-requests-cost": {
             "post": {
                 "tags": [
                     "Заявки от организаций поставщикам"
                 ],
                 "summary": "Создание заявки на расчет стоимости",
                 "description": "(страница создания заявки поставщику на расчет стоимости)",
-                "operationId": "3f13742a4a13a1324be2ef19891598b9",
+                "operationId": "078fcb8902e10463e5eb80636817fd57",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1685,14 +1685,14 @@
                 ]
             }
         },
-        "/v1/account/agency/organization-provider/delete-requests-cost/{request}": {
+        "/app/organization/account/agency/organization-provider/delete-requests-cost/{request}": {
             "delete": {
                 "tags": [
                     "Заявки от организаций поставщикам"
                 ],
                 "summary": "Удаление заявки на стоимость товара поставщика",
                 "description": "(страница заявок поставщикам на расчет стоимости)",
-                "operationId": "d452cf66c4fd650f23edc7604dd5432d",
+                "operationId": "30e1435093a7603cba6736c19a805b55",
                 "parameters": [
                     {
                         "name": "request",
@@ -1744,14 +1744,14 @@
                 }
             }
         },
-        "/v1/account/agency/organization-provider/offer/add": {
+        "/app/organization/account/agency/organization-provider/offer/add": {
             "post": {
                 "tags": [
                     "Заявки от организаций поставщикам"
                 ],
                 "summary": "Заявка на создание товара",
                 "description": "Создание запроса товара (страница на создание запроса на товар)",
-                "operationId": "3a961feee787bf5967530a98b2e20c2a",
+                "operationId": "03d5cd487fafd3de432a00e45fd825b9",
                 "requestBody": {
                     "description": "Offer data with images",
                     "required": true,
@@ -1992,14 +1992,14 @@
                 ]
             }
         },
-        "/v1/account/agency/organization-provider/offer/{id}/delete": {
+        "/app/organization/account/agency/organization-provider/offer/{id}/delete": {
             "delete": {
                 "tags": [
                     "Заявки от организаций поставщикам"
                 ],
                 "summary": "Удаление заявки на создание товара",
                 "description": "Удаление запроса товара поставщику по идентификатору (страница заявок поставщикам на создание товара)",
-                "operationId": "83493836057bd69fc14cc0cddaa73f77",
+                "operationId": "81c2bc57a6ff3ed8c5877cdc742c62d5",
                 "parameters": [
                     {
                         "name": "id",
@@ -2112,14 +2112,14 @@
                 ]
             }
         },
-        "/v1/account/agency/reviews/organization/{id}": {
+        "/app/organization/account/agency/reviews/organization/{id}": {
             "get": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Получение отзывов об организации",
                 "description": "(страница отзывов организации)",
-                "operationId": "456b10f24180e513c93b7aaef7f4f7c6",
+                "operationId": "88fcf5c01780ff2f7d75314b6d6f6f6d",
                 "parameters": [
                     {
                         "name": "id",
@@ -2304,14 +2304,14 @@
                 ]
             }
         },
-        "/v1/account/agency/product-comments/organization/{id}": {
+        "/app/organization/account/agency/product-comments/organization/{id}": {
             "get": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Получение комментариев к товарам организации",
                 "description": "(страница отзывов продуктов организации)",
-                "operationId": "15085ca0e7041fe6c6433951a9d72ad7",
+                "operationId": "47e972a2ff8c0631eb8991552e5a570d",
                 "parameters": [
                     {
                         "name": "id",
@@ -2505,14 +2505,14 @@
                 ]
             }
         },
-        "/v1/account/agency/reviews/{id}": {
+        "/app/organization/account/agency/reviews/{id}": {
             "delete": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Удаление отзыва об организации",
                 "description": "(страница отзывов организации)",
-                "operationId": "154e7e489e41480ce85fa218ed50577d",
+                "operationId": "3a1d2fb572d388a2abbab79bab09c32f",
                 "parameters": [
                     {
                         "name": "id",
@@ -2593,14 +2593,14 @@
                 ]
             }
         },
-        "/v1/account/agency/reviews/{id}/approve": {
+        "/app/organization/account/agency/reviews/{id}/approve": {
             "patch": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Одобрение отзыва об организации",
                 "description": "(страница отзывов организации)",
-                "operationId": "afd33cada6ab10cff70a0cfd7ec88cd7",
+                "operationId": "37a8a997685381a044806498116fd4f1",
                 "parameters": [
                     {
                         "name": "id",
@@ -2706,14 +2706,14 @@
                 ]
             }
         },
-        "/v1/account/agency/reviews/{id}/content": {
+        "/app/organization/account/agency/reviews/{id}/content": {
             "put": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Обновление текста отзыва",
                 "description": "(страница отзывов организации)",
-                "operationId": "cbfeaef12589756cb6217a840c9d7d26",
+                "operationId": "88734b643c4a992aaa14753e0336f2ee",
                 "parameters": [
                     {
                         "name": "id",
@@ -2848,14 +2848,14 @@
                 ]
             }
         },
-        "/v1/account/agency/product-comments/{id}": {
+        "/app/organization/account/agency/product-comments/{id}": {
             "delete": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Удаление комментария о товаре",
                 "description": "(страница отзывов продуктов организации)",
-                "operationId": "fbd9b46c8224508ebba4681fb2aeeb8d",
+                "operationId": "6601028e3f3ce18d2e52b4b513371650",
                 "parameters": [
                     {
                         "name": "id",
@@ -2936,14 +2936,14 @@
                 ]
             }
         },
-        "/v1/account/agency/product-comments/{id}/approve": {
+        "/app/organization/account/agency/product-comments/{id}/approve": {
             "patch": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Одобрение комментария о товаре",
                 "description": "(страница отзывов продуктов организации)",
-                "operationId": "053cf4cbb17b5fca34a9b82169ca6b46",
+                "operationId": "37303cb56fe941a4502b6486f0353559",
                 "parameters": [
                     {
                         "name": "id",
@@ -3053,14 +3053,14 @@
                 ]
             }
         },
-        "/v1/account/agency/product-comments/{id}/content": {
+        "/app/organization/account/agency/product-comments/{id}/content": {
             "put": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Обновление текста комментария о товаре",
                 "description": "(страница отзывов продуктов организации)",
-                "operationId": "5ab540e0b4eb4fcb38b59413427e3db1",
+                "operationId": "0b39f178b85fcfd8644bdb13516aef37",
                 "parameters": [
                     {
                         "name": "id",
@@ -3199,14 +3199,14 @@
                 ]
             }
         },
-        "/v1/account/agency/reviews/{id}/response": {
+        "/app/organization/account/agency/reviews/{id}/response": {
             "post": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Добавление ответа организации на отзыв",
                 "description": "(страница отзывов организации)",
-                "operationId": "125805b6918571370acde1979a010b24",
+                "operationId": "cb43040c1270247b33e517bf8389151a",
                 "parameters": [
                     {
                         "name": "id",
@@ -3337,14 +3337,14 @@
                 ]
             }
         },
-        "/v1/account/agency/product-comments/{id}/response": {
+        "/app/organization/account/agency/product-comments/{id}/response": {
             "post": {
                 "tags": [
                     "Организация: Отзывы и комментарии"
                 ],
                 "summary": "Добавление ответа организации на комментарий к товару",
                 "description": "(страница отзывов продуктов организации)",
-                "operationId": "992fa2a911a79a3c79444175637d3da1",
+                "operationId": "801d8b169875f6d5b04f5e69da0f0896",
                 "parameters": [
                     {
                         "name": "id",
@@ -3479,14 +3479,14 @@
                 ]
             }
         },
-        "/v1/organizations/{city}": {
+        "/app/organization/organizations/{city}": {
             "post": {
                 "tags": [
-                    "Города"
+                    "Организация"
                 ],
                 "summary": "Получить организации по городу",
-                "description": "(страница привязки организаций)",
-                "operationId": "8e82932a25d20c86b319d3da827fdb61",
+                "description": "(страница привязки организаций). Возможен поиск по названию организации",
+                "operationId": "46d6b4b9614a6d26add329e2c0c5489a",
                 "parameters": [
                     {
                         "name": "city",
@@ -3495,6 +3495,15 @@
                         "required": true,
                         "schema": {
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Название организации для поиска (частичное совпадение)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
@@ -3559,18 +3568,50 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибка валидации"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Поле name должно быть строкой."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
         },
-        "/v1/cities/search": {
+        "/app/organization/cities/search": {
             "post": {
                 "tags": [
                     "Города"
                 ],
                 "summary": "Поиск городов",
                 "description": "(страница привязки организаций)",
-                "operationId": "fb9a0c00cd586e7bec500775dd5d71be",
+                "operationId": "7d4cd2612c8ce5bba0ee8b4683e0e7ba",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -3634,14 +3675,117 @@
                 }
             }
         },
-        "/v1/send-code": {
+        "/app/organization/edges/search": {
+            "post": {
+                "tags": [
+                    "Регионы"
+                ],
+                "summary": "Поиск регионов",
+                "description": "Поиск регионов с фильтром is_show=1",
+                "operationId": "7105855fefc89b7cd13c690d3effc27e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "edge"
+                                ],
+                                "properties": {
+                                    "edge": {
+                                        "type": "string",
+                                        "example": "Московская"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Регионы успешно найдены"
+                                        },
+                                        "edges": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Московская область"
+                                                    },
+                                                    "is_show": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибка валидации"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "edge": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Поле edge обязательно для заполнения."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/organization/send-code": {
             "post": {
                 "tags": [
                     "Организация"
                 ],
                 "summary": "Отправить код подтверждения, страница привязывания организации",
                 "description": "(страница привязки организаций)",
-                "operationId": "e0343da12072bef90b2b1252b86b7759",
+                "operationId": "9e805379a4784be1df14288050b2fc7a",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -3685,14 +3829,14 @@
                 }
             }
         },
-        "/v1/accept-code": {
+        "/app/organization/accept-code": {
             "post": {
                 "tags": [
                     "Организация"
                 ],
                 "summary": "Подтвердить код, страница привязывания организации",
                 "description": "(страница привязки организаций)",
-                "operationId": "e248c979aecf2942b026fb8ea615905b",
+                "operationId": "9d143b1b2dc6a057260cd01ae2447d4d",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -3766,14 +3910,14 @@
                 ]
             }
         },
-        "/v1/account/agency/wallets": {
+        "/app/organization/account/agency/wallets": {
             "get": {
                 "tags": [
                     "Кошелек пользователя"
                 ],
                 "summary": "Получить кошельки пользователя",
                 "description": "(страница кошельки пользователя)",
-                "operationId": "38f64f02283e6435ed89ebefdf404229",
+                "operationId": "08014c6c98f30fe9a9768cfed0c24d6f",
                 "responses": {
                     "200": {
                         "description": "Успешный ответ",
@@ -3852,14 +3996,14 @@
                 ]
             }
         },
-        "/v1/account/agency/wallet/{wallet}/delete": {
+        "/app/organization/account/agency/wallet/{wallet}/delete": {
             "delete": {
                 "tags": [
                     "Кошелек пользователя"
                 ],
                 "summary": "Удаление кошелька",
                 "description": "(страница кошельки пользователя)",
-                "operationId": "7b65265d54ee922e4cdbb169bc7f1431",
+                "operationId": "3a7b7c9181ee25b075e3c88f3bf61d80",
                 "parameters": [
                     {
                         "name": "wallet",
@@ -3940,14 +4084,14 @@
                 ]
             }
         },
-        "/v1/account/agency/wallet/balance/update": {
+        "/app/organization/account/agency/wallet/balance/update": {
             "post": {
                 "tags": [
                     "Кошелек пользователя"
                 ],
                 "summary": "Пополнение баланса кошелька",
                 "description": "(страница кошельки пользователя)",
-                "operationId": "55850585c65983f0c34c65807f9ce783",
+                "operationId": "9fb6eeac8e5297449ee2e32c53f26f11",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -4067,14 +4211,14 @@
                 ]
             }
         },
-        "/v1/account/agency/aplications/buy": {
+        "/app/organization/account/agency/aplications/buy": {
             "get": {
                 "tags": [
                     "Покупка заявок"
                 ],
                 "summary": "Покупка заявок",
                 "description": "Заявки доступные для покупки (страница покупки заявок)",
-                "operationId": "d03d5dd82507b465813b0d6c1cb4b9b9",
+                "operationId": "fd44b80fe2ca6f775b54b9cb3f219c7e",
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -4189,14 +4333,14 @@
                 ]
             }
         },
-        "/v1/account/agency/aplications/purchase": {
+        "/app/organization/account/agency/aplications/purchase": {
             "post": {
                 "tags": [
                     "Покупка заявок"
                 ],
                 "summary": "Покупка заявок",
                 "description": "(страница покупки заявок)",
-                "operationId": "a24d30958d9b6cbcb34b637c1cb8e215",
+                "operationId": "156c8fd1367742646e69f8557242300e",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -4302,14 +4446,14 @@
                 ]
             }
         },
-        "/v1/account/agency/priority/buy": {
+        "/app/organization/account/agency/priority/buy": {
             "post": {
                 "tags": [
                     "Приоритет"
                 ],
                 "summary": "Покупка приоритета для организации",
                 "description": "(страница покупки приоритета организации)",
-                "operationId": "3df24c30d56b2199e0e4c87caff8de3a",
+                "operationId": "5d7a6c88e26b726cffca988dd703aaaa",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -4422,14 +4566,14 @@
                 ]
             }
         },
-        "/v1/account/agency/user/{user}/find": {
+        "/app/organization/account/agency/user/{user}/find": {
             "post": {
                 "tags": [
                     "Users"
                 ],
                 "summary": "Find user by ID",
                 "description": "Finds a user by their ID in the path",
-                "operationId": "de8ebee8dae62c56e885fb90c2b921b8",
+                "operationId": "1875b649b5abcf59d7d3ec165815e534",
                 "parameters": [
                     {
                         "name": "user",
@@ -4522,6 +4666,882 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Не авторизован"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/app/organization/categories/main": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Получить основные категории",
+                "description": "Возвращает список всех основных (родительских) категорий",
+                "operationId": "getMainCategories",
+                "responses": {
+                    "200": {
+                        "description": "Успешное получение категорий",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Электроника"
+                                                    },
+                                                    "slug": {
+                                                        "type": "string",
+                                                        "example": "electronics"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Описание категории"
+                                                    },
+                                                    "image_url": {
+                                                        "type": "string",
+                                                        "example": "https://example.com/image.jpg"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Основные категории успешно получены"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибка при получении категорий"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Сообщение об ошибке"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/organization/categories/{categoryId}/subcategories": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Получить подкатегории категории",
+                "description": "Возвращает список подкатегорий для указанной родительской категории",
+                "operationId": "getSubcategories",
+                "parameters": [
+                    {
+                        "name": "categoryId",
+                        "in": "path",
+                        "description": "ID родительской категории",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешное получение подкатегорий",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "main_category": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "Электроника"
+                                                        },
+                                                        "slug": {
+                                                            "type": "string",
+                                                            "example": "electronics"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "subcategories": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 2
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Смартфоны"
+                                                            },
+                                                            "slug": {
+                                                                "type": "string",
+                                                                "example": "smartphones"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "Описание подкатегории"
+                                                            },
+                                                            "image_url": {
+                                                                "type": "string",
+                                                                "example": "https://example.com/image.jpg"
+                                                            },
+                                                            "parent_id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Подкатегории успешно получены"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Категория не найдена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Категория не найдена"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибка при получении подкатегорий"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Сообщение об ошибке"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/organization/cemeteries": {
+            "get": {
+                "tags": [
+                    "Cemeteries"
+                ],
+                "summary": "Получить список кладбищ",
+                "description": "Возвращает список кладбищ с возможностью фильтрации по городу, району и краю через связи",
+                "operationId": "getCemeteries",
+                "parameters": [
+                    {
+                        "name": "city_id",
+                        "in": "query",
+                        "description": "ID города для фильтрации (прямая привязка)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "area_id",
+                        "in": "query",
+                        "description": "ID района для фильтрации (через связь города)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "edge_id",
+                        "in": "query",
+                        "description": "ID края для фильтрации (через связь города и района)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешное получение кладбищ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Центральное кладбище"
+                                                    },
+                                                    "slug": {
+                                                        "type": "string",
+                                                        "example": "central-cemetery"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Крупнейшее кладбище города"
+                                                    },
+                                                    "address": {
+                                                        "type": "string",
+                                                        "example": "ул. Центральная, 123"
+                                                    },
+                                                    "coordinates": {
+                                                        "type": "string",
+                                                        "example": "55.7558, 37.6176"
+                                                    },
+                                                    "total_plots": {
+                                                        "type": "integer",
+                                                        "example": 10000
+                                                    },
+                                                    "available_plots": {
+                                                        "type": "integer",
+                                                        "example": 150
+                                                    },
+                                                    "city_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "image_url": {
+                                                        "type": "string",
+                                                        "example": "https://example.com/cemetery.jpg"
+                                                    },
+                                                    "city": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Москва"
+                                                            },
+                                                            "area_id": {
+                                                                "type": "integer",
+                                                                "example": 2
+                                                            },
+                                                            "area": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": 2
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "example": "Центральный район"
+                                                                    },
+                                                                    "edge_id": {
+                                                                        "type": "integer",
+                                                                        "example": 3
+                                                                    },
+                                                                    "edge": {
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "integer",
+                                                                                "example": 3
+                                                                            },
+                                                                            "name": {
+                                                                                "type": "string",
+                                                                                "example": "Московская область"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "filters": {
+                                            "properties": {
+                                                "city_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "area_id": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "edge_id": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Кладбища успешно получены"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибка при получении кладбищ"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Сообщение об ошибке"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/organization/cemeteries/{id}": {
+            "get": {
+                "tags": [
+                    "Cemeteries"
+                ],
+                "summary": "Получить информацию о кладбище",
+                "description": "Возвращает детальную информацию о конкретном кладбище с данными о городе, районе и крае",
+                "operationId": "getCemetery",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID кладбища",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешное получение информации о кладбище",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Центральное кладбище"
+                                                },
+                                                "slug": {
+                                                    "type": "string",
+                                                    "example": "central-cemetery"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Крупнейшее кладбище города"
+                                                },
+                                                "address": {
+                                                    "type": "string",
+                                                    "example": "ул. Центральная, 123"
+                                                },
+                                                "coordinates": {
+                                                    "type": "string",
+                                                    "example": "55.7558, 37.6176"
+                                                },
+                                                "total_plots": {
+                                                    "type": "integer",
+                                                    "example": 10000
+                                                },
+                                                "available_plots": {
+                                                    "type": "integer",
+                                                    "example": 150
+                                                },
+                                                "city_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "image_url": {
+                                                    "type": "string",
+                                                    "example": "https://example.com/cemetery.jpg"
+                                                },
+                                                "city": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "Москва"
+                                                        },
+                                                        "area_id": {
+                                                            "type": "integer",
+                                                            "example": 2
+                                                        },
+                                                        "area": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 2
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "example": "Центральный район"
+                                                                },
+                                                                "edge_id": {
+                                                                    "type": "integer",
+                                                                    "example": 3
+                                                                },
+                                                                "edge": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": 3
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string",
+                                                                            "example": "Московская область"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Информация о кладбище успешно получена"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Кладбище не найдено",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Кладбище не найдено"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибка при получении информации о кладбище"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Сообщение об ошибке"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/organization/account/agency/change-organization": {
+            "post": {
+                "tags": [
+                    "Организация"
+                ],
+                "summary": "Изменить выбранную организацию",
+                "description": "Изменяет текущую выбранную организацию для авторизованного пользователя",
+                "operationId": "changeOrganization",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "organization_id"
+                                ],
+                                "properties": {
+                                    "organization_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Организация успешно изменена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Организация успешно изменена"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "organization_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "organization_name": {
+                                                    "type": "string",
+                                                    "example": "Моя организация"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Организация не найдена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Организация не найдена или не принадлежит пользователю"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибка валидации"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/app/organization/account/agency/organizations": {
+            "get": {
+                "tags": [
+                    "Организация"
+                ],
+                "summary": "Получить список организаций пользователя",
+                "description": "Возвращает список всех организаций, принадлежащих авторизованному пользователю",
+                "operationId": "getUserOrganizations",
+                "responses": {
+                    "200": {
+                        "description": "Список организаций успешно получен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "slug": {
+                                                        "type": "string",
+                                                        "example": "my-organization"
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Моя организация"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 3
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Организации пользователя успешно получены"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/app/organization/account/agency/current-organization": {
+            "get": {
+                "tags": [
+                    "Организация"
+                ],
+                "summary": "Получить текущую организацию пользователя",
+                "description": "Возвращает текущую выбранную организацию пользователя",
+                "operationId": "getCurrentOrganization",
+                "responses": {
+                    "200": {
+                        "description": "Текущая организация успешно получена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "slug": {
+                                                    "type": "string",
+                                                    "example": "my-organization"
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Моя организация"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Описание организации"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Текущая организация успешно получена"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Организация не выбрана или не найдена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Организация не выбрана"
                                         }
                                     },
                                     "type": "object"
@@ -5626,6 +6646,10 @@
             "description": "Города"
         },
         {
+            "name": "Регионы",
+            "description": "Регионы"
+        },
+        {
             "name": "Кошелек пользователя",
             "description": "Кошелек пользователя"
         },
@@ -5640,6 +6664,14 @@
         {
             "name": "Users",
             "description": "Users"
+        },
+        {
+            "name": "Categories",
+            "description": "Categories"
+        },
+        {
+            "name": "Cemeteries",
+            "description": "Cemeteries"
         },
         {
             "name": "Авторизация/регистрация",

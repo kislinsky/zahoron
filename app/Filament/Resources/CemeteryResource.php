@@ -1,21 +1,17 @@
 <?php
 namespace App\Filament\Resources;
 
-use App\Filament\Exports\CemeteryExporter;
 use App\Filament\Resources\CemeteryResource\Pages;
 use App\Filament\Resources\CemeteryResource\RelationManagers\ImagesRelationManager;
 use App\Filament\Resources\CemeteryResource\RelationManagers\PriceServiceRelationManager;
 use App\Filament\Resources\CemeteryResource\RelationManagers\ViewsRelationManager;
 use App\Filament\Resources\CemeteryResource\RelationManagers\WorkingHoursRelationManager;
-use App\Filament\Resources\CemeteryResource\RelationManagers\WorkingsHoursRelationManager;
 use App\Models\Area;
 use App\Models\Cemetery;
 use App\Models\City;
 use App\Models\Edge;
-use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
@@ -26,12 +22,9 @@ use Filament\Forms\Components\View;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\ExportBulkAction;
-use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use Rap2hpoutre\FastExcel\FastExcel;
 
 class CemeteryResource extends Resource
 {
@@ -250,7 +243,13 @@ class CemeteryResource extends Resource
                     TextInput::make('date_foundation')
                     ->label('Год основания'),
                 
-                                    
+                       Radio::make('priority')
+                        ->label('В приоритете')
+                        ->options([
+                            0 => 'Нет',
+                            1 => 'Да'
+                        ])
+                        ->inline(),             
             ]);
     }
 

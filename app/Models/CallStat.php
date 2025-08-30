@@ -64,7 +64,6 @@ class CallStat extends Model
 
     public static function callback(Request $request)
     {
-
         // Валидация входящих данных
         $validated = $request->validate([
             'callId'=> 'nullable',
@@ -117,11 +116,13 @@ class CallStat extends Model
         ]);
 
         try {
+            // Определяем organization_id из различных источников
+            $organizationId = self::extractOrganizationId($validated);
+
             // Создаем запись о звонке
             $callStat = self::create([
-
                 'call_id' => $validated['callId'] ?? null,
-                'organization_id' => $validated['organization_id'] ?? null,
+                'organization_id' => $organizationId,
                 
                 // Параметры коллтрекинга
                 'uid' => $validated['uid'] ?? null,
@@ -168,11 +169,6 @@ class CallStat extends Model
                 'called_number' => $validated['number'] ?? null,
             ]);
 
-            // Можно добавить дополнительные действия:
-            // - Отправка уведомлений
-            // - Обновление статистики организации
-            // - Логирование
-
             return response()->json([
                 'status' => 'success',
                 'message' => 'Call stat saved successfully'
@@ -189,5 +185,88 @@ class CallStat extends Model
                 'message' => 'Failed to save call stat'
             ], 500);
         }
+    }
+
+    /**
+     * Извлекает organization_id из различных источников
+     */
+    protected static function extractOrganizationId(array $validated): ?int
+    {
+        // 1. Проверяем, если organization_id уже передан напрямую
+        if (!empty($validated['organization_id'])) {
+            return (int) $validated['organization_id'];
+        }
+
+        // 2. Проверяем customParam на наличие organization_id
+        if (!empty($validated['customParam'])) {
+            $organizationIdFromCustomParam = self::extractOrganizationIdFromCustomParam($validated['customParam']);
+            if ($organizationIdFromCustomParam) {
+                return $organizationIdFromCustomParam;
+            }
+        }
+
+        // 3. Проверяем URL на наличие slug организации
+        if (!empty($validated['url'])) {
+            $organizationIdFromUrl = self::extractOrganizationIdFromUrl($validated['url']);
+            if ($organizationIdFromUrl) {
+                return $organizationIdFromUrl;
+            }
+        }
+
+        // 4. Если ничего не найдено, возвращаем null
+        return null;
+    }
+
+    /**
+     * Извлекает organization_id из customParam
+     */
+    protected static function extractOrganizationIdFromCustomParam(?string $customParam): ?int
+    {
+        if (empty($customParam)) {
+            return null;
+        }
+
+        // Ищем паттерн organization_id=число
+        if (preg_match('/organization_id=(\d+)/', $customParam, $matches)) {
+            return (int) $matches[1];
+        }
+
+        return null;
+    }
+
+    /**
+     * Извлекает organization_id из URL путем поиска по slug
+     */
+    protected static function extractOrganizationIdFromUrl(?string $url): ?int
+    {
+        if (empty($url)) {
+            return null;
+        }
+
+        // Парсим URL
+        $parsedUrl = parse_url($url);
+        if (!isset($parsedUrl['path'])) {
+            return null;
+        }
+
+        // Разбиваем путь на части
+        $pathParts = explode('/', trim($parsedUrl['path'], '/'));
+        
+        // Ищем паттерн: /город/organization/слаг-...
+        // Например: /elizovo/organization/pamat-24-7-1
+        $organizationIndex = array_search('organization', $pathParts);
+        
+        if ($organizationIndex !== false && isset($pathParts[$organizationIndex + 1])) {
+            $slug = $pathParts[$organizationIndex + 1];
+            
+            // Ищем организацию по slug
+            $organization = Organization::where('slug', $slug)->first();
+            
+            if ($organization) {
+                return $organization->id;
+            }
+        }
+
+        return null;
     }
 }

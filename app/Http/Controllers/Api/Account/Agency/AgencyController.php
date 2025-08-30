@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Account\Agency;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityCategoryOrganization;
 use App\Models\CategoryProduct;
+use App\Models\Cemetery;
 use App\Models\City;
 use App\Models\CommentProduct;
 use App\Models\ImageOrganization;
@@ -21,6 +22,7 @@ use App\Models\UserRequestsCount;
 use App\Models\Wallet;
 use App\Models\WorkingHoursOrganization;
 use App\Services\YooMoneyService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -28,6 +30,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Tymon\JWTAuth\Contracts\Providers\Storage;
 
 class AgencyController extends Controller
@@ -1414,13 +1417,38 @@ class AgencyController extends Controller
         ]);
     }
 
-    public static function organizationsCity(City $city){
-        $organizations=$city->organizations;
+    public static function organizationsCity(City $city, Request $request)
+    {
+        // Валидация входных параметров
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|string|max:255'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Получение отфильтрованных организаций с выбором конкретных полей
+        $query = $city->organizations()->select('id', 'title', 'name_type', 'phone', 'status');
+        
+        if ($request->has('name') && !empty($request->name)) {
+            $query->where('title', 'like', '%' . $request->name . '%');
+        }
+        
+        $organizations = $query->get();
+
         return response()->json([
             'success' => true,
             'message' => 'Организации успешно найдены',
             'organizations' => $organizations,
-            'city' => $city,
+            'city' => [
+                'id' => $city->id,
+                'title' => $city->title
+            ], // Упрощаем информацию о городе
         ]);
     }
 
@@ -1430,20 +1458,48 @@ class AgencyController extends Controller
         ]);
 
         $cities = DB::table('cities')
-        ->select('cities.*')
-        ->join('organizations', 'organizations.city_id', '=', 'cities.id')
-        ->join('areas', 'cities.area_id', '=', 'areas.id')
-        ->join('edges', 'areas.edge_id', '=', 'edges.id')
-        ->where('cities.title', 'like', $request->city . '%') // Используем начало строки для индекса
-        ->where('edges.is_show', 1)
-        ->groupBy('cities.id')
-        ->orderBy('cities.title', 'asc')
-        ->get();
+            ->select('cities.id', 'cities.title') // Выбираем только id и title
+            ->join('organizations', 'organizations.city_id', '=', 'cities.id')
+            ->join('areas', 'cities.area_id', '=', 'areas.id')
+            ->join('edges', 'areas.edge_id', '=', 'edges.id')
+            ->where('cities.title', 'like', $request->city . '%')
+            ->where('edges.is_show', 1)
+            ->groupBy('cities.id', 'cities.title') // Добавляем title в groupBy
+            ->orderBy('cities.title', 'asc')
+            ->get();
 
         return response()->json([
             'success' => true,
             'message' => 'Города успешно найдены',
-            'cities' => $cities,
+            'cities' => $cities, // Теперь cities содержат только id и title
+        ]);
+    }
+
+    public static function edgeSearch(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'edge' => 'required|string|max:3000'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $edges = DB::table('edges')
+            ->select('edges.*')
+            ->where('edges.title', 'like', $request->edge . '%')
+            ->where('edges.is_show', 1)
+            ->orderBy('edges.title', 'asc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Регионы успешно найдены',
+            'edges' => $edges,
         ]);
     }
 
@@ -1710,6 +1766,280 @@ class AgencyController extends Controller
         ]);
     }
     
+
+    public function getMainCategories(): JsonResponse
+    {
+        try {
+            $categories = CategoryProduct::whereNull('parent_id')
+                ->where('display', true)
+                ->orderBy('title')
+                ->get(['id', 'title', 'slug', ]);
+
+            return response()->json([
+                'success' => true,
+                'data' => $categories,
+                'message' => 'Основные категории успешно получены'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при получении категорий',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+   
+    public function getSubcategories(int $categoryId): JsonResponse
+    {
+        try {
+            // Проверяем существование категории
+            $mainCategory = CategoryProduct::find($categoryId);
+            
+            if (!$mainCategory) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Категория не найдена'
+                ], 404);
+            }
+
+            $subcategories = CategoryProduct::where('parent_id', $categoryId)
+                ->where('display', true)
+                ->orderBy('title')
+                ->get(['id', 'title', 'slug', 'parent_id']);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'main_category' => $mainCategory->only(['id', 'title', 'slug']),
+                    'subcategories' => $subcategories
+                ],
+                'message' => 'Подкатегории успешно получены'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при получении подкатегорий',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+   public function getCemeteries(Request $request): JsonResponse
+{
+    try {
+        $query = Cemetery::with(['city' => function($q) {
+                $q->with(['area' => function($q) {
+                    $q->with('edge');
+                }]);
+            }])
+            ->orderBy('priority');
+
+        // Проверяем существование сущностей для фильтров
+        if ($request->has('city_id') && $request->city_id) {
+            $cityExists = \App\Models\City::where('id', $request->city_id)->exists();
+            if (!$cityExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Город с указанным ID не найден'
+                ], 404);
+            }
+            $query->where('city_id', $request->city_id);
+        }
+
+        if ($request->has('area_id') && $request->area_id) {
+            $areaExists = \App\Models\Area::where('id', $request->area_id)->exists();
+            if (!$areaExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Район с указанным ID не найден'
+                ], 404);
+            }
+            $query->whereHas('city', function ($q) use ($request) {
+                $q->where('area_id', $request->area_id);
+            });
+        }
+
+        if ($request->has('edge_id') && $request->edge_id) {
+            $edgeExists = \App\Models\Edge::where('id', $request->edge_id)->exists();
+            if (!$edgeExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Край с указанным ID не найден'
+                ], 404);
+            }
+            $query->whereHas('city.area', function ($q) use ($request) {
+                $q->where('edge_id', $request->edge_id);
+            });
+        }
+
+        $cemeteries = $query->get(['id', 'title', 'city_id']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $cemeteries,
+            'filters' => $request->only(['city_id', 'area_id', 'edge_id']),
+            'count' => $cemeteries->count(),
+            'message' => $cemeteries->count() > 0 
+                ? 'Кладбища успешно получены' 
+                : 'Кладбища не найдены по заданным фильтрам'
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Ошибка при получении кладбищ',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+    public function getCemetery(int $id): JsonResponse
+    {
+        try {
+            $cemetery = Cemetery::with(['city.area.edge'])
+                ->find($id);
+
+            if (!$cemetery) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Кладбище не найдено'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $cemetery,
+                'message' => 'Информация о кладбище успешно получена'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при получении информации о кладбище',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function changeOrganization(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'organization_id' => 'required|integer|exists:organizations,id'
+            ]);
+
+            $user = auth()->user();
+            
+            // Проверяем, принадлежит ли организация пользователю
+            $organization = Organization::where('id', $request->organization_id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if (!$organization) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Организация не найдена или не принадлежит пользователю'
+                ], 404);
+            }
+
+            // Обновляем выбранную организацию
+            $user->organization_id = $request->organization_id;
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Организация успешно изменена',
+                'data' => [
+                    'organization_id' => $user->organization_id,
+                    'organization_name' => $organization->title
+                ]
+            ]);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при изменении организации',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function getUserOrganizations(): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+            
+            $organizations = Organization::where('user_id', $user->id)
+                ->orderBy('title')
+                ->get(['id', 'slug', 'title', 'created_at']);
+
+            return response()->json([
+                'success' => true,
+                'data' => $organizations,
+                'count' => $organizations->count(),
+                'message' => 'Организации пользователя успешно получены'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при получении организаций',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getCurrentOrganization(): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+            
+            if (!$user->organization_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Организация не выбрана'
+                ], 404);
+            }
+
+            $organization = Organization::where('id', $user->organization_id)
+                ->where('user_id', $user->id);
+
+            if (!$organization) {
+                // Сбрасываем organization_id если организация не найдена
+                $user->organization_id = null;
+                $user->save();
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Организация не найдена'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $organization,
+                'message' => 'Текущая организация успешно получена'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при получении организации',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
 
 

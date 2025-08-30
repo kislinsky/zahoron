@@ -8,6 +8,7 @@ use App\Models\City;
 use App\Models\ProductRequestToSupplier;
 use App\Models\User;
 use App\Models\Wallet;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AgencyController extends Controller
@@ -16,7 +17,7 @@ class AgencyController extends Controller
      * Получить список продуктов агентства с возможностью фильтрации и пагинации
      *
      * @OA\Get(
-     *     path="/v1/account/agency/products",
+     *     path="/app/organization/account/agency/products",
      *     tags={"Продукты организации"},
      *     summary="Получение списка продуктов агентства",
      *     description="Возвращает отфильтрованный список продуктов организации с пагинацией (страница товаров)",
@@ -151,7 +152,7 @@ class AgencyController extends Controller
 
 /**
  * @OA\Post(
- *     path="/v1/account/agency/products",
+ *     path="/app/organization/account/agency/products",
  *     summary="Добавить новый товар",
  *     tags={"Продукты организации"},
  *     description="(страница добавления товаров)",
@@ -193,7 +194,7 @@ class AgencyController extends Controller
         public function addProduct(Request $request){}
 /**
  * @OA\Post(
- *     path="/v1/account/agency/products/{productId}/update",
+ *     path="/app/organization/account/agency/products/{productId}/update",
  *     summary="Обновление товара",
  *     description="Обновляет информацию о товаре. Требуется ID организации для проверки владельца. Все поля, кроме organization_id, являются необязательными. (страница обновления товара)",
  *     tags={"Продукты организации"},
@@ -307,7 +308,7 @@ class AgencyController extends Controller
 
 /**
  * @OA\Delete(
- *     path="/v1/account/agency/products/{productId}",
+ *     path="/app/organization/account/agency/products/{productId}",
  *     summary="Удалить товар",
  *     description="(страница товаров)",
  *     tags={"Продукты организации"},
@@ -358,7 +359,7 @@ class AgencyController extends Controller
 
 /**
  * @OA\Post(
- *     path="/v1/account/agency/settings/update",
+ *     path="/app/organization/account/agency/settings/update",
  *     summary="Обновление настроек организации/ИП",
  *     description="Обновляет профиль организации или индивидуального предпринимателя",
  *     tags={"Профиль организации"},
@@ -504,7 +505,7 @@ public static function settingsUserUpdate(Request $request){}
 
 /**
  * @OA\Post(
- *     path="/v1/account/agency/organization/create",
+ *     path="/app/organization/account/agency/organization/create",
  *     tags={"Организация"},
  *     summary="Создание новой организации",
  *     description="Создает новую организацию с категориями, рабочими часами и изображениями (страница создания организации)",
@@ -801,7 +802,7 @@ public static function createOrganization(Request $request) {}
 
 /**
  * @OA\Post(
- *     path="/v1/account/agency/organization/update",
+ *     path="/app/organization/account/agency/organization/update",
  *     summary="Обновление данных организации",
  *     tags={"Организация"},
  *     description="(страница настроек организации)",
@@ -1054,7 +1055,7 @@ public static function update(Request $request) {}
 
 /**
  * @OA\Post(
- *     path="/v1/account/agency/organization-provider/create-requests-cost",
+ *     path="/app/organization/account/agency/organization-provider/create-requests-cost",
  *     summary="Создание заявки на расчет стоимости",
  *     tags={"Заявки от организаций поставщикам"},
  *     description="(страница создания заявки поставщику на расчет стоимости)",
@@ -1098,7 +1099,7 @@ public static function addRequestsCostProductSuppliers(Request $request){}
 
 /**
  * @OA\Delete(
- *     path="/v1/account/agency/organization-provider/delete-requests-cost/{request}",
+ *     path="/app/organization/account/agency/organization-provider/delete-requests-cost/{request}",
  *     summary="Удаление заявки на стоимость товара поставщика",
  *     description="(страница заявок поставщикам на расчет стоимости)",
  *     tags={"Заявки от организаций поставщикам"},
@@ -1146,7 +1147,7 @@ public static function addRequestsCostProductSuppliers(Request $request){}
 
 /**
  * @OA\Post(
- *     path="/v1/account/agency/organization-provider/offer/add",
+ *     path="/app/organization/account/agency/organization-provider/offer/add",
  *     summary="Заявка на создание товара",
  *     description="Создание запроса товара (страница на создание запроса на товар)",
  *     tags={"Заявки от организаций поставщикам"},
@@ -1290,7 +1291,7 @@ public function createProviderOffer(Request $request)
 
 /**
  * @OA\Delete(
- *     path="/v1/account/agency/organization-provider/offer/{id}/delete",
+ *     path="/app/organization/account/agency/organization-provider/offer/{id}/delete",
  *     summary="Удаление заявки на создание товара",
  *     description="Удаление запроса товара поставщику по идентификатору (страница заявок поставщикам на создание товара)",
  *     tags={"Заявки от организаций поставщикам"},
@@ -1351,7 +1352,7 @@ public static function deleteProviderOffer(ProductRequestToSupplier $offer)
 
 /**
  * @OA\Get(
- *     path="/v1/account/agency/reviews/organization/{id}",
+ *     path="/app/organization/account/agency/reviews/organization/{id}",
  *     summary="Получение отзывов об организации",
  *     description="(страница отзывов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
@@ -1425,7 +1426,7 @@ public function getOrganizationReviews($id) {}
 
 /**
  * @OA\Get(
- *     path="/v1/account/agency/product-comments/organization/{id}",
+ *     path="/app/organization/account/agency/product-comments/organization/{id}",
  *     summary="Получение комментариев к товарам организации",
  *     description="(страница отзывов продуктов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
@@ -1502,7 +1503,7 @@ public function getProductComments($id) {}
 
 /**
  * @OA\Delete(
- *     path="/v1/account/agency/reviews/{id}",
+ *     path="/app/organization/account/agency/reviews/{id}",
  *     summary="Удаление отзыва об организации",
  *     description="(страница отзывов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
@@ -1544,7 +1545,7 @@ public function deleteReview($id) {}
 
 /**
  * @OA\Patch(
- *     path="/v1/account/agency/reviews/{id}/approve",
+ *     path="/app/organization/account/agency/reviews/{id}/approve",
  *     summary="Одобрение отзыва об организации",
  *     description="(страница отзывов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
@@ -1593,7 +1594,7 @@ public function approveReview($id) {}
 
 /**
  * @OA\Put(
- *     path="/v1/account/agency/reviews/{id}/content",
+ *     path="/app/organization/account/agency/reviews/{id}/content",
  *     summary="Обновление текста отзыва",
  *     description="(страница отзывов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
@@ -1650,7 +1651,7 @@ public function updateReviewContent(Request $request, $id) {}
 
 /**
  * @OA\Delete(
- *     path="/v1/account/agency/product-comments/{id}",
+ *     path="/app/organization/account/agency/product-comments/{id}",
  *     summary="Удаление комментария о товаре",
  *     description="(страница отзывов продуктов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
@@ -1692,7 +1693,7 @@ public function deleteProductComment($id) {}
 
 /**
  * @OA\Patch(
- *     path="/v1/account/agency/product-comments/{id}/approve",
+ *     path="/app/organization/account/agency/product-comments/{id}/approve",
  *     summary="Одобрение комментария о товаре",
  *     description="(страница отзывов продуктов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
@@ -1742,7 +1743,7 @@ public function approveProductComment($id) {}
 
 /**
  * @OA\Put(
- *     path="/v1/account/agency/product-comments/{id}/content",
+ *     path="/app/organization/account/agency/product-comments/{id}/content",
  *     summary="Обновление текста комментария о товаре",
  *     description="(страница отзывов продуктов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
@@ -1801,7 +1802,7 @@ public function updateProductCommentContent(Request $request, $id) {}
 
 /**
  * @OA\Post(
- *     path="/v1/account/agency/reviews/{id}/response",
+ *     path="/app/organization/account/agency/reviews/{id}/response",
  *     summary="Добавление ответа организации на отзыв",
  *     description="(страница отзывов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
@@ -1857,7 +1858,7 @@ public function addOrganizationReviewResponse(Request $request, $id) {}
 
 /**
  * @OA\Post(
- *     path="/v1/account/agency/product-comments/{id}/response",
+ *     path="/app/organization/account/agency/product-comments/{id}/response",
  *     summary="Добавление ответа организации на комментарий к товару",
  *     description="(страница отзывов продуктов организации)",
  *     tags={"Организация: Отзывы и комментарии"},
@@ -1914,17 +1915,24 @@ public function addProductCommentResponse(Request $request, $id) {}
 
 
 /**
- * @OA\Post(
- *     path="/v1/organizations/{city}",
+ * @OA\POST(
+ *     path="/app/organization/organizations/{city}",
  *     summary="Получить организации по городу",
- *     description="(страница привязки организаций)",
- *     tags={"Города"},
+ *     description="(страница привязки организаций). Возможен поиск по названию организации",
+ *     tags={"Организация"},
  *     @OA\Parameter(
  *         name="city",
  *         in="path",
  *         required=true,
  *         description="ID города",
  *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Parameter(
+ *         name="name",
+ *         in="query",
+ *         required=false,
+ *         description="Название организации для поиска (частичное совпадение)",
+ *         @OA\Schema(type="string")
  *     ),
  *     @OA\Response(
  *         response=200,
@@ -1951,6 +1959,23 @@ public function addProductCommentResponse(Request $request, $id) {}
  *                 @OA\Property(property="area_id", type="integer", example=1)
  *             )
  *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Ошибка валидации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Ошибка валидации"),
+ *             @OA\Property(
+ *                 property="errors",
+ *                 type="object",
+ *                 @OA\Property(
+ *                     property="name",
+ *                     type="array",
+ *                     @OA\Items(type="string", example="Поле name должно быть строкой.")
+ *                 )
+ *             )
+ *         )
  *     )
  * )
  */
@@ -1958,7 +1983,7 @@ public static function organizationsCity(City $city) {  }
 
 /**
  * @OA\Post(
- *     path="/v1/cities/search",
+ *     path="/app/organization/cities/search",
  *     summary="Поиск городов",
  *     description="(страница привязки организаций)",
  *     tags={"Города"},
@@ -1991,9 +2016,63 @@ public static function organizationsCity(City $city) {  }
  */
 public static function citySearch(Request $request) {  }
 
+
 /**
  * @OA\Post(
- *     path="/v1/send-code",
+ *     path="/app/organization/edges/search",
+ *     summary="Поиск регионов",
+ *     description="Поиск регионов с фильтром is_show=1",
+ *     tags={"Регионы"},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"edge"},
+ *             @OA\Property(property="edge", type="string", example="Московская")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешный ответ",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Регионы успешно найдены"),
+ *             @OA\Property(
+ *                 property="edges",
+ *                 type="array",
+ *                 @OA\Items(
+ *                     type="object",
+ *                     @OA\Property(property="id", type="integer", example=1),
+ *                     @OA\Property(property="title", type="string", example="Московская область"),
+ *                     @OA\Property(property="is_show", type="integer", example=1)
+ *                 )
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Ошибка валидации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Ошибка валидации"),
+ *             @OA\Property(
+ *                 property="errors",
+ *                 type="object",
+ *                 @OA\Property(
+ *                     property="edge",
+ *                     type="array",
+ *                     @OA\Items(type="string", example="Поле edge обязательно для заполнения.")
+ *                 )
+ *             )
+ *         )
+ *     )
+ * )
+ */
+public static function edgeSearch(Request $request){}
+
+
+/**
+ * @OA\Post(
+ *     path="/app/organization/send-code",
  *     summary="Отправить код подтверждения, страница привязывания организации",
  *     description="(страница привязки организаций)",
  *     tags={"Организация"},
@@ -2018,7 +2097,7 @@ public function sendCode(Request $request) {  }
 
 /**
  * @OA\Post(
- *     path="/v1/accept-code",
+ *     path="/app/organization/accept-code",
  *     summary="Подтвердить код, страница привязывания организации",
  *     description="(страница привязки организаций)",
  *     tags={"Организация"},
@@ -2054,7 +2133,7 @@ public function acceptCode(Request $request) {  }
 
 /**
  * @OA\Get(
- *     path="/v1/account/agency/wallets",
+ *     path="/app/organization/account/agency/wallets",
  *     summary="Получить кошельки пользователя",
  *     description="(страница кошельки пользователя)",
  *     tags={"Кошелек пользователя"},
@@ -2094,7 +2173,7 @@ public static function userWallets(){}
 
 /**
  * @OA\Delete(
- *     path="/v1/account/agency/wallet/{wallet}/delete",
+ *     path="/app/organization/account/agency/wallet/{wallet}/delete",
  *     summary="Удаление кошелька",
  *     description="(страница кошельки пользователя)",
  *     tags={"Кошелек пользователя"},
@@ -2136,7 +2215,7 @@ public static function deleteWallet(Wallet $wallet) {}
 
 /**
  * @OA\Post(
- *     path="/v1/account/agency/wallet/balance/update",
+ *     path="/app/organization/account/agency/wallet/balance/update",
  *     summary="Пополнение баланса кошелька",
  *     description="(страница кошельки пользователя)",
  *     tags={"Кошелек пользователя"},
@@ -2215,7 +2294,7 @@ public static function walletUpdateBalance(Request $request) {}
 
 /**
  * @OA\Get(
- *     path="/v1/account/agency/aplications/buy",
+ *     path="/app/organization/account/agency/aplications/buy",
  *     summary="Покупка заявок",
  *     description="Заявки доступные для покупки (страница покупки заявок)",
  *     tags={"Покупка заявок"},
@@ -2283,7 +2362,7 @@ public static function getApplicationsForBuy(){}
 
 /**
  * @OA\Post(
- *     path="/v1/account/agency/aplications/purchase",
+ *     path="/app/organization/account/agency/aplications/purchase",
  *     summary="Покупка заявок",
  *     description="(страница покупки заявок)",
  *     tags={"Покупка заявок"},
@@ -2330,7 +2409,7 @@ public static function payApplication(Request $request){}
 
 /**
  * @OA\Post(
- *     path="/v1/account/agency/priority/buy",
+ *     path="/app/organization/account/agency/priority/buy",
  *     summary="Покупка приоритета для организации",
  *     tags={"Приоритет"},
  *     description="(страница покупки приоритета организации)",
@@ -2383,7 +2462,7 @@ public static function buyPriority(Request $request){}
 
 /**
  * @OA\Post(
- *     path="/v1/account/agency/user/{user}/find",
+ *     path="/app/organization/account/agency/user/{user}/find",
  *     summary="Find user by ID",
  *     description="Finds a user by their ID in the path",
  *     tags={"Users"},
@@ -2432,4 +2511,371 @@ public static function buyPriority(Request $request){}
  */
 public static function findUser(User $user){}
 
+
+
+/**
+ * @OA\Get(
+ *     path="/app/organization/categories/main",
+ *     summary="Получить основные категории",
+ *     description="Возвращает список всех основных (родительских) категорий",
+ *     operationId="getMainCategories",
+ *     tags={"Categories"},
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешное получение категорий",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="data", type="array", 
+ *                 @OA\Items(
+ *                     @OA\Property(property="id", type="integer", example=1),
+ *                     @OA\Property(property="name", type="string", example="Электроника"),
+ *                     @OA\Property(property="slug", type="string", example="electronics"),
+ *                     @OA\Property(property="description", type="string", example="Описание категории"),
+ *                     @OA\Property(property="image_url", type="string", example="https://example.com/image.jpg")
+ *                 )
+ *             ),
+ *             @OA\Property(property="message", type="string", example="Основные категории успешно получены")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Ошибка сервера",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Ошибка при получении категорий"),
+ *             @OA\Property(property="error", type="string", example="Сообщение об ошибке")
+ *         )
+ *     )
+ * )
+ */
+    public function getMainCategories(){}
+/**
+ * @OA\Get(
+ *     path="/app/organization/categories/{categoryId}/subcategories",
+ *     summary="Получить подкатегории категории",
+ *     description="Возвращает список подкатегорий для указанной родительской категории",
+ *     operationId="getSubcategories",
+ *     tags={"Categories"},
+ *     @OA\Parameter(
+ *         name="categoryId",
+ *         in="path",
+ *         required=true,
+ *         description="ID родительской категории",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешное получение подкатегорий",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="main_category", type="object",
+ *                     @OA\Property(property="id", type="integer", example=1),
+ *                     @OA\Property(property="name", type="string", example="Электроника"),
+ *                     @OA\Property(property="slug", type="string", example="electronics")
+ *                 ),
+ *                 @OA\Property(property="subcategories", type="array",
+ *                     @OA\Items(
+ *                         @OA\Property(property="id", type="integer", example=2),
+ *                         @OA\Property(property="name", type="string", example="Смартфоны"),
+ *                         @OA\Property(property="slug", type="string", example="smartphones"),
+ *                         @OA\Property(property="description", type="string", example="Описание подкатегории"),
+ *                         @OA\Property(property="image_url", type="string", example="https://example.com/image.jpg"),
+ *                         @OA\Property(property="parent_id", type="integer", example=1)
+ *                     )
+ *                 )
+ *             ),
+ *             @OA\Property(property="message", type="string", example="Подкатегории успешно получены")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Категория не найдена",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Категория не найдена")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Ошибка сервера",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Ошибка при получении подкатегорий"),
+ *             @OA\Property(property="error", type="string", example="Сообщение об ошибке")
+ *         )
+ *     )
+ * )
+ */
+    public function getSubcategories(int $categoryId){}
+
+
+
+/**
+ * @OA\Get(
+ *     path="/app/organization/cemeteries",
+ *     summary="Получить список кладбищ",
+ *     description="Возвращает список кладбищ с возможностью фильтрации по городу, району и краю через связи",
+ *     operationId="getCemeteries",
+ *     tags={"Cemeteries"},
+ *     @OA\Parameter(
+ *         name="city_id",
+ *         in="query",
+ *         required=false,
+ *         description="ID города для фильтрации (прямая привязка)",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Parameter(
+ *         name="area_id",
+ *         in="query",
+ *         required=false,
+ *         description="ID района для фильтрации (через связь города)",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Parameter(
+ *         name="edge_id",
+ *         in="query",
+ *         required=false,
+ *         description="ID края для фильтрации (через связь города и района)",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешное получение кладбищ",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="data", type="array",
+ *                 @OA\Items(
+ *                     @OA\Property(property="id", type="integer", example=1),
+ *                     @OA\Property(property="name", type="string", example="Центральное кладбище"),
+ *                     @OA\Property(property="slug", type="string", example="central-cemetery"),
+ *                     @OA\Property(property="description", type="string", example="Крупнейшее кладбище города"),
+ *                     @OA\Property(property="address", type="string", example="ул. Центральная, 123"),
+ *                     @OA\Property(property="coordinates", type="string", example="55.7558, 37.6176"),
+ *                     @OA\Property(property="total_plots", type="integer", example=10000),
+ *                     @OA\Property(property="available_plots", type="integer", example=150),
+ *                     @OA\Property(property="city_id", type="integer", example=1),
+ *                     @OA\Property(property="image_url", type="string", example="https://example.com/cemetery.jpg"),
+ *                     @OA\Property(property="city", type="object",
+ *                         @OA\Property(property="id", type="integer", example=1),
+ *                         @OA\Property(property="name", type="string", example="Москва"),
+ *                         @OA\Property(property="area_id", type="integer", example=2),
+ *                         @OA\Property(property="area", type="object",
+ *                             @OA\Property(property="id", type="integer", example=2),
+ *                             @OA\Property(property="name", type="string", example="Центральный район"),
+ *                             @OA\Property(property="edge_id", type="integer", example=3),
+ *                             @OA\Property(property="edge", type="object",
+ *                                 @OA\Property(property="id", type="integer", example=3),
+ *                                 @OA\Property(property="name", type="string", example="Московская область")
+ *                             )
+ *                         )
+ *                     ),
+ *                     @OA\Property(property="created_at", type="string", format="date-time"),
+ *                     @OA\Property(property="updated_at", type="string", format="date-time")
+ *                 )
+ *             ),
+ *             @OA\Property(property="filters", type="object",
+ *                 @OA\Property(property="city_id", type="integer", example=1),
+ *                 @OA\Property(property="area_id", type="integer", example=2),
+ *                 @OA\Property(property="edge_id", type="integer", example=3)
+ *             ),
+ *             @OA\Property(property="message", type="string", example="Кладбища успешно получены")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Ошибка сервера",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Ошибка при получении кладбищ"),
+ *             @OA\Property(property="error", type="string", example="Сообщение об ошибке")
+ *         )
+ *     )
+ * )
+ */
+    public function getCemeteries(Request $request){}
+
+/**
+ * @OA\Get(
+ *     path="/app/organization/cemeteries/{id}",
+ *     summary="Получить информацию о кладбище",
+ *     description="Возвращает детальную информацию о конкретном кладбище с данными о городе, районе и крае",
+ *     operationId="getCemetery",
+ *     tags={"Cemeteries"},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID кладбища",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Успешное получение информации о кладбище",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="name", type="string", example="Центральное кладбище"),
+ *                 @OA\Property(property="slug", type="string", example="central-cemetery"),
+ *                 @OA\Property(property="description", type="string", example="Крупнейшее кладбище города"),
+ *                 @OA\Property(property="address", type="string", example="ул. Центральная, 123"),
+ *                 @OA\Property(property="coordinates", type="string", example="55.7558, 37.6176"),
+ *                 @OA\Property(property="total_plots", type="integer", example=10000),
+ *                 @OA\Property(property="available_plots", type="integer", example=150),
+ *                 @OA\Property(property="city_id", type="integer", example=1),
+ *                 @OA\Property(property="image_url", type="string", example="https://example.com/cemetery.jpg"),
+ *                 @OA\Property(property="city", type="object",
+ *                     @OA\Property(property="id", type="integer", example=1),
+ *                     @OA\Property(property="name", type="string", example="Москва"),
+ *                     @OA\Property(property="area_id", type="integer", example=2),
+ *                     @OA\Property(property="area", type="object",
+ *                         @OA\Property(property="id", type="integer", example=2),
+ *                         @OA\Property(property="name", type="string", example="Центральный район"),
+ *                         @OA\Property(property="edge_id", type="integer", example=3),
+ *                         @OA\Property(property="edge", type="object",
+ *                             @OA\Property(property="id", type="integer", example=3),
+ *                             @OA\Property(property="name", type="string", example="Московская область")
+ *                         )
+ *                     )
+ *                 ),
+ *                 @OA\Property(property="created_at", type="string", format="date-time"),
+ *                 @OA\Property(property="updated_at", type="string", format="date-time")
+ *             ),
+ *             @OA\Property(property="message", type="string", example="Информация о кладбище успешно получена")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Кладбище не найдено",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Кладбище не найдено")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Ошибка сервера",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Ошибка при получении информации о кладбище"),
+ *             @OA\Property(property="error", type="string", example="Сообщение об ошибке")
+ *         )
+ *     )
+ * )
+ */
+
+
+    public function getCemetery(int $id){}
+
+
+/**
+ * @OA\Post(
+ *     path="/app/organization/account/agency/change-organization",
+ *     summary="Изменить выбранную организацию",
+ *     description="Изменяет текущую выбранную организацию для авторизованного пользователя",
+ *     operationId="changeOrganization",
+ *     tags={"Организация"},
+ *     security={{"bearerAuth":{}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"organization_id"},
+ *             @OA\Property(property="organization_id", type="integer", example=1)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Организация успешно изменена",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Организация успешно изменена"),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="organization_id", type="integer", example=1),
+ *                 @OA\Property(property="organization_name", type="string", example="Моя организация")
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Организация не найдена",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Организация не найдена или не принадлежит пользователю")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Ошибка валидации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Ошибка валидации"),
+ *             @OA\Property(property="errors", type="object")
+ *         )
+ *     )
+ * )
+ */
+public static function changeOrganization(){}
+/**
+ * @OA\Get(
+ *     path="/app/organization/account/agency/organizations",
+ *     summary="Получить список организаций пользователя",
+ *     description="Возвращает список всех организаций, принадлежащих авторизованному пользователю",
+ *     operationId="getUserOrganizations",
+ *     tags={"Организация"},
+ *     security={{"bearerAuth":{}}},
+ *     @OA\Response(
+ *         response=200,
+ *         description="Список организаций успешно получен",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="data", type="array",
+ *                 @OA\Items(
+ *                     @OA\Property(property="id", type="integer", example=1),
+ *                     @OA\Property(property="slug", type="string", example="my-organization"),
+ *                     @OA\Property(property="title", type="string", example="Моя организация"),
+ *                     @OA\Property(property="created_at", type="string", format="date-time")
+ *                 )
+ *             ),
+ *             @OA\Property(property="count", type="integer", example=3),
+ *             @OA\Property(property="message", type="string", example="Организации пользователя успешно получены")
+ *         )
+ *     )
+ * )
+ */
+public static function getUserOrganizations(){}
+/**
+ * @OA\Get(
+ *     path="/app/organization/account/agency/current-organization",
+ *     summary="Получить текущую организацию пользователя",
+ *     description="Возвращает текущую выбранную организацию пользователя",
+ *     operationId="getCurrentOrganization",
+ *     tags={"Организация"},
+ *     security={{"bearerAuth":{}}},
+ *     @OA\Response(
+ *         response=200,
+ *         description="Текущая организация успешно получена",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="data", type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="slug", type="string", example="my-organization"),
+ *                 @OA\Property(property="title", type="string", example="Моя организация"),
+ *                 @OA\Property(property="description", type="string", example="Описание организации"),
+ *                 @OA\Property(property="created_at", type="string", format="date-time")
+ *             ),
+ *             @OA\Property(property="message", type="string", example="Текущая организация успешно получена")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Организация не выбрана или не найдена",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Организация не выбрана")
+ *         )
+ *     )
+ * )
+ */
+public static function getCurrentOrganization(){}
 }

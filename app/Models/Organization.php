@@ -214,6 +214,10 @@ class Organization extends Model
     }
     
 
+    public  function calls(){
+        return $this->hasMany(CallStat::class);
+    }
+
    public function haveCalls()
     {
 

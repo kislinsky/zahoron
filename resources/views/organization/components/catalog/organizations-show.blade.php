@@ -70,7 +70,7 @@
             </div>
 
             <div class="li_flex_btn_organization">
-                 <a href='javascript:void(0)' class="blue_btn mgo-call-button" 
+                 <a id='{{ $organization->id }}' href='javascript:void(0)' class="blue_btn mgo-call-button" 
                   data-key="{{ $key }}"
                   data-org-id="{{ $organization->id }}"
                   data-phone="{{ str_replace('+', '', $organization->phone) }}"
@@ -231,7 +231,14 @@
   function getMangoNumberOnClick(orgId, phone, callback) {
     // Создаем уникальный хэш для каждого запроса
     const uniqueHash = 'org_' + orgId + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-  
+   mgo({
+      calltracking: {
+        id: 36238,
+        elements: [{selector: '.mgo-call-button'}],
+        customParam: 'organization_id=' + orgId + '&hash=' + uniqueHash
+      }
+    });
+
     
     // Запрашиваем номер
     mgo.getNumber({
@@ -246,14 +253,7 @@
     });
 
 // Инициализируем Mango Office с уникальными параметрами для каждого вызова
-    mgo({
-      calltracking: {
-        id: 36238,
-        elements: [{selector: '.mgo-number'}],
-        customParam: 'organization_id=' + orgId + '&hash=' + uniqueHash
-      }
-    });
-
+   
   }
 
   // Функция для проверки мобильного устройства
