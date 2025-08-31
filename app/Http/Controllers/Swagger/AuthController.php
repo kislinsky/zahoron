@@ -14,7 +14,7 @@ use OpenApi\Attributes as OA;
  {
      /**
       * @OA\Post(
-      *     path="/v1/register",
+      *     path="/app/organization/register",
       *     summary="Регистрация нового пользователя",
       *     tags={"Авторизация/регистрация"},
       *     @OA\RequestBody(
@@ -60,7 +60,7 @@ use OpenApi\Attributes as OA;
  
      /**
       * @OA\Post(
-      *     path="/v1/register/confirm-info",
+      *     path="/app/organization/register/confirm-info",
       *     summary="Подтверждение информации и отправка SMS кода",
       *     tags={"Авторизация/регистрация"},
       *     @OA\RequestBody(
@@ -93,7 +93,7 @@ use OpenApi\Attributes as OA;
  
      /**
  * @OA\Post(
- *     path="/v1/register/confirm-phone",
+ *     path="/app/organization/register/confirm-phone",
  *     summary="Подтверждение телефона по коду из SMS (завершение регистрации)",
  *     tags={"Авторизация/регистрация"},
  *     @OA\RequestBody(
@@ -161,7 +161,7 @@ public function confirmPhone()
  
      /**
       * @OA\Post(
-      *     path="/v1/auth",
+      *     path="/app/organization/auth",
       *     summary="Инициализация авторизации",
       *     tags={"Авторизация/регистрация"},
       *     @OA\RequestBody(
@@ -194,7 +194,7 @@ public function confirmPhone()
  
      /**
  * @OA\Post(
- *     path="/v1/auth/confirm",
+ *     path="/app/organization/auth/confirm",
  *     summary="Подтверждение авторизации по коду из SMS",
  *     tags={"Авторизация/регистрация"},
  *     @OA\RequestBody(
@@ -256,7 +256,7 @@ public function authConfirm()
 
 /**
  * @OA\Post(
- *     path="/v1/delete/{user}",
+ *     path="/app/organization/delete/{user}",
  *     summary="Удаление аккаунта пользователя",
  *     tags={"Авторизация/регистрация"},
  *     security={{"bearerAuth": {}}},

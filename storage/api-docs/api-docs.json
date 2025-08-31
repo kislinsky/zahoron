@@ -3681,20 +3681,19 @@
                     "Регионы"
                 ],
                 "summary": "Поиск регионов",
-                "description": "Поиск регионов с фильтром is_show=1",
+                "description": "Поиск регионов с фильтром is_show=1. Если параметр edge пустой или не передан, возвращаются все регионы.",
                 "operationId": "7105855fefc89b7cd13c690d3effc27e",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "edge"
-                                ],
+                                "required": [],
                                 "properties": {
                                     "edge": {
                                         "type": "string",
-                                        "example": "Московская"
+                                        "example": "Московская",
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -3763,7 +3762,7 @@
                                                     "type": "array",
                                                     "items": {
                                                         "type": "string",
-                                                        "example": "Поле edge обязательно для заполнения."
+                                                        "example": "Поле edge должно быть строкой."
                                                     }
                                                 }
                                             },
@@ -4566,14 +4565,14 @@
                 ]
             }
         },
-        "/app/organization/account/agency/user/{user}/find": {
+        "/app/organization/user/{user}/find": {
             "post": {
                 "tags": [
                     "Users"
                 ],
                 "summary": "Find user by ID",
                 "description": "Finds a user by their ID in the path",
-                "operationId": "1875b649b5abcf59d7d3ec165815e534",
+                "operationId": "64ed33e0cd84acc38f9010394fd70fd4",
                 "parameters": [
                     {
                         "name": "user",
@@ -5557,13 +5556,13 @@
                 ]
             }
         },
-        "/v1/register": {
+        "/app/organization/register": {
             "post": {
                 "tags": [
                     "Авторизация/регистрация"
                 ],
                 "summary": "Регистрация нового пользователя",
-                "operationId": "8d19ebf27aad77f03d818b41eb43fbf1",
+                "operationId": "091bd0f5c4eb17a792a3d155013e42cf",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -5679,13 +5678,13 @@
                 }
             }
         },
-        "/v1/register/confirm-info": {
+        "/app/organization/register/confirm-info": {
             "post": {
                 "tags": [
                     "Авторизация/регистрация"
                 ],
                 "summary": "Подтверждение информации и отправка SMS кода",
-                "operationId": "9fd2ab64d7278663a8fbb7a6913520a0",
+                "operationId": "fe2b78bdffd65975a721b3deb45412f0",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -5746,13 +5745,13 @@
                 }
             }
         },
-        "/v1/register/confirm-phone": {
+        "/app/organization/register/confirm-phone": {
             "post": {
                 "tags": [
                     "Авторизация/регистрация"
                 ],
                 "summary": "Подтверждение телефона по коду из SMS (завершение регистрации)",
-                "operationId": "7097f96c38e19ef9ad0d266c5c0c9571",
+                "operationId": "93e7a0e1e728a06ab9640f01712ed37f",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -5909,13 +5908,13 @@
                 }
             }
         },
-        "/v1/auth": {
+        "/app/organization/auth": {
             "post": {
                 "tags": [
                     "Авторизация/регистрация"
                 ],
                 "summary": "Инициализация авторизации",
-                "operationId": "dc43034ebd4bec1ae90f0cd3170d4ae8",
+                "operationId": "ddcb95f514971e777d1fbf082df411b8",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -5976,13 +5975,13 @@
                 }
             }
         },
-        "/v1/auth/confirm": {
+        "/app/organization/auth/confirm": {
             "post": {
                 "tags": [
                     "Авторизация/регистрация"
                 ],
                 "summary": "Подтверждение авторизации по коду из SMS",
-                "operationId": "b0234f3c6cc251de3831557bc9f03317",
+                "operationId": "da9a2d830a2869feb45c90955feb0409",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -6122,13 +6121,13 @@
                 }
             }
         },
-        "/v1/delete/{user}": {
+        "/app/organization/delete/{user}": {
             "post": {
                 "tags": [
                     "Авторизация/регистрация"
                 ],
                 "summary": "Удаление аккаунта пользователя",
-                "operationId": "cd635c3492fa6462242efdd19b89ae7b",
+                "operationId": "1adfcf55383a6caafba4f96ee0a6acac",
                 "parameters": [
                     {
                         "name": "user",

@@ -21,10 +21,12 @@ class SmsService
      */
     public function sendSms(string $to, string $message): array
     {
+         $appHash = 'Zc5zArH2ZXK';
+
         $response = Http::get('https://sms.ru/sms/send', [
             'api_id' => $this->apiKey,
             'to' => normalizePhone($to), // Номер телефона в формате 79876543210
-            'msg' => $message, // Сообщение
+            'msg' => $message."\n{$appHash}", // Сообщение
             'json' => 1, // Ответ в формате JSON
         ]);
 

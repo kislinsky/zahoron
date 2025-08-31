@@ -1475,33 +1475,43 @@ class AgencyController extends Controller
         ]);
     }
 
-    public static function edgeSearch(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'edge' => 'required|string|max:3000'
-        ]);
+   public static function edgeSearch(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'edge' => 'nullable|string|max:3000'
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Ошибка валидации',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $edges = DB::table('edges')
-            ->select('edges.*')
-            ->where('edges.title', 'like', $request->edge . '%')
-            ->where('edges.is_show', 1)
-            ->orderBy('edges.title', 'asc')
-            ->get();
-
+    if ($validator->fails()) {
         return response()->json([
-            'success' => true,
-            'message' => 'Регионы успешно найдены',
-            'edges' => $edges,
-        ]);
+            'success' => false,
+            'message' => 'Ошибка валидации',
+            'errors' => $validator->errors()
+        ], 422);
     }
+
+    $query = DB::table('edges')
+        ->select('edges.*')
+        ->where('edges.is_show', 1)
+        // Исключаем записи, где title содержит JSON-структуру
+        ->where(function($q) {
+            $q->where('edges.title', 'not like', '{%')
+              ->where('edges.title', 'not like', '{"%');
+        });
+
+    // Добавляем условие поиска только если edge не пустое
+    if (!empty($request->edge)) {
+        $query->where('edges.title', 'like', $request->edge . '%');
+    }
+
+    $edges = $query->orderBy('edges.title', 'asc')
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Регионы успешно найдены',
+        'edges' => $edges,
+    ]);
+}
 
     public function sendCode(Request $request)
     {
@@ -1584,12 +1594,23 @@ class AgencyController extends Controller
 
     public static function walletUpdateBalance(Request $request)
     {
-        $data = $request->validate([
+        $validator = Validator::make($request->all(), [
             'wallet_id' => 'required|exists:wallets,id',
             'count' => 'required|integer|min:1',
-            'deep_link' => 'required|url' // Ссылка для возврата в приложение
+            'deep_link' => ['required', 'regex:/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\/.+/'] // Кастомная валидация для deep links
+        ], [
+            'deep_link.regex' => 'Значение поля deep link имеет ошибочный формат URL.'
         ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $data = $validator->validated();
         $service = new YooMoneyService();
         $metadata = [
             'wallet_id' => $data['wallet_id'],
@@ -1623,7 +1644,7 @@ class AgencyController extends Controller
     {
         // Получаем активные типы заявок, доступные для покупки организациями
         $applicationTypes = TypeApplication::where('buy_for_organization', 1)
-            ->with(['services' => function($query) {
+            ->with(['typeService' => function($query) {
                 $query->where('is_show', 1)
                     ->select('id', 'type_application_id', 'title', 'title_ru');
             }])
@@ -1714,7 +1735,7 @@ class AgencyController extends Controller
     }
 
 
-    public static function buyPriority(Request $request)
+   public static function buyPriority(Request $request)
     {
         $validated = $request->validate([
             'type_priority' => 'required|string|in:1',
@@ -1722,8 +1743,26 @@ class AgencyController extends Controller
         ]);
 
         $user = auth()->user();
-        $organization = $user->organization();
+        
+        // Проверяем, есть ли у пользователя организация
+        if (!$user->organization) {
+            return response()->json([
+                'success' => false,
+                'message' => 'У пользователя нет организации'
+            ], 400);
+        }
+
+        $organization = $user->organization; // Без скобок!
         $typeService = getTypeService($validated['priority']);
+        
+        // Проверяем, найден ли тип услуги
+        if (!$typeService) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Услуга не найдена'
+            ], 400);
+        }
+        
         $price = $typeService->price;
         
         // Проверка баланса

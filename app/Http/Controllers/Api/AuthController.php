@@ -89,10 +89,9 @@ class AuthController extends Controller
             'sms_sent_at' => now(),
         ]);
 
-        $appHash = 'XhczEZL+G64';
 
         // Формирование сообщения с кодом подтверждения
-        $smsMessage = "<#> {$code} - код подтверждения\n{$appHash}";
+        $smsMessage = "<#> {$code} - код подтверждения";
 
         // Отправка SMS
         $send_sms = sendSms($session->phone, $smsMessage);
@@ -189,10 +188,9 @@ class AuthController extends Controller
             'sms_sent_at' => now(),
         ]);
 
-      $appHash = 'XhczEZL+G64';
 
         // Формирование сообщения с кодом подтверждения
-        $smsMessage = "<#> {$code} - код подтверждения\n{$appHash}";
+        $smsMessage = "<#> {$code} - код подтверждения";
 
         // Отправка SMS
         $send_sms = sendSms($account->phone, $smsMessage);

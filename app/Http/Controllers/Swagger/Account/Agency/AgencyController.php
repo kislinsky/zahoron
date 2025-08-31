@@ -2021,13 +2021,13 @@ public static function citySearch(Request $request) {  }
  * @OA\Post(
  *     path="/app/organization/edges/search",
  *     summary="Поиск регионов",
- *     description="Поиск регионов с фильтром is_show=1",
+ *     description="Поиск регионов с фильтром is_show=1. Если параметр edge пустой или не передан, возвращаются все регионы.",
  *     tags={"Регионы"},
  *     @OA\RequestBody(
  *         required=true,
  *         @OA\JsonContent(
- *             required={"edge"},
- *             @OA\Property(property="edge", type="string", example="Московская")
+ *             required={},
+ *             @OA\Property(property="edge", type="string", example="Московская", nullable=true)
  *         )
  *     ),
  *     @OA\Response(
@@ -2060,7 +2060,7 @@ public static function citySearch(Request $request) {  }
  *                 @OA\Property(
  *                     property="edge",
  *                     type="array",
- *                     @OA\Items(type="string", example="Поле edge обязательно для заполнения.")
+ *                     @OA\Items(type="string", example="Поле edge должно быть строкой.")
  *                 )
  *             )
  *         )
@@ -2068,7 +2068,6 @@ public static function citySearch(Request $request) {  }
  * )
  */
 public static function edgeSearch(Request $request){}
-
 
 /**
  * @OA\Post(
@@ -2462,7 +2461,7 @@ public static function buyPriority(Request $request){}
 
 /**
  * @OA\Post(
- *     path="/app/organization/account/agency/user/{user}/find",
+ *     path="/app/organization/user/{user}/find",
  *     summary="Find user by ID",
  *     description="Finds a user by their ID in the path",
  *     tags={"Users"},
