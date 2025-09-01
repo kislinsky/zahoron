@@ -40,18 +40,24 @@ class CallStatsRelationManager extends RelationManager
                     ->label('Время ожидания (сек)')
                     ->numeric(),
                 Forms\Components\Select::make('call_status')
-                    ->label('Статус звонка')
-                    ->options([
-                        'answered' => 'Отвечен',
-                        'no_answer' => 'Не отвечен',
-                        'busy' => 'Занято',
-                        'failed' => 'Неудачный',
-                    ]),
+    ->label('Статус')
+    ->options([
+        '1100' => 'Принят (1100)',
+        '1101' => 'Принят (1101)', 
+        '1110' => 'Принят (1110)',
+        '1111' => 'Принят (1111)',
+        '400' => 'Отклонен (400)',
+        '404' => 'Отклонен (404)',
+        '486' => 'Отклонен (486)',
+        // добавьте другие нужные статусы
+    ])
+    ->default(''),
                 Forms\Components\Select::make('call_type')
                     ->label('Тип звонка')
                     ->options([
-                        'incoming' => 'Входящий',
-                        'outgoing' => 'Исходящий',
+                        '1 ' => 'динамический',
+                                '2' => 'статический',
+                                '3' => 'дефолтный',
                     ]),
                 Forms\Components\Toggle::make('is_quality')
                     ->label('Качественный'),
@@ -84,52 +90,55 @@ class CallStatsRelationManager extends RelationManager
                     ->label('Длительность')
                     ->formatStateUsing(fn ($state) => $state ? gmdate('H:i:s', $state) : '-')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('call_status')
-                    ->label('Статус')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => match ($state) {
-                        'answered' => 'Отвечен',
-                        'no_answer' => 'Не отвечен',
-                        'busy' => 'Занято',
-                        'failed' => 'Неудачный',
-                        default => $state,
-                    })
-                    ->color(fn ($state) => match ($state) {
-                        'answered' => 'success',
-                        'no_answer' => 'warning',
-                        'busy' => 'gray',
-                        'failed' => 'danger',
-                        default => 'gray',
-                    }),
+               Tables\Columns\TextColumn::make('call_status')
+                ->label('Статус')
+                ->badge()
+                ->formatStateUsing(fn ($state) => match (true) {
+                    str_starts_with($state, '11') => 'Принят',
+                    empty($state) => 'Нет данных',
+                    default => 'Отклонен (' . $state . ')',
+                })
+                ->color(fn ($state) => match (true) {
+                    str_starts_with($state, '11') => 'success',
+                    empty($state) => 'warning',
+                    default => 'danger',
+                }),
                 Tables\Columns\TextColumn::make('call_type')
                     ->label('Тип')
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'incoming' => 'Входящий',
-                        'outgoing' => 'Исходящий',
+                        '1' => 'динамический',
+                                '2' => 'статический',
+                                '3' => 'дефолтный',
                         default => $state,
                     }),
-                Tables\Columns\IconColumn::make('is_quality')
-                    ->label('Качество')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_new')
-                    ->label('Новый')
-                    ->boolean(),
+              
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('call_status')
                     ->label('Статус звонка')
-                    ->options([
-                        'answered' => 'Отвечен',
-                        'no_answer' => 'Не отвечен',
-                        'busy' => 'Занято',
-                        'failed' => 'Неудачный',
-                    ]),
+                   ->options([
+        '11' => 'Принятые звонки (11XX)',
+        'other' => 'Отклоненные звонки',
+        '' => 'Нет данных',
+    ])
+    ->query(function (Builder $query, $data) {
+        $value = $data['value'];
+        
+        return match ($value) {
+            '11' => $query->where('call_status', 'like', '11%'),
+            'other' => $query->whereNot('call_status', 'like', '11%')
+                             ->whereNotNull('call_status'),
+            '' => $query->whereNull('call_status'),
+            default => $query,
+        };
+    }),
                 Tables\Filters\SelectFilter::make('call_type')
                     ->label('Тип звонка')
-                    ->options([
-                        'incoming' => 'Входящий',
-                        'outgoing' => 'Исходящий',
-                    ]),
+                     ->options([
+                                '1 ' => 'динамический',
+                                '2' => 'статический',
+                                '3' => 'дефолтный',
+                            ]),
                 Tables\Filters\TernaryFilter::make('is_quality')
                     ->label('Качественный звонок'),
                 Tables\Filters\TernaryFilter::make('is_new')
@@ -190,8 +199,9 @@ class CallStatsRelationManager extends RelationManager
                         Forms\Components\Select::make('call_type')
                             ->label('Тип звонка')
                             ->options([
-                                'incoming' => 'Входящий',
-                                'outgoing' => 'Исходящий',
+                                '1 ' => 'динамический',
+                                '2' => 'статический',
+                                '3' => 'дефолтный',
                             ]),
                         Forms\Components\DateTimePicker::make('date_end')
                             ->label('Время окончания звонка'),

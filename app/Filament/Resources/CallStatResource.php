@@ -178,21 +178,27 @@ class CallStatResource extends Resource
                         Forms\Components\Select::make('call_type')
                             ->label('Тип звонка')
                             ->options([
-                                'inbound' => 'Входящий',
-                                'outbound' => 'Исходящий',
+                                '1' => 'динамический',
+                                '2' => 'статический',
+                                '3' => 'дефолтный',
                             ]),
                         
                         Forms\Components\DateTimePicker::make('date_end')
                             ->label('Время окончания'),
                         
                         Forms\Components\Select::make('call_status')
-                            ->label('Статус')
-                            ->options([
-                                'answered' => 'Отвечен',
-                                'no_answer' => 'Не отвечен',
-                                'busy' => 'Занято',
-                                'failed' => 'Ошибка',
-                            ]),
+    ->label('Статус')
+    ->options([
+        '1100' => 'Принят (1100)',
+        '1101' => 'Принят (1101)', 
+        '1110' => 'Принят (1110)',
+        '1111' => 'Принят (1111)',
+        '400' => 'Отклонен (400)',
+        '404' => 'Отклонен (404)',
+        '486' => 'Отклонен (486)',
+        // добавьте другие нужные статусы
+    ])
+    ->default(''),
                         
                         Forms\Components\TextInput::make('duration')
                             ->label('Длительность (сек)')
@@ -256,18 +262,29 @@ class CallStatResource extends Resource
                 Tables\Filters\SelectFilter::make('call_type')
                     ->label('Тип звонка')
                     ->options([
-                        'inbound' => 'Входящий',
-                        'outbound' => 'Исходящий',
+                         '1' => 'динамический',
+                                '2' => 'статический',
+                                '3' => 'дефолтный',
                     ]),
 
                 Tables\Filters\SelectFilter::make('call_status')
                     ->label('Статус')
-                    ->options([
-                        'answered' => 'Отвечен',
-                        'no_answer' => 'Не отвечен',
-                        'busy' => 'Занято',
-                        'failed' => 'Ошибка',
-                    ]),
+                     ->options([
+        '11' => 'Принятые звонки (11XX)',
+        'other' => 'Отклоненные звонки',
+        '' => 'Нет данных',
+    ])
+    ->query(function (Builder $query, $data) {
+        $value = $data['value'];
+        
+        return match ($value) {
+            '11' => $query->where('call_status', 'like', '11%'),
+            'other' => $query->whereNot('call_status', 'like', '11%')
+                             ->whereNotNull('call_status'),
+            '' => $query->whereNull('call_status'),
+            default => $query,
+        };
+    }),
 
                 Tables\Filters\Filter::make('date_start')
                     ->form([

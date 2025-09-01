@@ -79,9 +79,9 @@ class CallStat extends Model
             'utmTerm' => 'nullable|string',
             
             // Гео данные
-            'countryCode' => 'nullable|string|max:2',
-            'regionCode' => 'nullable|string|max:10',
-            'city' => 'nullable|string|max:100',
+            'countryCode' => 'nullable|string',
+            'regionCode' => 'nullable|string',
+            'city' => 'nullable|string',
             
             // Данные устройства
             'device' => 'nullable|string|in:desktop,tablet,mobile',
@@ -90,7 +90,7 @@ class CallStat extends Model
             // URL данные
             'url' => 'nullable|url',
             'firstUrl' => 'nullable|url',
-            'customParam' => 'nullable|string|max:4000',
+            'customParam' => 'nullable|string',
             
             // Флаги
             'isDuplicate' => 'nullable|boolean',
@@ -110,14 +110,15 @@ class CallStat extends Model
             'numberHash' => 'nullable|string',
             'waitTime' => 'nullable|integer',
             'number' => 'nullable|string',
-            
-            // Дополнительные параметры
-            'organization_id' => 'nullable|integer|exists:organizations,id',
         ]);
 
         try {
             // Определяем organization_id из различных источников
             $organizationId = self::extractOrganizationId($validated);
+
+            if($organizationId!=null){
+                self::updateLimitCalls($organizationId);
+            }
 
             // Создаем запись о звонке
             $callStat = self::create([
@@ -252,8 +253,6 @@ class CallStat extends Model
         // Разбиваем путь на части
         $pathParts = explode('/', trim($parsedUrl['path'], '/'));
         
-        // Ищем паттерн: /город/organization/слаг-...
-        // Например: /elizovo/organization/pamat-24-7-1
         $organizationIndex = array_search('organization', $pathParts);
         
         if ($organizationIndex !== false && isset($pathParts[$organizationIndex + 1])) {
@@ -268,5 +267,20 @@ class CallStat extends Model
         }
 
         return null;
+    }
+
+    protected static function updateLimitCalls($organizationId){
+        $organization=Organization::find($organizationId);
+
+        if($organization->user!=null && $organization->user->app_organization==1){
+            return true;
+        }
+        elseif($organization->calls=='unlimited'){
+            return true;
+        }
+        elseif($organization->calls>0){
+            $organization->update(['calls'=>$organization->calls-1]);
+        }
+        
     }
 }
