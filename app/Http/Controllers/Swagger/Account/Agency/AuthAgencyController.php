@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Swagger;
+namespace App\Http\Controllers\Swagger\Account\Agency;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -10,13 +10,13 @@ use OpenApi\Attributes as OA;
 
 
 
- class AuthController extends Controller
+ class AuthAgencyController extends Controller
  {
      /**
       * @OA\Post(
       *     path="/app/organization/register",
       *     summary="Регистрация нового пользователя",
-      *     tags={"Авторизация/регистрация"},
+      *     tags={"Авторизация/регистрация агенства"},
       *     @OA\RequestBody(
       *         required=true,
       *         @OA\JsonContent(
@@ -62,7 +62,7 @@ use OpenApi\Attributes as OA;
       * @OA\Post(
       *     path="/app/organization/register/confirm-info",
       *     summary="Подтверждение информации и отправка SMS кода",
-      *     tags={"Авторизация/регистрация"},
+      *     tags={"Авторизация/регистрация агенства"},
       *     @OA\RequestBody(
       *         required=true,
       *         @OA\JsonContent(
@@ -95,7 +95,7 @@ use OpenApi\Attributes as OA;
  * @OA\Post(
  *     path="/app/organization/register/confirm-phone",
  *     summary="Подтверждение телефона по коду из SMS (завершение регистрации)",
- *     tags={"Авторизация/регистрация"},
+ *     tags={"Авторизация/регистрация агенства"},
  *     @OA\RequestBody(
  *         required=true,
  *         @OA\JsonContent(
@@ -163,7 +163,7 @@ public function confirmPhone()
       * @OA\Post(
       *     path="/app/organization/auth",
       *     summary="Инициализация авторизации",
-      *     tags={"Авторизация/регистрация"},
+      *     tags={"Авторизация/регистрация агенства"},
       *     @OA\RequestBody(
       *         required=true,
       *         @OA\JsonContent(
@@ -196,7 +196,7 @@ public function confirmPhone()
  * @OA\Post(
  *     path="/app/organization/auth/confirm",
  *     summary="Подтверждение авторизации по коду из SMS",
- *     tags={"Авторизация/регистрация"},
+ *     tags={"Авторизация/регистрация агенства"},
  *     @OA\RequestBody(
  *         required=true,
  *         @OA\JsonContent(
@@ -258,7 +258,7 @@ public function authConfirm()
  * @OA\Post(
  *     path="/app/organization/delete/{user}",
  *     summary="Удаление аккаунта пользователя",
- *     tags={"Авторизация/регистрация"},
+ *     tags={"Авторизация/регистрация агенства"},
  *     security={{"bearerAuth": {}}},
  *     @OA\Parameter(
  *         name="user",

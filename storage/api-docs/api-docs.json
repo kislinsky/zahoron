@@ -5559,10 +5559,10 @@
         "/app/organization/register": {
             "post": {
                 "tags": [
-                    "Авторизация/регистрация"
+                    "Авторизация/регистрация агенства"
                 ],
                 "summary": "Регистрация нового пользователя",
-                "operationId": "091bd0f5c4eb17a792a3d155013e42cf",
+                "operationId": "d590f3fc592bb539601c30e1cf25b520",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -5681,10 +5681,10 @@
         "/app/organization/register/confirm-info": {
             "post": {
                 "tags": [
-                    "Авторизация/регистрация"
+                    "Авторизация/регистрация агенства"
                 ],
                 "summary": "Подтверждение информации и отправка SMS кода",
-                "operationId": "fe2b78bdffd65975a721b3deb45412f0",
+                "operationId": "024a6672e9df2bd2d52d3dedcf7127ad",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -5748,10 +5748,10 @@
         "/app/organization/register/confirm-phone": {
             "post": {
                 "tags": [
-                    "Авторизация/регистрация"
+                    "Авторизация/регистрация агенства"
                 ],
                 "summary": "Подтверждение телефона по коду из SMS (завершение регистрации)",
-                "operationId": "93e7a0e1e728a06ab9640f01712ed37f",
+                "operationId": "6b24c95d8df58fb08517bba8b6b05568",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -5911,10 +5911,10 @@
         "/app/organization/auth": {
             "post": {
                 "tags": [
-                    "Авторизация/регистрация"
+                    "Авторизация/регистрация агенства"
                 ],
                 "summary": "Инициализация авторизации",
-                "operationId": "ddcb95f514971e777d1fbf082df411b8",
+                "operationId": "2bf7328cc2a4d39f2202607d1d592594",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -5978,10 +5978,10 @@
         "/app/organization/auth/confirm": {
             "post": {
                 "tags": [
-                    "Авторизация/регистрация"
+                    "Авторизация/регистрация агенства"
                 ],
                 "summary": "Подтверждение авторизации по коду из SMS",
-                "operationId": "da9a2d830a2869feb45c90955feb0409",
+                "operationId": "fe88b8947261fb1d010cd9a7394ef372",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -6124,10 +6124,10 @@
         "/app/organization/delete/{user}": {
             "post": {
                 "tags": [
-                    "Авторизация/регистрация"
+                    "Авторизация/регистрация агенства"
                 ],
                 "summary": "Удаление аккаунта пользователя",
-                "operationId": "1adfcf55383a6caafba4f96ee0a6acac",
+                "operationId": "31924f1974ad7e78779e51a556d9bd0c",
                 "parameters": [
                     {
                         "name": "user",
@@ -6226,6 +6226,306 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/app/cashier/auth/init": {
+            "post": {
+                "tags": [
+                    "Авторизация кассира"
+                ],
+                "summary": "Инициализация авторизации кассира",
+                "description": "Отправляет SMS с кодом подтверждения на телефон кассира",
+                "operationId": "16850ac9cd018f9a7d4cd9d940412d54",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "description": "Номер телефона кассира",
+                                        "type": "string",
+                                        "example": "+79991234567"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "SMS отправлено успешно",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "reg_id": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "SMS с кодом отправлено"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "object",
+                                            "example": {
+                                                "phone": [
+                                                    "Поле phone обязательно для заполнения."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден или не соответствует требованиям",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Пользователь с таким номером телефона не найден"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/cashier/auth/confirm": {
+            "post": {
+                "tags": [
+                    "Авторизация кассира"
+                ],
+                "summary": "Подтверждение SMS кода",
+                "description": "Подтверждает SMS код и отправляет звонок с кодом подтверждения",
+                "operationId": "1168c637c0b6ea900a4cbf4baa0d12e8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reg_id",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "reg_id": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                    },
+                                    "code": {
+                                        "description": "6-значный SMS код",
+                                        "type": "string",
+                                        "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "SMS код подтвержден, звонок отправлен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "SMS код подтвержден. Ожидайте звонок с кодом подтверждения"
+                                        },
+                                        "reg_id": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                                        },
+                                        "call_sent": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный код или ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Неверный код"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка отправки звонка",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Ошибка отправки звонка"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/cashier/auth/confirm-call": {
+            "post": {
+                "tags": [
+                    "Авторизация кассира"
+                ],
+                "summary": "Подтверждение кода из звонка",
+                "description": "Подтверждает код из звонка и завершает авторизацию кассира",
+                "operationId": "cc0377ad51edde5bbf1cc7296d4f11a8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reg_id",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "reg_id": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                    },
+                                    "code": {
+                                        "description": "6-значный код из звонка",
+                                        "type": "string",
+                                        "example": "654321"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешная авторизация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Успешная авторизация"
+                                        },
+                                        "auth_data": {
+                                            "properties": {
+                                                "access_token": {
+                                                    "type": "string",
+                                                    "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                                },
+                                                "token_type": {
+                                                    "type": "string",
+                                                    "example": "bearer"
+                                                },
+                                                "expires_in": {
+                                                    "type": "integer",
+                                                    "example": 3600
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Иван Иванов"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "+79991234567"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "ivan@example.com"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный код или код истек",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Неверный код из звонка"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     },
@@ -6673,8 +6973,12 @@
             "description": "Cemeteries"
         },
         {
-            "name": "Авторизация/регистрация",
-            "description": "Авторизация/регистрация"
+            "name": "Авторизация/регистрация агенства",
+            "description": "Авторизация/регистрация агенства"
+        },
+        {
+            "name": "Авторизация кассира",
+            "description": "Авторизация кассира"
         }
     ],
     "security": [

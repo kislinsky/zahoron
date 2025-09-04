@@ -91,6 +91,7 @@ class UserResource extends Resource
                     'agent' => 'Работник', 
                     'deputy-admin' => 'Зам. админ', 
                     'manager' => 'Менеджер', 
+                    'cashier'=> 'Кассир', 
                     'seo-specialist' => 'Seo-специалист', 
             ])->default('user'),
                 Forms\Components\TextInput::make('name')
@@ -211,6 +212,7 @@ class UserResource extends Resource
                         'organization-provider' => 'Организация-поставщик', 
                         'user' => 'Пользователь', 
                         'agent' => 'Работник', 
+                        'cashier'=> 'Кассир', 
                         'deputy-admin' => 'Зам. админ', 
                         'manager' => 'Менеджер', 
                         'seo-specialist' => 'Seo-специалист', 
@@ -226,6 +228,7 @@ class UserResource extends Resource
                         'organization' => 'Организация', 
                         'organization-provider' => 'Организация-поставщик', 
                         'user' => 'Пользователь', 
+                        'cashier'=> 'Кассир', 
                         'agent' => 'Работник', 
                         'deputy-admin' => 'Зам. админ', 
                         'manager' => 'Менеджер', 

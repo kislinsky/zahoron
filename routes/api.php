@@ -1,25 +1,30 @@
 <?php
 
 use App\Http\Controllers\Api\Account\Agency\AgencyController;
-use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\Account\Agency\AuthAgencyController;
+use App\Http\Controllers\Api\Account\Cashier\AuthCashierController;
 use App\Http\Controllers\Swagger\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
 Route::prefix('app')->group(function () {
+
+
+
     Route::prefix('organization')->group(function () {
         // Незащищенные маршруты (публичные)
-        Route::post('/delete/{user}', [AuthController::class, 'deleteAccountTest']);
+        Route::post('/delete/{user}', [AuthAgencyController::class, 'deleteAccountTest']);
         Route::post('/user/{user}/find', [AgencyController::class, 'findUser']);
         
         // Регистрация и авторизация
-        Route::post('/register', [AuthController::class, 'register']);
-        Route::post('/register/confirm-info', [AuthController::class, 'confirmInfo']);
-        Route::post('/register/confirm-phone', [AuthController::class, 'confirmPhone']);
+        Route::post('/register', [AuthAgencyController::class, 'register']);
+        Route::post('/register/confirm-info', [AuthAgencyController::class, 'confirmInfo']);
+        Route::post('/register/confirm-phone', [AuthAgencyController::class, 'confirmPhone']);
         
         // Авторизация
-        Route::post('/auth', [AuthController::class, 'authInit']);
-        Route::post('/auth/confirm', [AuthController::class, 'authConfirm']);
+        Route::post('/auth', [AuthAgencyController::class, 'authInit']);
+        Route::post('/auth/confirm', [AuthAgencyController::class, 'authConfirm']);
         
         // Публичные API
         Route::post('/organizations/{city}', [AgencyController::class, 'organizationsCity']);
@@ -100,7 +105,16 @@ Route::prefix('app')->group(function () {
         });
 
         // Эти маршруты ДОЛЖНЫ БЫТЬ ВНЕ middleware, иначе будут конфликты
-        Route::post('/delete/{user}', [AuthController::class, 'deleteAccountTest']);
+        Route::post('/delete/{user}', [AuthAgencyController::class, 'deleteAccountTest']);
         Route::post('/user/{user}/find', [AgencyController::class, 'findUser']);
+    });
+
+
+    Route::prefix('cashier')->group(function () {
+     // Авторизация
+        Route::post('/auth/init', [AuthCashierController::class, 'authInit']);
+        Route::post('/auth/confirm', [AuthCashierController::class, 'authConfirm']);
+        Route::post('/auth/confirm-call', [AuthCashierController::class, 'authConfirmCall']);
+        
     });
 });

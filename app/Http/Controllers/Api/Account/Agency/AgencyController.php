@@ -24,14 +24,12 @@ use App\Models\WorkingHoursOrganization;
 use App\Services\YooMoneyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Tymon\JWTAuth\Contracts\Providers\Storage;
 
 class AgencyController extends Controller
 {
@@ -1433,7 +1431,7 @@ class AgencyController extends Controller
         }
 
         // Получение отфильтрованных организаций с выбором конкретных полей
-        $query = $city->organizations()->select('id', 'title', 'name_type', 'phone', 'status');
+        $query = $city->organizations()->select('id', 'title', 'name_type', 'phone', 'status','adres','two_gis_link');
         
         if ($request->has('name') && !empty($request->name)) {
             $query->where('title', 'like', '%' . $request->name . '%');
@@ -1662,7 +1660,7 @@ class AgencyController extends Controller
                 'services' => []
             ];
 
-            foreach ($appType->services as $service) {
+            foreach ($appType->typeService as $service) {
                 // Проверяем купленные заявки пользователя
                 $purchased = UserRequestsCount::where('user_id', $userId)
                     ->where('type_service_id', $service->id)
@@ -1752,7 +1750,7 @@ class AgencyController extends Controller
             ], 400);
         }
 
-        $organization = $user->organization; // Без скобок!
+        $organization = $user->organization(); // Без скобок!
         $typeService = getTypeService($validated['priority']);
         
         // Проверяем, найден ли тип услуги

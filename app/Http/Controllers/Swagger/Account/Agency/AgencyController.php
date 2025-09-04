@@ -8,7 +8,6 @@ use App\Models\City;
 use App\Models\ProductRequestToSupplier;
 use App\Models\User;
 use App\Models\Wallet;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AgencyController extends Controller

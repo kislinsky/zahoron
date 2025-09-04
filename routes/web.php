@@ -65,9 +65,11 @@ use Filament\Facades\Filament;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+
 
 
 
@@ -138,7 +140,16 @@ Route::get('/call-callback', [MangoOfficeController::class, 'callback'])->name('
 
 Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
 
-
+Route::get('/portfolio', function () {
+    $isPortfolioAvailable = Cache::get('portfolio_available', false);
+    
+    if ($isPortfolioAvailable) {
+        $telegramUrl = 'https://t.me/losystane'; 
+        return "<a href='{$telegramUrl}' target='_blank'>Вот телеграм (клик)</a>";
+    } else {
+        return "Извините, портфолио сейчас недоступно, ведутся тех работы";
+    }
+});
     Route::get('/', [MainController::class, 'index'])->name('index');
 
 

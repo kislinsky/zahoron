@@ -162,6 +162,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(City::class);
     }
 
+    function organizationBranch(){
+        return $this->belongsTo(Organization::class,'organization_id_branch');
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();

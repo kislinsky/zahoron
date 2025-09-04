@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Account\Agency;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuthSession;
@@ -11,14 +11,13 @@ use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use session;
 
 
-class AuthController extends Controller
+class AuthAgencyController extends Controller
 {
     public function register(Request $request)
     {
