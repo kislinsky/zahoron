@@ -6323,7 +6323,7 @@
                     "Авторизация кассира"
                 ],
                 "summary": "Подтверждение SMS кода",
-                "description": "Подтверждает SMS код и отправляет звонок с кодом подтверждения",
+                "description": "Подтверждает SMS код и завершает авторизацию кассира",
                 "operationId": "1168c637c0b6ea900a4cbf4baa0d12e8",
                 "requestBody": {
                     "required": true,
@@ -6344,105 +6344,6 @@
                                         "description": "6-значный SMS код",
                                         "type": "string",
                                         "example": "123456"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "SMS код подтвержден, звонок отправлен",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "SMS код подтвержден. Ожидайте звонок с кодом подтверждения"
-                                        },
-                                        "reg_id": {
-                                            "type": "string",
-                                            "format": "uuid",
-                                            "example": "550e8400-e29b-41d4-a716-446655440000"
-                                        },
-                                        "call_sent": {
-                                            "type": "boolean",
-                                            "example": true
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный код или ошибка валидации",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "example": "Неверный код"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка отправки звонка",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "example": "Ошибка отправки звонка"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/app/cashier/auth/confirm-call": {
-            "post": {
-                "tags": [
-                    "Авторизация кассира"
-                ],
-                "summary": "Подтверждение кода из звонка",
-                "description": "Подтверждает код из звонка и завершает авторизацию кассира",
-                "operationId": "cc0377ad51edde5bbf1cc7296d4f11a8",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "reg_id",
-                                    "code"
-                                ],
-                                "properties": {
-                                    "reg_id": {
-                                        "type": "string",
-                                        "format": "uuid",
-                                        "example": "550e8400-e29b-41d4-a716-446655440000"
-                                    },
-                                    "code": {
-                                        "description": "6-значный код из звонка",
-                                        "type": "string",
-                                        "example": "654321"
                                     }
                                 },
                                 "type": "object"
@@ -6517,7 +6418,7 @@
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "Неверный код из звонка"
+                                            "example": "Неверный код"
                                         }
                                     },
                                     "type": "object"

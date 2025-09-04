@@ -3,12 +3,6 @@
 namespace App\Http\Controllers\Swagger\Account\Cashier;
 
 use App\Http\Controllers\Controller;
-use App\Models\AuthSession;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AuthCashierController extends Controller
 {
@@ -49,13 +43,13 @@ class AuthCashierController extends Controller
      *     )
      * )
      */
-    public function authInit(Request $request){}
+    public function authInit(){}
 
     /**
      * @OA\Post(
      *     path="/app/cashier/auth/confirm",
      *     summary="Подтверждение SMS кода",
-     *     description="Подтверждает SMS код и отправляет звонок с кодом подтверждения",
+     *     description="Подтверждает SMS код и завершает авторизацию кассира",
      *     tags={"Авторизация кассира"},
      *     @OA\RequestBody(
      *         required=true,
@@ -63,48 +57,6 @@ class AuthCashierController extends Controller
      *             required={"reg_id", "code"},
      *             @OA\Property(property="reg_id", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
      *             @OA\Property(property="code", type="string", example="123456", description="6-значный SMS код")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="SMS код подтвержден, звонок отправлен",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="SMS код подтвержден. Ожидайте звонок с кодом подтверждения"),
-     *             @OA\Property(property="reg_id", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
-     *             @OA\Property(property="call_sent", type="boolean", example=true)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Неверный код или ошибка валидации",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="Неверный код")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Ошибка отправки звонка",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="Ошибка отправки звонка")
-     *         )
-     *     )
-     * )
-     */
-    public function authConfirm(Request $request){}
-
-    /**
-     * @OA\Post(
-     *     path="/app/cashier/auth/confirm-call",
-     *     summary="Подтверждение кода из звонка",
-     *     description="Подтверждает код из звонка и завершает авторизацию кассира",
-     *     tags={"Авторизация кассира"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"reg_id", "code"},
-     *             @OA\Property(property="reg_id", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
-     *             @OA\Property(property="code", type="string", example="654321", description="6-значный код из звонка")
      *         )
      *     ),
      *     @OA\Response(
@@ -134,10 +86,10 @@ class AuthCashierController extends Controller
      *         response=400,
      *         description="Неверный код или код истек",
      *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="Неверный код из звонка")
+     *             @OA\Property(property="error", type="string", example="Неверный код")
      *         )
      *     )
      * )
      */
-    public function authConfirmCall(Request $request){}
+    public function authConfirm(){}
 }
