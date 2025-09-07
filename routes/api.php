@@ -3,9 +3,11 @@
 use App\Http\Controllers\Api\Account\Agency\AgencyController;
 use App\Http\Controllers\Api\Account\Agency\AuthAgencyController;
 use App\Http\Controllers\Api\Account\Cashier\AuthCashierController;
+use App\Http\Controllers\Api\Account\Cashier\CashierController;
 use App\Http\Controllers\Swagger\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 
 Route::prefix('app')->group(function () {
@@ -115,6 +117,20 @@ Route::prefix('app')->group(function () {
         Route::post('/auth/init', [AuthCashierController::class, 'authInit']);
         Route::post('/auth/confirm', [AuthCashierController::class, 'authConfirm']);
         Route::post('/auth/confirm-call', [AuthCashierController::class, 'authConfirmCall']);
+
+
+        Route::middleware('jwt.auth')->group(function () {
+            Route::group(['prefix' => 'account'], function() {
+                Route::group(['prefix' => 'cashier'], function() {
+
+                    Route::get('/cemeteries', [CashierController::class, 'getCemeteries']);
+                    Route::get('/morgues', [CashierController::class, 'getMorgues']);
+                    Route::get('/call-stats', [CashierController::class, 'getCallStats']);
+
+                });
+            });
+        });
+      
         
     });
 });

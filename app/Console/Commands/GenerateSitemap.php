@@ -178,7 +178,6 @@ class GenerateSitemap extends Command
         $this->addOrganizations();
         $this->addCemeteries();
         $this->addMortuaries();
-       
     }
 
     protected function addOrganizations()
@@ -228,7 +227,7 @@ class GenerateSitemap extends Command
             }
         }
 
-        // Individual organization pages with strict file splitting
+        // Individual organization pages - используем slug
         Organization::whereIn('city_id', array_keys($this->citySlugs))
             ->select(['slug', 'city_id', 'updated_at'])
             ->orderBy('id')
@@ -268,18 +267,18 @@ class GenerateSitemap extends Command
             );
         }
         
-        // Add detail pages
+        // Add detail pages - используем slug вместо ID
         $model::whereHas('city', function($query) {
                 $query->whereIn('id', array_keys($this->citySlugs));
             })
-            ->select(['id', 'city_id', 'updated_at'])
+            ->select(['slug', 'city_id', 'updated_at'])
             ->orderBy('id')
             ->chunk(1000, function($entities) use ($detailRoutePattern, $name) {
                 foreach ($entities as $entity) {
                     if (isset($this->citySlugs[$entity->city_id])) {
                         $url = sprintf($this->baseUrl . $detailRoutePattern, 
                             $this->citySlugs[$entity->city_id], 
-                            $entity->id
+                            $entity->slug
                         );
                         
                         $this->addUrlWithStrictCounting(
@@ -298,7 +297,7 @@ class GenerateSitemap extends Command
         $this->processEntityWithPreciseCounting(
             Cemetery::class,
             '/cemeteries',
-            '/%s/cemetery/%d',
+            '/%s/cemetery/%s',
             'cemeteries'
         );
     }
@@ -308,7 +307,7 @@ class GenerateSitemap extends Command
         $this->processEntityWithPreciseCounting(
             Mortuary::class,
             '/mortuaries',
-            '/%s/mortuary/%d',
+            '/%s/mortuary/%s',
             'mortuaries'
         );
     }
@@ -318,7 +317,7 @@ class GenerateSitemap extends Command
         $this->processEntityWithPreciseCounting(
             Crematorium::class,
             '/crematoriums',
-            '/%s/crematorium/%d',
+            '/%s/crematorium/%s',
             'crematoriums'
         );
     }
@@ -328,7 +327,7 @@ class GenerateSitemap extends Command
         $this->processEntityWithPreciseCounting(
             Columbarium::class,
             '/columbariums',
-            '/%s/columbarium/%d',
+            '/%s/columbarium/%s',
             'columbariums'
         );
     }
@@ -338,7 +337,7 @@ class GenerateSitemap extends Command
         $this->processEntityWithPreciseCounting(
             Church::class,
             '/churches',
-            '/%s/church/%d',
+            '/%s/church/%s',
             'churches'
         );
     }
@@ -348,7 +347,7 @@ class GenerateSitemap extends Command
         $this->processEntityWithPreciseCounting(
             Mosque::class,
             '/mosques',
-            '/%s/mosque/%d',
+            '/%s/mosque/%s',
             'mosques'
         );
     }

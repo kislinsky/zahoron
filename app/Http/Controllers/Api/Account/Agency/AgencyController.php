@@ -333,6 +333,7 @@ class AgencyController extends Controller
             'email_notifications' => 'nullable|boolean',
             'sms_notifications' => 'nullable|boolean',
             'language' => 'nullable|integer',
+            'acting_basis_of'=>'nullable|string',
             'theme' => 'nullable|string',
             'inn' => 'required|string',
             'name_organization' => 'nullable|string',
@@ -438,6 +439,7 @@ class AgencyController extends Controller
             'language' => $data['language'] ?? null,
             'theme' => $data['theme'] ?? null,
             'inn' => $data['inn'],
+            'acting_basis_of'=>$data['acting_basis_of'] ?? null,
             'name_organization' => $data['name_organization'] ?? null,
             'city_id' => $data['city_id'],
             'edge_id' => $data['edge_id'],
@@ -534,8 +536,8 @@ class AgencyController extends Controller
             'holiday_day.*' => 'string|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
             
             // Images
-            'img' => 'required|mimes:jpeg,jpg,png|max:5048',
-            'img_main' => 'required|mimes:jpeg,jpg,png|max:5048',
+            'img' => 'nullable|mimes:jpeg,jpg,png|max:5048',
+            'img_main' => 'nullable|mimes:jpeg,jpg,png|max:5048',
             'images' => 'nullable|array|max:5',
             'images.*' => 'nullable|image|mimes:jpeg,jpg,png|max:5120',
         ]);
@@ -559,38 +561,54 @@ class AgencyController extends Controller
             // Process cemetery_ids
             $data['cemetery_ids'] = implode(",", $data['cemetery_ids']) . ',';
     
-            // Handle file uploads
+        // Handle file uploads
+        if (!empty($data['img']) && $data['img'] instanceof \Illuminate\Http\UploadedFile) {
             $filename = Str::random(40) . '.jpeg';
             $data['img']->storeAs("uploads_organization", $filename, "public");
-            
+            $imgPath = 'uploads_organization/' . $filename;
+            $hrefImg = 0; // не дефолтная картинка
+        } else {
+            $imgPath = 'default';
+            $hrefImg = 1; // дефолтная картинка
+        }
+
+        if (!empty($data['img_main']) && $data['img_main'] instanceof \Illuminate\Http\UploadedFile) {
             $filename_main = Str::random(40) . '.jpeg';
             $data['img_main']->storeAs("uploads_organization", $filename_main, "public");
-    
-            // Create organization
-            $organization = Organization::create([
-                'title' => $data['title'],
-                'status' => 0,
-                'content' => $data['content'],
-                'cemetery_ids' => $data['cemetery_ids'],
-                'phone' => normalizePhone($data['phone']) ?? null,
-                'telegram' => $data['telegram'] ?? null,
-                'user_id' => $data['user_id'],
-                'img_file' => 'uploads_organization/' . $filename,
-                'img_main_file' => 'uploads_organization/' . $filename_main,
-                'whatsapp' => $data['whatsapp'] ?? null,
-                'email' => $data['email'] ?? null,
-                'city_id' => $data['city_id'],
-                'slug' => slugOrganization($data['title']),
-                'next_to' => $data['next_to'] ?? null,
-                'underground' => $data['underground'] ?? null,
-                'adres' => $data['adres'],
-                'width' => $data['width'],
-                'longitude' => $data['longitude'],
-                'available_installments' => $data['available_installments'] ?? 0,
-                'found_cheaper' => $data['found_cheaper'] ?? 0,
-                'state_compensation' => $data['state_compensation'] ?? 0,
-                'conclusion_contract' => $data['conclusion_contract'] ?? 0,
-            ]);
+            $imgMainPath = 'uploads_organization/' . $filename_main;
+            $hrefImgMain = 0; // не дефолтная картинка
+        } else {
+            $imgMainPath = 'default';
+            $hrefImgMain = 1; // дефолтная картинка
+        }
+
+        // Create organization
+        $organization = Organization::create([
+            'title' => $data['title'],
+            'status' => 0,
+            'content' => $data['content'],
+            'cemetery_ids' => $data['cemetery_ids'],
+            'phone' => normalizePhone($data['phone']) ?? null,
+            'telegram' => $data['telegram'] ?? null,
+            'user_id' => $data['user_id'],
+            'img_file' => $imgPath,
+            'img_main_file' => $imgMainPath,
+            'href_img' => $hrefImg, // 1 если дефолтная, 0 если загруженная
+            'href_img_main' => $hrefImgMain, // 1 если дефолтная, 0 если загруженная
+            'whatsapp' => $data['whatsapp'] ?? null,
+            'email' => $data['email'] ?? null,
+            'city_id' => $data['city_id'],
+            'slug' => slugOrganization($data['title']),
+            'next_to' => $data['next_to'] ?? null,
+            'underground' => $data['underground'] ?? null,
+            'adres' => $data['adres'],
+            'width' => $data['width'],
+            'longitude' => $data['longitude'],
+            'available_installments' => $data['available_installments'] ?? 0,
+            'found_cheaper' => $data['found_cheaper'] ?? 0,
+            'state_compensation' => $data['state_compensation'] ?? 0,
+            'conclusion_contract' => $data['conclusion_contract'] ?? 0,
+        ]);
     
 
            
@@ -1912,7 +1930,7 @@ class AgencyController extends Controller
             });
         }
 
-        $cemeteries = $query->get(['id', 'title', 'city_id']);
+        $cemeteries = $query->get(['id', 'title', 'city_id','adres']);
 
         return response()->json([
             'success' => true,

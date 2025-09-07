@@ -6428,6 +6428,212 @@
                     }
                 }
             }
+        },
+        "/app/cashier/account/cashier/cemeteries": {
+            "get": {
+                "tags": [
+                    "Кассир лк"
+                ],
+                "summary": "Список кладбищ в которых работает организация",
+                "operationId": "36f790577c882244ede9a87222720d04",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Central Cemetery"
+                                                    },
+                                                    "city_id": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "adres": {
+                                                        "type": "string",
+                                                        "example": "Main Street 123"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/app/cashier/account/cashier/morgues": {
+            "get": {
+                "tags": [
+                    "Кассир лк"
+                ],
+                "summary": "Список моргов округа этой организации",
+                "operationId": "4afeb3800ff0b23f4f78773ae4c1cb62",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "City Morgue"
+                                                    },
+                                                    "city_id": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "adres": {
+                                                        "type": "string",
+                                                        "example": "Hospital Street 45"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/app/cashier/account/cashier/call-stats": {
+            "get": {
+                "tags": [
+                    "Кассир лк"
+                ],
+                "summary": "Получить звонки органиазции",
+                "operationId": "8e9bb7e6582a0ad6b2ea3b5abf72b20e",
+                "parameters": [
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "description": "Start date for filtering (format: Y-m-d)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "description": "End date for filtering (format: Y-m-d)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "city": {
+                                                        "type": "string",
+                                                        "example": "Москва"
+                                                    },
+                                                    "call_status": {
+                                                        "type": "string",
+                                                        "example": "answered"
+                                                    },
+                                                    "duration": {
+                                                        "type": "integer",
+                                                        "example": 120
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-01-15T10:30:00Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "total_calls": {
+                                                    "type": "integer",
+                                                    "example": 150
+                                                },
+                                                "avg_duration": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 45.5
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -6880,6 +7086,10 @@
         {
             "name": "Авторизация кассира",
             "description": "Авторизация кассира"
+        },
+        {
+            "name": "Кассир лк",
+            "description": "Кассир лк"
         }
     ],
     "security": [

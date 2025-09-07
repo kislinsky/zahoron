@@ -118,6 +118,10 @@ class CallStat extends Model
 
             if($organizationId!=null){
                 self::updateLimitCalls($organizationId);
+                if(str_starts_with($validated['call_status'], '11')){
+                    $organization=Organization::find($organizationId);
+                    sendSms($organization->phone,'Вам поступал звонок с сайта zahoron.ru');
+                }
             }
 
             // Создаем запись о звонке

@@ -9,7 +9,11 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Widgets\ChartWidget;
+use Filament\Widgets\StatsOverviewWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class CallStatResource extends Resource
 {
@@ -221,15 +225,20 @@ class CallStatResource extends Resource
             ]);
     }
 
-    public static function table(Table $table): Table
+   public static function table(Table $table): Table
     {
         return $table
             ->columns([
-         Tables\Columns\TextColumn::make('id')
-                    ->label('ID ')
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
                     ->searchable()
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('organization.title')
+                    ->label('Организация')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('call_id')
                     ->label('ID звонка')
@@ -242,54 +251,149 @@ class CallStatResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('called_number')
-                    ->label('Номер на который звонят')
+                    ->label('Номер назначения')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('device')
-                    ->label('Устройство')
+                Tables\Columns\TextColumn::make('call_status')
+                    ->label('Статус')
                     ->badge()
+                    ->color(fn (string $state): string => match (substr($state, 0, 2)) {
+                        '11' => 'success',
+                        default => 'danger'
+                    })
+                    ->formatStateUsing(fn (string $state): string => match (substr($state, 0, 2)) {
+                        '11' => 'Принят (' . $state . ')',
+                        default => 'Отклонен (' . $state . ')'
+                    }),
+
+                Tables\Columns\TextColumn::make('duration')
+                    ->label('Длительность')
+                    ->formatStateUsing(fn ($state) => $state ? gmdate('H:i:s', $state) : '00:00:00')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('date_start')
+                    ->label('Время начала')
+                    ->dateTime()
+                    ->sortable(),
+
+                Tables\Columns\IconColumn::make('is_quality')
+                    ->label('Качество')
+                    ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('ip')
-                    ->label('ip')
+                Tables\Columns\IconColumn::make('is_duplicate')
+                    ->label('Дубликат')
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('utm_source')
+                    ->label('UTM Source')
                     ->searchable()
-                    ->sortable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
-
+                Tables\Columns\TextColumn::make('city')
+                    ->label('Город')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                // Поиск по организации
+                Tables\Filters\SelectFilter::make('organization_id')
+                    ->label('Организация')
+                    ->relationship('organization', 'title')
+                    ->searchable()
+                    ->preload(),
+
+                // Фильтр по типу звонка
                 Tables\Filters\SelectFilter::make('call_type')
                     ->label('Тип звонка')
                     ->options([
-                         '1' => 'динамический',
-                                '2' => 'статический',
-                                '3' => 'дефолтный',
+                        '1' => 'Динамический',
+                        '2' => 'Статический', 
+                        '3' => 'Дефолтный',
                     ]),
 
+                // Фильтр по статусу звонка
                 Tables\Filters\SelectFilter::make('call_status')
-                    ->label('Статус')
-                     ->options([
-        '11' => 'Принятые звонки (11XX)',
-        'other' => 'Отклоненные звонки',
-        '' => 'Нет данных',
-    ])
-    ->query(function (Builder $query, $data) {
-        $value = $data['value'];
-        
-        return match ($value) {
-            '11' => $query->where('call_status', 'like', '11%'),
-            'other' => $query->whereNot('call_status', 'like', '11%')
-                             ->whereNotNull('call_status'),
-            '' => $query->whereNull('call_status'),
-            default => $query,
-        };
-    }),
+                    ->label('Статус звонка')
+                    ->options([
+                        '1100' => 'Принят (1100)',
+                        '1101' => 'Принят (1101)',
+                        '1110' => 'Принят (1110)',
+                        '1111' => 'Принят (1111)',
+                        '400' => 'Отклонен (400)',
+                        '404' => 'Отклонен (404)',
+                        '486' => 'Отклонен (486)',
+                    ]),
 
-                Tables\Filters\Filter::make('date_start')
+                // Фильтр по группе статусов
+                Tables\Filters\SelectFilter::make('status_group')
+                    ->label('Группа статусов')
+                    ->options([
+                        'accepted' => 'Принятые звонки',
+                        'rejected' => 'Отклоненные звонки',
+                        'no_status' => 'Без статуса',
+                    ])
+                    ->query(function (Builder $query, $data) {
+                        $value = $data['value'];
+                        
+                        return match ($value) {
+                            'accepted' => $query->where('call_status', 'like', '11%'),
+                            'rejected' => $query->whereNotNull('call_status')
+                                             ->whereNot('call_status', 'like', '11%'),
+                            'no_status' => $query->whereNull('call_status'),
+                            default => $query,
+                        };
+                    }),
+
+                // Фильтр по UTM Source (исправленная версия)
+                Tables\Filters\SelectFilter::make('utm_source')
+                    ->label('UTM Source')
+                    ->options(function () {
+                        $sources = CallStat::whereNotNull('utm_source')
+                            ->distinct('utm_source')
+                            ->pluck('utm_source')
+                            ->filter()
+                            ->mapWithKeys(fn ($source) => [$source => $source])
+                            ->toArray();
+                        
+                        return $sources ?: [];
+                    })
+                    ->searchable(),
+
+                // Фильтр по городу (исправленная версия)
+                Tables\Filters\SelectFilter::make('city')
+                    ->label('Город')
+                    ->options(function () {
+                        $cities = CallStat::whereNotNull('city')
+                            ->distinct('city')
+                            ->pluck('city')
+                            ->filter()
+                            ->mapWithKeys(fn ($city) => [$city => $city])
+                            ->toArray();
+                        
+                        return $cities ?: [];
+                    })
+                    ->searchable(),
+
+                // Фильтр по устройству
+                Tables\Filters\SelectFilter::make('device')
+                    ->label('Устройство')
+                    ->options([
+                        'desktop' => 'Desktop',
+                        'tablet' => 'Tablet', 
+                        'mobile' => 'Mobile',
+                    ]),
+
+                // Фильтр по дате
+                Tables\Filters\Filter::make('date_range')
+                    ->label('Диапазон дат')
                     ->form([
-                        Forms\Components\DatePicker::make('start_date'),
-                        Forms\Components\DatePicker::make('end_date'),
+                        Forms\Components\DatePicker::make('start_date')
+                            ->label('С даты'),
+                        Forms\Components\DatePicker::make('end_date')
+                            ->label('По дату'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -303,14 +407,42 @@ class CallStatResource extends Resource
                             );
                     }),
 
+                // Фильтр по качеству
                 Tables\Filters\TernaryFilter::make('is_quality')
                     ->label('Качественные звонки'),
 
+                // Фильтр по дубликатам
                 Tables\Filters\TernaryFilter::make('is_duplicate')
                     ->label('Дубликаты'),
 
+                // Фильтр по новым звонкам
                 Tables\Filters\TernaryFilter::make('is_new')
                     ->label('Новые звонки'),
+
+                // Фильтр по длительности
+                Tables\Filters\Filter::make('duration_range')
+                    ->label('Длительность звонка (сек)')
+                    ->form([
+                        Forms\Components\TextInput::make('min_duration')
+                            ->label('От')
+                            ->numeric()
+                            ->minValue(0),
+                        Forms\Components\TextInput::make('max_duration')
+                            ->label('До')
+                            ->numeric()
+                            ->minValue(0),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['min_duration'] ?? null,
+                                fn (Builder $query, $duration): Builder => $query->where('duration', '>=', $duration),
+                            )
+                            ->when(
+                                $data['max_duration'] ?? null,
+                                fn (Builder $query, $duration): Builder => $query->where('duration', '<=', $duration),
+                            );
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -355,4 +487,6 @@ class CallStatResource extends Resource
     {
         return 'запись звонка';
     }
+
+  
 }

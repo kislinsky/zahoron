@@ -30,15 +30,24 @@ class CheckCity
 
     protected function isValidCity(?City $city): bool
     {
-        if (!$city || !$city->area || !$city->area->edge || $city->area->edge->is_show != 1) {
-            return false;
-        }
+        if (!$city) return false;
 
-        $orgCount = Cache::remember("city_org_count_{$city->id}", 3600, function() use ($city) {
-            return Organization::where('city_id', $city->id)->count();
+        // Кешируем проверку валидности города на 1 час
+        return Cache::remember("city_valid_{$city->id}", 3600, function() use ($city) {
+            // Быстрая проверка через предзагруженные отношения
+            if (!$city->relationLoaded('area')) {
+                $city->load('area.edge');
+            }
+            
+            if (!$city->area || !$city->area->edge || $city->area->edge->is_show != 1) {
+                return false;
+            }
+
+            // Используем exists() вместо count() для более быстрой проверки
+            return Organization::where('city_id', $city->id)
+                ->where('status', 1) // Добавляем условие статуса если нужно
+                ->exists();
         });
-
-        return $orgCount >= 1;
     }
 
     public function handle(Request $request, Closure $next)
@@ -52,9 +61,16 @@ class CheckCity
             return $next($request);
         }
 
-        $defaultCity = City::where('selected_admin', 1)->first();
+        // Кешируем город по умолчанию на 1 час
+        $defaultCity = Cache::remember('default_city', 3600, function() {
+            return City::where('selected_admin', 1)
+                ->first(['id', 'slug']);
+        });
+
         $currentCityId = $request->cookie('city');
-        $currentCity = $currentCityId ? City::find($currentCityId) : null;
+        $currentCity = $currentCityId ? Cache::remember("city_{$currentCityId}", 3600, function() use ($currentCityId) {
+            return City::with(['area.edge'])->find($currentCityId, ['id', 'slug']);
+        }) : null;
         
         // Для главной страницы
         if ($path === '/' || empty($citySlug)) {
@@ -73,8 +89,11 @@ class CheckCity
             return $next($request);
         }
 
-        // Для городских страниц
-        $city = City::with(['area.edge'])->where('slug', $citySlug)->first();
+        // Для городских страниц - кешируем запрос города
+        $city = Cache::remember("city_slug_{$citySlug}", 3600, function() use ($citySlug) {
+            return City::with(['area.edge'])->where('slug', $citySlug)
+                ->first(['id', 'slug', 'area_id']);
+        });
 
         // Проверка города
         if (!$this->isValidCity($city)) {
