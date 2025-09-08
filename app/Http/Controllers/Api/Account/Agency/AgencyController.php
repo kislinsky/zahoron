@@ -594,7 +594,7 @@ class AgencyController extends Controller
             'img_file' => $imgPath,
             'img_main_file' => $imgMainPath,
             'href_img' => $hrefImg, // 1 если дефолтная, 0 если загруженная
-            'href_img_main' => $hrefImgMain, // 1 если дефолтная, 0 если загруженная
+            'href_main_img' => $hrefImgMain, // 1 если дефолтная, 0 если загруженная
             'whatsapp' => $data['whatsapp'] ?? null,
             'email' => $data['email'] ?? null,
             'city_id' => $data['city_id'],

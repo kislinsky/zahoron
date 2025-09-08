@@ -42,6 +42,7 @@
                     <option value="gallery">Галлерея</option>
                     <option value="services">Виды услуг</option>
                     <option value="inn">Инн</option>
+                    <option value="type_phone">Тип телефона</option>
 
                 </select>  
             </div>

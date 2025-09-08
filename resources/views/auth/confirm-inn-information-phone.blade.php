@@ -39,6 +39,32 @@
             <input type="hidden" name="okved" value='{{ $okved }}'>
         </div>
 
+@if($existingOrganizations->count() > 0)
+<div class="block_input">
+    <div class="text_black_bold text_start">Найденные организации с ИНН {{ $inn }}:</div>
+    <div class="text_gray">Выберите организации, которые хотите привязать к своему аккаунту:</div>
+    
+    <div class="organizations-list">
+        @foreach($existingOrganizations as $organization)
+        <div class="organization-item">
+            <label class="checkbox">
+                <input type="checkbox" name="organizations[]" value="{{ $organization->id }}" class="organization-checkbox">
+                <a href='{{ $organization->route() }}' target="_blank" class="text_black_bold">{{ $organization->title }}</a>
+                <div class="organization-details">
+                    @if($organization->email)
+                    <span class='text_gray'>Email: {{ $organization->email }}</span>
+                    @endif
+                    @if($organization->phone)
+                    <span class='text_gray'>Телефон: {{ $organization->phone }}</span>
+                    @endif
+                </div>
+            </label>
+        </div>
+        @endforeach
+    </div>
+</div>
+@endif
+        
         <div class="grid_btn">
             <button type="submit" class="blue_btn">Подвердить</button>
             <a href='{{ route('register') }}' type="submit" class="btn_border_blue">Изменить</a>

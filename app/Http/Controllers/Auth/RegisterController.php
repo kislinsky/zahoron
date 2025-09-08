@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\OtpCodes;
 use App\Models\User;
 use App\Models\Wallet;
+use App\Models\Organization;
 use App\Providers\RouteServiceProvider;
 use App\Rules\RecaptchaRule;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -16,43 +17,16 @@ use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
     use RegistersUsers;
 
-    /**
-     * Where to redirect users after registration.
-     *
-     * @var string
-     */
     protected $redirectTo = '/home';
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('guest');
         $this->redirectTo = '/' . selectCity()->slug . '/home';
-
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
     protected function validator(array $data)
     {
         if ($data['role'] === 'user') {
@@ -74,9 +48,6 @@ class RegisterController extends Controller
         ]);
     }
     
-    /**
-     * Обработка запроса регистрации
-     */
     public function register(Request $request)
     {
         $data = $request->all();
@@ -86,27 +57,24 @@ class RegisterController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
     
-        // Если роль 'user', создаем пользователя и авторизуем
         if ($data['role'] === 'user') {
             $user = $this->create($data);
             Wallet::create(['user_id'=>$user->id]);
             Auth::login($user);
-            return redirect()->route('home'); // Замените на маршрут после входа
-        }
-        $inn_user=User::where('inn',$data['inn'])->get();
-        if($inn_user->count()>0){
-            return redirect()->back()->with('error','Пользователь с таким инн уже существует.');
+            return redirect()->route('home');
         }
 
-        $organization_ddata=null;
-        if(env('API_WORK')=='true'){
-            $organization_ddata=checkOrganizationInn($data['inn']);
+        $inn_user = User::where('inn', $data['inn'])->get();
+        if($inn_user->count() > 0){
+            return redirect()->back()->with('error', 'Пользователь с таким ИНН уже существует.');
         }
 
+        $organization_data = null;
+        if(env('API_WORK') == 'true'){
+            $organization_data = checkOrganizationInn($data['inn']);
+        }
 
-
-        if($organization_ddata!=null && $organization_ddata['state']['status']=='ACTIVE'){
-
+        if($organization_data != null && $organization_data['state']['status'] == 'ACTIVE'){
             return redirect()->route('confirm.inn.information.email')->with([
                 'email'             => $data['email'],
                 'role'              => $data['role'],
@@ -115,16 +83,13 @@ class RegisterController extends Controller
                 'organization_form' => $data['organization_form'],
                 'contragent'        => '3edqwe',
                 'status'            => 'Действующий',
-                'okved'             => $organization_ddata['okved'],
+                'okved'             => $organization_data['okved'],
             ]);
         }
-        return redirect()->back()->with('error','Такого инн не существует или он не действителен');
-
+        
+        return redirect()->back()->with('error', 'Такого ИНН не существует или он не действителен');
     }
     
-    /**
-     * Создание объекта пользователя (только для 'user')
-     */
     protected function create(array $data): User
     {
         return User::create([
@@ -134,49 +99,66 @@ class RegisterController extends Controller
         ]);
     }
 
-
-
-    public static function confirmInnInformationEmail(){
-        $email=session('email');
-        $inn=session('inn');
-        $contragent=session('contragent');
-        $status=session('status');
-        $okved=session('okved');
-        $role=session('role');
-        $password=session('password');
-        $organization_form=session('organization_form');
-        return view('auth.confirm-inn-information-email',compact('password','organization_form','role','email','inn','contragent','status','okved'));
+    public static function confirmInnInformationEmail()
+    {
+        $email = session('email');
+        $inn = session('inn');
+        $contragent = session('contragent');
+        $status = session('status');
+        $okved = session('okved');
+        $role = session('role');
+        $password = session('password');
+        $organization_form = session('organization_form');
+        
+        $existingOrganizations = Organization::where('inn', $inn)
+            ->get(['id', 'title', 'email', 'phone', 'created_at','slug']);
+        
+        return view('auth.confirm-inn-information-email', compact(
+            'password', 
+            'organization_form', 
+            'role', 
+            'email', 
+            'inn', 
+            'contragent', 
+            'status', 
+            'okved',
+            'existingOrganizations'
+        ));
     }
 
-    public static function createUserOrganizationEmail(Request $request){
-
-        $data=request()->validate([
-            'email'=>['required','string'],
-            'password'=>['required','string'],
-            'inn'=>['required','string'],
-            'contragent'=>['required','string'],
-            'status'=>['required','string'],
-            'okved'=>['required','string'],
-            'organization_form'=>['required','string'],
-            'role'=>['required','string'],
+    public static function createUserOrganizationEmail(Request $request)
+    {
+        $data = $request->validate([
+            'email' => ['required', 'string'],
+            'password' => ['required', 'string'],
+            'inn' => ['required', 'string'],
+            'contragent' => ['required', 'string'],
+            'status' => ['required', 'string'],
+            'okved' => ['required', 'string'],
+            'organization_form' => ['required', 'string'],
+            'role' => ['required', 'string'],
+            'organizations' => ['nullable', 'array'],
+            'organizations.*' => ['nullable', 'integer'],
         ]);
 
-        $user=User::create([
-            'email'=>$data['email'],
-            'password'=>$data['password'],
-            'inn'=>$data['inn'],
-            'organization_form'=>$data['organization_form'],
-            'role'=>$data['role'],
+        $user = User::create([
+            'email' => $data['email'],
+            'password' => $data['password'],
+            'inn' => $data['inn'],
+            'organization_form' => $data['organization_form'],
+            'role' => $data['role'],
         ]);
 
-        Wallet::create(['user_id'=>$user->id]);
+        Wallet::create(['user_id' => $user->id]);
+
+        if (!empty($data['organizations'])) {
+            Organization::whereIn('id', $data['organizations'])
+                ->update(['user_id' => $user->id]);
+        }
 
         Auth::login($user);
         return redirect()->route('home');
     }
-
-
-
 
     public static function registerWithPhone(Request $request)
     {
@@ -213,63 +195,79 @@ class RegisterController extends Controller
                 'role' => $data['role_phone'],
             ]);
 
-            if(env('API_WORK')=='true'){
-                $send_sms=sendSms($data['phone'],$code);
-                if($send_sms!=true){
-                    return redirect()->back()->with('error','Ошибка отправки сообщения');
+            if(env('API_WORK') == 'true'){
+                $send_sms = sendSms($data['phone'], $code);
+                if($send_sms != true){
+                    return redirect()->back()->with('error', 'Ошибка отправки сообщения');
                 }
             }
             return redirect()->route('register.verify.code')->with('token', $token);
         } else {
-            $inn =$data['inn_phone'];
-            $inn_user=User::where('inn',$data['inn'])->get();
-            if($inn_user->count()>0){
-                return redirect()->back()->with('error','Пользователь с таким инн уже существует.');
+            $inn = $data['inn_phone'];
+            $inn_user = User::where('inn', $data['inn_phone'])->get();
+            if($inn_user->count() > 0){
+                return redirect()->back()->with('error', 'Пользователь с таким ИНН уже существует.');
             }
+            
             $status = 'Действующий';
             $contragent = '3edqwe';
-            $okved='';
-            if(env('API_WORK')=='true'){
-                $organization_ddata=checkOrganizationInn($data['inn_phone']);
+            $okved = '';
+            
+            if(env('API_WORK') == 'true'){
+                $organization_data = checkOrganizationInn($data['inn_phone']);
                 $contragent = '3edqwe';
-                $okved = $organization_ddata['okved'];
+                $okved = $organization_data['okved'] ?? '';
             }
             
             return redirect()->route('confirm.inn.information.phone')->with([
-                'phone' =>  $data['phone'],
-                'role'=>$data['role_phone'],
+                'phone' => $data['phone'],
+                'role' => $data['role_phone'],
                 'inn' => $inn,
-                'organization_form'=>$data['organization_form_phone'],
+                'organization_form' => $data['organization_form_phone'],
                 'contragent' => $contragent,
                 'status' => $status,
                 'okved' => $okved,
             ]);
-            
         }
     }
 
-
-    public static function confirmInnInformationPhone(){
-        $phone=session('phone');
-        $inn=session('inn');
-        $contragent=session('contragent');
-        $status=session('status');
-        $okved=session('okved');
-        $role=session('role');
-        $organization_form=session('organization_form');
-        return view('auth.confirm-inn-information-phone',compact('organization_form','role','phone','inn','contragent','status','okved'));
+    public static function confirmInnInformationPhone()
+    {
+        $phone = session('phone');
+        $inn = session('inn');
+        $contragent = session('contragent');
+        $status = session('status');
+        $okved = session('okved');
+        $role = session('role');
+        $organization_form = session('organization_form');
+        
+        $existingOrganizations = Organization::where('inn', $inn)
+            ->get(['id', 'title', 'email', 'phone', 'created_at','slug']);
+        
+        return view('auth.confirm-inn-information-phone', compact(
+            'organization_form',
+            'role',
+            'phone',
+            'inn',
+            'contragent',
+            'status',
+            'okved',
+            'existingOrganizations'
+        ));
     }
 
-    public static function acceptInnInformation(Request $request){
-
-        $data=request()->validate([
-            'phone'=>['required','string'],
-            'inn'=>['required','string'],
-            'contragent'=>['required','string'],
-            'status'=>['required','string'],
-            'okved'=>['required','string'],
-            'organization_form'=>['required','string'],
-            'role'=>['required','string'],
+    public static function acceptInnInformation(Request $request)
+    {
+        $data = $request->validate([
+            'phone' => ['required', 'string'],
+            'inn' => ['required', 'string'],
+            'contragent' => ['required', 'string'],
+            'status' => ['required', 'string'],
+            'okved' => ['required', 'string'],
+            'organization_form' => ['required', 'string'],
+            'role' => ['required', 'string'],
+            'organizations' => ['nullable', 'array'],
+            'organizations.*' => ['nullable', 'integer'],
         ]);
 
         $code = generateSixDigitCode();
@@ -279,41 +277,58 @@ class RegisterController extends Controller
             'code' => $code,
             'phone' => $data['phone'],
             'token' => $token,
-            'inn'=>$data['inn'],
-            'okved'=>$data['okved'],
-            'contragent'=>$data['contragent'],
+            'inn' => $data['inn'],
+            'okved' => $data['okved'],
+            'contragent' => $data['contragent'],
             'role' => $data['role'],
-            'organization_form'=>$data['organization_form'],
+            'organization_form' => $data['organization_form'],
+            'organization_ids' => json_encode($data['organizations']) ?? null,
         ]);
 
-
-        if(env('API_WORK')=='true'){
-            $send_sms=sendSms($data['phone'],$code);
-            if($send_sms!=true){
-                return redirect()->back()->with('error','Ошибка отправки сообщения');
+        if(env('API_WORK') == 'true'){
+            $send_sms = sendSms($data['phone'], $code);
+            if($send_sms != true){
+                return redirect()->back()->with('error', 'Ошибка отправки сообщения');
             }
         }
 
         return redirect()->route('register.verify.code')->with('token', $token);
     }
 
-
-    public static function verifyCode(){
-        $token=session('token');
-        return view('auth.verify-code',compact('token'));
+    public static function verifyCode()
+    {
+        $token = session('token');
+        return view('auth.verify-code', compact('token'));
     }
 
-    public static function  verifyCodeSend(Request $request){
-        $data=request()->validate([
-            'code'=>['required','string'],
-            'token'=>['required','string'],
+    public static function verifyCodeSend(Request $request)
+    {
+        $data = $request->validate([
+            'code' => ['required', 'string'],
+            'token' => ['required', 'string'],
         ]);
-        $codeModel=OtpCodes::orderBy('id', 'desc')->where('token',$data['token'])->first();
-        if($codeModel!=null && $codeModel->code!=$data['code']){
-            return redirect()->back()->with('error','Код веден неверно')->with('token',$data['token']);
+        
+        $codeModel = OtpCodes::orderBy('id', 'desc')->where('token', $data['token'])->first();
+        
+        if($codeModel != null && $codeModel->code != $data['code']){
+            return redirect()->back()->with('error', 'Код введен неверно')->with('token', $data['token']);
         }
-        $user=createUserWithPhone($codeModel->phone,'user',$codeModel->role,$codeModel->inn,$codeModel->organization_form); 
+        
+        $user = User::create([
+            'phone' => $codeModel->phone,
+            'role' => $codeModel->role,
+            'inn' => $codeModel->inn,
+            'organization_form' => $codeModel->organization_form,
+        ]);
+        
+        Wallet::create(['user_id' => $user->id]);
+        
+        if (!empty($codeModel->organization_ids)) {
+            Organization::whereIn('id', json_decode($codeModel->organization_ids))
+                ->update(['user_id' => $user->id]);
+        }
+        
         Auth::login($user);
-        return redirect()->route('home');       
-}
+        return redirect()->route('home');
+    }
 }

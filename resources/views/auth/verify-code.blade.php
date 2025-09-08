@@ -9,7 +9,7 @@
         <div class="title_li">Подтверждение регистрации</div>
         <div class="block_input">
             <label for="phone">Введите код, присланный по SMS</label>
-            <input id="email" type="integer"  name="code" value="{{ old('code') }}" required autocomplete="code" autofocus placeholder="3423424242">
+            <input id="email" type="integer"  name="code" value="{{ old('code') }}" required autocomplete="code" autofocus placeholder="1234">
             @error('code')
                 <div class='error-text'>{{ $message }}</div>
             @enderror

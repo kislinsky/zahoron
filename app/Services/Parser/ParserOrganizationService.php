@@ -11,6 +11,7 @@ use App\Models\ImageOrganization;
 use App\Models\Organization;
 use App\Models\ReviewsOrganization;
 use App\Models\WorkingHoursOrganization;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -66,6 +67,7 @@ class ParserOrganizationService
                 $nameType = $organization[$columns['Вид деятельности']?? null] ?? null;
                 $urlSite = $organization[$columns['Сайт']?? null] ?? null;
                 $innOrg = $organization[$columns['inn']?? null] ?? null;
+                $typePhone = $organization[$columns['phone_status']?? null] ?? null;
     
                 if($importType != 'update') {
                     if(empty($cityName)) continue;
@@ -134,6 +136,16 @@ class ParserOrganizationService
                         }
                     }
                     
+                    if(in_array('type_phone', $columnsToUpdate) && isset($columns['phone_status'])) {
+                        if($typePhone){
+                            if($typePhone=='Мобильный'){
+                                $updateData['type_phone'] = 'mobile';   
+                            }else{
+                                $updateData['type_phone'] = 'stationary';   
+                            }
+                        }
+                    }
+
                     if(in_array('address', $columnsToUpdate) && isset($columns['Адрес'])) {
                         if($address) $updateData['adres'] = $address;
                     }
@@ -174,8 +186,13 @@ class ParserOrganizationService
                     }
         
                     if(!empty($updateData)) {
-                        $existingOrg->update($updateData);
-                    }
+        DB::table('organizations')
+            ->where('id', $existingOrg->id)
+            ->update($updateData);
+        
+        // Обновляем объект в памяти
+        $existingOrg->refresh();
+    }
         
                     // Обновляем рабочие часы
                     if(in_array('working_hours', $columnsToUpdate) && isset($columns['Режим работы'])) {

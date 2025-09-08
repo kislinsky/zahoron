@@ -5134,6 +5134,15 @@ text-align: left;
 background: #F7F7F8;
 }
 
+.organizations-list{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.organization-item{
+    border-bottom: 1px solid #999999;
+    padding: 10px 0px;
+}
 .ul_organizaiotns{
     display: flex;
     flex-direction: column;
