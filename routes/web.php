@@ -530,6 +530,10 @@ Route::get('/portfolio', function () {
 
                 Route::group(['middleware'=>'user.role.check'],function(){
 
+                    Route::group(['prefix'=>'calls'], function() {
+                        Route::get('/stats',[AgencyOrganizationController::class,'callStats'])->name('account.agency.organization.calls.stats');
+                    });
+
                     Route::group(['prefix'=>'aplication'], function() {
 
                         Route::group(['prefix'=>'dead'], function() {

@@ -218,14 +218,109 @@ text-align: center;
 
 }
 
+.filters_calls{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.filters_calls .btn_gray,.filters_calls .blue_btn{
+    padding: 10px ;
+    font-weight: bold;
+    font-size: 14px;
+    border: none;
+}
+
+
+
+ .filter-container {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .custom-period {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        border: 1px solid #e0e0e0;
+        z-index: 1000;
+        min-width: 300px;
+        margin-top: 10px;
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        visibility: hidden;
+    }
+    
+    .custom-period.visible {
+        opacity: 1;
+        display: flex;
+        transform: translateY(0);
+        visibility: visible;
+    }
+    
+    .custom-period.hidden {
+        display: flex !important;
+        opacity: 0;
+        visibility: hidden;
+    }
+    
+    .date-input {
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        width: 100%;
+    }
+    
+    .toggle-period-btn {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
 
 .margin_left_auto{
     margin-left: auto;
 }
+.call_stats{
+    width: 100%;
+    margin: 30px 0px;
+}
+.call_stats thead{
+    background: #F7F7F8;
+}
+.call_stats  td{
+    padding: 10px;
 
+}
+.call_stats  td div{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 .blue_btn:hover,.flex_btn_li_product_market .blue_btn:hover{
 background: #0080FC;
 color: white;
+}
+
+.phone_icon_black{
+    width: 40px;
+    background: #F7F7F8;
+    border-radius: 50%;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.phone_icon_black img{
+    width: 20px;
+    height: 20px;
 }
 .search{
     display: flex;

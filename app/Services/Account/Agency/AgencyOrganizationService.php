@@ -739,5 +739,26 @@ class AgencyOrganizationService {
         $object=new YooMoneyService();
         return $object->createPayment($data['count'],route('account.agency.organization.wallets'),'Пополнение баланса',$data);
     }
+
+
+      public static function callStats($data,$request)
+    {
+        $organization=user()->organization();
+        // Получаем статистику через модель
+        $calls = Organization::getCallStats($data);
+        
+        if ($request->ajax()) {
+        $html = view('account.agency.components.calls.calls_table_body', compact('calls'))->render();
+        $pagination = $calls->appends($request->except('page'))->links()->toHtml();
+        
+        return response()->json([
+            'success' => true,
+            'html' => $html,
+            'pagination' => $pagination
+        ]);
+    }
+    
+        return view('account.agency.organization.calls.stats', compact('calls','organization'));
+    }
 }
 

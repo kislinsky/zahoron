@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Organization;
 use Artesaos\SEOTools\Facades\SEOMeta;
+use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -80,6 +81,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Carbon::setLocale('ru');
         // SEO настройки
         $city = selectCity();
         if ($city) {

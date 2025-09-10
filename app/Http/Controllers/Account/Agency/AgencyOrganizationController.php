@@ -307,5 +307,16 @@ class AgencyOrganizationController extends Controller
         return AgencyOrganizationService::walletUpdateBalance($data);
     }
  
-    
+    public function callStats(Request $request)
+    {
+        // Валидация входных параметров
+        $validated = $request->validate([
+            'period' => 'nullable|in:month,last_month,week,last_week,custom',
+            'date_from' => 'nullable|required_if:period,custom|date',
+            'sort' => 'nullable|in:asc,desc',
+            'date_to' => 'nullable|required_if:period,custom|date|after_or_equal:date_from'
+        ]);
+        
+        return AgencyOrganizationService::callStats($validated,$request);
+    }
 }

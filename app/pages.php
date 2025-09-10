@@ -212,6 +212,12 @@ function organizationPages(){
             ]
         ],
 
+        ['Звонки','storage/uploads/Icon_sidebar_2.svg',
+           [
+            ['Входящие','account.agency.organization.calls.stats']
+           ]
+        ],
+        
         
         ['Настройки','storage/uploads/icon_sidebar.svg',
            [
@@ -580,6 +586,13 @@ function mobilePagesAccountAgecny() {
                 ['В работе', route('account.agency.organization.aplication.funeral-service.in-work')],
                 ['Завершенные', route('account.agency.organization.aplication.funeral-service.completed')],
             ]
+        ],
+
+        [
+            ['Звонки',''],
+           [
+                ['Входящие',route('account.agency.organization.calls.stats')]
+           ]
         ],
 
         [

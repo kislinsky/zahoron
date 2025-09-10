@@ -321,5 +321,8 @@ class OrganizationService
         $organizations_category=organizationsFilters($data,$category);
         return view('organization.components.catalog.map-cats',compact('category','organizations_category','city'));
     }
+
+
+  
     
 }
