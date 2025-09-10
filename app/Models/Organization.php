@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class Organization extends Model
@@ -246,5 +248,50 @@ class Organization extends Model
         }
 
         return 0;
+    }
+    public function likedByUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'like_organizations', 'organization_id', 'user_id')
+            ->withTimestamps();
+    }
+    
+    /**
+     * Проверяет, лайкнул ли текущий пользователь организацию
+     */
+    public function getIsLikedAttribute(): bool
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+        
+        return $this->likedByUsers()->where('user_id', Auth::id())->exists();
+    }
+    
+    /**
+     * Альтернативный метод (статический)
+     */
+    public static function isLiked($organizationId): bool
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+        
+        return static::whereHas('likedByUsers', function($query) {
+            $query->where('user_id', Auth::id());
+        })->where('id', $organizationId)->exists();
+    }
+    
+    /**
+     * Проверяет, лайкнул ли организацию конкретный пользователь
+     */
+    public function isLikedByUser($userId = null): bool
+    {
+        $userId = $userId ?? Auth::id();
+        
+        if (!$userId) {
+            return false;
+        }
+        
+        return $this->likedByUsers()->where('user_id', $userId)->exists();
     }
 }

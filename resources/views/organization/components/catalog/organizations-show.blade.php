@@ -9,7 +9,7 @@
     
         
 
-        <div class="li_organization">
+        <div class="li_organization <?php if($organization->priority){echo 'priority';}?>">
 
             <?php $category_organiaztion=$organization_category->categoryProduct;?>
 
@@ -24,6 +24,12 @@
                 @endif
 
                 <div class="info_li_organization">
+                  @if($organization->priority)
+                    <div class="priority_flex">
+                      <img src="{{ asset('storage/uploads/Vector_premium.svg') }}" alt="">
+                      <div class="text_black_bold">Premium</div>
+                    </div>
+                  @endif
                     <a href='{{$organization->route()}}'class="title_li_organiaztion">{{$organization->title}}</a>
                     <div class="text_gray">{{$organization->name_type}}</div>
                     <div class="text_gray"> {{$organization->adres}}</div>
@@ -46,6 +52,12 @@
             </div>
 
             <div class="info_li_organization li_org_dekstop">
+                @if($organization->priority)
+                    <div class="priority_flex">
+                      <img src="{{ asset('storage/uploads/Vector_premium.svg') }}" alt="">
+                      <div class="text_black_bold">Premium</div>
+                    </div>
+                  @endif
                 <a href='{{$organization->route()}}'class="title_li_organiaztion"> {{$organization->title}}</a>
                 <div class="text_gray">{{$organization->name_type}}</div>
                 <div class="text_gray"> {{$organization->adres}}</div>
@@ -59,8 +71,12 @@
                     <div class="text_black_bold"> <span class='title_blue'>{{$organization_category->priceHtml()}} </span></div>
                 </div>
                 <div class="li_flex_icon_organization">
-                    <a href="{{route('organization.like.add',$organization->id)}}"><img src="{{asset('storage/uploads/Vector (9).svg')}}" alt=""></a>
-                    <div val='{{ $organization->route() }}' class='share_button'><img src="{{asset('storage/uploads/Vector (8).svg')}}" alt=""></div>
+                  @if($organization->getIsLikedAttribute())
+                    <a href="{{route('organization.like.add',$organization->id)}}"><img src="{{asset('storage/uploads/VectorLike.svg')}}" alt=""></a>
+                  @else
+                    <a href="{{route('organization.like.add',$organization->id)}}"><img src="{{asset('storage/uploads/Vector_not_like.svg')}}" alt=""></a>
+                  @endif                    
+                  <div val='{{ $organization->route() }}' class='share_button'><img src="{{asset('storage/uploads/Vector (8).svg')}}" alt=""></div>
                 </div>
             </div>
 
@@ -83,7 +99,11 @@
             </div>
 
             <div class="li_flex_icon_organization li_org_dekstop">
-                <a href="{{route('organization.like.add',$organization->id)}}"><img src="{{asset('storage/uploads/Vector (9).svg')}}" alt=""></a>
+              @if($organization->getIsLikedAttribute())
+                <a href="{{route('organization.like.add',$organization->id)}}"><img src="{{asset('storage/uploads/VectorLike.svg')}}" alt=""></a>
+              @else
+                <a href="{{route('organization.like.add',$organization->id)}}"><img src="{{asset('storage/uploads/Vector_not_like.svg')}}" alt=""></a>
+              @endif
                 <div val='{{ $organization->route() }}' class='share_button'><img src="{{asset('storage/uploads/Vector (8).svg')}}" alt=""></div>
             </div>
         </div>

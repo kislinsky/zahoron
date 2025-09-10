@@ -15,6 +15,11 @@ Route::prefix('app')->group(function () {
 
 
     Route::prefix('organization')->group(function () {
+
+
+        Route::post('/send-code', [AgencyController::class, 'sendCode']);
+        Route::post('/accept-code', [AgencyController::class, 'acceptCode']);
+        
         // Незащищенные маршруты (публичные)
         Route::post('/delete/{user}', [AuthAgencyController::class, 'deleteAccountTest']);
         Route::post('/user/{user}/find', [AgencyController::class, 'findUser']);
@@ -63,8 +68,7 @@ Route::prefix('app')->group(function () {
                         Route::post('/buy', [AgencyController::class, 'buyPriority']);
                     });
 
-                    Route::post('/send-code', [AgencyController::class, 'sendCode']);
-                    Route::post('/accept-code', [AgencyController::class, 'acceptCode']);
+                   
 
                     Route::group(['prefix' => 'organization'], function() {
                         Route::post('/create', [AgencyController::class, 'createOrganization']);

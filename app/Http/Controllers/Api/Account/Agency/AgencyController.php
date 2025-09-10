@@ -1433,41 +1433,54 @@ class AgencyController extends Controller
         ]);
     }
 
-    public static function organizationsCity(City $city, Request $request)
-    {
-        // Валидация входных параметров
-        $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|string|max:255'
-        ]);
+public static function organizationsCity(City $city, Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'name' => 'sometimes|string|max:255'
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Ошибка валидации',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        // Получение отфильтрованных организаций с выбором конкретных полей
-        $query = $city->organizations()->select('id', 'title', 'name_type', 'phone', 'status','adres','two_gis_link');
-        
-        if ($request->has('name') && !empty($request->name)) {
-            $query->where('title', 'like', '%' . $request->name . '%');
-        }
-        
-        $organizations = $query->get();
-
+    if ($validator->fails()) {
         return response()->json([
-            'success' => true,
-            'message' => 'Организации успешно найдены',
-            'organizations' => $organizations,
-            'city' => [
-                'id' => $city->id,
-                'title' => $city->title
-            ], // Упрощаем информацию о городе
-        ]);
+            'success' => false,
+            'message' => 'Ошибка валидации',
+            'errors' => $validator->errors()
+        ], 422);
     }
 
+    // Прямой запрос к организациям с фильтрацией по городу
+    $query = Organization::where('city_id', $city->id)
+        ->select('id', 'title', 'name_type', 'phone', 'status', 'adres', 'two_gis_link')
+        ->where('status', '1');
+    
+    if ($request->has('name') && !empty($request->name)) {
+        $query->where('title', 'like', '%' . $request->name . '%');
+    }
+    
+    $organizations = $query->get();
+
+    // Преобразуем все числовые ID в строки для корректной передачи в JSON
+    $organizations->transform(function($org) {
+        return [
+            'id' => (string)$org->id, // Преобразуем ID в строку
+            'title' => $org->title,
+            'name_type' => $org->name_type,
+            'phone' => $org->phone,
+            'status' => $org->status,
+            'adres' => $org->adres,
+            'two_gis_link' => $org->two_gis_link
+        ];
+    });
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Организации успешно найдены',
+        'organizations' => $organizations,
+        'city' => [
+            'id' => (string)$city->id, // Также преобразуем ID города в строку
+            'title' => $city->title
+        ],
+    ]);
+}
     public static function citySearch(Request $request){
         $validator = Validator::make($request->all(), [
             'city' => 'required|string|max:3000'
@@ -1538,12 +1551,10 @@ class AgencyController extends Controller
         $organization = Organization::find($request->organization_id);
         $code = generateRandomNumber(); // Генерация кода (например, 4-6 цифр)
 
-        // Отправка кода (первый способ)
-        $sendCodeResult = sendCode($organization->phone, $code);
-
-        // Если первый способ не сработал, пробуем SMS
-        if ($sendCodeResult['tell_code_result']['status'] != 'ok') {
-            sendSms($organization->phone, $code);
+        if($organization->type_phone=='mobile'){
+            sendSms($organization->phone,$code);
+        }else{
+            $send_code=sendCode($organization->phone,$code);
         }
 
         // Сохраняем хеш кода в кеш (вместо куки) на 20 минут

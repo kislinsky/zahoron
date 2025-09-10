@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Traits\HasPhone;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -181,6 +182,12 @@ class User extends Authenticatable implements JWTSubject
     public function setPhoneAttribute($value)
     {
         $this->attributes['phone'] = $this->normalizePhone($value);
+    }
+
+     public function likedOrganizations(): BelongsToMany
+    {
+        return $this->belongsToMany(Organization::class, 'like_organizations', 'user_id', 'organization_id')
+            ->withTimestamps();
     }
      
 }

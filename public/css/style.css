@@ -5115,8 +5115,28 @@ text-align: left;
     background: #F7F7F8;
 }
 
+.li_organization.priority{
+    background: #0080D71A;
+}
+.priority_flex img{
+    width: 28px;
+    height: 34px;
+}
+.priority_flex .text_black_bold{
+    font-family: EB Garamond;
+font-weight: 800;
+font-style: ExtraBold;
+font-size: 20px;
+leading-trim: NONE;
+line-height: 150%;
+letter-spacing: 0%;
 
-
+}
+.priority_flex{
+    display: flex;
+    align-items: start;
+    gap: 6px;
+}
 .filter_block_organization .checkbox{
     width: 100%;
     display: flex;
@@ -7839,7 +7859,17 @@ color: #0080D7;
     background: #0F0F0F;
 }
 
+.black_theme .mgo-modal-header{
+    color: white;
+}
 
+.black_theme .mgo-modal{
+    background: #0F0F0F;
+}
+
+.black_theme .open_children_pages{
+    color: white;
+}
 .black_theme header{
     background: #050505;
 }

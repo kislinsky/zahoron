@@ -28,10 +28,12 @@ class OrganizationService
     public static function sendCode($data){
         $organization=Organization::find($data['organization_id']);
         $code=generateRandomNumber();
-        $send_code=sendCode($organization->phone,$code);
-        if($send_code['tell_code_result']['status']!='ok'){
+        if($organization->type_phone=='mobile'){
             sendSms($organization->phone,$code);
+        }else{
+            $send_code=sendCode($organization->phone,$code);   
         }
+        
         setcookie("code", Hash::make($code), time() + (20 * 24 * 60 * 60), '/');
         return true;
     }
@@ -142,17 +144,26 @@ class OrganizationService
 
 
     public static function addLikeOrganization($id){
-        $organization=Organization::findOrFail($id);
-        $like_organization=LikeOrganization::where('organization_id',$id)->where('user_id',Auth::user()->id)->get();
-
-        if($like_organization=null || $like_organization->count()==0){
-            LikeOrganization::create([
-                'organization_id'=>$id,
-                'user_id'=>Auth::user()->id,
-            ]);
-            return redirect()->back()->with('message_cart','Организация успешно добавлена.');
-        }
-        return redirect()->back()->with('error','Организация уже добавлена.');
+         $organization = Organization::findOrFail($id);
+    $userId = Auth::user()->id;
+    
+    // Ищем существующий лайк
+    $like_organization = LikeOrganization::where('organization_id', $id)
+        ->where('user_id', $userId)
+        ->first();
+    
+    if ($like_organization) {
+        // Если лайк уже существует - удаляем его
+        $like_organization->delete();
+        return redirect()->back()->with('message_cart', 'Организация удалена из избранного.');
+    } else {
+        // Если лайка нет - создаем новый
+        LikeOrganization::create([
+            'organization_id' => $id,
+            'user_id' => $userId,
+        ]);
+        return redirect()->back()->with('message_cart', 'Организация успешно добавлена в избранное.');
+    }
     }
     
 
