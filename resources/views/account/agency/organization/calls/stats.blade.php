@@ -70,7 +70,7 @@
                         <td>
                             <div class="text_black">
                                 @if($call->record_url)
-                                    <audio controls style="width: 150px; height: 30px;">
+                                    <audio controls style="width: 100%; height: 30px;">
                                         <source src="{{ $call->record_url }}" type="audio/mpeg">
                                     </audio>
                                 @else

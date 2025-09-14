@@ -1893,15 +1893,20 @@ public static function organizationsCity(City $city, Request $request)
         }
     }
 
-   public function getCemeteries(Request $request): JsonResponse
+public function getCemeteries(Request $request): JsonResponse
 {
     try {
-        $query = Cemetery::with(['city' => function($q) {
-                $q->with(['area' => function($q) {
-                    $q->with('edge');
-                }]);
-            }])
-            ->orderBy('priority');
+        $query = Cemetery::with([
+            'city' => function($q) {
+                $q->select('id', 'title', 'area_id');
+            },
+            'city.area' => function($q) {
+                $q->select('id', 'title', 'edge_id');
+            },
+            'city.area.edge' => function($q) {
+                $q->select('id', 'title');
+            }
+        ])->orderBy('priority');
 
         // Проверяем существование сущностей для фильтров
         if ($request->has('city_id') && $request->city_id) {
@@ -1941,11 +1946,36 @@ public static function organizationsCity(City $city, Request $request)
             });
         }
 
-        $cemeteries = $query->get(['id', 'title', 'city_id','adres']);
+        $cemeteries = $query->get();
+
+        // Преобразуем ID в строки для всей коллекции
+        $transformedCemeteries = $cemeteries->map(function ($cemetery) {
+            return [
+                'id' => (string)$cemetery->id,
+                'title' => $cemetery->title,
+                'city_id' => (string)$cemetery->city_id,
+                'adres' => $cemetery->adres,
+                'priority' => $cemetery->priority,
+                'city' => $cemetery->city ? [
+                    'id' => (string)$cemetery->city->id,
+                    'title' => $cemetery->city->title,
+                    'area_id' => $cemetery->city->area_id ? (string)$cemetery->city->area_id : null,
+                    'area' => $cemetery->city->area ? [
+                        'id' => (string)$cemetery->city->area->id,
+                        'title' => $cemetery->city->area->title,
+                        'edge_id' => $cemetery->city->area->edge_id ? (string)$cemetery->city->area->edge_id : null,
+                        'edge' => $cemetery->city->area->edge ? [
+                            'id' => (string)$cemetery->city->area->edge->id,
+                            'title' => $cemetery->city->area->edge->title,
+                        ] : null
+                    ] : null
+                ] : null
+            ];
+        });
 
         return response()->json([
             'success' => true,
-            'data' => $cemeteries,
+            'data' => $transformedCemeteries,
             'filters' => $request->only(['city_id', 'area_id', 'edge_id']),
             'count' => $cemeteries->count(),
             'message' => $cemeteries->count() > 0 
@@ -1962,33 +1992,65 @@ public static function organizationsCity(City $city, Request $request)
     }
 }
 
-    public function getCemetery(int $id): JsonResponse
-    {
-        try {
-            $cemetery = Cemetery::with(['city.area.edge'])
-                ->find($id);
-
-            if (!$cemetery) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Кладбище не найдено'
-                ], 404);
+public function getCemetery(int $id): JsonResponse
+{
+    try {
+        $cemetery = Cemetery::with([
+            'city' => function($q) {
+                $q->select('id', 'title', 'area_id');
+            },
+            'city.area' => function($q) {
+                $q->select('id', 'title', 'edge_id');
+            },
+            'city.area.edge' => function($q) {
+                $q->select('id', 'title');
             }
+        ])->find($id);
 
-            return response()->json([
-                'success' => true,
-                'data' => $cemetery,
-                'message' => 'Информация о кладбище успешно получена'
-            ]);
-
-        } catch (\Exception $e) {
+        if (!$cemetery) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка при получении информации о кладбище',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => 'Кладбище не найдено'
+            ], 404);
         }
+
+        // Создаем преобразованный массив вручную
+        $transformedCemetery = [
+            'id' => (string)$cemetery->id,
+            'title' => $cemetery->title,
+            'city_id' => (string)$cemetery->city_id,
+            'adres' => $cemetery->adres,
+            'priority' => $cemetery->priority,
+            'city' => $cemetery->city ? [
+                'id' => (string)$cemetery->city->id,
+                'title' => $cemetery->city->title,
+                'area_id' => $cemetery->city->area_id ? (string)$cemetery->city->area_id : null,
+                'area' => $cemetery->city->area ? [
+                    'id' => (string)$cemetery->city->area->id,
+                    'title' => $cemetery->city->area->title,
+                    'edge_id' => $cemetery->city->area->edge_id ? (string)$cemetery->city->area->edge_id : null,
+                    'edge' => $cemetery->city->area->edge ? [
+                        'id' => (string)$cemetery->city->area->edge->id,
+                        'title' => $cemetery->city->area->edge->title,
+                    ] : null
+                ] : null
+            ] : null
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => $transformedCemetery,
+            'message' => 'Информация о кладбище успешно получена'
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Ошибка при получении информации о кладбище',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 
 
     public function changeOrganization(Request $request): JsonResponse
@@ -2004,7 +2066,6 @@ public static function organizationsCity(City $city, Request $request)
             $organization = Organization::where('id', $request->organization_id)
                 ->where('user_id', $user->id)
                 ->first();
-
             if (!$organization) {
                 return response()->json([
                     'success' => false,
@@ -2020,7 +2081,7 @@ public static function organizationsCity(City $city, Request $request)
                 'success' => true,
                 'message' => 'Организация успешно изменена',
                 'data' => [
-                    'organization_id' => $user->organization_id,
+                    'organization_id' => (string)$user->organization_id,
                     'organization_name' => $organization->title
                 ]
             ]);
@@ -2041,71 +2102,80 @@ public static function organizationsCity(City $city, Request $request)
     }
 
 
-    public function getUserOrganizations(): JsonResponse
-    {
-        try {
-            $user = auth()->user();
-            
-            $organizations = Organization::where('user_id', $user->id)
-                ->orderBy('title')
-                ->get(['id', 'slug', 'title', 'created_at']);
+   public function getUserOrganizations(): JsonResponse
+{
+    try {
+        $user = auth()->user();
+        
+        $organizations = Organization::where('user_id', $user->id)
+            ->orderBy('title')
+            ->get(['id', 'slug', 'title', 'created_at']);
 
-            return response()->json([
-                'success' => true,
-                'data' => $organizations,
-                'count' => $organizations->count(),
-                'message' => 'Организации пользователя успешно получены'
-            ]);
+        // Преобразуем ID в строки
+        $organizations->transform(function ($org) {
+            $org->id = (string)$org->id;
+            return $org;
+        });
 
-        } catch (\Exception $e) {
+        return response()->json([
+            'success' => true,
+            'data' => $organizations,
+            'count' => $organizations->count(),
+            'message' => 'Организации пользователя успешно получены'
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Ошибка при получении организаций',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function getCurrentOrganization(): JsonResponse
+{
+    try {
+        $user = auth()->user();
+        
+        if (!$user->organization_id) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка при получении организаций',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => 'Организация не выбрана'
+            ], 404);
         }
-    }
 
-    public function getCurrentOrganization(): JsonResponse
-    {
-        try {
-            $user = auth()->user();
-            
-            if (!$user->organization_id) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Организация не выбрана'
-                ], 404);
-            }
+        $organization = Organization::where('id', $user->organization_id)
+            ->where('user_id', $user->id)
+            ->first();
 
-            $organization = Organization::where('id', $user->organization_id)
-                ->where('user_id', $user->id);
+        if (!$organization) {
+            $user->organization_id = null;
+            $user->save();
 
-            if (!$organization) {
-                // Сбрасываем organization_id если организация не найдена
-                $user->organization_id = null;
-                $user->save();
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Организация не найдена'
-                ], 404);
-            }
-
-            return response()->json([
-                'success' => true,
-                'data' => $organization,
-                'message' => 'Текущая организация успешно получена'
-            ]);
-
-        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка при получении организации',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => 'Организация не найдена'
+            ], 404);
         }
+
+        // Преобразуем ID в строку
+        $organization->id = (string)$organization->id;
+
+        return response()->json([
+            'success' => true,
+            'data' => $organization,
+            'message' => 'Текущая организация успешно получена'
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Ошибка при получении организации',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 }
 
 

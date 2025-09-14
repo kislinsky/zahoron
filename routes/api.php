@@ -48,6 +48,7 @@ Route::prefix('app')->group(function () {
         Route::middleware('jwt.auth')->group(function () {
             Route::group(['prefix' => 'account'], function() {
                 Route::group(['prefix' => 'agency'], function() {
+
                     Route::post('/change-organization', [AgencyController::class, 'changeOrganization']);
                     Route::get('/organizations', [AgencyController::class, 'getUserOrganizations']);
                     Route::get('/current-organization', [AgencyController::class, 'getCurrentOrganization']);
@@ -122,6 +123,8 @@ Route::prefix('app')->group(function () {
         Route::post('/auth/confirm', [AuthCashierController::class, 'authConfirm']);
         Route::post('/auth/confirm-call', [AuthCashierController::class, 'authConfirmCall']);
 
+        Route::get('/cemeteries/{id}', [CashierController::class, 'getCemetery']);
+        Route::get('/mortuaries/{id}', [CashierController::class, 'getMortuary']);
 
         Route::middleware('jwt.auth')->group(function () {
             Route::group(['prefix' => 'account'], function() {

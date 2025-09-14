@@ -6634,6 +6634,189 @@
                     }
                 ]
             }
+        },
+        "/app/cashier/cemeteries/{id}": {
+            "get": {
+                "tags": [
+                    "Кассир лк"
+                ],
+                "summary": "Получение кладбища по ID",
+                "operationId": "0375aac6347deb2033fcc94121296625",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID кладбища",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешное получение данных кладбища",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Новодевичье кладбище"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "+7 (495) 123-45-67"
+                                                },
+                                                "address": {
+                                                    "type": "string",
+                                                    "example": "Лужнецкий пр-д, 2, Москва, Центральный округ, Москва, Россия"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Кладбище не найдено",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Кладбище не найдено"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/app/cashier/mortuaries/{id}": {
+            "get": {
+                "tags": [
+                    "Кассир лк"
+                ],
+                "summary": "Получение морга по ID",
+                "operationId": "cac354b7a83c60c4caf7ae8c287bc94f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID морга",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешное получение данных морга",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Городской морг №1"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "+7 (495) 765-43-21"
+                                                },
+                                                "address": {
+                                                    "type": "string",
+                                                    "example": "ул. Большая Якиманка, 22, Москва, Центральный округ, Москва, Россия"
+                                                },
+                                                "working_hours": {
+                                                    "properties": {
+                                                        "monday": {
+                                                            "type": "string",
+                                                            "example": "09:00-18:00"
+                                                        },
+                                                        "tuesday": {
+                                                            "type": "string",
+                                                            "example": "09:00-18:00"
+                                                        },
+                                                        "wednesday": {
+                                                            "type": "string",
+                                                            "example": "09:00-18:00"
+                                                        },
+                                                        "thursday": {
+                                                            "type": "string",
+                                                            "example": "09:00-18:00"
+                                                        },
+                                                        "friday": {
+                                                            "type": "string",
+                                                            "example": "09:00-18:00"
+                                                        },
+                                                        "saturday": {
+                                                            "type": "string",
+                                                            "example": "10:00-16:00"
+                                                        },
+                                                        "sunday": {
+                                                            "type": "string",
+                                                            "example": "выходной"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Морг не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Морг не найден"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {

@@ -126,4 +126,96 @@ class CashierController extends Controller
      */
     public function getCallStats(){}
 
+    /**
+     * @OA\Get(
+     *     path="/app/cashier/cemeteries/{id}",
+     *     summary="Получение кладбища по ID",
+     *     tags={"Кассир лк"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID кладбища",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Успешное получение данных кладбища",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="title", type="string", example="Новодевичье кладбище"),
+     *                 @OA\Property(property="phone", type="string", example="+7 (495) 123-45-67"),
+     *                 @OA\Property(property="address", type="string", example="Лужнецкий пр-д, 2, Москва, Центральный округ, Москва, Россия")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Кладбище не найдено",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Кладбище не найдено")
+     *         )
+     *     )
+     * )
+     */
+    public function getCemetery($id)
+    {
+        // ... существующий код
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/app/cashier/mortuaries/{id}",
+     *     summary="Получение морга по ID",
+     *     tags={"Кассир лк"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID морга",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Успешное получение данных морга",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="title", type="string", example="Городской морг №1"),
+     *                 @OA\Property(property="phone", type="string", example="+7 (495) 765-43-21"),
+     *                 @OA\Property(property="address", type="string", example="ул. Большая Якиманка, 22, Москва, Центральный округ, Москва, Россия"),
+     *                 @OA\Property(
+     *                     property="working_hours",
+     *                     type="object",
+     *                     @OA\Property(property="monday", type="string", example="09:00-18:00"),
+     *                     @OA\Property(property="tuesday", type="string", example="09:00-18:00"),
+     *                     @OA\Property(property="wednesday", type="string", example="09:00-18:00"),
+     *                     @OA\Property(property="thursday", type="string", example="09:00-18:00"),
+     *                     @OA\Property(property="friday", type="string", example="09:00-18:00"),
+     *                     @OA\Property(property="saturday", type="string", example="10:00-16:00"),
+     *                     @OA\Property(property="sunday", type="string", example="выходной")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Морг не найден",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Морг не найден")
+     *         )
+     *     )
+     * )
+     */
+    public function getMortuary($id)
+    {
+        // ... существующий код
+    }
 }

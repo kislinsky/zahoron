@@ -12,11 +12,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-
 class CashierController extends Controller
 {
-
-     public function getCemeteries(): JsonResponse
+    public function getCemeteries(): JsonResponse
     {
         $user = Auth::user();
         
@@ -31,11 +29,18 @@ class CashierController extends Controller
         }
 
         $cemeteries = Cemetery::whereIn('id', $cemeteryIds)
-            ->get(['id', 'title', 'city_id', 'adres']);
+            ->get(['id', 'title', 'city_id', 'adres'])
+            ->map(function ($cemetery) {
+                return [
+                    'id' => (string)$cemetery->id,
+                    'title' => $cemetery->title,
+                    'city_id' => (string)$cemetery->city_id,
+                    'adres' => $cemetery->adres
+                ];
+            });
 
         return response()->json(['data' => $cemeteries]);
     }
-
 
     public function getMorgues(): JsonResponse
     {
@@ -65,15 +70,20 @@ class CashierController extends Controller
 
         // Получаем морги в этих городах
         $morgues = Mortuary::whereIn('city_id', $citiesInArea)
-            ->get(['id', 'name', 'city_id', 'adres']);
+            ->get(['id', 'name', 'city_id', 'adres'])
+            ->map(function ($morgue) {
+                return [
+                    'id' => (string)$morgue->id,
+                    'name' => $morgue->name,
+                    'city_id' => (string)$morgue->city_id,
+                    'adres' => $morgue->adres
+                ];
+            });
 
         return response()->json(['data' => $morgues]);
     }
 
-
-
-
-     public function getCallStats(Request $request): JsonResponse
+    public function getCallStats(Request $request): JsonResponse
     {
         $user = Auth::user();
         
@@ -113,7 +123,7 @@ class CashierController extends Controller
             ->get()
             ->map(function ($call) {
                 return [
-                    'id' => $call->id,
+                    'id' => (string)$call->id,
                     'city' => $call->city ? $call->city->city_name : 'Не указан',
                     'call_status' => $call->call_status,
                     'duration' => $call->duration,
@@ -138,4 +148,107 @@ class CashierController extends Controller
         ]);
     }
 
+     public function getCemetery($id)
+    {
+        try {
+            $cemetery = Cemetery::with('city')->findOrFail($id);
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'title' => $cemetery->title,
+                    'phone' => $cemetery->phone,
+                    'address' => $this->formatCemeteryAddress($cemetery)
+                ]
+            ]);
+            
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Кладбище не найдено'
+            ], 404);
+        }
+    }
+
+    /**
+     * Получение морга по ID
+     */
+    public function getMortuary($id)
+    {
+        try {
+            $mortuary = Mortuary::with('city')->findOrFail($id);
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'title' => $mortuary->title,
+                    'phone' => $mortuary->phone,
+                    'address' => $this->formatMortuaryAddress($mortuary),
+                    'working_hours' => $mortuary->workingHours
+                ]
+            ]);
+            
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Морг не найден'
+            ], 404);
+        }
+    }
+
+    /**
+     * Форматирование адреса кладбища
+     */
+    private function formatCemeteryAddress(Cemetery $cemetery)
+    {
+        $addressParts = [];
+        
+        if ($cemetery->adres) {
+            $addressParts[] = $cemetery->adres;
+        }
+        
+        if ($cemetery->city && $cemetery->city->title) {
+            $addressParts[] = $cemetery->city->title;
+        }
+        
+        if ($cemetery->city && $cemetery->city->area) {
+            $addressParts[] = $cemetery->city->area->title;
+        }
+        
+        if ($cemetery->city && $cemetery->city->edge) {
+            $addressParts[] = $cemetery->city->edge->title;
+        }
+        
+        $addressParts[] = 'Россия';
+        
+        return implode(', ', $addressParts);
+    }
+
+    /**
+     * Форматирование адреса морга
+     */
+    private function formatMortuaryAddress(Mortuary $mortuary)
+    {
+        $addressParts = [];
+        
+        if ($mortuary->adres) {
+            $addressParts[] = $mortuary->adres;
+        }
+        
+        if ($mortuary->city && $mortuary->city->title) {
+            $addressParts[] = $mortuary->city->title;
+        }
+        
+        if ($mortuary->city && $mortuary->city->area) {
+            $addressParts[] = $mortuary->city->area->title;
+        }
+        
+        if ($mortuary->city && $mortuary->city->edge) {
+            $addressParts[] = $mortuary->city->edge->title;
+        }
+        
+        $addressParts[] = 'Россия';
+        
+        return implode(', ', $addressParts);
+    }
 }
