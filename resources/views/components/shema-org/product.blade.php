@@ -4,7 +4,7 @@
       "@id": "{{$product->route()}}",
       "@type": "Product",
       "name": "{{$product->title}}",
-      "image":"{{ asset('storage/uploads_product/'.$product->getImages[0]->title) }}",
+      "image": "{{ isset($product->getImages[0]->title) ? asset('storage/uploads_product/'.$product->getImages[0]->title) : null }}",
       "description": "{{$product->content}}",
       "brand": {
         "@type": "Brand",

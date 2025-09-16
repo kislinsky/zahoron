@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Swagger\Account\Cashier;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 
 class CashierController extends Controller
@@ -217,5 +218,92 @@ class CashierController extends Controller
     public function getMortuary($id)
     {
         // ... существующий код
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/app/cashier/account/cashier/orders",
+     *     summary="Получить список заказов организации",
+     *     description="Возвращает список заказов организации, привязанной к авторизованному пользователю через user->organizationBranch. 
+     *                  Включает связи с продуктами, фотографиями продуктов, кладбищами, городами и моргами. 
+     *                  Поддерживает фильтрацию по категории, подкатегории и статусу заказов.",
+     *     tags={"Кассир лк"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="category_id",
+     *         in="query",
+     *         description="ID категории для фильтрации",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="subcategory_id",
+     *         in="query",
+     *         description="ID подкатегории для фильтрации",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Статус заказа: 0 - новые, 1 - в работе",
+     *         required=false,
+     *         @OA\Schema(type="integer", enum={0, 1})
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Успешный ответ",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="total", type="integer", example=15),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="created_at", type="string", format="date-time", example="2023-12-01T10:00:00.000000Z"),
+     *                     @OA\Property(
+     *                         property="product",
+     *                         type="object",
+     *                         @OA\Property(property="id", type="integer", example=5),
+     *                         @OA\Property(property="title", type="string", example="Гроб деревянный"),
+     *                         @OA\Property(property="first_image", type="string", nullable=true, example="image.jpg")
+     *                     ),
+     *                     @OA\Property(property="cemetery", type="string", nullable=true, example="Новое кладбище"),
+     *                     @OA\Property(property="city", type="string", nullable=true, example="Москва"),
+     *                     @OA\Property(property="mortuary", type="string", nullable=true, example="Морг №1"),
+     *                     @OA\Property(property="customer", type="string", example="Иван Иванов"),
+     *                     @OA\Property(property="count", type="integer", example=2),
+     *                     @OA\Property(property="price", type="integer", example=5000),
+     *                     @OA\Property(property="status", type="integer", example=0),
+     *                     @OA\Property(property="date", type="string", format="date", example="2023-12-05"),
+     *                     @OA\Property(property="time", type="string", example="14:00"),
+     *                     @OA\Property(property="customer_comment", type="string", example="Дополнительные пожелания"),
+     *                     @OA\Property(property="additional", type="array", @OA\Items(type="string"))
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Не авторизован",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Доступ запрещен",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     )
+     * )
+     */
+    public static function orderProducts(Request $request)
+    {
+        // ... ваш код
     }
 }

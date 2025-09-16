@@ -7,6 +7,7 @@ use App\Models\CallStat;
 use App\Models\Cemetery;
 use App\Models\City;
 use App\Models\Mortuary;
+use App\Models\OrderProduct;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -250,5 +251,72 @@ class CashierController extends Controller
         $addressParts[] = 'Россия';
         
         return implode(', ', $addressParts);
+    }
+
+
+
+    public static function orderProducts(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Получаем заказы через связь пользователя с организацией
+        $orders = OrderProduct::with([
+                'product.getImages' => function($query) {
+                    $query->orderBy('created_at', 'asc')->limit(1);
+                },
+                'cemetery',
+                'city',
+                'mortuary',
+                'user'
+            ])
+            ->whereHas('user.organizationBranch', function($query) use ($user) {
+                $query->where('organization_id', $user->organizationBranch->organization_id);
+            })
+            ->when($request->has('category_id'), function($query) use ($request) {
+                $query->whereHas('product', function($q) use ($request) {
+                    $q->where('category_id', $request->category_id);
+                });
+            })
+            ->when($request->has('subcategory_id'), function($query) use ($request) {
+                $query->whereHas('product', function($q) use ($request) {
+                    $q->where('category_parent_id', $request->subcategory_id);
+                });
+            })
+            ->when($request->has('status'), function($query) use ($request) {
+                $query->where('status', $request->status);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Преобразуем данные для ответа
+        $result = $orders->map(function($order) {
+            return [
+                'id' => $order->id,
+                'created_at' => $order->created_at,
+                'product' => [
+                    'id' => $order->product->id,
+                    'title' => $order->product->title,
+                    'first_image' => $order->product->getImages->first() ? 
+                        $order->product->getImages->first()->title : null
+                ],
+                'cemetery' => $order->cemetery ? $order->cemetery->title : null,
+                'city' => $order->city ? $order->city->title : null,
+                'mortuary' => $order->mortuary ? $order->mortuary->title : null,
+                'customer' => $order->user->name,
+                'count' => $order->count,
+                'price' => $order->price,
+                'status' => $order->status,
+                'date' => $order->date,
+                'time' => $order->time,
+                'customer_comment' => $order->customer_comment,
+                'additional' => $order->additionals()
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $result,
+            'total' => $orders->count()
+        ]);
     }
 }

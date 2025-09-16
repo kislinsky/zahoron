@@ -133,7 +133,8 @@ Route::prefix('app')->group(function () {
                     Route::get('/cemeteries', [CashierController::class, 'getCemeteries']);
                     Route::get('/morgues', [CashierController::class, 'getMorgues']);
                     Route::get('/call-stats', [CashierController::class, 'getCallStats']);
-
+                    Route::get('/orders', [CashierController::class, 'orderProducts']);
+                    
                 });
             });
         });

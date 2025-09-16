@@ -6817,6 +6817,201 @@
                     }
                 }
             }
+        },
+        "/app/cashier/account/cashier/orders": {
+            "get": {
+                "tags": [
+                    "Кассир лк"
+                ],
+                "summary": "Получить список заказов организации",
+                "description": "Возвращает список заказов организации, привязанной к авторизованному пользователю через user->organizationBranch. \r\n     *                  Включает связи с продуктами, фотографиями продуктов, кладбищами, городами и моргами. \r\n     *                  Поддерживает фильтрацию по категории, подкатегории и статусу заказов.",
+                "operationId": "e161597ad1b7ebc57bd5b018d45b6cff",
+                "parameters": [
+                    {
+                        "name": "category_id",
+                        "in": "query",
+                        "description": "ID категории для фильтрации",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "subcategory_id",
+                        "in": "query",
+                        "description": "ID подкатегории для фильтрации",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Статус заказа: 0 - новые, 1 - в работе",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "enum": [
+                                0,
+                                1
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 15
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2023-12-01T10:00:00.000000Z"
+                                                    },
+                                                    "product": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 5
+                                                            },
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "Гроб деревянный"
+                                                            },
+                                                            "first_image": {
+                                                                "type": "string",
+                                                                "example": "image.jpg",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "cemetery": {
+                                                        "type": "string",
+                                                        "example": "Новое кладбище",
+                                                        "nullable": true
+                                                    },
+                                                    "city": {
+                                                        "type": "string",
+                                                        "example": "Москва",
+                                                        "nullable": true
+                                                    },
+                                                    "mortuary": {
+                                                        "type": "string",
+                                                        "example": "Морг №1",
+                                                        "nullable": true
+                                                    },
+                                                    "customer": {
+                                                        "type": "string",
+                                                        "example": "Иван Иванов"
+                                                    },
+                                                    "count": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "price": {
+                                                        "type": "integer",
+                                                        "example": 5000
+                                                    },
+                                                    "status": {
+                                                        "type": "integer",
+                                                        "example": 0
+                                                    },
+                                                    "date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2023-12-05"
+                                                    },
+                                                    "time": {
+                                                        "type": "string",
+                                                        "example": "14:00"
+                                                    },
+                                                    "customer_comment": {
+                                                        "type": "string",
+                                                        "example": "Дополнительные пожелания"
+                                                    },
+                                                    "additional": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
