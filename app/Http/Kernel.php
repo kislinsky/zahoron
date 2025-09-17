@@ -2,6 +2,8 @@
 
 namespace App\Http;
 
+use \App\Http\Middleware\CacheResponse;
+use \App\Http\Middleware\CacheResponseShort;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\AgencyMiddleware;
 use App\Http\Middleware\AgentMiddleware;

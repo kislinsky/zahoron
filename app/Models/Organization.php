@@ -328,48 +328,56 @@ class Organization extends Model
      * Применяет фильтры к запросу звонков
      */
     protected static function applyCallFilters($query, array $filters)
-    {
-        if (empty($filters['period'])) {
-            return;
-        }
-        
-        switch ($filters['period']) {
-            case 'month':
-                $query->whereBetween('created_at', [
-                    now()->startOfMonth(),
-                    now()->endOfMonth()
-                ]);
-                break;
-                
-            case 'last_month':
-                $query->whereBetween('created_at', [
-                    now()->subMonth()->startOfMonth(),
-                    now()->subMonth()->endOfMonth()
-                ]);
-                break;
-                
-            case 'week':
-                $query->whereBetween('created_at', [
-                    now()->startOfWeek(),
-                    now()->endOfWeek()
-                ]);
-                break;
-                
-            case 'last_week':
-                $query->whereBetween('created_at', [
-                    now()->subWeek()->startOfWeek(),
-                    now()->subWeek()->endOfWeek()
-                ]);
-                break;
-                
-            case 'custom':
-                if (!empty($filters['date_from']) && !empty($filters['date_to'])) {
-                    $query->whereBetween('created_at', [
-                        $filters['date_from'] . ' 00:00:00',
-                        $filters['date_to'] . ' 23:59:59'
-                    ]);
-                }
-                break;
-        }
+{
+    if (empty($filters['period'])) {
+        return;
     }
+    
+    switch ($filters['period']) {
+        case 'month':
+            $query->whereBetween('created_at', [
+                now()->startOfMonth(),
+                now()->endOfMonth()
+            ]);
+            break;
+            
+        case 'last_month':
+            $query->whereBetween('created_at', [
+                now()->subMonth()->startOfMonth(),
+                now()->subMonth()->endOfMonth()
+            ]);
+            break;
+            
+        case 'week':
+            $query->whereBetween('created_at', [
+                now()->startOfWeek(),
+                now()->endOfWeek()
+            ]);
+            break;
+            
+        case 'last_week':
+            $query->whereBetween('created_at', [
+                now()->subWeek()->startOfWeek(),
+                now()->subWeek()->endOfWeek()
+            ]);
+            break;
+            
+        case 'today':
+            $query->whereDate('created_at', now()->toDateString());
+            break;
+            
+        case 'yesterday':
+            $query->whereDate('created_at', now()->subDay()->toDateString());
+            break;
+            
+        case 'custom':
+            if (!empty($filters['date_from']) && !empty($filters['date_to'])) {
+                $query->whereBetween('created_at', [
+                    $filters['date_from'] . ' 00:00:00',
+                    $filters['date_to'] . ' 23:59:59'
+                ]);
+            }
+            break;
+    }
+}
 }

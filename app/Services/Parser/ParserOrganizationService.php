@@ -52,9 +52,9 @@ class ParserOrganizationService
                 $orgId = rtrim($organization[$columns['ID']] ?? '', '!');
                 $orgTitle = $organization[$columns['Название'] ?? null] ?? null;
                 $address = $organization[$columns['Адрес']?? null?? null] ?? null;
-                $latitude = $organization[$columns['Latitude']?? null] ?? null;
+                $latitude = $organization[$columns['Широта']?? null] ?? null;
                 $two_gis_link = $organization[$columns['URL']?? null] ?? null;
-                $longitude = $organization[$columns['Longitude']?? null] ?? null;
+                $longitude = $organization[$columns['Долгота']?? null] ?? null;
                 $phones = $organization[$columns['Телефон']?? null] ?? null;
                 $workHours = $organization[$columns['Режим работы']?? null] ?? null;
                 $logoUrl = $organization[$columns['Логотип']?? null] ?? 'default';
@@ -68,6 +68,12 @@ class ParserOrganizationService
                 $urlSite = $organization[$columns['Сайт']?? null] ?? null;
                 $innOrg = $organization[$columns['inn']?? null] ?? null;
                 $typePhone = $organization[$columns['phone_status']?? null] ?? null;
+
+                $responsible_organization = $organization[$columns['Ответственная организация']?? null] ?? null;
+                $address_responsible_person = $organization[$columns['Адрес (ответственного лица)']?? null] ?? null;
+                $responsible_person_full_name = $organization[$columns['Ответственное лицо (ФИО)']?? null] ?? null;
+                $okved = $organization[$columns['Okved']?? null] ?? null;
+
     
                 if($importType != 'update') {
                     if(empty($cityName)) continue;
@@ -82,7 +88,7 @@ class ParserOrganizationService
                 if(empty($orgId)) continue;
         
                 // Ищем организацию в базе с загрузкой связанных данных
-                $existingOrg = Organization::where('phone',$phones)->first();
+                $existingOrg = Organization::where('width',$latitude)->where('longitude',$longitude)->first();
                 // Применяем фильтры по местоположению
                 if ($filterRegion || $filterDistrict || $filterCity) {
                     $locationMatch = true;
@@ -114,7 +120,7 @@ class ParserOrganizationService
                 // Режим "Обновление"
                 if($importType == 'update') {
                     if(!$existingOrg) continue;
-        
+
                     $updateData = [];
                     
                     // Обновляем только выбранные колонки
@@ -124,6 +130,28 @@ class ParserOrganizationService
                             $updateData['slug'] = slugOrganization($orgTitle);
                         }
                     }
+
+                    if(in_array('responsible_organization', $columnsToUpdate) && isset($columns['Ответственная организация'])) {
+                        if($orgTitle) {
+                            $updateData['responsible_organization'] = $responsible_organization;
+                        }
+                    }
+                    if(in_array('address_responsible_person', $columnsToUpdate) && isset($columns['Адрес (ответственного лица)'])) {
+                        if($orgTitle) {
+                            $updateData['address_responsible_person'] = $address_responsible_person;
+                        }
+                    }
+                    if(in_array('responsible_person_full_name', $columnsToUpdate) && isset($columns['Ответственное лицо (ФИО)'])) {
+                        if($orgTitle) {
+                            $updateData['responsible_person_full_name'] = $responsible_person_full_name;
+                        }
+                    }
+                    if(in_array('okved', $columnsToUpdate) && isset($columns['Okved'])) {
+                        if($orgTitle) {
+                            $updateData['okved'] = $okved;
+                        }
+                    }
+
 
                     if(in_array('inn', $columnsToUpdate) && isset($columns['inn'])) {
                         if($innOrg) {

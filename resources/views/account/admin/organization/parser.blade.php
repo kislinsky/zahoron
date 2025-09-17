@@ -43,7 +43,10 @@
                     <option value="services">Виды услуг</option>
                     <option value="inn">Инн</option>
                     <option value="type_phone">Тип телефона</option>
-
+                    <option value="responsible_organization">Ответственная организация</option>
+                    <option value="address_responsible_person">Адрес (ответственного лица)</option>
+                    <option value="responsible_person_full_name">Ответственное лицо (ФИО)</option>
+                    <option value="okved">Okved</option>
                 </select>  
             </div>
            

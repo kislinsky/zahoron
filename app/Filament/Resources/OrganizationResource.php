@@ -306,6 +306,21 @@ class OrganizationResource extends Resource
                  Forms\Components\TextInput::make('calls')
                     ->label('Лимит звонков')
                     ->maxLength(255),
+
+
+
+             Forms\Components\TextInput::make('responsible_organization')
+                ->label('Ответственная организация')
+                ->required(),
+                 Forms\Components\TextInput::make('address_responsible_person')
+                ->label('Адрес (ответственного лица)')
+                ->required(),
+                 Forms\Components\TextInput::make('responsible_person_full_name')
+                ->label('Ответственное лицо (ФИО)')
+                ->required(),
+                 Forms\Components\TextInput::make('okved')
+                ->label('Okved')
+                ->required(),
             ]);
     }
 
