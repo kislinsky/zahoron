@@ -86,15 +86,20 @@
             </div>
 
             <div class="li_flex_btn_organization">
-                 <a id='{{ $organization->id }}' href='javascript:void(0)' class="blue_btn mgo-call-button" 
-                  data-key="{{ $key }}"
-                  data-org-id="{{ $organization->id }}"
-                  data-phone="{{ str_replace('+', '', $organization->phone) }}"
-                  data-default-number="{{ $organization->phone }}"
-                  data-calls="{{ $organization->haveCalls() }}"
-                > 
-                  Позвонить
-                </a>
+                @if($organization->city->edge->call_mango_office)
+                  <a id='{{ $organization->id }}' href='javascript:void(0)' class="blue_btn mgo-call-button" 
+                    data-key="{{ $key }}"
+                    data-org-id="{{ $organization->id }}"
+                    data-phone="{{ str_replace('+', '', $organization->phone) }}"
+                    data-default-number="{{ $organization->phone }}"
+                    data-calls="{{ $organization->haveCalls() }}"
+                  > 
+                    Позвонить
+                  </a>
+                @else
+                  <a href="tel:{{ $organization->phone }}" class="blue_btn" >Позвонить</a>
+                @endif
+                 
                 <a href='{{$organization->route()}}' class="btn_border_blue">Подробнее</a>
             </div>
 

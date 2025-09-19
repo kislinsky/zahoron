@@ -38,6 +38,13 @@ class EdgeResource extends Resource
                     1 => 'Да'
                 ]),
 
+                Radio::make('call_mango_office')
+                ->label('Разрешить звонок через манго офис')
+                ->options([
+                    0 => 'Нет',
+                    1 => 'Да'
+                ]),
+
                  Forms\Components\TextInput::make('limit_calls')
                     ->label('Лимит звонков')
                     ->maxLength(255),

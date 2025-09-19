@@ -40,7 +40,8 @@
 <section class="karta_contacts">
     <div class="container">
         <h2 class="title_our_works">Офис на карте</h2>
-        <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3Aeceab6635117d452c8357b016b6e5af7c3d9e21b18b5056fa41b8cab5010a732&amp;source=constructor" width="100%" height="530" style='margin-top:20px;'frameborder="0"></iframe>    </div>
+        <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3Af6b2445394efe4343b6369062f2e9092bca16e76ec6dcc4b831f9c84b18cd5a8&amp;source=constructor" width="100%" height="530" style='margin-top:20px;' frameborder="0"></iframe>
+   </div>
 </section>
 
 @include('forms.contacts-form') 

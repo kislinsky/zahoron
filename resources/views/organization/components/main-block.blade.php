@@ -67,15 +67,24 @@
     <div class="flex_btn_single_organization">
         <div class="block_btn_single_organization">
             
+          @if($organization->city->edge->call_mango_office)
             <a href='javascript:void(0)' class="icon_btn_single_organization mgo-call-button" 
-                   data-key="{{ 1 }}"
-                   data-org-id="{{ $organization->id }}"
-                   data-phone="{{ str_replace('+', '', $organization->phone) }}"
-                   data-default-number="{{ $organization->phone }}"
-                   data-calls="{{ $organization->haveCalls() }}">
-                <img  class='blue_icon'src="{{asset('storage/uploads/Vector (1).svg')}}" alt="">
-                <img  class='white_icon'src="{{asset('storage/uploads/phone_1.svg')}}" alt="">
+                data-key="{{ 1 }}"
+                data-org-id="{{ $organization->id }}"
+                data-phone="{{ str_replace('+', '', $organization->phone) }}"
+                data-default-number="{{ $organization->phone }}"
+                data-calls="{{ $organization->haveCalls() }}">
+              <img  class='blue_icon'src="{{asset('storage/uploads/Vector (1).svg')}}" alt="">
+              <img  class='white_icon'src="{{asset('storage/uploads/phone_1.svg')}}" alt="">
+          </a>
+          @else
+            <a href='tel:{{ $organization->phone }}' class="icon_btn_single_organization mgo-call-button" > 
+              <img  class='blue_icon'src="{{asset('storage/uploads/Vector (1).svg')}}" alt="">
+              <img  class='white_icon'src="{{asset('storage/uploads/phone_1.svg')}}" alt="">
             </a>
+          @endif
+
+            
           <div class="text_black">Позвонить</div>
         </div>
         <div class="block_btn_single_organization">

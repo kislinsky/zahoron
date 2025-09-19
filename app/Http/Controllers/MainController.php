@@ -9,6 +9,7 @@ use App\Services\OurWork\OurWorkService;
 use App\Services\Page\IndexService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 
 class MainController extends Controller
@@ -86,6 +87,19 @@ function generateUniqueCitySlug($baseSlug, $cityId)
         setcookie('theme', $newTheme, time() + 7 * 24 * 60 * 60, "/");
         
          return true;
+    }
+
+
+    public function store(Request $request)
+    {
+        $data=request()->validate([
+            'theme_feedback' => 'required|string|max:255',
+            'faq_feedback' => 'required|string|min:10',
+            'name_feedback' => 'required|string|max:255',
+            'phone_feedback' => 'required|string|max:20'
+        ]);
+        return IndexService::store($data);
+
     }
 
     

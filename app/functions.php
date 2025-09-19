@@ -43,12 +43,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
 use Stevebauman\Location\Facades\Location;
+
 
 
 
@@ -298,69 +300,79 @@ function defaultCity(){
 }
 
 
-
 function selectCity()
 {
-    $city = null;
+    static $city = null;
+    
+    // Используем статическую переменную для кэширования в рамках одного запроса
+    if ($city !== null) {
+        return $city;
+    }
+    
     $isHomepage = request()->path() === '/';
-
-    // 1. Проверяем город из URL (работает на всех страницах)
+    
+    // 1. Проверяем город из URL (самый быстрый способ)
     $slug = request()->segment(1);
     if (!empty($slug)) {
-        $city = City::where('slug', $slug)->first();
+        try {
+            $city = Cache::remember("city_slug_{$slug}", 3600, function() use ($slug) {
+                return City::where('slug', $slug)->first();
+            });
+        } catch (\Exception $e) {
+            // Если Redis недоступен, ищем без кэша
+            $city = City::where('slug', $slug)->first();
+        }
+        
         if ($city) {
             setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
             return $city;
         }
     }
 
-    // 2. Для локального окружения - ПРЕРЫВАЕМ выполнение
-    if (env('API_WORK') == 'false') {
-        $city = City::where('selected_admin', 1)->first();
-        if (!$city) {
-            $city = City::first() ?? new City(['title' => 'Москва']);
+    // 2. Проверяем город из куки (быстрый способ)
+    if (isset($_COOKIE['city'])) {
+        try {
+            $city = Cache::remember("city_{$_COOKIE['city']}", 3600, function() {
+                return City::find($_COOKIE['city']);
+            });
+        } catch (\Exception $e) {
+            $city = City::find($_COOKIE['city']);
         }
         
-        setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
-        return $city; // ВОЗВРАЩАЕМ город и выходим из функции
-    }
-
-    // 3. Определение по IP (ТОЛЬКО на главной странице и только если API работает)
-    if ($isHomepage && !isset($_COOKIE['ip'])) {
-        try {
-            $response = Http::timeout(3)->get("http://www.geoplugin.net/json.gp?ip=" . request()->ip());
-            
-            if ($response->successful() && !empty($response['geoplugin_city'])) {
-                $cityName = str_replace("'", '', $response['geoplugin_city']);
-                $city = City::where('slug', 'like', '%'.$cityName.'%')
-                            ->orWhere('title', 'like', '%'.$cityName.'%')
-                            ->first();
-                
-                if ($city) {
-                    setcookie('ip', 'true', time() + (20 * 24 * 60 * 60), '/');
-                    setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
-                    return $city;
-                }
-            }
-        } catch (\Exception $e) {
-            // Логируем ошибку, но не прерываем выполнение
-            Log::warning('Geoplugin API error: ' . $e->getMessage());
-        }
-    }
-
-    // 4. Проверяем город из куки (работает на всех страницах)
-    if (isset($_COOKIE['city'])) {
-        $city = City::find($_COOKIE['city']);
         if ($city) {
             return $city;
         }
     }
 
-    // 5. Город по умолчанию (работает на всех страницах)
-    $city = City::where('selected_admin', 1)->first();
-    
-    if (!$city) {
-        $city = City::first() ?? new City(['title' => 'Москва']);
+    // 3. Для локального окружения - город по умолчанию
+    if (env('API_WORK') == 'false') {
+        try {
+            $city = Cache::remember('default_city_local', 86400, function() {
+                return City::where('selected_admin', 1)->first() 
+                    ?? City::first() 
+                    ?? new City(['title' => 'Москва']);
+            });
+        } catch (\Exception $e) {
+            $city = City::where('selected_admin', 1)->first() 
+                ?? City::first() 
+                ?? new City(['title' => 'Москва']);
+        }
+        
+        setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
+        return $city;
+    }
+
+    // 4. Город по умолчанию с кэшированием
+    try {
+        $city = Cache::remember('default_city_global', 86400, function() {
+            return City::where('selected_admin', 1)->first() 
+                ?? City::first() 
+                ?? new City(['title' => 'Москва']);
+        });
+    } catch (\Exception $e) {
+        $city = City::where('selected_admin', 1)->first() 
+            ?? City::first() 
+            ?? new City(['title' => 'Москва']);
     }
     
     setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
@@ -464,141 +476,180 @@ function ddata(){
 
 
 
-function organizationratingEstablishmentsProvidingHallsHoldingCommemorations($city)
+
+function getCachedCity($cityId)
 {
-    $city = City::find($city);
-
-    $allOrganizations = ActivityCategoryOrganization::where('category_children_id', 46)
-        ->where('price', '!=', null)
-        ->whereHas('organization', function ($query) use ($city) {
-            $query->whereHas('city', function ($q) use ($city) {
-                $q->where('area_id', $city->area_id);
-            })->where('role', 'organization')->where('status', 1);
-        })
-        ->get();
-
-    // Разделяем по приоритетам
-    $highPriority = $allOrganizations->filter(function($item) {
-        return $item->organization && $item->organization->priority == 1;
-    })->sortBy('organization.rotation_order');
-
-    $mediumPriority = $allOrganizations->filter(function($item) {
-        return $item->organization && $item->organization->priority == 2;
-    })->sortBy('organization.rotation_order');
-
-    $otherItems = $allOrganizations->filter(function($item) {
-        return !$item->organization || ($item->organization->priority != 1 && $item->organization->priority != 2);
-    })->sortBy('price');
-
-    // Обновляем порядок ротации
-    updateRotationOrders($highPriority, $mediumPriority);
-
-    // Собираем и возвращаем результат
-    return $highPriority->merge($mediumPriority)
-        ->merge($otherItems)
-        ->take(10);
+    return Cache::remember("city_{$cityId}", 86400, function() use ($cityId) {
+        return City::with('area')->find($cityId);
+    });
 }
 
-function organizationRatingFuneralAgenciesPrices($city)
+function getOrganizationsWithCache($cityId, $categoryIds, $requiredCount = null)
 {
-    $city = City::find($city);
-
-    $allOrganizations = ActivityCategoryOrganization::whereIn('category_children_id', [32, 33, 34])
-        ->where('price', '!=', null)
-        ->whereHas('organization', function ($query) use ($city) {
-            $query->whereHas('city', function ($q) use ($city) {
-                $q->where('area_id', $city->area_id);
-            })->where('role', 'organization')->where('status', 1);
-        })
-        ->get()
-        ->groupBy('organization_id');
-
-    $processedOrganizations = collect();
+    $city = getCachedCity($cityId);
+    if (!$city) return collect();
     
-    foreach ($allOrganizations as $orgId => $categories) {
-        if ($categories->count() == 3) {
-            $organization = $categories->first()->organization;
-            if ($organization) {
-                $organization->all_price = $categories->sum('price');
-                
-                // Устанавливаем приоритет для сортировки
+    $cacheKey = 'orgs_full_' . implode('_', $categoryIds) . '_city_' . $cityId;
+    if ($requiredCount) {
+        $cacheKey .= '_count_' . $requiredCount;
+    }
+    
+    return Cache::remember($cacheKey, now()->addHours(6), function() use ($city, $categoryIds, $requiredCount) {
+        
+        $query = DB::table('activity_category_organizations as aco')
+            ->join('organizations as org', 'aco.organization_id', '=', 'org.id')
+            ->join('cities as c', 'org.city_id', '=', 'c.id')
+            ->whereIn('aco.category_children_id', $categoryIds)
+            ->whereNotNull('aco.price')
+            ->where('org.role', 'organization')
+            ->where('org.status', 1)
+            ->where('c.area_id', $city->area_id);
+        
+        if ($requiredCount) {
+            $organizationIds = $query->groupBy('org.id')
+                ->havingRaw('COUNT(DISTINCT aco.category_children_id) = ?', [$requiredCount])
+                ->pluck('org.id');
+        } else {
+            $organizationIds = $query->pluck('org.id')->unique();
+        }
+        
+        if ($organizationIds->isEmpty()) {
+            return collect();
+        }
+        
+        // Загружаем организации БЕЗ отношения media
+        return Organization::with([
+                'activityCategories' => function($query) use ($categoryIds) {
+                    $query->whereIn('category_children_id', $categoryIds)
+                          ->whereNotNull('price');
+                },
+                'city.area'
+                // Убираем media, если отношения нет
+            ])
+            ->whereIn('id', $organizationIds)
+            ->where('role', 'organization')
+            ->where('status', 1)
+            ->get();
+    });
+}
+
+
+function organizationratingEstablishmentsProvidingHallsHoldingCommemorations($cityId)
+{
+    $cacheKey = "halls_commemorations_full_{$cityId}_v4";
+    
+    return Cache::remember($cacheKey, now()->addHours(6), function() use ($cityId) {
+        
+        $organizations = getOrganizationsWithCache($cityId, [46]);
+        
+        $organizationCategories = [];
+        foreach ($organizations as $org) {
+            foreach ($org->activityCategories as $category) {
+                if ($category->category_children_id == 46) {
+                    $organizationCategories[] = (object)[
+                        'organization' => $org,
+                        'price' => $category->price,
+                        'category' => $category
+                    ];
+                }
+            }
+        }
+        
+        $allItems = collect($organizationCategories);
+        
+        $highPriority = $allItems->filter(function($item) {
+            return $item->organization->priority == 1;
+        })->sortBy('organization.rotation_order');
+
+        $mediumPriority = $allItems->filter(function($item) {
+            return $item->organization->priority == 2;
+        })->sortBy('organization.rotation_order');
+
+        $otherItems = $allItems->filter(function($item) {
+            return !in_array($item->organization->priority, [1, 2]);
+        })->sortBy('price');
+
+        updateRotationOrders($highPriority, $mediumPriority);
+
+        return $highPriority->merge($mediumPriority)
+            ->merge($otherItems)
+            ->take(10);
+    });
+}
+
+function organizationRatingFuneralAgenciesPrices($cityId)
+{
+    $cacheKey = "funeral_agencies_full_{$cityId}_v4";
+    
+    return Cache::remember($cacheKey, now()->addHours(6), function() use ($cityId) {
+        
+        $organizations = getOrganizationsWithCache($cityId, [32, 33, 34], 3);
+        
+        $processedOrganizations = collect();
+        
+        foreach ($organizations as $organization) {
+            if ($organization->activityCategories->count() == 3) {
+                $organization->all_price = $organization->activityCategories->sum('price');
                 $organization->priority = $organization->priority ?? 0;
                 $organization->rotation_order = $organization->rotation_order ?? 0;
                 
                 $processedOrganizations->push($organization);
             }
         }
-    }
+        
+        $highPriority = $processedOrganizations->where('priority', 1)
+            ->sortBy('rotation_order');
 
-    // Разделяем по приоритетам
-    $highPriority = $processedOrganizations->where('priority', 1)
-        ->sortBy('rotation_order');
+        $mediumPriority = $processedOrganizations->where('priority', 2)
+            ->sortBy('rotation_order');
 
-    $mediumPriority = $processedOrganizations->where('priority', 2)
-        ->sortBy('rotation_order');
+        $otherItems = $processedOrganizations->whereNotIn('priority', [1, 2])
+            ->sortBy('all_price');
 
-    $otherItems = $processedOrganizations->whereNotIn('priority', [1, 2])
-        ->sortBy('all_price');
+        updateRotationOrders($highPriority, $mediumPriority);
 
-    // Обновляем порядок ротации
-    updateRotationOrders($highPriority, $mediumPriority);
-
-    // Собираем и возвращаем результат
-    return $highPriority->merge($mediumPriority)
-        ->merge($otherItems)
-        ->take(10);
+        return $highPriority->merge($mediumPriority)
+            ->merge($otherItems)
+            ->take(10);
+    });
 }
 
-function organizationRatingUneralBureausRavesPrices($city)
+function organizationRatingUneralBureausRavesPrices($cityId)
 {
-    $city = City::find($city);
-
-    $allOrganizations = ActivityCategoryOrganization::whereIn('category_children_id', [29, 30, 39])
-        ->where('price', '!=', null)
-        ->whereHas('organization', function ($query) use ($city) {
-            $query->whereHas('city', function ($q) use ($city) {
-                $q->where('area_id', $city->area_id);
-            })->where('role', 'organization')->where('status', 1);
-        })
-        ->get()
-        ->groupBy('organization_id');
-
-    $processedOrganizations = collect();
+    $cacheKey = "uneral_bureaus_full_{$cityId}_v4";
     
-    foreach ($allOrganizations as $orgId => $categories) {
-        if ($categories->count() == 3) {
-            $organization = $categories->first()->organization;
-            if ($organization) {
-                $organization->all_price = $categories->sum('price');
-                
-                // Устанавливаем приоритет для сортировки
+    return Cache::remember($cacheKey, now()->addHours(6), function() use ($cityId) {
+        
+        $organizations = getOrganizationsWithCache($cityId, [29, 30, 39], 3);
+        
+        $processedOrganizations = collect();
+        
+        foreach ($organizations as $organization) {
+            if ($organization->activityCategories->count() == 3) {
+                $organization->all_price = $organization->activityCategories->sum('price');
                 $organization->priority = $organization->priority ?? 0;
                 $organization->rotation_order = $organization->rotation_order ?? 0;
                 
                 $processedOrganizations->push($organization);
             }
         }
-    }
+        
+        $highPriority = $processedOrganizations->where('priority', 1)
+            ->sortBy('rotation_order');
 
-    // Разделяем по приоритетам
-    $highPriority = $processedOrganizations->where('priority', 1)
-        ->sortBy('rotation_order');
+        $mediumPriority = $processedOrganizations->where('priority', 2)
+            ->sortBy('rotation_order');
 
-    $mediumPriority = $processedOrganizations->where('priority', 2)
-        ->sortBy('rotation_order');
+        $otherItems = $processedOrganizations->whereNotIn('priority', [1, 2])
+            ->sortBy('all_price');
 
-    $otherItems = $processedOrganizations->whereNotIn('priority', [1, 2])
-        ->sortBy('all_price');
+        updateRotationOrders($highPriority, $mediumPriority);
 
-    // Обновляем порядок ротации
-    updateRotationOrders($highPriority, $mediumPriority);
-
-    // Собираем и возвращаем результат
-    return $highPriority->merge($mediumPriority)
-        ->merge($otherItems)
-        ->take(10);
+        return $highPriority->merge($mediumPriority)
+            ->merge($otherItems)
+            ->take(10);
+    });
 }
-
 
 function savingsPrice($id){
     $city=selectCity();
@@ -856,55 +907,74 @@ function updateRotationOrders($highPriority, $mediumPriority)
 
 
 
-function organizationsPrices($data){
-    $city=selectCity();
-    $category_id=categoryProductChoose()->id;
-    if(isset($data['category_id'])){
-        $category_id=$data['category_id'];
-    }
-    $organizations_prices = ActivityCategoryOrganization::where('category_children_id', $category_id)
-    ->whereHas('organization', function ($query) use ($city) {
-        $query->whereHas('city', function ($q) use ($city) {
-            $q->where('area_id', $city->area_id); // Ищем организации в городах того же района
-        })
-        ->where('role', 'organization')
-        ->where('status', 1);
-    });
-    if (isset($data['cemetery_id']) && $data['cemetery_id']!=null && $data['cemetery_id']!='null' ){
-        $cemetery_id=$data['cemetery_id'];
-        $organizations_prices=$organizations_prices->whereHas('organization', function ($query) use ($cemetery_id) {
-            $query->where(function($item) use ($cemetery_id){
-                return $item->orWhere('cemetery_ids',"LIKE", "%,".$cemetery_id.",%")->orWhere('cemetery_ids',"LIKE", $cemetery_id.",%")->orWhere('cemetery_ids',"LIKE", "%,".$cemetery_id);
-            });
-        });
-    }
-    if(isset($data['district_id']) && $data['district_id']!=null && $data['district_id']!='null'){
-        $district_id=$data['district_id'];
-        $organizations_prices=$organizations_prices->where(function($item) use ($district_id){
-            return $item->orWhere('district_ids',"LIKE", "%,".$district_id.",%")->orWhere('district_ids',"LIKE", $district_id.",%")->orWhere('district_ids',"LIKE", "%,".$district_id);
-        });
-    }   
-    if(isset($data['filter_work']) && $data['filter_work']!=null){
-        if($data['filter_work']=='on'){
-            $organizations_prices_ids=$organizations_prices->get()->map(function ($organization) {
-                $organization_choose=$organization->organization;
-                if( $organization_choose->openOrNot()=='Открыто'){
-                    $organization->open=1;
-                    return $organization;
-                }
-            });
-            $organizations_prices=$organizations_prices->whereIn('id',$organizations_prices_ids->where('open',1)->pluck('id'));
-        }  
-    }
-    $organizations_prices=$organizations_prices->get();
-    if($organizations_prices!=null && $organizations_prices->count()>0){
-        $price_min = $organizations_prices->where('price', '>', 0)->min('price');
-        $price_middle=round($organizations_prices->where('price','>',0)->avg('price'));
-        $price_max=$organizations_prices->max('price');
-        return  [$price_min,$price_middle,$price_max];
-    }
-    return null;
+function organizationsPrices($data)
+{
+    $city = selectCity();
+    if (!$city) return null;
     
+    $category_id = $data['category_id'] ?? categoryProductChoose()->id;
+    
+    $cacheKey = "org_prices_{$city->area_id}_{$category_id}_" . md5(serialize($data));
+    $cacheTime = now()->addHours(6);
+    
+    return Cache::remember($cacheKey, $cacheTime, function() use ($city, $category_id, $data) {
+        
+        // Основной запрос с оптимизацией
+        $query = DB::table('activity_category_organizations as aco')
+            ->join('organizations as org', 'aco.organization_id', '=', 'org.id')
+            ->join('cities as c', 'org.city_id', '=', 'c.id')
+            ->where('aco.category_children_id', $category_id)
+            ->where('c.area_id', $city->area_id)
+            ->where('org.role', 'organization')
+            ->where('org.status', 1)
+            ->where('aco.price', '>', 0)
+            ->select('aco.price', 'aco.id', 'org.cemetery_ids', );
+        
+        // Фильтр по кладбищу
+        if (!empty($data['cemetery_id']) && $data['cemetery_id'] != 'null') {
+            $cemetery_id = (int)$data['cemetery_id'];
+            $query->where(function($q) use ($cemetery_id) {
+                $q->where('org.cemetery_ids', 'LIKE', "%,{$cemetery_id},%")
+                  ->orWhere('org.cemetery_ids', 'LIKE', "{$cemetery_id},%")
+                  ->orWhere('org.cemetery_ids', 'LIKE', "%,{$cemetery_id}");
+            });
+        }
+        
+       
+        
+        $prices = $query->pluck('aco.price');
+        
+        if ($prices->isEmpty()) {
+            return null;
+        }
+        
+        // Фильтр по времени работы (только если нужно)
+        if (!empty($data['filter_work']) && $data['filter_work'] == 'on') {
+            $organizationIds = $query->pluck('org.id')->unique();
+            
+            if ($organizationIds->isNotEmpty()) {
+                $openOrganizationIds = Organization::whereIn('id', $organizationIds)
+                    ->get()
+                    ->filter(function($org) {
+                        return $org->openOrNot() == 'Открыто';
+                    })
+                    ->pluck('id');
+                
+                $prices = $query->whereIn('org.id', $openOrganizationIds)
+                    ->pluck('aco.price');
+            }
+        }
+        
+        if ($prices->isEmpty()) {
+            return null;
+        }
+        
+        $price_min = $prices->min();
+        $price_middle = round($prices->avg());
+        $price_max = $prices->max();
+        
+        return [$price_min, $price_middle, $price_max];
+    });
 }
 
 
@@ -1913,11 +1983,18 @@ function formatContentCategory($content, $category, $models, $prices = []) {
     $time = date('H:i');
     $date = date('Y-m-d');
     $year = date('Y');
-    
 
-    $price_min = $prices[0];
-    $price_middle = $prices[1];
-    $price_max = $prices[2];
+    
+    $price_min = 0;
+    $price_middle = 0;
+    $price_max = 0;
+
+    if($prices!=null){
+        $price_min = $prices[0];
+        $price_middle = $prices[1];
+        $price_max = $prices[2];
+    }
+   
 
     $result = str_replace(
         ["{category}", "{city}", "{count}", "{time}", "{date}", "{Year}", "{price_min}", "{price_avg}", "{price_max}"],

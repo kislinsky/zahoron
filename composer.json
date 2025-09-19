@@ -36,6 +36,7 @@
         "php-open-source-saver/jwt-auth": "^2.3",
         "phpmailer/phpmailer": "^6.10",
         "phpoffice/phpspreadsheet": "^3.3",
+        "predis/predis": "*",
         "rap2hpoutre/fast-excel": "^5.5",
         "smsaero/smsaero_api": "^1.0",
         "spatie/laravel-sitemap": "^7.3",

@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\City;
 use App\Models\Organization;
 use Artesaos\SEOTools\Facades\SEOMeta;
 use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
@@ -81,6 +83,23 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
+
+    try {
+        $defaultCity = Cache::remember('default_city_preload', 86400, function() {
+            return City::where('selected_admin', 1)->first() 
+                ?? City::first() 
+                ?? new City(['title' => 'Москва']);
+        });
+    } catch (\Exception $e) {
+        $defaultCity = City::where('selected_admin', 1)->first() 
+            ?? City::first() 
+            ?? new City(['title' => 'Москва']);
+    }
+    
+    view()->share('defaultCity', $defaultCity);
+    
+        
         Carbon::setLocale('ru');
         // SEO настройки
         $city = selectCity();

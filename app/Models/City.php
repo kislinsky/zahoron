@@ -59,7 +59,9 @@ class City extends Model
     }
 
     public function edgeCities($nameObject){
-        return $cities=City::orderBy('title','asc')->where('edge_id', selectCity()->edge_id)->whereHas($nameObject)->get();
+        return $cities=City::orderBy('title','asc')->where('edge_id', selectCity()->edge_id)->whereHas($nameObject)->whereHas('organizations',function($q) {
+                $q->where('status', 1); // Проверка что организация активна
+            })->get();
     }
 
     function priceProductPriceList(){
