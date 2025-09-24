@@ -56,7 +56,7 @@ $organizations2 = Organization::whereIn('id', $organizationIds2)->get()->keyBy('
                                                     уточняйте
                                                 </a>
                                             @else
-                                                <a href='tel:{{ $organization->phone }}' class="mgo-call-button price-link"> 
+                                                <a href='tel:{{ $organization->phone }}' class="price-link"> 
                                                     уточняйте
                                                 </a>
                                             @endif

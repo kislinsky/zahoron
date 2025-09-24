@@ -11,17 +11,24 @@ class CheckRoleAccessMiddleware
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-       
         $allowedRoles = ['admin', 'seo-specialist', 'deputy-admin', 'manager'];
-        if (Auth::check() &&  !in_array(auth()->user()->role, $allowedRoles)) {
-            abort('404');
+        
+        // Check if user is authenticated
+        if (!Auth::check()) {
+            abort(404);
         }
         
+        // Get the user's role safely
+        $userRole = auth()->user()->role;
+        
+        // Check if role exists and is in allowed roles
+        if (empty($userRole) || !in_array($userRole, $allowedRoles)) {
+            abort(404);
+        }
+
         return $next($request);
     }
 }

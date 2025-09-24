@@ -102,6 +102,16 @@ function generateUniqueCitySlug($baseSlug, $cityId)
 
     }
 
+    public static function sendAiMessage(Request $request){
+        $data=request()->validate([
+            'message_ai' => 'required|string|max:1000',
+            'chat_id'=>'required|string|max:1000',
+        ]);
+        
+        return IndexService::sendAiMessage($data);
+
+    }
+
     
 
 }

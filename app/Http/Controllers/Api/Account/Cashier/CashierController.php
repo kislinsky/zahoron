@@ -15,74 +15,82 @@ use Illuminate\Support\Facades\DB;
 
 class CashierController extends Controller
 {
-    public function getCemeteries(): JsonResponse
-    {
-        $user = Auth::user();
-        
-        if (!$user->organizationBranch) {
-            return response()->json(['data' => []]);
-        }
-
-        $cemeteryIds = json_decode($user->organizationBranch->cemetery_ids, true) ?? [];
-        
-        if (empty($cemeteryIds)) {
-            return response()->json(['data' => []]);
-        }
-
-        $cemeteries = Cemetery::whereIn('id', $cemeteryIds)
-            ->get(['id', 'title', 'city_id', 'adres'])
-            ->map(function ($cemetery) {
-                return [
-                    'id' => (string)$cemetery->id,
-                    'title' => $cemetery->title,
-                    'city_id' => (string)$cemetery->city_id,
-                    'adres' => $cemetery->adres
-                ];
-            });
-
-        return response()->json(['data' => $cemeteries]);
+public function getCemeteries(): JsonResponse
+{
+    $user = Auth::user();
+    
+    if (!$user->organizationBranch) {
+        return response()->json(['data' => []]);
     }
 
-    public function getMorgues(): JsonResponse
-    {
-        $user = Auth::user();
-        
-        if (!$user->organizationBranch) {
-            return response()->json(['data' => []]);
-        }
-
-        // Получаем area_id из города организации пользователя
-        $organizationCity = $user->organizationBranch->city;
-        
-        if (!$organizationCity || !$organizationCity->area) {
-            return response()->json(['data' => []]);
-        }
-
-        $areaId = $organizationCity->area->id;
-
-        // Получаем все города в этом районе
-        $citiesInArea = City::where('area_id', $areaId)
-            ->pluck('id')
-            ->toArray();
-
-        if (empty($citiesInArea)) {
-            return response()->json(['data' => []]);
-        }
-
-        // Получаем морги в этих городах
-        $morgues = Mortuary::whereIn('city_id', $citiesInArea)
-            ->get(['id', 'name', 'city_id', 'adres'])
-            ->map(function ($morgue) {
-                return [
-                    'id' => (string)$morgue->id,
-                    'name' => $morgue->name,
-                    'city_id' => (string)$morgue->city_id,
-                    'adres' => $morgue->adres
-                ];
-            });
-
-        return response()->json(['data' => $morgues]);
+    // Используем explode вместо json_decode для строки с разделителями-запятыми
+    $cemeteryIds = explode(',', $user->organizationBranch->cemetery_ids);
+    
+    // Фильтруем пустые значения и преобразуем к числам
+    $cemeteryIds = array_filter(array_map('intval', $cemeteryIds));
+    
+    if (empty($cemeteryIds)) {
+        return response()->json(['data' => []]);
     }
+
+    $cemeteries = Cemetery::whereIn('id', $cemeteryIds)
+        ->get(['id', 'title', 'city_id', 'adres', 'width', 'longitude'])
+        ->map(function ($cemetery) {
+            return [
+                'id' => (string)$cemetery->id,
+                'title' => $cemetery->title,
+                'city_id' => (string)$cemetery->city_id,
+                'adres' => $cemetery->adres,
+                'width' => $cemetery->width ? (string)$cemetery->width : null,
+                'longitude' => $cemetery->longitude ? (string)$cemetery->longitude : null
+            ];
+        });
+
+    return response()->json(['data' => $cemeteries]);
+}
+
+public function getMorgues(): JsonResponse
+{
+    $user = Auth::user();
+    
+    if (!$user->organizationBranch) {
+        return response()->json(['data' => []]);
+    }
+
+    // Получаем area_id из города организации пользователя
+    $organizationCity = $user->organizationBranch->city;
+    
+    if (!$organizationCity || !$organizationCity->area) {
+        return response()->json(['data' => []]);
+    }
+
+    $areaId = $organizationCity->area->id;
+
+    // Получаем все города в этом районе
+    $citiesInArea = City::where('area_id', $areaId)
+        ->pluck('id')
+        ->toArray();
+
+    if (empty($citiesInArea)) {
+        return response()->json(['data' => []]);
+    }
+
+    // Получаем морги в этих городах
+    $morgues = Mortuary::whereIn('city_id', $citiesInArea)
+        ->get(['id', 'title', 'city_id', 'adres', 'width', 'longitude'])
+        ->map(function ($morgue) {
+            return [
+                'id' => (string)$morgue->id,
+                'title' => $morgue->title,
+                'city_id' => (string)$morgue->city_id,
+                'adres' => $morgue->adres,
+                'width' => $morgue->width ? (string)$morgue->width : null,
+                'longitude' => $morgue->longitude ? (string)$morgue->longitude : null
+            ];
+        });
+
+    return response()->json(['data' => $morgues]);
+}
 
     public function getCallStats(Request $request): JsonResponse
     {
@@ -97,18 +105,16 @@ class CashierController extends Controller
 
         $organizationId = $user->organizationBranch->organization_id;
         
-        // Базовый запрос
         $query = CallStat::where('organization_id', $organizationId)
-            ->with(['city' => function($query) {
-                $query->select('id', 'name as city_name');
-            }])
-            ->select([
-                'id',
-                'city_id',
-                'call_status',
-                'duration',
-                'created_at'
-            ]);
+    ->leftJoin('cities', 'cities.title', '=', 'call_stats.city') // Предполагаем, что есть поле city_name
+    ->select([
+        'call_stats.id',
+        'cities.id as city_id', // Получаем ID из таблицы cities
+        'call_stats.call_status',
+        'call_stats.duration',
+        'call_stats.created_at',
+        'cities.title as city'
+    ]);
 
         // Фильтрация по дате
         if ($request->has('date_from')) {
@@ -125,7 +131,7 @@ class CashierController extends Controller
             ->map(function ($call) {
                 return [
                     'id' => (string)$call->id,
-                    'city' => $call->city ? $call->city->city_name : 'Не указан',
+                    'city' => $call->city ?? 'Не указан',
                     'call_status' => $call->call_status,
                     'duration' => $call->duration,
                     'created_at' => $call->created_at

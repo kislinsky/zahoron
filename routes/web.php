@@ -18,11 +18,12 @@ use App\Http\Controllers\Account\Agency\Aplication\AgencyOrganizationAplicationM
 use App\Http\Controllers\Account\AgentController;
 use App\Http\Controllers\Account\DecoderController;
 use App\Http\Controllers\Account\HomeController;
+use App\Http\Controllers\Account\TicketController;
 use App\Http\Controllers\Account\User\AccountController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+
+
 use App\Http\Controllers\Auth\ForgotPasswordController;
-
-
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BasketBurialContoller;
@@ -69,6 +70,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+
 
 
 
@@ -160,6 +162,7 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
     Auth::routes();
     
     
+    Route::get('/ai-message/send', [MainController::class, 'sendAiMessage'])->name('ai-message.send');
 
     Route::get('/accept-cookie', [MainController::class, 'acceptCookie'])->name('cookie.accept');
 
@@ -417,6 +420,9 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
 
     Route::group(['middleware'=>'auth'],function(){
 
+        
+
+
         Route::post('/organization/send-code', [OrganizationController::class, 'sendCode'])->name('organization.send-code');
         Route::post('/organization/accept-code', [OrganizationController::class, 'acceptCode'])->name('organization.accept-code');
 
@@ -428,6 +434,17 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                 Route::group(['prefix'=>'user'], function() {
 
                     Route::group(['middleware'=>'user.role.check'],function(){
+
+                        
+                        Route::group(['prefix'=>'tickets'], function() {
+                            Route::get('/', [TicketController::class, 'index'])->name('account.tickets.index');
+                            Route::get('/create', [TicketController::class, 'create'])->name('account.tickets.create');
+                            Route::post('/', [TicketController::class, 'store'])->name('account.tickets.store');
+                            Route::get('/{ticket}', [TicketController::class, 'show'])->name('account.tickets.show');
+                            Route::post('/{ticket}/reply', [TicketController::class, 'addReply'])->name('account.tickets.reply');
+                            Route::post('/{ticket}/close', [TicketController::class, 'close'])->name('account.tickets.close');
+                            Route::post('/{ticket}/reopen', [TicketController::class, 'reopen'])->name('account.tickets.reopen');
+                        });
 
                         Route::get('wallets', [AccountController::class, 'wallets'])->name('account.user.wallets');
                         Route::delete('wallet/{wallet}/delete', [AccountController::class, 'walletDelete'])->name('account.user.wallet.delete');

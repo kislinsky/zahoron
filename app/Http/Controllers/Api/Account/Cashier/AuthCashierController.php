@@ -59,7 +59,7 @@ class AuthCashierController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'reg_id' => 'required|uuid|exists:auth_sessions,id',
-            'code' => 'required|string|size:6',
+            'code' => 'required|string|size:4',
         ]);
 
         if ($validator->fails()) {

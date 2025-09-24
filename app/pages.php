@@ -127,6 +127,15 @@ function userPages(){
                 ['Кошельки','account.user.wallets'],
             ]
         ],
+
+
+        ['Техподдержка','storage/uploads/icon_sidebar.svg',
+            [
+                ['Главная','account.tickets.index'],
+                ['Создать заявку','account.tickets.create'],
+            ]
+        ],
+
         
     ];
     return $pages;

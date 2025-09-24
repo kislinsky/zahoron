@@ -165,6 +165,53 @@ use Artesaos\SEOTools\Facades\SEOTools;
     @csrf
 </form>
 
+
+  {{-- <div class="chat-widget">
+        <button class="chat-button" id="chatToggle">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+            </svg>
+        </button>
+        
+        <div class="chat-container" id="chatContainer">
+            <div class="chat-header">
+                <div class="chat-avatar">Z</div>
+                <div class="chat-info">
+                    <h3>Zahoron.ru</h3>
+                    <p>Онлайн-консультант</p>
+                </div>
+                <button class="chat-close" id="chatClose">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message message-bot">
+                    Здравствуйте! Я консультант Zahoron.ru. Чем могу помочь?
+                </div>
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+            
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Введите ваше сообщение...">
+                <button class="send-button" id="sendButton">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div> --}}
+
 <script>
 
 $( ".change_theme" ).on( "click", function() {
@@ -173,4 +220,219 @@ $( ".change_theme" ).on( "click", function() {
     $.get("{{route('change-theme')}}", function (response) {
     });
 })
+
+
+
+$(document).ready(function() {
+    const chatToggle = $('#chatToggle');
+    const chatContainer = $('#chatContainer');
+    const chatClose = $('#chatClose');
+    const chatMessages = $('#chatMessages');
+    const chatInput = $('#chatInput');
+    const sendButton = $('#sendButton');
+    const typingIndicator = $('#typingIndicator');
+
+    // Функции для работы с куками
+    function setCookie(name, value, days) {
+        const expires = new Date();
+        expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+        document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + expires.toUTCString() + ';path=/;SameSite=Lax';
+    }
+
+    function getCookie(name) {
+        const nameEQ = name + '=';
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+        }
+        return null;
+    }
+
+    // Генерация или получение ID чата
+    function getChatId() {
+        let chatId = getCookie('chat_id');
+        if (!chatId) {
+            chatId = 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            setCookie('chat_id', chatId, 30);
+        }
+        return chatId;
+    }
+
+    // Сохранение сообщений в куки
+    function saveMessageToCookie(message, sender) {
+        try {
+            const messages = getMessagesFromCookie();
+            messages.push({
+                text: message,
+                sender: sender,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Сохраняем только последние 50 сообщений
+            const recentMessages = messages.slice(-50);
+            setCookie('chat_messages', JSON.stringify(recentMessages), 30);
+        } catch (error) {
+            console.error('Ошибка сохранения в куки:', error);
+        }
+    }
+
+    // Получение сообщений из куки
+    function getMessagesFromCookie() {
+        try {
+            const messagesCookie = getCookie('chat_messages');
+            return messagesCookie ? JSON.parse(messagesCookie) : [];
+        } catch (error) {
+            console.error('Ошибка чтения куки:', error);
+            return [];
+        }
+    }
+
+    // Загрузка истории сообщений при открытии чата
+    function loadChatHistory() {
+        try {
+            const messages = getMessagesFromCookie();
+            chatMessages.empty();
+            
+            if (messages.length === 0) {
+                // Если сообщений нет, показываем приветствие
+                addMessage('Здравствуйте! Чем могу помочь?', 'bot', false);
+            } else {
+                // Загружаем все сообщения из истории
+                messages.forEach(msg => {
+                    addMessage(msg.text, msg.sender, false);
+                });
+            }
+            // Прокручиваем вниз после загрузки
+            setTimeout(() => {
+                chatMessages.scrollTop(chatMessages[0].scrollHeight);
+            }, 100);
+        } catch (error) {
+            console.error('Ошибка загрузки истории:', error);
+        }
+    }
+
+    // Открытие/закрытие чата
+    chatToggle.on('click', function() {
+        chatContainer.slideToggle(300, function() {
+            if ($(this).is(':visible')) {
+                loadChatHistory();
+                chatInput.focus();
+            }
+        });
+    });
+
+    chatClose.on('click', function() {
+        chatContainer.slideUp(300);
+    });
+
+    // Добавление сообщения в чат
+    function addMessage(text, sender, saveToCookie = true) {
+        const messageElement = $('<div>').addClass('message_ai').addClass(`message-${sender}`).text(text);
+        chatMessages.append(messageElement);
+        
+        // Прокручиваем к новому сообщению
+        setTimeout(() => {
+            chatMessages.scrollTop(chatMessages[0].scrollHeight);
+        }, 100);
+
+        // Сохраняем в куки (кроме случаев когда загружаем историю)
+        if (saveToCookie) {
+            saveMessageToCookie(text, sender);
+        }
+    }
+
+    // Отправка сообщения
+    function sendMessage() {
+        const message = chatInput.val().trim();
+        if (message === '') return;
+
+        // Добавляем сообщение пользователя и сразу сохраняем в куки
+        addMessage(message, 'user');
+        chatInput.val('');
+        chatInput.prop('disabled', true);
+        sendButton.prop('disabled', true);
+
+        // НЕ добавляем сообщение "Отправка..." - вместо этого показываем индикатор
+        const loadingElement = $('<div>').addClass('message').addClass('message-bot loading').text('⏳ Отправляем сообщение...');
+        chatMessages.append(loadingElement);
+        chatMessages.scrollTop(chatMessages[0].scrollHeight);
+
+        // Отправляем на сервер
+        sendToAI(message, loadingElement);
+    }
+
+    // Отправка на AI API
+    function sendToAI(userMessage, loadingElement) {
+        const chatId = getChatId();
+        
+        $.ajax({
+            url: '{{ route("ai-message.send") }}',
+            type: 'GET',
+            data: {
+                message_ai: userMessage,
+                chat_id: chatId
+            },
+            success: function(response) {
+                // Убираем индикатор загрузки
+                loadingElement.remove();
+                
+                // Добавляем реальный ответ бота и сохраняем в куки
+                let botResponse = 'Не удалось получить ответ от сервера';
+                
+                if (response && response !== '') {
+                    botResponse = response;
+                }
+                
+                addMessage(botResponse, 'bot');
+                
+                chatInput.prop('disabled', false);
+                sendButton.prop('disabled', false);
+                chatInput.focus();
+            },
+            error: function(xhr, status, error) {
+                // Убираем индикатор загрузки
+                loadingElement.remove();
+                
+                // Добавляем сообщение об ошибке и сохраняем в куки
+                let errorMessage = 'Ошибка сервера';
+                
+                if (status === 'timeout') {
+                    errorMessage = 'Превышено время ожидания ответа';
+                } else if (xhr.status === 0) {
+                    errorMessage = 'Нет соединения с интернетом';
+                } else {
+                    errorMessage = 'Ошибка сервера: ' + xhr.status;
+                }
+                
+                addMessage(errorMessage, 'bot');
+                
+                chatInput.prop('disabled', false);
+                sendButton.prop('disabled', false);
+                chatInput.focus();
+            }
+        });
+    }
+
+    // Обработчики событий
+    sendButton.on('click', sendMessage);
+    
+    chatInput.on('keypress', function(e) {
+        if (e.which === 13 && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    // Закрытие чата при клике вне области
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.chat-widget').length && chatContainer.is(':visible')) {
+            chatContainer.slideUp(300);
+        }
+    });
+
+    // Автоинициализация
+    console.log('Чат виджет инициализирован');
+});
 </script>

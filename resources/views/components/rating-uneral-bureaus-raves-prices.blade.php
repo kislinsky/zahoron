@@ -61,7 +61,7 @@ $prices = ActivityCategoryOrganization::whereIn('category_children_id', [29, 30,
                                                 Уточняйте
                                             </a>
                                         @else
-                                            <a href='tel:{{ $organization->phone }}' class="mgo-call-button price-link"> 
+                                            <a href='tel:{{ $organization->phone }}' class=" price-link"> 
                                                 Уточняйте
                                             </a>
                                         @endif
@@ -83,7 +83,7 @@ $prices = ActivityCategoryOrganization::whereIn('category_children_id', [29, 30,
                                                 Уточняйте
                                             </a>
                                         @else
-                                            <a href='tel:{{ $organization->phone }}' class="mgo-call-button price-link"> 
+                                            <a href='tel:{{ $organization->phone }}' class=" price-link"> 
                                                 Уточняйте
                                             </a>
                                         @endif
@@ -105,7 +105,7 @@ $prices = ActivityCategoryOrganization::whereIn('category_children_id', [29, 30,
                                                 Уточняйте
                                             </a>
                                         @else
-                                            <a href='tel:{{ $organization->phone }}' class="mgo-call-button price-link"> 
+                                            <a href='tel:{{ $organization->phone }}' class=" price-link"> 
                                                 Уточняйте
                                             </a>
                                         @endif

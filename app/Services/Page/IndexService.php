@@ -16,6 +16,7 @@ use App\Services\Burial\SearchBurialService;
 use App\Services\OurWork\OurWorkService;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 
 
@@ -56,5 +57,23 @@ class IndexService
         }
 
         return redirect()->back()->with('message_cart', 'Ваш запрос успешно отправлен!');
+    }
+
+    public static function sendAiMessage($data){
+        $response = Http::withoutVerifying()
+        ->get('https://hoquaromihi.beget.app/webhook/gpt-message', [
+            'text' => $data['message_ai'],
+            'chat_id' => $data['chat_id']
+        ]);
+
+        // Получить статус ответа
+        $status = $response->status(); // 200, 404, 500, etc.
+
+        // Получить содержимое ответа
+        $content = $response->body();
+
+        // Или как массив, если JSON
+        $data = $response->json();
+        return $data[0]['output'];     
     }
 }

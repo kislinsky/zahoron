@@ -41,6 +41,22 @@
     </div>
 @endif
 
+
+@if(session("success"))
+    <div class="bac_black">
+        <div class='message'>
+            <div class="flex_title_message">
+                <div class="title_middle">{!!  session("success") !!} </div>
+                <div class="close_message">
+                    <img src="{{ asset('storage/uploads/close (2).svg') }}" alt="">
+                </div>
+            </div>
+            <div class="blue_btn close_message">OK</div>
+        </div>
+    </div>
+@endif
+
+
 @if(session("message_order_burial"))
     <div class="bac_black">
         <div class='message'>
