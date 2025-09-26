@@ -13,11 +13,11 @@
                     <label class='checkbox'>
                         @if (selectCity()->cemeteries->first()!=null)
                             <input price={{$service->getPriceForCemetery(selectCity()->cemeteries->first()->id)  }} type="checkbox" name="service[]" value='{{ $service->id }}'>
-                            <a href='{{ route('service.single',$service->id) }}'class="text_block_mini">{{ $service->title }}</a>
+                            <a href='{{ $service->route() }}'class="text_block_mini">{{ $service->title }}</a>
                             <div class="title_middle">{{ $service->getPriceForCemetery(selectCity()->cemeteries->first()->id) }} ₽</div>  
                         @else
                             <input price={{$service->price  }} type="checkbox" name="service[]" value='{{ $service->id }}'>
-                            <a href='{{ route('service.single',$service->id) }}'class="text_block_mini">{{ $service->title }}</a>
+                            <a href='{{ $service->route() }}'class="text_block_mini">{{ $service->title }}</a>
                             <div class="title_middle">{{ $service->price }} ₽</div>   
                         @endif
                         

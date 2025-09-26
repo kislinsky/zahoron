@@ -10,9 +10,13 @@ use App\Services\Service\CategoryServiceService;
 use Artesaos\SEOTools\Facades\SEOTools;
 
 class IndexService {  
-    public static function single($id){
+    public static function single($slug){
+
         $city=selectCity();
-        $service=Service::find($id);
+        $service=Service::where('slug',$slug)->first();
+        if($service==null){
+            return abort('404');
+        }
 
         $seo="$service->title в г. $city->title";
         SEOTools::setTitle($seo);

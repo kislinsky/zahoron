@@ -314,8 +314,10 @@ function selectCity()
     // 1. Проверяем город из URL (самый быстрый способ)
     $slug = request()->segment(1);
     if (!empty($slug)) {
+
         try {
             $city = Cache::remember("city_slug_{$slug}", 3600, function() use ($slug) {
+                
                 return City::where('slug', $slug)->first();
             });
         } catch (\Exception $e) {

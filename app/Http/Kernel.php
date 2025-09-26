@@ -86,6 +86,7 @@ class Kernel extends HttpKernel
         'check.city' => CheckCity::class,
         'admin.check'=>CheckRoleAccessMiddleware::class,
         'jwt.auth'=>JwtAuthenticate::class,
-       
+        'jwt.role.organization' => \App\Http\Middleware\CheckOrganizationRole::class,
+        'jwt.role.cashier' => \App\Http\Middleware\CheckCashierRole::class,
     ];
 }

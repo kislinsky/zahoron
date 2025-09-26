@@ -6,6 +6,11 @@
                     <label for="">Выберите тему вопроса</label>
                     <select name="theme_feedback" id="">
                         <option value="Поиск могил">Поиск могил</option>
+                        <option value="Ритуальные услуги">Ритуальные услуги</option>
+                        <option value="Облагораживание могил">Облагораживание могил</option>
+                        <option value="Не верная информация">Не верная информация</option>
+                        <option value="Размещение фирмы">Размещение фирмы</option>
+                        <option value="Вакансии">Вакансии</option>
                     </select>    
                     @error('theme_feedback')
                     <div class='error-text'>{{ $message }}</div>
@@ -34,6 +39,10 @@
                         @enderror
                     </div>  
                 </div>
+                <div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}"></div>
+                @error('g-recaptcha-response')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
                 <div class="block_input"><button class="blue_btn">Отправить запрос</button></div>
         </form>
     </div>

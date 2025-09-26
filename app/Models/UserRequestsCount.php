@@ -10,6 +10,9 @@ class UserRequestsCount extends Model
     use HasFactory;
     protected $guarded =[];
 
+    function organization(){
+        return $this->belongsTo(Organization::class);
+    }
 
     function typeApplication(){
         return $this->belongsTo(TypeApplication::class);

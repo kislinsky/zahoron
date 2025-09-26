@@ -1678,7 +1678,7 @@ public static function organizationsCity(City $city, Request $request)
             ->select('id', 'title', 'title_ru')
             ->get();
 
-        $userId = auth()->id();
+        $organization = auth()->organization();
         $result = [];
 
         foreach ($applicationTypes as $appType) {
@@ -1691,7 +1691,7 @@ public static function organizationsCity(City $city, Request $request)
 
             foreach ($appType->typeService as $service) {
                 // Проверяем купленные заявки пользователя
-                $purchased = UserRequestsCount::where('user_id', $userId)
+                $purchased = UserRequestsCount::where('organization_id', $organization->id)
                     ->where('type_service_id', $service->id)
                     ->first();
 

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AuthCashierController extends Controller
@@ -98,5 +99,98 @@ class AuthCashierController extends Controller
                 'email' => $user->email,
             ]
         ]);
+    }
+
+    public static function checkJwtToken(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return [
+                'success' => false,
+                'message' => 'Токен обязателен',
+                'errors' => $validator->errors()
+            ];
+        }
+
+        try {
+            $token = $request->input('token');
+            $user = JWTAuth::setToken($token)->authenticate();
+
+            if (!$user) {
+                return [
+                    'success' => false,
+                    'message' => 'Пользователь не найден'
+                ];
+            }
+
+            // Проверяем срок действия токена
+            $payload = JWTAuth::setToken($token)->getPayload();
+            $expiration = $payload->get('exp');
+            
+            if (time() >= $expiration) {
+                return [
+                    'success' => false,
+                    'message' => 'Токен истек'
+                ];
+            }
+
+            return [
+                'success' => true,
+                'message' => 'Токен действителен',
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role
+                ],
+                'expires_at' => date('Y-m-d H:i:s', $expiration)
+            ];
+
+        } catch (JWTException $e) {
+            return [
+                'success' => false,
+                'message' => 'Недействительный токен: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Дополнительная функция для проверки токена из заголовка
+     */
+    public static function checkJwtTokenFromHeader(Request $request)
+    {
+        try {
+            $token = $request->bearerToken();
+            
+            if (!$token) {
+                return [
+                    'success' => false,
+                    'message' => 'Токен не предоставлен'
+                ];
+            }
+
+            $user = JWTAuth::setToken($token)->authenticate();
+
+            if (!$user) {
+                return [
+                    'success' => false,
+                    'message' => 'Пользователь не найден'
+                ];
+            }
+
+            return [
+                'success' => true,
+                'user' => $user
+            ];
+
+        } catch (JWTException $e) {
+            return [
+                'success' => false,
+                'message' => 'Ошибка проверки токена'
+            ];
+        }
     }
 }

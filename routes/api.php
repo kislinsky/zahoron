@@ -45,7 +45,7 @@ Route::prefix('app')->group(function () {
         Route::get('/categories/{categoryId}/subcategories', [AgencyController::class, 'getSubcategories']);
 
         // ЗАЩИЩЕННЫЕ маршруты (должны быть ВЫШЕ конкретных маршрутов)
-        Route::middleware('jwt.auth')->group(function () {
+        Route::middleware('jwt.role.organization')->group(function () {
             Route::group(['prefix' => 'account'], function() {
                 Route::group(['prefix' => 'agency'], function() {
 
@@ -118,7 +118,13 @@ Route::prefix('app')->group(function () {
 
 
     Route::prefix('cashier')->group(function () {
-     // Авторизация
+
+
+        Route::post('/validate-token', [AuthCashierController::class, 'checkJwtToken']);
+        // Проверка JWT токена из заголовка
+        Route::get('/validate-token-header', [AuthCashierController::class, 'checkJwtTokenFromHeader']);
+        
+        // Авторизация
         Route::post('/auth/init', [AuthCashierController::class, 'authInit']);
         Route::post('/auth/confirm', [AuthCashierController::class, 'authConfirm']);
         Route::post('/auth/confirm-call', [AuthCashierController::class, 'authConfirmCall']);
@@ -126,7 +132,7 @@ Route::prefix('app')->group(function () {
         Route::get('/cemeteries/{id}', [CashierController::class, 'getCemetery']);
         Route::get('/mortuaries/{id}', [CashierController::class, 'getMortuary']);
 
-        Route::middleware('jwt.auth')->group(function () {
+        Route::middleware('jwt.role.cashier')->group(function () {
             Route::group(['prefix' => 'account'], function() {
                 Route::group(['prefix' => 'cashier'], function() {
 

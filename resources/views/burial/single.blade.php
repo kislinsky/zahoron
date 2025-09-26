@@ -236,7 +236,7 @@
                                     @foreach ($services as $service)
                                         <label class='checkbox'>
                                             <input price={{$service->getPriceForCemetery($product->cemetery->id)  }} type="checkbox" name="service[]" value='{{ $service->id }}'>
-                                            <a href='{{ route('service.single',$service->id) }}'class="text_block_mini">{{ $service->title }}</a>
+                                            <a href='{{ $service->route() }}'class="text_block_mini">{{ $service->title }}</a>
                                             <div class="title_middle">{{ $service->getPriceForCemetery($product->cemetery->id) }} ₽</div>
                                         </label>
                                     @endforeach

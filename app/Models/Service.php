@@ -27,5 +27,9 @@ class Service extends Model
         return  $price->price;
     }
 
+    public  function route(){
+        return route('service.single',$this->slug);
+    }
+
 
 }

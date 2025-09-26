@@ -23,6 +23,8 @@ class CategoryServiceService {
     public static function serviceOneTimeCleaning($service){
         $city=selectCity();
         $edge=selectCity()->edge;
+                $cemetery=Cemetery::find($service->cemetery_id);
+
         $imgs_service=ImageService::where('service_id',$service->id)->get();
         $stages_service=StageService::orderBy('id','asc')->where('product_price_list_id',$service->id)->get();
         return view('service.single.single-one-time-cleaning',compact('imgs_service','stages_service','service','edge','city'));
@@ -42,6 +44,8 @@ class CategoryServiceService {
     public static function serviceDepartureBrigadeCalculation($service){
         $city=selectCity();
         $edge=selectCity()->edge;
+                $cemetery=Cemetery::find($service->cemetery_id);
+
         $reviews=ServiceReviews::orderBy('id','asc')->where('service_id',$service->id)->get();
         $imgs_service=ImageService::where('service_id',$service->id)->get();
         $stages_service=StageService::orderBy('id','asc')->where('product_price_list_id',$service->id)->get();
@@ -50,9 +54,9 @@ class CategoryServiceService {
     }
 
     public static function serviceLayingFlowers($service){
-        $cemetery=Cemetery::findOrFail($service->cemetery_id);
-        $city=City::findOrFail($cemetery->city_id);
-        $edge=Edge::findOrFail($city->edge_id);
+        $city=selectCity();
+        $edge=selectCity()->edge;
+        $cemetery=Cemetery::find($service->cemetery_id);
         $reviews=ServiceReviews::orderBy('id','asc')->where('service_id',$service->id)->get();
         $imgs_service=ImageService::where('service_id',$service->id)->get();
         $stages_service=StageService::orderBy('id','asc')->where('product_price_list_id',$service->id)->get();

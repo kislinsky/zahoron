@@ -9,7 +9,7 @@ use App\Services\ProductPriceList\ProductPriceListService;
 
 class ServiceController extends Controller
 {
-   public static function single($id){
-        return IndexService::single($id);
+   public static function single($slug){
+        return IndexService::single($slug);
    }
 }

@@ -322,7 +322,7 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
     Route::group(['prefix'=>'service'], function() {
         Route::get('/{id}/cart/add', [BasketServiceContoller::class, 'addToCart'])->name('burial.service.add');
         Route::get('/cart/delete', [BasketServiceContoller::class, 'deletefromCart'])->name('burial.service.delete');
-        Route::get('/{id}', [ServiceController::class, 'single'])->name('service.single');
+        Route::get('/{slug}', [ServiceController::class, 'single'])->name('service.single');
     });
 
 

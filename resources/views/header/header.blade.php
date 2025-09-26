@@ -45,7 +45,6 @@ use Artesaos\SEOTools\Facades\SEOTools;
 
 @include('header.header-mobile')
 
-
 <div class="bac_black city_question">
     <div class='message'>
         <div class="flex_title_message">
@@ -166,7 +165,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
 </form>
 
 
-  {{-- <div class="chat-widget">
+ <div class="chat-widget">
         <button class="chat-button" id="chatToggle">
             <svg viewBox="0 0 24 24">
                 <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
@@ -210,7 +209,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
                 </button>
             </div>
         </div>
-    </div> --}}
+    </div> 
 
 <script>
 
@@ -232,91 +231,344 @@ $(document).ready(function() {
     const sendButton = $('#sendButton');
     const typingIndicator = $('#typingIndicator');
 
-    // Функции для работы с куками
-    function setCookie(name, value, days) {
-        const expires = new Date();
-        expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-        document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + expires.toUTCString() + ';path=/;SameSite=Lax';
-    }
+    // Конфигурация
+    const CHAT_CONFIG = {
+        MAX_MESSAGES: 100, // Максимум сообщений в истории
+        MESSAGE_TTL: 30 * 24 * 60 * 60 * 1000, // 30 дней в миллисекундах
+        STORAGE_KEY: 'chat_data',
+        CHAT_ID_KEY: 'chat_id'
+    };
 
-    function getCookie(name) {
-        const nameEQ = name + '=';
-        const ca = document.cookie.split(';');
-        for (let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    // Функция для расчета высоты чата
+    // Функция для расчета высоты чата
+function calculateChatHeight() {
+    const headerHeight = $('.chat-header').outerHeight(true) || 90;
+    const inputHeight = $('.chat-input-container').outerHeight(true) || 74;
+    const windowHeight = $(window).height();
+    const availableHeight = windowHeight - headerHeight - inputHeight;
+    
+    // На мобильных устройствах используем всю доступную высоту
+    const isMobile = window.innerWidth <= 480;
+    const chatHeight = isMobile ? availableHeight : Math.min(500, availableHeight);
+    
+    chatMessages.css({
+        'height': chatHeight + 'px',
+        'max-height': chatHeight + 'px',
+        'overflow-y': 'auto'
+    });
+    
+    console.log('Высота чата рассчитана:', {
+        windowHeight,
+        headerHeight,
+        inputHeight,
+        availableHeight,
+        chatHeight,
+        isMobile
+    });
+}
+
+    // Универсальное хранилище с fallback
+    const storage = {
+        set: function(key, value) {
+            try {
+                if (typeof(Storage) !== "undefined") {
+                    localStorage.setItem(key, JSON.stringify(value));
+                    return true;
+                }
+            } catch (e) {
+                console.warn('LocalStorage недоступен, используем cookies', e);
+                return this.setCookie(key, value, 30);
+            }
+            return false;
+        },
+
+        get: function(key) {
+            try {
+                if (typeof(Storage) !== "undefined") {
+                    const item = localStorage.getItem(key);
+                    return item ? JSON.parse(item) : null;
+                }
+            } catch (e) {
+                console.warn('LocalStorage недоступен, читаем из cookies', e);
+                return this.getCookie(key);
+            }
+            return null;
+        },
+
+        remove: function(key) {
+            try {
+                if (typeof(Storage) !== "undefined") {
+                    localStorage.removeItem(key);
+                    return true;
+                }
+            } catch (e) {
+                return this.setCookie(key, '', -1);
+            }
+            return false;
+        },
+
+        setCookie: function(name, value, days) {
+            try {
+                const expires = new Date();
+                expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+                document.cookie = name + '=' + encodeURIComponent(JSON.stringify(value)) + 
+                                 ';expires=' + expires.toUTCString() + 
+                                 ';path=/;SameSite=Lax;Secure';
+                return true;
+            } catch (e) {
+                console.error('Ошибка записи cookie:', e);
+                return false;
+            }
+        },
+
+        getCookie: function(name) {
+            try {
+                const nameEQ = name + '=';
+                const ca = document.cookie.split(';');
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i].trim();
+                    if (c.indexOf(nameEQ) === 0) {
+                        const value = c.substring(nameEQ.length);
+                        return value ? JSON.parse(decodeURIComponent(value)) : null;
+                    }
+                }
+                return null;
+            } catch (e) {
+                console.error('Ошибка чтения cookie:', e);
+                return null;
+            }
         }
-        return null;
+    };
+
+    // Генерация ID чата
+    function generateChatId() {
+        return 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
 
-    // Генерация или получение ID чата
+    // Получение или создание ID чата
     function getChatId() {
-        let chatId = getCookie('chat_id');
+        let chatId = storage.get(CHAT_CONFIG.CHAT_ID_KEY);
         if (!chatId) {
-            chatId = 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            setCookie('chat_id', chatId, 30);
+            chatId = generateChatId();
+            storage.set(CHAT_CONFIG.CHAT_ID_KEY, chatId);
         }
         return chatId;
     }
 
-    // Сохранение сообщений в куки
-    function saveMessageToCookie(message, sender) {
-        try {
-            const messages = getMessagesFromCookie();
-            messages.push({
-                text: message,
-                sender: sender,
-                timestamp: new Date().toISOString()
-            });
-            
-            // Сохраняем только последние 50 сообщений
-            const recentMessages = messages.slice(-50);
-            setCookie('chat_messages', JSON.stringify(recentMessages), 30);
-        } catch (error) {
-            console.error('Ошибка сохранения в куки:', error);
-        }
+    // Структура данных чата
+    function createChatData() {
+        return {
+            id: getChatId(),
+            createdAt: new Date().toISOString(),
+            lastActivity: new Date().toISOString(),
+            messages: [],
+            version: '1.0'
+        };
     }
 
-    // Получение сообщений из куки
-    function getMessagesFromCookie() {
-        try {
-            const messagesCookie = getCookie('chat_messages');
-            return messagesCookie ? JSON.parse(messagesCookie) : [];
-        } catch (error) {
-            console.error('Ошибка чтения куки:', error);
-            return [];
+    // Получение данных чата
+    function getChatData() {
+        let chatData = storage.get(CHAT_CONFIG.STORAGE_KEY);
+        
+        if (!chatData || !chatData.messages) {
+            chatData = createChatData();
+            storage.set(CHAT_CONFIG.STORAGE_KEY, chatData);
         }
+        
+        // Очистка устаревших сообщений
+        return cleanupChatData(chatData);
     }
 
-    // Загрузка истории сообщений при открытии чата
-    function loadChatHistory() {
-        try {
-            const messages = getMessagesFromCookie();
-            chatMessages.empty();
+    // Сохранение данных чата
+    function saveChatData(chatData) {
+        chatData.lastActivity = new Date().toISOString();
+        chatData.messageCount = chatData.messages.length;
+        
+        // Ограничиваем количество сообщений
+        if (chatData.messages.length > CHAT_CONFIG.MAX_MESSAGES) {
+            chatData.messages = chatData.messages.slice(-CHAT_CONFIG.MAX_MESSAGES);
+        }
+        
+        return storage.set(CHAT_CONFIG.STORAGE_KEY, chatData);
+    }
+
+    // Очистка устаревших данных
+    function cleanupChatData(chatData) {
+        const now = Date.now();
+        const validMessages = [];
+        
+        for (const message of chatData.messages) {
+            const messageAge = now - new Date(message.timestamp).getTime();
             
-            if (messages.length === 0) {
-                // Если сообщений нет, показываем приветствие
-                addMessage('Здравствуйте! Чем могу помочь?', 'bot', false);
-            } else {
-                // Загружаем все сообщения из истории
-                messages.forEach(msg => {
-                    addMessage(msg.text, msg.sender, false);
-                });
+            // Удаляем сообщения старше TTL
+            if (messageAge <= CHAT_CONFIG.MESSAGE_TTL) {
+                validMessages.push(message);
             }
-            // Прокручиваем вниз после загрузки
-            setTimeout(() => {
-                chatMessages.scrollTop(chatMessages[0].scrollHeight);
-            }, 100);
-        } catch (error) {
-            console.error('Ошибка загрузки истории:', error);
         }
+        
+        chatData.messages = validMessages;
+        return chatData;
     }
 
-    // Открытие/закрытие чата
+    // Добавление сообщения в историю
+    function addMessageToHistory(text, sender) {
+        const chatData = getChatData();
+        
+        const message = {
+            id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+            text: text,
+            sender: sender,
+            timestamp: new Date().toISOString(),
+            type: 'text'
+        };
+        
+        chatData.messages.push(message);
+        const success = saveChatData(chatData);
+        
+        console.log('Сообщение сохранено:', { 
+            id: message.id, 
+            sender, 
+            success,
+            totalMessages: chatData.messages.length 
+        });
+        
+        return success;
+    }
+
+    // Получение истории сообщений
+    function getMessageHistory() {
+        const chatData = getChatData();
+        return chatData.messages || [];
+    }
+
+    // Очистка истории чата
+    function clearChatHistory() {
+        const chatData = createChatData();
+        storage.set(CHAT_CONFIG.STORAGE_KEY, chatData);
+        storage.remove(CHAT_CONFIG.CHAT_ID_KEY);
+        
+        console.log('История чата очищена');
+        return chatData;
+    }
+
+    // Загрузка истории в интерфейс
+    function loadChatHistory() {
+        const messages = getMessageHistory();
+        chatMessages.empty();
+        
+        if (messages.length === 0) {
+            addMessageToUI('Здравствуйте! Чем могу помочь?', 'bot', false);
+        } else {
+            messages.forEach(msg => {
+                addMessageToUI(msg.text, msg.sender, false);
+            });
+        }
+        
+        scrollToBottom();
+        console.log('Загружена история:', messages.length, 'сообщений');
+    }
+
+    // Добавление сообщения в UI
+    function addMessageToUI(text, sender, saveToHistory = true) {
+        const messageElement = $('<div>')
+            .addClass('message_ai')
+            .addClass(sender === 'user' ? 'message-user' : 'message-bot')
+            .text(text);
+            
+        chatMessages.append(messageElement);
+        
+        if (saveToHistory) {
+            addMessageToHistory(text, sender);
+        }
+        
+        scrollToBottom();
+        console.log('Сообщение добавлено в UI:', { sender, text, saveToHistory });
+    }
+
+    // Прокрутка вниз
+    function scrollToBottom() {
+        setTimeout(() => {
+            if (chatMessages[0] && chatMessages[0].scrollHeight > chatMessages[0].clientHeight) {
+                chatMessages.scrollTop(chatMessages[0].scrollHeight);
+            }
+        }, 100);
+    }
+
+    // Отправка сообщения
+    function sendMessage() {
+        const message = chatInput.val().trim();
+        if (message === '') return;
+
+        console.log('Отправка сообщения:', message);
+
+        // Добавляем сообщение пользователя
+        addMessageToUI(message, 'user');
+        chatInput.val('');
+        chatInput.prop('disabled', true);
+        sendButton.prop('disabled', true);
+
+        // Индикатор загрузки
+        const loadingElement = $('<div>')
+            .addClass('message_ai message-bot loading')
+            .text('⏳ Отправляем сообщение...');
+            
+        chatMessages.append(loadingElement);
+        scrollToBottom();
+
+        // Отправка на сервер
+        sendToAI(message, loadingElement);
+    }
+
+    // Отправка на AI API
+    function sendToAI(userMessage, loadingElement) {
+        const chatId = getChatId();
+        
+        console.log('Отправка на AI API:', { userMessage, chatId });
+
+        $.ajax({
+            url: '{{ route("ai-message.send") }}',
+            type: 'GET',
+            data: {
+                message_ai: userMessage,
+                chat_id: chatId
+            },
+            timeout: 30000,
+            success: function(response) {
+                console.log('Ответ от сервера:', response);
+                loadingElement.remove();
+                
+                const botResponse = response && response !== '' ? response : 'Не удалось получить ответ от сервера';
+                addMessageToUI(botResponse, 'bot');
+                
+                enableInput();
+            },
+            error: function(xhr, status, error) {
+                console.error('Ошибка AJAX:', { status, error, xhr });
+                loadingElement.remove();
+                
+                let errorMessage = 'Ошибка соединения';
+                if (status === 'timeout') errorMessage = 'Превышено время ожидания';
+                else if (xhr.status === 0) errorMessage = 'Нет соединения с интернетом';
+                else errorMessage = 'Ошибка сервера: ' + xhr.status;
+                
+                addMessageToUI(errorMessage, 'bot');
+                enableInput();
+            }
+        });
+    }
+
+    // Активация поля ввода
+    function enableInput() {
+        chatInput.prop('disabled', false);
+        sendButton.prop('disabled', false);
+        chatInput.focus();
+    }
+
+    // Обработчики событий
     chatToggle.on('click', function() {
         chatContainer.slideToggle(300, function() {
             if ($(this).is(':visible')) {
+                calculateChatHeight();
                 loadChatHistory();
                 chatInput.focus();
             }
@@ -327,95 +579,6 @@ $(document).ready(function() {
         chatContainer.slideUp(300);
     });
 
-    // Добавление сообщения в чат
-    function addMessage(text, sender, saveToCookie = true) {
-        const messageElement = $('<div>').addClass('message_ai').addClass(`message-${sender}`).text(text);
-        chatMessages.append(messageElement);
-        
-        // Прокручиваем к новому сообщению
-        setTimeout(() => {
-            chatMessages.scrollTop(chatMessages[0].scrollHeight);
-        }, 100);
-
-        // Сохраняем в куки (кроме случаев когда загружаем историю)
-        if (saveToCookie) {
-            saveMessageToCookie(text, sender);
-        }
-    }
-
-    // Отправка сообщения
-    function sendMessage() {
-        const message = chatInput.val().trim();
-        if (message === '') return;
-
-        // Добавляем сообщение пользователя и сразу сохраняем в куки
-        addMessage(message, 'user');
-        chatInput.val('');
-        chatInput.prop('disabled', true);
-        sendButton.prop('disabled', true);
-
-        // НЕ добавляем сообщение "Отправка..." - вместо этого показываем индикатор
-        const loadingElement = $('<div>').addClass('message').addClass('message-bot loading').text('⏳ Отправляем сообщение...');
-        chatMessages.append(loadingElement);
-        chatMessages.scrollTop(chatMessages[0].scrollHeight);
-
-        // Отправляем на сервер
-        sendToAI(message, loadingElement);
-    }
-
-    // Отправка на AI API
-    function sendToAI(userMessage, loadingElement) {
-        const chatId = getChatId();
-        
-        $.ajax({
-            url: '{{ route("ai-message.send") }}',
-            type: 'GET',
-            data: {
-                message_ai: userMessage,
-                chat_id: chatId
-            },
-            success: function(response) {
-                // Убираем индикатор загрузки
-                loadingElement.remove();
-                
-                // Добавляем реальный ответ бота и сохраняем в куки
-                let botResponse = 'Не удалось получить ответ от сервера';
-                
-                if (response && response !== '') {
-                    botResponse = response;
-                }
-                
-                addMessage(botResponse, 'bot');
-                
-                chatInput.prop('disabled', false);
-                sendButton.prop('disabled', false);
-                chatInput.focus();
-            },
-            error: function(xhr, status, error) {
-                // Убираем индикатор загрузки
-                loadingElement.remove();
-                
-                // Добавляем сообщение об ошибке и сохраняем в куки
-                let errorMessage = 'Ошибка сервера';
-                
-                if (status === 'timeout') {
-                    errorMessage = 'Превышено время ожидания ответа';
-                } else if (xhr.status === 0) {
-                    errorMessage = 'Нет соединения с интернетом';
-                } else {
-                    errorMessage = 'Ошибка сервера: ' + xhr.status;
-                }
-                
-                addMessage(errorMessage, 'bot');
-                
-                chatInput.prop('disabled', false);
-                sendButton.prop('disabled', false);
-                chatInput.focus();
-            }
-        });
-    }
-
-    // Обработчики событий
     sendButton.on('click', sendMessage);
     
     chatInput.on('keypress', function(e) {
@@ -425,14 +588,49 @@ $(document).ready(function() {
         }
     });
 
-    // Закрытие чата при клике вне области
+    // Обновление высоты при изменении размера окна
+    $(window).on('resize', function() {
+        if (chatContainer.is(':visible')) {
+            calculateChatHeight();
+            scrollToBottom();
+        }
+    });
+
+    // Закрытие по клику вне области
     $(document).on('click', function(e) {
         if (!$(e.target).closest('.chat-widget').length && chatContainer.is(':visible')) {
             chatContainer.slideUp(300);
         }
     });
 
-    // Автоинициализация
-    console.log('Чат виджет инициализирован');
+    // API для отладки
+    window.chatDebug = {
+        clearHistory: clearChatHistory,
+        getData: getChatData,
+        getStats: function() {
+            const data = getChatData();
+            return {
+                chatId: data.id,
+                totalMessages: data.messages.length,
+                lastActivity: data.lastActivity,
+                storageType: typeof(Storage) !== "undefined" ? 'localStorage' : 'cookies'
+            };
+        },
+        exportHistory: function() {
+            return JSON.stringify(getChatData(), null, 2);
+        },
+        recalculateHeight: calculateChatHeight
+    };
+
+    // Инициализация
+    console.log('Чат виджет инициализирован', window.chatDebug.getStats());
+
+    if (chatContainer.is(':visible')) {
+        calculateChatHeight();
+        loadChatHistory();
+    }
 });
+
+
+
 </script>

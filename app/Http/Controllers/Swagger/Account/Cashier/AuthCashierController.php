@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Swagger\Account\Cashier;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class AuthCashierController extends Controller
 {
@@ -92,4 +93,94 @@ class AuthCashierController extends Controller
      * )
      */
     public function authConfirm(){}
+
+
+
+    
+/**
+     * @OA\Post(
+     *     path="/app/cashier/validate-token",
+     *     summary="Проверка JWT токена из тела запроса",
+     *     tags={"Авторизация кассира"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"token"},
+     *             @OA\Property(property="token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Токен действителен",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Токен действителен"),
+     *             @OA\Property(property="user", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Иван Иванов"),
+     *                 @OA\Property(property="email", type="string", example="user@example.com"),
+     *                 @OA\Property(property="role", type="string", example="organization")
+     *             ),
+     *             @OA\Property(property="expires_at", type="string", example="2024-12-31 23:59:59")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Токен недействителен",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Токен истек"),
+     *             @OA\Property(property="errors", type="object", example=null)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Ошибка валидации",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Токен обязателен"),
+     *             @OA\Property(property="errors", type="object",
+     *                 @OA\Property(property="token", type="array",
+     *                     @OA\Items(type="string", example="Поле token обязательно.")
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function checkJwtToken(Request $request){}
+
+    /**
+     * @OA\Get(
+     *     path="/app/cashier/validate-token-header",
+     *     summary="Проверка JWT токена из заголовка Authorization",
+     *     tags={"Авторизация кассира"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Токен действителен",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="user", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Иван Иванов"),
+     *                 @OA\Property(property="email", type="string", example="user@example.com"),
+     *                 @OA\Property(property="role", type="string", example="cashier"),
+     *                 @OA\Property(property="created_at", type="string", example="2024-01-01T00:00:00.000000Z"),
+     *                 @OA\Property(property="updated_at", type="string", example="2024-01-01T00:00:00.000000Z")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Токен недействителен или отсутствует",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Токен не предоставлен")
+     *         )
+     *     )
+     * )
+     */
+    public function checkJwtTokenFromHeader(Request $request){}
+
 }
