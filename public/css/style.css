@@ -5738,7 +5738,7 @@ margin: 0 auto;
     bottom: 80px;
     right: 0;
     width: 350px;
-    height: 500px;
+    height: auto;
     background: #f8f9fa;
     border-radius: 16px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
@@ -5746,6 +5746,7 @@ margin: 0 auto;
     flex-direction: column;
     overflow: hidden;
     border: 1px solid #e0e0e0;
+    /* Убираем фиксированную высоту, она будет управляться через JS */
 }
 
 .chat-header {
@@ -5799,7 +5800,7 @@ margin: 0 auto;
 .chat-messages {
     flex: 1;
     padding: 20px;
-    overflow-y: auto;
+    overflow-y: auto; /* Всегда включаем скролл */
     background: #f8f9fa;
     display: flex;
     flex-direction: column;
@@ -5948,6 +5949,7 @@ margin: 0 auto;
         border-radius: 0;
         bottom: auto;
         right: auto;
+        max-height: 100vh;
     }
     
     .chat-widget {

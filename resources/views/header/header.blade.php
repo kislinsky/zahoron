@@ -233,41 +233,120 @@ $(document).ready(function() {
 
     // Конфигурация
     const CHAT_CONFIG = {
-        MAX_MESSAGES: 100, // Максимум сообщений в истории
-        MESSAGE_TTL: 30 * 24 * 60 * 60 * 1000, // 30 дней в миллисекундах
+        MAX_MESSAGES: 100,
+        MESSAGE_TTL: 30 * 24 * 60 * 60 * 1000,
         STORAGE_KEY: 'chat_data',
-        CHAT_ID_KEY: 'chat_id'
+        CHAT_ID_KEY: 'chat_id',
+        ALLOWED_HTML_TAGS: ['b', 'strong', 'i', 'em', 'u', 'br', 'p', 'div', 'span', 'code', 'pre', 'ul', 'ol', 'li', 'a']
     };
 
-    // Функция для расчета высоты чата
-    // Функция для расчета высоты чата
-function calculateChatHeight() {
-    const headerHeight = $('.chat-header').outerHeight(true) || 90;
-    const inputHeight = $('.chat-input-container').outerHeight(true) || 74;
-    const windowHeight = $(window).height();
-    const availableHeight = windowHeight - headerHeight - inputHeight;
-    
-    // На мобильных устройствах используем всю доступную высоту
-    const isMobile = window.innerWidth <= 480;
-    const chatHeight = isMobile ? availableHeight : Math.min(500, availableHeight);
-    
-    chatMessages.css({
-        'height': chatHeight + 'px',
-        'max-height': chatHeight + 'px',
-        'overflow-y': 'auto'
-    });
-    
-    console.log('Высота чата рассчитана:', {
-        windowHeight,
-        headerHeight,
-        inputHeight,
-        availableHeight,
-        chatHeight,
-        isMobile
-    });
-}
+    // Функция для безопасного отображения HTML
+    function safeHtml(html) {
+        if (!html) return '';
+        
+        // Создаем временный элемент для парсинга HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        
+        // Функция для рекурсивной очистки элементов
+        function sanitizeNode(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                return node.textContent;
+            }
+            
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                
+                // Разрешаем только определенные теги
+                if (CHAT_CONFIG.ALLOWED_HTML_TAGS.includes(tagName)) {
+                    const allowedElement = document.createElement(tagName);
+                    
+                    // Копируем атрибуты (только безопасные)
+                    for (let attr of node.attributes) {
+                        if (tagName === 'a' && attr.name === 'href') {
+                            // Для ссылок проверяем протокол
+                            if (attr.value.startsWith('http://') || 
+                                attr.value.startsWith('https://') ||
+                                attr.value.startsWith('/') ||
+                                attr.value.startsWith('#') ||
+                                attr.value.startsWith('mailto:')) {
+                                allowedElement.setAttribute(attr.name, attr.value);
+                            }
+                        } else if (['class', 'style', 'id'].includes(attr.name)) {
+                            allowedElement.setAttribute(attr.name, attr.value);
+                        }
+                    }
+                    
+                    // Рекурсивно обрабатываем дочерние элементы
+                    for (let child of node.childNodes) {
+                        const sanitizedChild = sanitizeNode(child);
+                        if (sanitizedChild) {
+                            if (typeof sanitizedChild === 'string') {
+                                allowedElement.appendChild(document.createTextNode(sanitizedChild));
+                            } else {
+                                allowedElement.appendChild(sanitizedChild);
+                            }
+                        }
+                    }
+                    
+                    return allowedElement;
+                } else {
+                    // Для запрещенных тегов оставляем только текст
+                    let textContent = '';
+                    for (let child of node.childNodes) {
+                        const sanitized = sanitizeNode(child);
+                        if (typeof sanitized === 'string') {
+                            textContent += sanitized;
+                        }
+                    }
+                    return textContent;
+                }
+            }
+            
+            return '';
+        }
+        
+        // Очищаем HTML
+        const sanitizedContent = sanitizeNode(tempDiv);
+        
+        if (typeof sanitizedContent === 'string') {
+            return sanitizedContent;
+        } else {
+            return sanitizedContent.outerHTML;
+        }
+    }
 
-    // Универсальное хранилище с fallback
+    // Функция для определения, содержит ли текст HTML
+    function containsHtml(text) {
+        if (!text) return false;
+        return /<[a-z][\s\S]*>/i.test(text);
+    }
+
+    // Функция для расчета высоты чата
+    function calculateChatHeight() {
+        const isMobile = $(window).width() <= 440;
+        
+        if (isMobile) {
+            const headerHeight = $('.chat-header').outerHeight(true) || 90;
+            const inputHeight = $('.chat-input-container').outerHeight(true) || 74;
+            const windowHeight = $(window).height();
+            const availableHeight = windowHeight - headerHeight - inputHeight;
+            
+            chatMessages.css({
+                'height': availableHeight + 'px',
+                'max-height': availableHeight + 'px',
+                'overflow-y': 'auto'
+            });
+        } else {
+            chatMessages.css({
+                'height': '500px',
+                'max-height': '500px',
+                'overflow-y': 'auto'
+            });
+        }
+    }
+
+    // Универсальное хранилище
     const storage = {
         set: function(key, value) {
             try {
@@ -375,7 +454,6 @@ function calculateChatHeight() {
             storage.set(CHAT_CONFIG.STORAGE_KEY, chatData);
         }
         
-        // Очистка устаревших сообщений
         return cleanupChatData(chatData);
     }
 
@@ -384,7 +462,6 @@ function calculateChatHeight() {
         chatData.lastActivity = new Date().toISOString();
         chatData.messageCount = chatData.messages.length;
         
-        // Ограничиваем количество сообщений
         if (chatData.messages.length > CHAT_CONFIG.MAX_MESSAGES) {
             chatData.messages = chatData.messages.slice(-CHAT_CONFIG.MAX_MESSAGES);
         }
@@ -400,7 +477,6 @@ function calculateChatHeight() {
         for (const message of chatData.messages) {
             const messageAge = now - new Date(message.timestamp).getTime();
             
-            // Удаляем сообщения старше TTL
             if (messageAge <= CHAT_CONFIG.MESSAGE_TTL) {
                 validMessages.push(message);
             }
@@ -419,18 +495,12 @@ function calculateChatHeight() {
             text: text,
             sender: sender,
             timestamp: new Date().toISOString(),
-            type: 'text'
+            type: 'text',
+            containsHtml: containsHtml(text)
         };
         
         chatData.messages.push(message);
         const success = saveChatData(chatData);
-        
-        console.log('Сообщение сохранено:', { 
-            id: message.id, 
-            sender, 
-            success,
-            totalMessages: chatData.messages.length 
-        });
         
         return success;
     }
@@ -447,7 +517,6 @@ function calculateChatHeight() {
         storage.set(CHAT_CONFIG.STORAGE_KEY, chatData);
         storage.remove(CHAT_CONFIG.CHAT_ID_KEY);
         
-        console.log('История чата очищена');
         return chatData;
     }
 
@@ -460,20 +529,25 @@ function calculateChatHeight() {
             addMessageToUI('Здравствуйте! Чем могу помочь?', 'bot', false);
         } else {
             messages.forEach(msg => {
-                addMessageToUI(msg.text, msg.sender, false);
+                addMessageToUI(msg.text, msg.sender, false, msg.containsHtml);
             });
         }
         
         scrollToBottom();
-        console.log('Загружена история:', messages.length, 'сообщений');
     }
 
     // Добавление сообщения в UI
-    function addMessageToUI(text, sender, saveToHistory = true) {
+    function addMessageToUI(text, sender, saveToHistory = true, isHtml = false) {
         const messageElement = $('<div>')
             .addClass('message_ai')
-            .addClass(sender === 'user' ? 'message-user' : 'message-bot')
-            .text(text);
+            .addClass(sender === 'user' ? 'message-user' : 'message-bot');
+            
+        // Если текст содержит HTML и это разрешено, обрабатываем безопасно
+        if (isHtml || containsHtml(text)) {
+            messageElement.html(safeHtml(text));
+        } else {
+            messageElement.text(text);
+        }
             
         chatMessages.append(messageElement);
         
@@ -482,7 +556,6 @@ function calculateChatHeight() {
         }
         
         scrollToBottom();
-        console.log('Сообщение добавлено в UI:', { sender, text, saveToHistory });
     }
 
     // Прокрутка вниз
@@ -498,8 +571,6 @@ function calculateChatHeight() {
     function sendMessage() {
         const message = chatInput.val().trim();
         if (message === '') return;
-
-        console.log('Отправка сообщения:', message);
 
         // Добавляем сообщение пользователя
         addMessageToUI(message, 'user');
@@ -523,8 +594,6 @@ function calculateChatHeight() {
     function sendToAI(userMessage, loadingElement) {
         const chatId = getChatId();
         
-        console.log('Отправка на AI API:', { userMessage, chatId });
-
         $.ajax({
             url: '{{ route("ai-message.send") }}',
             type: 'GET',
@@ -534,16 +603,17 @@ function calculateChatHeight() {
             },
             timeout: 30000,
             success: function(response) {
-                console.log('Ответ от сервера:', response);
                 loadingElement.remove();
                 
                 const botResponse = response && response !== '' ? response : 'Не удалось получить ответ от сервера';
-                addMessageToUI(botResponse, 'bot');
+                
+                // Определяем, содержит ли ответ HTML
+                const responseContainsHtml = containsHtml(botResponse);
+                addMessageToUI(botResponse, 'bot', true, responseContainsHtml);
                 
                 enableInput();
             },
             error: function(xhr, status, error) {
-                console.error('Ошибка AJAX:', { status, error, xhr });
                 loadingElement.remove();
                 
                 let errorMessage = 'Ошибка соединения';
@@ -580,7 +650,7 @@ function calculateChatHeight() {
     });
 
     sendButton.on('click', sendMessage);
-    
+
     chatInput.on('keypress', function(e) {
         if (e.which === 13 && !e.shiftKey) {
             e.preventDefault();
@@ -603,34 +673,11 @@ function calculateChatHeight() {
         }
     });
 
-    // API для отладки
-    window.chatDebug = {
-        clearHistory: clearChatHistory,
-        getData: getChatData,
-        getStats: function() {
-            const data = getChatData();
-            return {
-                chatId: data.id,
-                totalMessages: data.messages.length,
-                lastActivity: data.lastActivity,
-                storageType: typeof(Storage) !== "undefined" ? 'localStorage' : 'cookies'
-            };
-        },
-        exportHistory: function() {
-            return JSON.stringify(getChatData(), null, 2);
-        },
-        recalculateHeight: calculateChatHeight
-    };
-
     // Инициализация
-    console.log('Чат виджет инициализирован', window.chatDebug.getStats());
-
     if (chatContainer.is(':visible')) {
         calculateChatHeight();
         loadChatHistory();
     }
 });
-
-
 
 </script>

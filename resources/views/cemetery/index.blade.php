@@ -31,9 +31,14 @@
                     @if (isset($cemeteries) && $cemeteries->count()>0)
                         @foreach ($cemeteries as $cemetery)
                             <div  class="li_place">
+                                
                                 <a  href="{{ $cemetery->route() }}"  class="img_place"> 
-                                    <img class='white_img_org' src="{{$cemetery->defaultImg()[0]}}" alt="">   
-                                    <img class='black_img_org' src="{{$cemetery->defaultImg()[1]}}" alt="">    
+                                    @if($cemetery->urlImg()=='default')
+                                        <img class='white_img_org' src="{{$cemetery->defaultImg()[0]}}" alt="">   
+                                        <img class='black_img_org' src="{{$cemetery->defaultImg()[1]}}" alt="">
+                                    @else
+                                        <img  src="{{$cemetery->urlImg()}}" alt="">
+                                    @endif    
                                 </a>
                                 <div class="content_place_mini">
                                     <a href="{{ $cemetery->route() }}" class="title_blue">{{$cemetery->title}}</a>

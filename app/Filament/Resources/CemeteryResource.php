@@ -43,7 +43,11 @@ class CemeteryResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                
+                 Forms\Components\TextInput::make('slug')
+                    ->label('slug')
+                    ->required()
+                    ->maxLength(255),
+
                 Forms\Components\TextInput::make('width')
                     ->label('Ширина')
                     ->required()

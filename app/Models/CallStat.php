@@ -62,7 +62,7 @@ class CallStat extends Model
         return $this->belongsTo(Organization::class);
     }
 
-    public static function callback(Request $request)
+   public static function callback(Request $request)
     {
         // Валидация входящих данных
         $validated = $request->validate([
@@ -124,6 +124,12 @@ class CallStat extends Model
                 }
             }
 
+            // Обрабатываем запись звонка, если есть URL
+            $localRecordPath = null;
+            if (!empty($validated['recordUrl'])) {
+                $localRecordPath = self::downloadCallRecord($validated['recordUrl']);
+            }
+
             // Создаем запись о звонке
             $callStat = self::create([
                 'call_id' => $validated['callId'] ?? null,
@@ -162,7 +168,7 @@ class CallStat extends Model
                 // Данные звонка
                 'webhook_type' => $validated['webhookType'] ?? null,
                 'last_group' => $validated['lastGroup'] ?? null,
-                'record_url' => $validated['recordUrl'] ?? null,
+                'record_url' => $localRecordPath,
                 'date_start' => $validated['dateStart'] ?? null,
                 'caller_number' => $validated['callerNumber'] ?? null,
                 'call_type' => $validated['callType'] ?? null,
@@ -189,6 +195,60 @@ class CallStat extends Model
                 'status' => 'error',
                 'message' => 'Failed to save call stat'
             ], 500);
+        }
+    }
+
+    /**
+     * Скачивает запись звонка по URL и сохраняет локально
+     */
+    private static function downloadCallRecord(string $recordUrl): ?string
+    {
+        try {
+            // Создаем папку если не существует
+            $storagePath = storage_path('files_calls');
+            if (!file_exists($storagePath)) {
+                mkdir($storagePath, 0755, true);
+            }
+
+            // Генерируем уникальное имя файла
+            $extension = pathinfo(parse_url($recordUrl, PHP_URL_PATH), PATHINFO_EXTENSION);
+            if (empty($extension)) {
+                $extension = 'mp3'; // или другой формат по умолчанию
+            }
+            
+            $filename = 'call_record_' . uniqid() . '_' . time() . '.' . $extension;
+            $filePath = $storagePath . '/' . $filename;
+
+            // Скачиваем файл
+            $client = new \GuzzleHttp\Client();
+            $response = $client->get($recordUrl, [
+                'sink' => $filePath,
+                'timeout' => 30, // 30 секунд таймаут
+                'headers' => [
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                ]
+            ]);
+
+            // Проверяем успешность скачивания
+            if ($response->getStatusCode() === 200 && file_exists($filePath)) {
+                Log::info('Call record downloaded successfully', [
+                    'url' => $recordUrl,
+                    'local_path' => $filePath,
+                    'file_size' => filesize($filePath)
+                ]);
+                
+                return 'files_calls/' . $filename; // Возвращаем относительный путь для БД
+            }
+
+            return null;
+
+        } catch (\Exception $e) {
+            Log::error('Failed to download call record', [
+                'url' => $recordUrl,
+                'error' => $e->getMessage()
+            ]);
+            
+            return null;
         }
     }
 
