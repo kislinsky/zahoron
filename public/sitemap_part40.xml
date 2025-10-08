@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://zahoron.ru/novokuzneck/cemetery/kladbishhe-s-krasnaia-orlovka</loc>
+    <lastmod>2025-07-26T07:02:15+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://zahoron.ru/novokuzneck/cemetery/listvianskoe-kladbishhe</loc>
+    <lastmod>2025-07-26T07:02:14+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://zahoron.ru/prokop-evsk/cemetery/zenkovskoe-kladbishhe</loc>
+    <lastmod>2025-07-26T07:01:09+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://zahoron.ru/usol-e/cemetery/usolskoe-kladbishhe</loc>
+    <lastmod>2025-07-26T07:02:23+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://zahoron.ru/novokuzneck/cemetery/bedarevskoe-kladbishhe</loc>
+    <lastmod>2025-07-26T07:02:14+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://zahoron.ru/pos-tajzina/cemetery/kladbishhe-pos-taizina</loc>
     <lastmod>2025-07-26T07:02:14+00:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -758,7 +788,7 @@
   </url>
   <url>
     <loc>https://zahoron.ru/vladivostok/cemetery/kladbishhe-1755154228-1</loc>
-    <lastmod>2025-07-26T07:01:08+00:00</lastmod>
+    <lastmod>2025-09-18T23:28:19+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -5967,36 +5997,6 @@
   <url>
     <loc>https://zahoron.ru/bransk/cemetery/kladbishhe-d-merkulevo</loc>
     <lastmod>2025-07-26T07:02:37+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://zahoron.ru/vladikavkaz/cemetery/kladbishhe-1755154252-1</loc>
-    <lastmod>2025-07-26T07:04:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://zahoron.ru/s-malinovka/cemetery/kladbishhe-1755154252-1</loc>
-    <lastmod>2025-08-03T10:55:35+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://zahoron.ru/pos-nikolaevka/cemetery/kladbishhe-1755154252-1</loc>
-    <lastmod>2025-07-26T07:03:01+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://zahoron.ru/s-sovetskoe/cemetery/kladbishhe-1755154252-1</loc>
-    <lastmod>2025-08-03T10:55:13+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://zahoron.ru/s-sadovoe/cemetery/kladbishhe-1755154252-1</loc>
-    <lastmod>2025-08-03T10:55:15+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

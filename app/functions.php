@@ -2394,16 +2394,29 @@ function changeContent($content,$model=null){
 
 
 function addView($entityType, $entityId, $userId = null, $source = null)
-    {
-        View::create([
-            'entity_type' => $entityType,
-            'entity_id' => $entityId,
-            'user_id' => $userId,
-            'session_id' => request()->session()->getId(),
-            'source' => $source,
-            'ip_address' => request()->ip(),
-        ]);
+{
+    $userAgent = request()->userAgent();
+    $deviceType = 'Unknown';
+    
+    // Простая детекция типа устройства
+    if (preg_match('/(mobile|android|iphone|ipod|blackberry|opera mini)/i', $userAgent)) {
+        $deviceType = 'mobile';
+    } elseif (preg_match('/(tablet|ipad|kindle|silk)/i', $userAgent)) {
+        $deviceType = 'tablet';
+    } else {
+        $deviceType = 'desktop';
     }
+    
+    View::create([
+        'entity_type' => $entityType,
+        'entity_id' => $entityId,
+        'user_id' => $userId,
+        'session_id' => request()->session()->getId(),
+        'source' => $source,
+        'ip_address' => request()->ip(),
+        'device' => $deviceType,
+    ]);
+}
 
 
 function addActiveCategory(string $input, array $excludeCategories = [],$organization,$price=null)

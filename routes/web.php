@@ -538,6 +538,22 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
 
                 Route::group(['middleware'=>'user.role.check'],function(){
 
+                    
+                    Route::group(['prefix'=>'tickets'], function() {
+                        Route::get('/', [TicketController::class, 'index'])->name('account.agency.tickets.index');
+                        Route::get('/create', [TicketController::class, 'create'])->name('account.agency.tickets.create');
+                    });
+
+                    Route::group(['prefix'=>'users'], function() {
+                        Route::get('/', [AgencyController::class, 'users'])->name('account.agency.users');
+                        Route::post('/store', [AgencyController::class, 'store'])->name('account.agency.users.store');
+                        Route::get('/{user}', [AgencyController::class, 'edit'])->name('account.agency.users.edit');
+                        Route::put('/{user}', [AgencyController::class, 'update'])->name('account.agency.users.update');
+                        Route::delete('/{user}', [AgencyController::class, 'destroy'])->name('account.agency.users.destroy');
+                        Route::post('/{user}/update-organization', [AgencyController::class, 'updateOrganization'])->name('account.agency.users.update.organization');                    
+                    });
+
+
                     Route::group(['prefix'=>'calls'], function() {
                         Route::get('/stats',[AgencyOrganizationController::class,'callStats'])->name('account.agency.organization.calls.stats');
                     });
@@ -774,8 +790,6 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
 
 
                 Route::group(['prefix'=>'burial'], function() {
-                    Route::get('/', [AdminBurialController::class, 'index'])->name('account.admin.burial');
-                    Route::delete('/delete/{burial}', [AdminBurialController::class, 'delete'])->name('account.admin.burial.delete');
                     Route::get('/parser', [AdminBurialController::class, 'parser'])->name('account.admin.burial.parser');
                     Route::post('/import', [AdminBurialController::class, 'import'])->name('account.admin.burial.import');
                     

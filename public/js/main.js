@@ -480,6 +480,9 @@ $( ".open_monument_image_form" ).on( "click", function() {
 })
 
 
+$( "#toggleUserForm" ).on( "click", function() {
+    $('#userFormContainer').slideToggle(200);
+})
 
 
 $( ".edge_li" ).on( "click", function() {

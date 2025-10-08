@@ -2462,6 +2462,17 @@ text-align: left;
     border:none;
 }
 
+.flex_user_agency{
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.col-corganization div{
+    text-align: center;
+}
+
 .flex_input_checkbox .slider:before {
     position: absolute;
     content: "";

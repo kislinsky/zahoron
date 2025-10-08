@@ -11,6 +11,7 @@ use App\Models\Organization;
 use App\Models\Church;
 use App\Models\Mosque;
 use App\Models\CategoryProduct;
+use App\Models\Burial; // Добавляем модель Burial
 use Illuminate\Console\Command;
 use Spatie\Sitemap\SitemapIndex;
 use Spatie\Sitemap\Tags\Url;
@@ -178,6 +179,7 @@ class GenerateSitemap extends Command
         $this->addOrganizations();
         $this->addCemeteries();
         $this->addMortuaries();
+        $this->addBurials(); // Добавляем захоронения
     }
 
     protected function addOrganizations()
@@ -350,5 +352,38 @@ class GenerateSitemap extends Command
             '/%s/mosque/%s',
             'mosques'
         );
+    }
+
+    // Добавляем метод для обработки захоронений
+    protected function addBurials()
+    {
+        $this->info('Processing burials with strict counting...');
+        
+        
+        // Add individual burial pages - используем связь burial->cemetery->city
+        Burial::where('status', 1) // Только захоронения со статусом 1
+            ->with(['cemetery.city'])
+            ->select(['burials.slug', 'burials.cemetery_id', 'burials.updated_at'])
+            ->whereHas('cemetery.city', function($query) {
+                $query->whereIn('id', array_keys($this->citySlugs));
+            })
+            ->orderBy('burials.id')
+            ->chunk(1000, function($burials) {
+                foreach ($burials as $burial) {
+                    if ($burial->cemetery && $burial->cemetery->city && 
+                        isset($this->citySlugs[$burial->cemetery->city->id])) {
+                        
+                        $citySlug = $this->citySlugs[$burial->cemetery->city->id];
+                        $url = $this->baseUrl . "/{$citySlug}/burial/{$burial->slug}";
+                        
+                        $this->addUrlWithStrictCounting(
+                            Url::create($url)
+                                ->setLastModificationDate($burial->updated_at)
+                                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                                ->setPriority(0.5)
+                        );
+                    }
+                }
+            });
     }
 }

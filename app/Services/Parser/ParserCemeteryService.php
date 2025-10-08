@@ -11,14 +11,14 @@ use App\Models\PriceService;
 use App\Models\ReviewCemetery;
 use App\Models\Service;
 use App\Models\WorkingHoursCemetery;
+use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class ParserCemeteryService
 {
 
-
- public static function index($request) {
+    public static function index($request) {
         // Валидация входных данных
         $validated = $request->validate([
             'files' => 'required|array',
@@ -54,22 +54,20 @@ class ParserCemeteryService
                 $columns = array_flip($filteredTitles);
 
                 // Проверка наличия обязательных колонок
-                $requiredColumns = ['ID 2GIS','Название кладбища', 'Широта', 'Долгота'];
+                $requiredColumns = ['ID 2GIS', 'Название кладбища', 'Широта', 'Долгота'];
                 foreach ($requiredColumns as $col) {
                     if (!isset($columns[$col])) {
+                        $errors[] = "В файле {$file->getClientOriginalName()} отсутствует обязательная колонка: {$col}";
                         continue 2;
                     }
                 }
+
                 foreach ($cemeteriesData as $rowIndex => $cemeteryRow) {
-                    
                     try {
-                        
-                       
                         $objectId = transformId(isset($columns['ID 2GIS']) ? (int)rtrim($cemeteryRow[$columns['ID 2GIS']] ?? '', '!') : null);
                         
-
                         // Проверка обязательных полей
-                        if ($objectId==null) {
+                        if ($objectId == null) {
                             $skippedRows++;
                             continue;
                         }
@@ -80,7 +78,6 @@ class ParserCemeteryService
                             continue;
                         }
                                                
-
                         // Проверка координат
                         if (empty($cemeteryRow[$columns['Широта']])) {
                             $skippedRows++;
@@ -92,7 +89,6 @@ class ParserCemeteryService
                             continue;
                         }
 
-                        
                         $objects = linkRegionDistrictCity(
                             $cemeteryRow[$columns['Регион'] ?? null],
                             $cemeteryRow[$columns['Район'] ?? null],
@@ -107,68 +103,70 @@ class ParserCemeteryService
                             continue;
                         }
 
-    
-                        $status=1;
-                        if($cemeteryRow[$columns['Статус']]!=null && $cemeteryRow[$columns['Статус']]!='Действующая организация'){
+                        $status = 1;
+                        if ($cemeteryRow[$columns['Статус']] != null && $cemeteryRow[$columns['Статус']] != 'Действующая организация') {
                             $status = 0;
                         }                        
 
                         $time_difference = $city->utc_offset ?? null;
-                        if($time_difference==null && env('API_WORK')=='true'){
-                            $time_difference=differencetHoursTimezone(getTimeByCoordinates($cemeteryRow[$columns['Широта']],$cemeteryRow[$columns['Долгота']])['timezone']);
-                            $city->update(['utc_offset'=> $time_difference]);
-                            
+                        if ($time_difference == null && env('API_WORK') == 'true') {
+                            $timeData = getTimeByCoordinates($cemeteryRow[$columns['Широта']], $cemeteryRow[$columns['Долгота']]);
+                            $time_difference = differencetHoursTimezone($timeData['timezone'] ?? 'UTC');
+                            $city->update(['utc_offset' => $time_difference]);
                         }
-                        if($time_difference==null){
-                            $time_difference=0;
+                        if ($time_difference == null) {
+                            $time_difference = 0;
                         }   
                         
-                        
+                        // Полный набор данных для кладбища
                         $cemeteryData = [
-                            'id'=>$objectId,
-                            'cadastral_number' => $cemeteryRow[$columns['Кадастровый номер']], // Сохраняем оригинальный кадастровый номер
+                            'id' => $objectId,
                             'title' => $cemeteryRow[$columns['Название кладбища']],
+                            'slug' => Str::slug($cemeteryRow[$columns['Название кладбища']]),
+                            'adres' => $cemeteryRow[$columns['Адрес кладбища'] ?? null],
+                            'responsible_person_address' => $cemeteryRow[$columns['Адрес (ответственного лица)'] ?? null],
+                            'responsible_organization' => $cemeteryRow[$columns['Ответственная организация'] ?? null],
+                            'okved' => $cemeteryRow[$columns['Okved'] ?? null],
+                            'inn' => (int)($cemeteryRow[$columns['ИНН'] ?? null] ?? 0),
+                            'city_id' => $city->id,
+                            'area_id' => $area->id,
                             'width' => $cemeteryRow[$columns['Широта']],
                             'longitude' => $cemeteryRow[$columns['Долгота']],
-                            'city_id' => $city->id,
-                            'two_gis_link'=> $cemeteryRow[$columns['URL']],
-                            'area_id' => $area->id,
-                            'rating'=>$cemeteryRow[$columns['Рейтинг']],
-                            'phone' => normalizePhone($cemeteryRow[$columns['Телефон']]),
-                            'img_url' => 'default' ,
+                            'rating' => (float)str_replace(',', '.', $cemeteryRow[$columns['Рейтинг'] ?? 0]),
+                            'phone' => normalizePhone($cemeteryRow[$columns['Телефон'] ?? null]),
+                            'email' => $cemeteryRow[$columns['Емейл'] ?? null],
+                            'img_url' => 'default',
                             'href_img' => 1,
-                            'price_burial_location' => $price ?? 0,
                             'time_difference' => $time_difference,
-                            'inn'=>(int)$cemeteryRow[$columns['ИНН'] ?? null],
                             'responsible' => $cemeteryRow[$columns['Ответственное лицо (ФИО)'] ?? null],
-                            'responsible_organization'=>$cemeteryRow[$columns['Ответственная организация'] ?? null],
-                            'okved'=> $cemeteryRow[$columns['Okved'] ?? null],
-                            'status'=>$status,
+                            'cadastral_number' => $cemeteryRow[$columns['Кадастровый номер'] ?? null],
+                            'price_burial_location' => $price ?? 5900,
+                            'two_gis_link' => $cemeteryRow[$columns['URL'] ?? null],
+                            'status' => $status,
+                            'date_foundation' => $cemeteryRow[$columns['Дата парсинга'] ?? null],
+                            'address_responsible_person' => $cemeteryRow[$columns['Адрес (ответственного лица)'] ?? null],
+                            'responsible_person_full_name' => $cemeteryRow[$columns['Ответственное лицо (ФИО)'] ?? null],
                         ];
 
-
-                        
-
-    
                         if ($importAction === 'create') {
-
-                            // Проверяем существование по кадастровому номеру
-                            $existing = Cemetery::find($objectId);
+                            // Проверяем существование по ID или two_gis_link
+                            $existing = Cemetery::where('id', $objectId)
+                                                ->orWhere('two_gis_link', $objectId)
+                                                ->first();
                             if ($existing) {
                                 $skippedRows++;
                                 continue;
                             }    
 
-                            $cemetery=Cemetery::create($cemeteryData);
-
+                            $cemetery = Cemetery::create($cemeteryData);
                             $createdCemeteries++;
 
                             // Обработка режима работы при создании
-                            if(isset($columns['Режим работы']) && $cemeteryRow[$columns['Режим работы']] != null) {
+                            if (isset($columns['Режим работы']) && $cemeteryRow[$columns['Режим работы']] != null) {
                                 $workHours = $cemeteryRow[$columns['Режим работы']];
                                 $days = parseWorkingHours($workHours);
                                 
-                                foreach($days as $day) {
+                                foreach ($days as $day) {
                                     $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
                                     WorkingHoursCemetery::create([
                                         'day' => $day['day'],
@@ -179,12 +177,28 @@ class ParserCemeteryService
                                     ]);
                                 }
                             }
-                        } elseif ($importAction === 'update') {
 
-                            $cemetery = Cemetery::find($objectId);
+                            // Обработка фотографий при создании
+                            if (isset($columns['Фотографии']) && !empty($cemeteryRow[$columns['Фотографии']])) {
+                                $urls_array = explode(', ', $cemeteryRow[$columns['Фотографии']]);
+                                foreach ($urls_array as $img) {
+                                    if ($img != null) {
+                                        ImageCemetery::create([
+                                            'img_url' => $img,
+                                            'href_img' => 1,
+                                            'cemetery_id' => $cemetery->id,
+                                        ]);
+                                    }
+                                }
+                            }
+
+                        } elseif ($importAction === 'update') {
+                            // Ищем кладбище по two_gis_link или ID
+                            $cemetery = Cemetery::where('two_gis_link', $objectId)
+                                                ->orWhere('id', $objectId)
+                                                ->first();
 
                             if ($cemetery) {
-                                
                                 $updateData = [];
                                 foreach ($updateFields as $field) {
                                     if (isset($cemeteryData[$field])) {
@@ -192,21 +206,26 @@ class ParserCemeteryService
                                     }
                                 }
 
+                                // Обновляем slug если обновляется title
+                                if (isset($updateData['title']) && !isset($updateData['slug'])) {
+                                    $updateData['slug'] = Str::slug($updateData['title']);
+                                }
 
                                 if (!empty($updateData)) {
                                     $cemetery->update($updateData);
                                     $updatedCemeteries++;
                                 }
 
-                                if(in_array('working_hours', $updateFields) && isset($columns['Режим работы'])) {
+                                // Обработка режима работы при обновлении
+                                if (in_array('working_hours', $updateFields) && isset($columns['Режим работы'])) {
                                     $workHours = $cemeteryRow[$columns['Режим работы']] ?? null;
-                                    if($workHours) {
+                                    if ($workHours) {
                                         // Удаляем старые записи о рабочем времени
                                         WorkingHoursCemetery::where('cemetery_id', $cemetery->id)->delete();
                                         
                                         // Создаем новые записи
                                         $days = parseWorkingHours($workHours);
-                                        foreach($days as $day) {
+                                        foreach ($days as $day) {
                                             $holiday = ($day['time_start_work'] == 'Выходной') ? 1 : 0;
                                             WorkingHoursCemetery::create([
                                                 'day' => $day['day'],
@@ -218,13 +237,14 @@ class ParserCemeteryService
                                         }
                                     }
                                 }
+
                                 // Обработка фотографий при обновлении
                                 if (in_array('galerey', $updateFields) && isset($columns['Фотографии']) && !empty($cemeteryRow[$columns['Фотографии']])) {
                                     ImageCemetery::where('cemetery_id', $cemetery->id)->delete();
                                     
                                     $urls_array = explode(', ', $cemeteryRow[$columns['Фотографии']]);
                                     foreach ($urls_array as $img) {
-                                        if ($img != null ) {
+                                        if ($img != null) {
                                             ImageCemetery::create([
                                                 'img_url' => $img,
                                                 'href_img' => 1,
@@ -239,11 +259,13 @@ class ParserCemeteryService
                         }
                     } catch (\Exception $e) {
                         $skippedRows++;
+                        $errors[] = "Ошибка в строке " . ($rowIndex + 2) . ": " . $e->getMessage();
                     }
                 }
                 
                 $processedFiles++;
             } catch (\Exception $e) {
+                $errors[] = "Ошибка при обработке файла {$file->getClientOriginalName()}: " . $e->getMessage();
             }
         }
     
@@ -253,15 +275,10 @@ class ParserCemeteryService
                    "Обновлено кладбищ: $updatedCemeteries, " .
                    "Пропущено строк: $skippedRows";
     
-        
-    
         return redirect()->back()
             ->with("message_cart", $message)
             ->withErrors($errors);
     }
-
-
-
 
 
     

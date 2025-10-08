@@ -5,9 +5,12 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CallStatResource\Pages;
 use App\Models\CallStat;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\StatsOverviewWidget;
@@ -234,6 +237,11 @@ class CallStatResource extends Resource
                     ->searchable()
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('city')
+                    ->label('Город')
+                    ->searchable()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('organization.title')
                     ->label('Организация')
                     ->searchable()
@@ -292,18 +300,58 @@ class CallStatResource extends Resource
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('city')
-                    ->label('Город')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+               
             ])
             ->filters([
+
+                SelectFilter::make('city')
+                    ->label('Подкатегория')
+                    ->searchable(),
+
                 // Поиск по организации
                 Tables\Filters\SelectFilter::make('organization_id')
                     ->label('Организация')
                     ->relationship('organization', 'title')
                     ->searchable()
                     ->preload(),
+
+
+
+        // Фильтр по краю
+        Tables\Filters\SelectFilter::make('organization.city.area.edge')
+            ->label('Край организации')
+            ->relationship(
+                'organization.city.area.edge',
+                'title',
+                fn ($query) => $query->whereHas('area.cities.organizations')
+            )
+            ->searchable()
+            ->preload(),
+
+        // Фильтр по области
+        Tables\Filters\SelectFilter::make('organization.city.area')
+            ->label('Область организации')
+            ->relationship(
+                'organization.city.area',
+                'title',
+                fn ($query) => $query->whereHas('cities.organizations')
+            )
+            ->searchable()
+            ->preload(),
+
+                    // Фильтр по городу
+                Tables\Filters\SelectFilter::make('organization.city')
+                    ->label('Город организации')
+                    ->relationship(
+                        'organization.city',
+                        'title',
+                        fn ($query) => $query->whereHas('organizations')
+                    )
+                    ->searchable()
+                    ->preload(),
+
+
+
 
                 // Фильтр по типу звонка
                 Tables\Filters\SelectFilter::make('call_type')

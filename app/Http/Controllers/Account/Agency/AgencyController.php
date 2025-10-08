@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Account\Agency;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Services\Account\Agency\AgencyService;
 use Illuminate\Http\Request;
 
@@ -12,6 +13,77 @@ class AgencyController extends Controller
     public static function index(){
         return AgencyService::index();
     }
+
+
+
+    public static function users(){
+        return AgencyService::users();
+    }
+
+
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'surname' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email|unique:users',
+            'phone' => 'required|string',
+            'organization_id_branch' => 'nullable|exists:organizations,id'
+        ]);
+
+
+        return AgencyService::store($request);
+
+
+    }
+
+    public function updateOrganization(Request $request, User $user)
+    {
+        
+        // Проверяем, что пользователь принадлежит текущему менеджеру
+        if ($user->parent_id !== auth()->id()) {
+            return redirect()->back()->with('error', 'Пользователь вам не принадлежит');
+        }
+        return AgencyService::updateOrganization($request,$user);
+
+    }
+
+    public function edit(User $user)
+    {
+        return AgencyService::edit($user);
+    }
+
+    public function update(Request $request, User $user)
+    {
+        
+        if ($user->parent_id !== auth()->id()) {
+            return redirect()->back()->with('error', 'Пользователь вам не принадлежит');
+        }
+
+        $request->validate([
+            'surname' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email|unique:users,email,' . $user->id,
+            'phone' => 'required|unique:users,phone,' . $user->id,
+            'organization_id_branch' => 'nullable|exists:organizations,id'
+
+        ]);
+
+        return AgencyService::update($request,$user);
+
+    }
+
+    public function destroy(User $user)
+    {
+        
+        if ($user->parent_id !== auth()->id()) {
+            return response()->json(['success' => false], 403);
+        }
+
+        return AgencyService::destroy($user);
+    }
+
 
 
     public static function settings(){

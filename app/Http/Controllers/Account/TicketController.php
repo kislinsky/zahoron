@@ -25,6 +25,9 @@ class TicketController extends Controller
     {
         $tickets = $this->ticketService->getTicketsByUser(auth()->id());
         
+        if(auth()->user()->role=='organization'){
+            return view('account.agency.tickets.index', compact('tickets'));
+        }
         return view('account.user.tickets.index', compact('tickets'));
     }
 
@@ -36,6 +39,9 @@ class TicketController extends Controller
         $categories = TicketCategory::where('is_active', true)->get();
         $priorities = TicketPriority::all();
         
+        if(auth()->user()->role=='organization'){
+            return view('account.agency.tickets.create', compact('categories', 'priorities'));
+        }
         return view('account.user.tickets.create', compact('categories', 'priorities'));
     }
 
@@ -57,6 +63,8 @@ class TicketController extends Controller
             'status_id' => 1 // Open status
         ]);
 
+        
+
         return redirect()->route('account.tickets.show', $ticket)
             ->with('success', 'Тикет успешно создан!');
     }
@@ -73,6 +81,9 @@ class TicketController extends Controller
 
         $ticket->load(['replies.user', 'category', 'priority', 'status']);
         
+        if(auth()->user()->role=='organization'){
+            return view('account.agency.tickets.show', compact('ticket'));
+        }
         return view('account.user.tickets.show', compact('ticket'));
     }
 

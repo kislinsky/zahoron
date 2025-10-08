@@ -168,10 +168,6 @@ class AgencyService {
 
 
 
-
-
-
-
     public static function chooseOrganization($id){
         $organization=Organization::findOrFail($id);
         $user=Auth::user();
@@ -184,6 +180,66 @@ class AgencyService {
         
     }
 
+    public static function users(){
+        $users=user()->users;
+        $organizations=user()->organizations;
+        return view('account.agency.users.index',compact('users','organizations'));
+    }
+
+
+
+    public static function store($request)
+    {
+        $users_phone=User::where('phone',normalizePhone($request->phone))->first();
+        if($users_phone!=null){
+            return redirect()->back()->with('error', 'Пользователь с таким телефон уже существует');
+        }
+        $user = new User();
+        $user->surname = $request->surname;
+        $user->role = 'cashier';
+        $user->name = $request->name;
+        $user->patronymic = $request->patronymic;
+        $user->phone = $request->phone;
+        $user->email = $request->email;
+        $user->organization_id_branch = $request->organization_id_branch;
+        $user->parent_id = auth()->id(); // Привязываем к текущему менеджеру
+        $user->save();
+
+        return redirect()->back()->with('success', 'Пользователь успешно создан');
+    }
+
+    public static function updateOrganization($request, $user)
+    {
+
+        $user->organization_id_branch = $request->organization_id_branch;
+        $user->save();
+
+        return redirect()->back()->with('success', 'Пользователь успешно обновлен');
+    }
+
+    public static function edit($user)
+    {
+        $organization_user=$user->organizationBranch;
+        $organizations=auth()->user()->organizations;
+        return view('account.agency.users.edit',compact('user','organization_user','organizations'));
+    }
+
+    public static function update(Request $request, $user)
+    {
+        $users_phone=User::where('phone',normalizePhone($request->phone))->first();
+        if($user->phone!=$request->phone && $users_phone!=null){
+            return redirect()->back()->with('error', 'Пользователь с таким телефон уже существует');
+        }
+        $user->update($request->all());
+        return redirect()->back()->with('success', 'Данные пользователя обновлены');
+    }
+
+    public static function destroy($user)
+    {
+        $user->delete();
+
+        return redirect()->back()->with('success', 'Пользовтель успешно удален');
+    }
 
 
     // public static function acceptService($id){

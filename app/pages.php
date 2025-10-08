@@ -221,12 +221,25 @@ function organizationPages(){
             ]
         ],
 
-        ['Звонки','storage/uploads/Icon_sidebar_2.svg',
+        ['Звонки','storage/uploads/Icon_calls.svg',
            [
             ['Входящие','account.agency.organization.calls.stats']
            ]
         ],
         
+        [ 'Подчиненные','storage/uploads/Icon_sidebar_2.svg',
+           [
+                ['Список','account.agency.users']
+           ]
+        ],
+
+
+        ['Техподдержка','storage/uploads/icon_sidebar.svg',
+            [
+                ['Главная','account.agency.tickets.index'],
+                ['Создать заявку','account.agency.tickets.create'],
+            ]
+        ],
         
         ['Настройки','storage/uploads/icon_sidebar.svg',
            [
@@ -254,7 +267,7 @@ function organizationPages(){
         ],
 
 
-        ['Отзывы','storage/uploads/Icon_sidebar_2.svg',
+        ['Отзывы','storage/uploads/Icon_reviews.svg',
             [
                 ['Об организации','account.agency.reviews.organization'],
                 ['О товарах','account.agency.reviews.product'],
@@ -272,7 +285,7 @@ function organizationPages(){
        
 
 
-        ['Поставщики','storage/uploads/Icon_sidebar_2.svg',
+        ['Поставщики','storage/uploads/Icon_provider.svg',
             [
                 ['Заявки','account.agency.provider.requests.products.add'],
                 ['Созданные заявки','account.agency.provider.requests.products.created'],
@@ -478,7 +491,6 @@ function mobilePagesAccountAdmin(){
             ['Захоронения',''],
 
             [
-                ['Список',route('account.admin.burial')],
                 ['Импортировать',route('account.admin.burial.parser')],
             ]
         ],
@@ -489,7 +501,6 @@ function mobilePagesAccountAdmin(){
             ['Кладбища',''],
 
             [
-                ['Список',route('account.admin.cemetery')],
                 ['Импортировать',route('account.admin.parser.cemetery')],
                 // ['Добавить кладбища','account.admin.create.cemetery']
             ],
@@ -500,7 +511,6 @@ function mobilePagesAccountAdmin(){
             ['Крематории',''],
             
             [
-                ['Список',route('account.admin.crematorium')],
                 ['Импортировать',route('account.admin.parser.crematorium')],
                 // ['Добавить кладбища','account.admin.create.crematorium']
             ],
@@ -512,7 +522,6 @@ function mobilePagesAccountAdmin(){
             ['Колумбарии',''],
             
             [
-                ['Список',route('account.admin.columbarium')],
                 ['Импортировать',route('account.admin.parser.columbarium')],
                 // ['Добавить кладбища','account.admin.create.cemetery']
             ],
@@ -538,7 +547,7 @@ function mobilePagesAccountAdmin(){
 }
 
 
-function mobilePagesAccountAgecny() {
+function mobilePagesAccountAgency() {
 
     $organizations=user()->organizations;
     $ul_organizations=[];
@@ -602,6 +611,23 @@ function mobilePagesAccountAgecny() {
            [
                 ['Входящие',route('account.agency.organization.calls.stats')]
            ]
+        ],
+
+
+        [
+            ['Подчиненные',''],
+           [
+                ['Список',route('account.agency.users')]
+           ]
+        ],
+
+        [
+            ['Техподдержка',''],
+            
+            [
+                ['Главная',route('account.agency.tickets.index')],
+                ['Создать заявку',route('account.agency.tickets.create')],
+            ]
         ],
 
         [

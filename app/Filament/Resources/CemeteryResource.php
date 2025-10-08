@@ -166,9 +166,14 @@ class CemeteryResource extends Resource
                     ->maxLength(1000),
 
 
-                    Forms\Components\TextInput::make('cost_sponsorship_call')
-                    ->label('Стоимость спонсорства звонка с кладбища')
-                    ->maxLength(1000),
+                Forms\Components\TextInput::make('cost_sponsorship_call')
+                ->label('Стоимость спонсорства звонка с кладбища')
+                ->maxLength(1000),
+
+
+                Forms\Components\TextInput::make('responsible_person_full_name')
+                ->label('Ответственное лицо (ФИО)')
+                ->maxLength(1000),
                     
                
 
