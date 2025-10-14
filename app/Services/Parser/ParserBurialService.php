@@ -27,6 +27,7 @@ class ParserBurialService
             $validated = $request->validate([
                 'files' => 'required|array',
                 'files.*' => 'file|mimes:xlsx,xls',
+                'id_cemetery'=>'nullable|integer',
             ]);
 
             // Предзагрузка существующих slug для проверки уникальности
@@ -62,11 +63,18 @@ class ParserBurialService
 
                     Log::info('Columns found: ' . implode(', ', array_keys($columns)));
 
+
                     $requiredColumns = [
-                        'City', 'Cemetery', 'LastName', 'FirstName',
+                        'City',  'LastName', 'FirstName',
                         'BirthDate', 'DeathDate', 'Latitude', 'Longitude'
                     ];
 
+                    if(!isset($request->id_cemetery) && $request->id_cemetery!=null){
+                        $requiredColumns[]='Cemetery';
+                    }else{
+                        $cemetery = Cemetery::find($request->id_cemetery);
+                    }
+                    
                     foreach ($requiredColumns as $col) {
                         if (!isset($columns[$col])) {
                             $errorMsg = "В файле {$file->getClientOriginalName()} отсутствует обязательная колонка: {$col}";
@@ -78,6 +86,7 @@ class ParserBurialService
 
                     DB::beginTransaction();
 
+                 
                     foreach ($burialsData as $rowIndex => $burialRow) {
                         try {
                             // Пропускаем пустые строки
@@ -96,7 +105,7 @@ class ParserBurialService
 
                             // Ищем город в базе
                             $city = City::with('area.edge')
-                                ->where('title', $cityTitle)
+                                ->where('title', 'like','%'.$cityTitle.'%')
                                 ->first();
 
                             if (!$city) {
@@ -105,16 +114,20 @@ class ParserBurialService
                                 continue;
                             }
 
-                            $cemeteryTitle = $burialRow[$columns['Cemetery']] ?? null;
-                            if (!$cemeteryTitle) {
-                                $skippedRows++;
-                                continue;
+                            if(!isset($request->id_cemetery) && $request->id_cemetery!=null){
+                                $cemeteryTitle = $burialRow[$columns['Cemetery']] ?? null;
+                                if (!$cemeteryTitle) {
+                                    $skippedRows++;
+                                    continue;
+                                }
                             }
 
-                            // Ищем кладбище в базе
-                            $cemetery = Cemetery::where('city_id', $city->id)
+
+                            if(!isset($request->id_cemetery) || $request->id_cemetery==null){
+                                $cemetery = Cemetery::where('city_id', $city->id)
                                 ->where('title', $cemeteryTitle)
                                 ->first();
+                            }
 
                             if (!$cemetery) {
                                 Log::warning("Cemetery not found: " . $cemeteryTitle . " for city: " . $cityTitle);

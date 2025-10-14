@@ -550,7 +550,6 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                         Route::get('/{user}', [AgencyController::class, 'edit'])->name('account.agency.users.edit');
                         Route::put('/{user}', [AgencyController::class, 'update'])->name('account.agency.users.update');
                         Route::delete('/{user}', [AgencyController::class, 'destroy'])->name('account.agency.users.destroy');
-                        Route::post('/{user}/update-organization', [AgencyController::class, 'updateOrganization'])->name('account.agency.users.update.organization');                    
                     });
 
 

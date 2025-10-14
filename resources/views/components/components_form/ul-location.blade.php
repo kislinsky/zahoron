@@ -45,6 +45,8 @@
     if(type_request=='children' & type_object=='cemetery'){
         $('#location_form_2').modal('hide')
         $('.input_location input').val($(this).html())
+        $('.cemetery_id_input').val(id)
+
         $('.load_block_2').hide()
     }else{
         $('.html_geo .block_location').remove()

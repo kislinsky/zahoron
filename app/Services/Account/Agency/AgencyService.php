@@ -208,14 +208,6 @@ class AgencyService {
         return redirect()->back()->with('success', 'Пользователь успешно создан');
     }
 
-    public static function updateOrganization($request, $user)
-    {
-
-        $user->organization_id_branch = $request->organization_id_branch;
-        $user->save();
-
-        return redirect()->back()->with('success', 'Пользователь успешно обновлен');
-    }
 
     public static function edit($user)
     {

@@ -23,7 +23,7 @@ $cities=mainCities();
                         @if(count($cities)>0)
                             <div  class="ul_location">
                                 @foreach ($cities as $city)
-                                    <a href="{{changeUrl($city)}}"  class="li_location city_li">{{ $city->title }} </a>
+                                    <a href="/{{$city->slug}}"  class="li_location city_li">{{ $city->title }} </a>
                                 @endforeach
                             </div>
                         @endif

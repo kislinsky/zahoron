@@ -49,6 +49,15 @@ Route::prefix('app')->group(function () {
             Route::group(['prefix' => 'account'], function() {
                 Route::group(['prefix' => 'agency'], function() {
 
+
+                     Route::group(['prefix'=>'users'], function() {
+                        Route::get('/', [AgencyController::class, 'users'])->name('account.agency.users');
+                        Route::post('/store', [AgencyController::class, 'storeUser'])->name('account.agency.users.store');
+                        Route::get('/{user}', [AgencyController::class, 'editUser'])->name('account.agency.users.edit');
+                        Route::put('/{user}', [AgencyController::class, 'updateUser'])->name('account.agency.users.update');
+                        Route::delete('/{user}', [AgencyController::class, 'destroyUser'])->name('account.agency.users.destroy');
+                    });
+
                     Route::post('/change-organization', [AgencyController::class, 'changeOrganization']);
                     Route::get('/organizations', [AgencyController::class, 'getUserOrganizations']);
                     Route::get('/current-organization', [AgencyController::class, 'getCurrentOrganization']);

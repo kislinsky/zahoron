@@ -5556,6 +5556,431 @@
                 ]
             }
         },
+        "/app/organization/account/agency/users": {
+            "get": {
+                "tags": [
+                    "Подчиненные организации (кассиры)"
+                ],
+                "summary": "Получить список пользователей агентства",
+                "operationId": "d1e5b81bab3a5978a8e451149ae461b1",
+                "responses": {
+                    "200": {
+                        "description": "Список пользователей успешно получен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Пользователи успешно получены"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Иван"
+                                                    },
+                                                    "surname": {
+                                                        "type": "string",
+                                                        "example": "Иванов"
+                                                    },
+                                                    "patronymic": {
+                                                        "type": "string",
+                                                        "example": "Иванович"
+                                                    },
+                                                    "phone": {
+                                                        "type": "string",
+                                                        "example": "+79991234567"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "example": "ivan@example.com"
+                                                    },
+                                                    "organization_name": {
+                                                        "type": "string",
+                                                        "example": "Название организации"
+                                                    },
+                                                    "branch_name": {
+                                                        "type": "string",
+                                                        "example": "Название филиала"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/app/organization/account/agency/users/store": {
+            "post": {
+                "tags": [
+                    "Подчиненные организации (кассиры)"
+                ],
+                "summary": "Создать нового пользователя агентства",
+                "operationId": "930ea4ebbc90908698a7cdd86274b7e3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "surname",
+                                    "name",
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "surname": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Иванов"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Иван"
+                                    },
+                                    "patronymic": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Иванович"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "ivan@example.com"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+79991234567"
+                                    },
+                                    "organization_id_branch": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Пользователь успешно создан",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Пользователь успешно создан"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибка валидации"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/app/organization/account/agency/users/{user}": {
+            "get": {
+                "tags": [
+                    "Подчиненные организации (кассиры)"
+                ],
+                "summary": "Получить данные пользователя для редактирования",
+                "operationId": "a990e9154507f7d82074998aadfda511",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "ID пользователя",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Данные пользователя получены",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "type": "object"
+                                                },
+                                                "organization_user": {
+                                                    "type": "object"
+                                                },
+                                                "organizations": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Пользователь не принадлежит текущему пользователю",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Пользователь вам не принадлежит"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Пользователь не найден"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Подчиненные организации (кассиры)"
+                ],
+                "summary": "Обновить данные пользователя",
+                "operationId": "07c634ea0ab4bd88fffb0c4f6f15df5a",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "ID пользователя",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "surname",
+                                    "name",
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "surname": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Иванов"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Иван"
+                                    },
+                                    "patronymic": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Иванович"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "ivan@example.com"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+79991234567"
+                                    },
+                                    "organization_id_branch": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Данные пользователя обновлены",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Данные пользователя обновлены"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Пользователь не принадлежит текущему пользователю"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    },
+                    "500": {
+                        "description": "Ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Подчиненные организации (кассиры)"
+                ],
+                "summary": "Удалить пользователя",
+                "operationId": "36f120cc7dd53999021f2c97283edd67",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "ID пользователя",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пользователь успешно удален",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Пользователь успешно удален"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Пользователь не принадлежит текущему пользователю"
+                    },
+                    "500": {
+                        "description": "Ошибка сервера"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/app/organization/register": {
             "post": {
                 "tags": [
@@ -7668,6 +8093,10 @@
         {
             "name": "Cemeteries",
             "description": "Cemeteries"
+        },
+        {
+            "name": "Подчиненные организации (кассиры)",
+            "description": "Подчиненные организации (кассиры)"
         },
         {
             "name": "Авторизация/регистрация агенства",

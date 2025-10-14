@@ -2876,4 +2876,208 @@ public static function getUserOrganizations(){}
  * )
  */
 public static function getCurrentOrganization(){}
+
+
+
+/**
+ * @OA\Get(
+ *     path="/app/organization/account/agency/users",
+ *     summary="Получить список пользователей агентства",
+ *     tags={"Подчиненные организации (кассиры)"},
+ *     security={{ "bearerAuth": {} }},
+ *     @OA\Response(
+ *         response=200,
+ *         description="Список пользователей успешно получен",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Пользователи успешно получены"),
+ *             @OA\Property(
+ *                 property="data",
+ *                 type="array",
+ *                 @OA\Items(
+ *                     @OA\Property(property="id", type="integer", example=1),
+ *                     @OA\Property(property="name", type="string", example="Иван"),
+ *                     @OA\Property(property="surname", type="string", example="Иванов"),
+ *                     @OA\Property(property="patronymic", type="string", example="Иванович"),
+ *                     @OA\Property(property="phone", type="string", example="+79991234567"),
+ *                     @OA\Property(property="email", type="string", example="ivan@example.com"),
+ *                     @OA\Property(property="organization_name", type="string", example="Название организации"),
+ *                     @OA\Property(property="branch_name", type="string", example="Название филиала")
+ *                 )
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Неавторизован"
+ *     )
+ * )
+ */
+    public static function users(){}
+/**
+ * @OA\Post(
+ *     path="/app/organization/account/agency/users/store",
+ *     summary="Создать нового пользователя агентства",
+ *     tags={"Подчиненные организации (кассиры)"},
+ *     security={{ "bearerAuth": {} }},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"surname","name","phone"},
+ *             @OA\Property(property="surname", type="string", maxLength=255, example="Иванов"),
+ *             @OA\Property(property="name", type="string", maxLength=255, example="Иван"),
+ *             @OA\Property(property="patronymic", type="string", maxLength=255, example="Иванович"),
+ *             @OA\Property(property="email", type="string", format="email", example="ivan@example.com"),
+ *             @OA\Property(property="phone", type="string", example="+79991234567"),
+ *             @OA\Property(property="organization_id_branch", type="integer", example=1)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="Пользователь успешно создан",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Пользователь успешно создан"),
+ *             @OA\Property(property="data", type="object")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Ошибка валидации",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Ошибка валидации"),
+ *             @OA\Property(property="errors", type="object")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Ошибка сервера"
+ *     )
+ * )
+ */
+    public static function storeUser(Request $request){}
+/**
+ * @OA\Get(
+ *     path="/app/organization/account/agency/users/{user}",
+ *     summary="Получить данные пользователя для редактирования",
+ *     tags={"Подчиненные организации (кассиры)"},
+ *     security={{ "bearerAuth": {} }},
+ *     @OA\Parameter(
+ *         name="user",
+ *         in="path",
+ *         required=true,
+ *         description="ID пользователя",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Данные пользователя получены",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(
+ *                 property="data",
+ *                 type="object",
+ *                 @OA\Property(property="user", type="object"),
+ *                 @OA\Property(property="organization_user", type="object"),
+ *                 @OA\Property(property="organizations", type="array", @OA\Items(type="object"))
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=403,
+ *         description="Пользователь не принадлежит текущему пользователю",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Пользователь вам не принадлежит")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Пользователь не найден"
+ *     )
+ * )
+ */
+    public static function editUser(User $user){}
+/**
+ * @OA\Put(
+ *     path="/app/organization/account/agency/users/{user}",
+ *     summary="Обновить данные пользователя",
+ *     tags={"Подчиненные организации (кассиры)"},
+ *     security={{ "bearerAuth": {} }},
+ *     @OA\Parameter(
+ *         name="user",
+ *         in="path",
+ *         required=true,
+ *         description="ID пользователя",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"surname","name","phone"},
+ *             @OA\Property(property="surname", type="string", maxLength=255, example="Иванов"),
+ *             @OA\Property(property="name", type="string", maxLength=255, example="Иван"),
+ *             @OA\Property(property="patronymic", type="string", maxLength=255, example="Иванович"),
+ *             @OA\Property(property="email", type="string", format="email", example="ivan@example.com"),
+ *             @OA\Property(property="phone", type="string", example="+79991234567"),
+ *             @OA\Property(property="organization_id_branch", type="integer", example=1)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Данные пользователя обновлены",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Данные пользователя обновлены"),
+ *             @OA\Property(property="data", type="object")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=403,
+ *         description="Пользователь не принадлежит текущему пользователю"
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Ошибка валидации"
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Ошибка сервера"
+ *     )
+ * )
+ */
+    public static function updateUser(Request $request, User $user){}
+/**
+ * @OA\Delete(
+ *     path="/app/organization/account/agency/users/{user}",
+ *     summary="Удалить пользователя",
+ *     tags={"Подчиненные организации (кассиры)"},
+ *     security={{ "bearerAuth": {} }},
+ *     @OA\Parameter(
+ *         name="user",
+ *         in="path",
+ *         required=true,
+ *         description="ID пользователя",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Пользователь успешно удален",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Пользователь успешно удален")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=403,
+ *         description="Пользователь не принадлежит текущему пользователю"
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Ошибка сервера"
+ *     )
+ * )
+ */
+    public static function destroyUser(User $user){}
 }

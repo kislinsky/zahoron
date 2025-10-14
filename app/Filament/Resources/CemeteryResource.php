@@ -149,6 +149,13 @@ class CemeteryResource extends Resource
                     ->required()
                     ->maxLength(255),
 
+
+                    Forms\Components\TextInput::make('cost_sponsorship_call')
+                    ->label('Цена за звонок')
+                    ->numeric()
+                    ->required()
+                    ->maxLength(255),
+
                     Forms\Components\TextInput::make('square')
                     ->label('Площадь')
                     ->maxLength(255),

@@ -164,7 +164,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
     @csrf
 </form>
 
-
+@if(env('AI_CHAT')!='off')
  <div class="chat-widget">
         <button class="chat-button" id="chatToggle">
             <svg viewBox="0 0 24 24">
@@ -210,7 +210,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
             </div>
         </div>
     </div> 
-
+@endif
 <script>
 
 $( ".change_theme" ).on( "click", function() {

@@ -2186,7 +2186,6 @@ function generateSixDigitCode() {
 function createUserWithPhone($phone,$name='',$role='user',$inn='',$organization_form='',$orgainization_ids=[]){
 
     $user=User::where('phone',$phone)->get();
-    Wallet::create(['user_id'=>$user->id]);
 
     if(isset($user[0])){
         return null;
@@ -2208,6 +2207,8 @@ function createUserWithPhone($phone,$name='',$role='user',$inn='',$organization_
         'organization_form'=>$organization_form,
         'inn'=>$inn,
     ]);
+
+    Wallet::create(['user_id'=>$userCreate->id]);
 
     if (!empty($organization_ids)) {
         Organization::whereIn('id', $organization_ids)

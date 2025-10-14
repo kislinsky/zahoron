@@ -484,6 +484,11 @@ $( "#toggleUserForm" ).on( "click", function() {
     $('#userFormContainer').slideToggle(200);
 })
 
+$( "#toggleUserFormEmpty" ).on( "click", function() {
+    $('#userFormContainer').slideToggle(200);
+})
+
+
 
 $( ".edge_li" ).on( "click", function() {
   block_parent=$( this ).parent('.ul_location')

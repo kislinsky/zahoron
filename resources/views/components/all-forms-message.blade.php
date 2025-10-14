@@ -9,7 +9,6 @@
 
 
 
-
 @if(session("message_words_memory"))
     <div class="bac_black">
         <div class='message'>

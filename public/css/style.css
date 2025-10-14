@@ -2462,6 +2462,10 @@ text-align: left;
     border:none;
 }
 
+.default_admin_form .input_location_settings{
+    width: 100%;
+}
+
 .flex_user_agency{
     display: flex;
     justify-content: space-between;

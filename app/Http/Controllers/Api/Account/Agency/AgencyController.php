@@ -2103,79 +2103,257 @@ public function getCemetery(int $id): JsonResponse
 
 
    public function getUserOrganizations(): JsonResponse
-{
-    try {
-        $user = auth()->user();
-        
-        $organizations = Organization::where('user_id', $user->id)
-            ->orderBy('title')
-            ->get(['id', 'slug', 'title', 'created_at']);
+    {
+        try {
+            $user = auth()->user();
+            
+            $organizations = Organization::where('user_id', $user->id)
+                ->orderBy('title')
+                ->get(['id', 'slug', 'title', 'created_at']);
 
-        // Преобразуем ID в строки
-        $organizations->transform(function ($org) {
-            $org->id = (string)$org->id;
-            return $org;
+            // Преобразуем ID в строки
+            $organizations->transform(function ($org) {
+                $org->id = (string)$org->id;
+                return $org;
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $organizations,
+                'count' => $organizations->count(),
+                'message' => 'Организации пользователя успешно получены'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при получении организаций',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getCurrentOrganization(): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+            
+            if (!$user->organization_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Организация не выбрана'
+                ], 404);
+            }
+
+            $organization = Organization::where('id', $user->organization_id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if (!$organization) {
+                $user->organization_id = null;
+                $user->save();
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Организация не найдена'
+                ], 404);
+            }
+
+            // Преобразуем ID в строку
+            $organization->id = (string)$organization->id;
+
+            return response()->json([
+                'success' => true,
+                'data' => $organization,
+                'message' => 'Текущая организация успешно получена'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при получении организации',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public static function users(){
+        $users = auth()->user()->users()->with('organizationBranch')->get();
+
+        $formattedUsers = $users->map(function($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'surname' => $user->surname,
+                'patronymic' => $user->patronymic,
+                'phone' => $user->phone,
+                'email' => $user->email,
+                'organization_name' => $user->organizationBranch->organization->title ?? null,
+                'branch_name' => $user->organizationBranch->title ?? null,
+            ];
         });
 
         return response()->json([
             'success' => true,
-            'data' => $organizations,
-            'count' => $organizations->count(),
-            'message' => 'Организации пользователя успешно получены'
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Ошибка при получении организаций',
-            'error' => $e->getMessage()
-        ], 500);
+            'message' => 'Пользователи успешно получены',
+            'data' => $formattedUsers,
+        ], 200);
     }
-}
 
-public function getCurrentOrganization(): JsonResponse
-{
-    try {
-        $user = auth()->user();
-        
-        if (!$user->organization_id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Организация не выбрана'
-            ], 404);
-        }
+    public static function storeUser(Request $request)
+    {
+        try {
+            // Валидация
+            $validator = Validator::make($request->all(), [
+                'surname' => 'required|string|max:255',
+                'name' => 'required|string|max:255',
+                'email' => 'nullable|email|unique:users',
+                'phone' => 'required|string',
+                'organization_id_branch' => 'nullable|exists:organizations,id'
+            ]);
 
-        $organization = Organization::where('id', $user->organization_id)
-            ->where('user_id', $user->id)
-            ->first();
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ошибка валидации',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
 
-        if (!$organization) {
-            $user->organization_id = null;
+            $users_phone = User::where('phone', normalizePhone($request->phone))->first();
+            if($users_phone != null){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Пользователь с таким телефоном уже существует'
+                ], 422);
+            }
+            
+            $user = new User();
+            $user->surname = $request->surname;
+            $user->role = 'cashier';
+            $user->name = $request->name;
+            $user->patronymic = $request->patronymic;
+            $user->phone = $request->phone;
+            $user->email = $request->email;
+            $user->organization_id_branch = $request->organization_id_branch;
+            $user->parent_id = auth()->id();
             $user->save();
 
             return response()->json([
+                'success' => true,
+                'message' => 'Пользователь успешно создан',
+                'data' => $user
+            ], 201);
+            
+        } catch (\Exception $e) {
+            return response()->json([
                 'success' => false,
-                'message' => 'Организация не найдена'
-            ], 404);
+                'message' => 'Ошибка при создании пользователя'
+            ], 500);
+        }
+    }
+
+    public static function editUser(User $user)
+    {
+        // Проверка принадлежности пользователя
+        if ($user->parent_id !== auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Пользователь вам не принадлежит'
+            ], 403);
         }
 
-        // Преобразуем ID в строку
-        $organization->id = (string)$organization->id;
-
+        $organization_user = $user->organizationBranch;
+        $organizations = auth()->user()->organizations;
+        
         return response()->json([
             'success' => true,
-            'data' => $organization,
-            'message' => 'Текущая организация успешно получена'
+            'data' => [
+                'user' => $user,
+                'organization_user' => $organization_user,
+                'organizations' => $organizations
+            ]
         ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Ошибка при получении организации',
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
+
+    public static function updateUser(Request $request, User $user)
+    {
+        try {
+            // Проверка принадлежности пользователя
+            if ($user->parent_id !== auth()->id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Пользователь вам не принадлежит'
+                ], 403);
+            }
+
+            // Валидация
+            $validator = Validator::make($request->all(), [
+                'surname' => 'required|string|max:255',
+                'name' => 'required|string|max:255',
+                'email' => 'nullable|email|unique:users,email,' . $user->id,
+                'phone' => 'required|string|unique:users,phone,' . $user->id,
+                'organization_id_branch' => 'nullable|exists:organizations,id'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ошибка валидации',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $users_phone = User::where('phone', normalizePhone($request->phone))->first();
+            if($user->phone != $request->phone && $users_phone != null){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Пользователь с таким телефоном уже существует'
+                ], 422);
+            }
+            
+            $user->update($request->all());
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Данные пользователя обновлены',
+                'data' => $user
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при обновлении пользователя'
+            ], 500);
+        }
+    }
+
+    public static function destroyUser(User $user)
+    {
+        try {
+            // Проверка принадлежности пользователя
+            if ($user->parent_id !== auth()->id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Пользователь вам не принадлежит'
+                ], 403);
+            }
+
+            $user->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Пользователь успешно удален'
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при удалении пользователя'
+            ], 500);
+        }
+    }
 }
 
 

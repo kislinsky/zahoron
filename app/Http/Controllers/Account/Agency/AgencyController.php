@@ -38,16 +38,7 @@ class AgencyController extends Controller
 
     }
 
-    public function updateOrganization(Request $request, User $user)
-    {
-        
-        // Проверяем, что пользователь принадлежит текущему менеджеру
-        if ($user->parent_id !== auth()->id()) {
-            return redirect()->back()->with('error', 'Пользователь вам не принадлежит');
-        }
-        return AgencyService::updateOrganization($request,$user);
-
-    }
+  
 
     public function edit(User $user)
     {
@@ -78,7 +69,7 @@ class AgencyController extends Controller
     {
         
         if ($user->parent_id !== auth()->id()) {
-            return response()->json(['success' => false], 403);
+            return redirect()->back()->with('error', 'Пользователь вам не принадлежит');
         }
 
         return AgencyService::destroy($user);
