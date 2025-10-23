@@ -203,7 +203,7 @@ class GenerateSitemap extends Command
         foreach ($cityIdsWithOrgs as $cityId) {
             if (isset($this->citySlugs[$cityId])) {
                 $this->addUrlWithStrictCounting(
-                    Url::create($this->baseUrl . "/{$this->citySlugs[$cityId]}/organizations")
+                    Url::create($this->baseUrl . "/{$this->citySlugs[$cityId]}/organization")
                         ->setLastModificationDate($this->now)
                         ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
                         ->setPriority(0.8)

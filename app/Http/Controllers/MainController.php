@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Faq;
+use App\Rules\RecaptchaRule;
 use App\Services\Burial\SearchBurialService;
 use App\Services\OurWork\OurWorkService;
 use App\Services\Page\IndexService;
@@ -93,6 +94,7 @@ function generateUniqueCitySlug($baseSlug, $cityId)
     public function store(Request $request)
     {
         $data=request()->validate([
+            'g-recaptcha-response' => ['required', new RecaptchaRule],
             'theme_feedback' => 'required|string|max:255',
             'faq_feedback' => 'required|string|min:10',
             'name_feedback' => 'required|string|max:255',

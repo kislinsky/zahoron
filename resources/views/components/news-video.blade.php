@@ -20,7 +20,7 @@
                     </div>
                 </div>
                 <div class="swiper-button-next swiper_button_next_video"><img src='{{asset('storage/uploads/Переключатель.svg')}}'></div>
-            <div class="swiper-button-prev swiper_button_prev_video"><img src='{{asset('storage/uploads/Переключатель (1).svg')}}'></div>
+            <div class="swiper-button-prev swiper_button_prev_video"><img src='{{asset('storage/uploads/Переключатель (1) copy.svg')}}'></div>
             </div>
         </section>
     @endif

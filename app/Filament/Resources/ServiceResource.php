@@ -54,7 +54,10 @@ class ServiceResource extends Resource
 
                     FileUpload::make('video_1')
                         ->label('Видео 1')
+                        ->directory('/uploads_service')
                         ->nullable(),
+
+                       
 
                     Textarea::make('text_under_video_1')
                         ->label('Текст под видео 1')
@@ -74,13 +77,14 @@ class ServiceResource extends Resource
 
                     FileUpload::make('video_2')
                         ->label('Видео 2')
+                        ->directory('/uploads_service')
                         ->nullable(),
 
                     FileUpload::make('img_structure')
                         ->label('Изображение структуры')
                         ->nullable()
                         ->disk('public')
-                        ->directory('services/images')
+                        ->directory('/services/images')
                         ->maxSize(1024) // 1MB
                         ->image(),
                 ]),

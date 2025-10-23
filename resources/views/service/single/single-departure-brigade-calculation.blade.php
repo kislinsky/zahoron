@@ -58,7 +58,7 @@ use App\Models\Service;
             </div>
         </div>
         @if($service->img_structure!=null)
-            <img class='img_structure'src="{{asset('storage/uploads_service/'.$service->img_structure)}}" alt="">
+            <img class='img_structure'src="{{asset('storage/'.$service->img_structure)}}" alt="">
         @endif
         <div class="single_flex_btn">
             <div class="blue_btn">Заказать выезд</div>
@@ -71,8 +71,8 @@ use App\Models\Service;
                     <div class="li_our_work">
                         <div class="title_before_our_works">До уборки</div>
                         <div class="title_after_our_works">После уборки</div>
-                        <img src="{{asset('storage/uploads_service/'. $img_service->img_before )}}" alt="">
-                        <img src="{{asset('storage/uploads_service/'. $img_service->img_after )}}" alt="">
+                        <img src="{{asset('storage/'. $img_service->img_before )}}" alt="">
+                        <img src="{{asset('storage/'. $img_service->img_after )}}" alt="">
                     </div>
                 @endforeach
             </div>
@@ -80,7 +80,7 @@ use App\Models\Service;
         @if($service->video_1!=null)
             <div class="video_service">
                 <img class='btn_play_video' src="{{asset('storage/uploads/Group 34.svg')}}" alt="">
-                <video controls src="{{asset('storage/uploads_service/'. $service->video_1 )}}"></video>
+                <video controls src="{{asset('storage/'. $service->video_1 )}}"></video>
             </div>
         @endif
 

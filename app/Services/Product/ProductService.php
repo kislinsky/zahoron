@@ -24,7 +24,6 @@ use Illuminate\Http\Request;
 class ProductService
 {
     public static function singleProduct($slug){
-        return abort('404');
         $product=Product::where('slug',$slug)->first();
         if($product==null || $product->view!=1){
             return redirect()->back();
@@ -48,14 +47,19 @@ class ProductService
         $category=$product->category;
         $sales=ActivityCategoryOrganization::where('organization_id',$organization->id)->where('category_children_id',$category->id)->where('sales','!=',null)->get();
         $city=selectCity();  
-
+        $category_products = Product::where('view', 1)
+            ->where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->whereNot('organization_id', $product->organization->id)
+            ->inRandomOrder()
+            ->limit(8)
+            ->get();
         $cemeteries=Cemetery::orderBy('priority', 'desc')->whereIn('id',explode(',', rtrim($product->organization->cemetery_ids,',')))->get();
         
         $cities=$city->area->edge->area->flatMap(function($area_one) {
             return $area_one->cities; // Здесь предполагается, что есть связь mortuaries
         });
         $mortuaries=Mortuary::whereIn('city_id',$cities->pluck('id'))->get();
-        $category_products=Product::orderBy('id','desc')->where('view',1)->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('city_id',$product->city_id)->get();
 
         
         if($category->type=='funeral-service'){
@@ -101,7 +105,6 @@ class ProductService
             return view('product.single.single-button-grave',compact('title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
         
-        $category_products=Product::orderBy('id','desc')->where('view',1)->where('category_id',$product->category_id)->where('id','!=',$product->id)->where('organization_id',$product->organization->id)->get();
 
         return view('product.single.single',compact('cemeteries','title_h1','agent','product','organization','sales','images','parameters','category','size','additionals','comments','category_products'));
     }
@@ -109,8 +112,6 @@ class ProductService
 
 
     public static function marketplace($slug,$data){
-                return abort('404');
-
 
         addView('page',Page::where('title','marketplace')->first()->id,user()->id ?? null,'site');
 
@@ -134,7 +135,7 @@ class ProductService
         $cats=CategoryProduct::orderBy('id','desc')->where('parent_id',null)->get();
         $products=filterProducts($data);
         $faqs=faqCatsProduct($data);
-        $cemeteries_all=$city->cemeteries->orderBy('priority', 'desc');
+        $cemeteries_all = $city->cemeteries->sortByDesc('priority');
         $cemetery=cemeteryProduct($data);
         $district=null;
         if(isset($data['district_id'])  && $data['district_id']!='undefined'){
@@ -204,16 +205,16 @@ class ProductService
         }
         $products=filterProducts($data);
         if($category->parent_id==36){
-            return view("product.components.catalog.products-show-beautification", compact("products"));
+            return view("product.components.catalog.products-show-beautification", compact("products",'category'));
         }
         if($category->parent_id==31){
-            return view("product.components.catalog.products-show-funeral-service", compact("products"));
+            return view("product.components.catalog.products-show-funeral-service", compact("products",'category'));
        }
        if($category->parent_id==45){
-            return view("product.components.catalog.products-show-organization-commemorations", compact("products"));
+            return view("product.components.catalog.products-show-organization-commemorations", compact("products",'category'));
        }
 
-        return view("product.components.catalog.products-show-beautification", compact("products"));
+        return view("product.components.catalog.products-show-beautification", compact("products",'category'));
     }
 
     public static function ajaxProductCat($data){ 

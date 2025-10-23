@@ -99,94 +99,99 @@ class BurialResource extends Resource
                                 ->openUrlInNewTab()
                             ),
 
-                            Select::make('edge_id')
-                            ->label('Край')
-                            ->options(Edge::all()->pluck('title', 'id'))
-                            ->searchable() // Добавляем поиск по тексту
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                $set('area_id', null); // Сбрасываем значение района
-                                $set('city_id', null); // Сбрасываем значение города
-                                $set('cemetery_id', null); // Сбрасываем значение кладбища
-                            })
-                            ->afterStateHydrated(function (Select $component, $record) {
-                                // Устанавливаем начальное значение для edge_id при редактировании
-                                if ($record && $record->cemetery && $record->cemetery->area) {
-                                    $component->state($record->cemetery->city->area->edge_id);
-                                }
-                            })
-                            ->dehydrated(false), // Не сохранять значение в базу данных
-                        Select::make('area_id')
-                            ->label('Округ')
-                            ->options(function ($get) {
-                                $edgeId = $get('edge_id'); // Получаем выбранный край
-                        
-                                if (!$edgeId) {
-                                    return []; // Если край не выбран, возвращаем пустой список
-                                }
-                        
-                                // Возвращаем список районов, привязанных к выбранному краю
-                                return Area::where('edge_id', $edgeId)->pluck('title', 'id');
-                            })
-                            ->searchable() // Добавляем поиск по тексту
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                $set('city_id', null); // Сбрасываем значение города при изменении района
-                                $set('cemetery_id', null); // Сбрасываем значение кладбища при изменении района
-                            })
-                            ->afterStateHydrated(function (Select $component, $record) {
-                                // Устанавливаем начальное значение для area_id при редактировании
-                                if ($record && $record->cemetery) {
-                                    $component->state($record->cemetery->city->area_id);
-                                }
-                            })
-                            ->dehydrated(false), // Не сохранять значение в базу данных
-                        
-                        Select::make('city_id')
-                            ->label('Город')
-                            ->options(function ($get) {
-                                $areaId = $get('area_id'); // Получаем выбранный район
-                                if (!$areaId) {
-                                    return []; // Если район не выбран, возвращаем пустой список
-                                }
-                        
-                                // Возвращаем список городов, привязанных к выбранному району
-                                return City::where('area_id', $areaId)->pluck('title', 'id');
-                            })
-                            ->searchable() // Добавляем поиск по тексту
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                $set('cemetery_id', null); // Сбрасываем значение кладбища при изменении города
-                            })
-                            ->afterStateHydrated(function (Select $component, $record) {
-                                // Устанавливаем начальное значение для city_id при редактировании
-                                if ($record) {
-                                    $component->state($record->cemetery->city_id);
-                                }
-                            })
-                            ->dehydrated(false), // Не сохранять значение в базу данных
-                        
-                        Select::make('cemetery_id')
-                            ->label('Кладбище')
-                            ->options(function ($get) {
-                                $cityId = $get('city_id'); // Получаем выбранный город
-                        
-                                if (!$cityId) {
-                                    return []; // Если город не выбран, возвращаем пустой список
-                                }
-                        
-                                // Возвращаем список кладбищ, привязанных к выбранному городу
-                                return Cemetery::where('city_id', $cityId)->pluck('title', 'id');
-                            })
-                            ->searchable() // Добавляем поиск по тексту
-                            ->required()
-                            ->afterStateHydrated(function (Select $component, $record) {
-                                // Устанавливаем начальное значение для cemetery_id при редактировании
-                                if ($record) {
-                                    $component->state($record->cemetery_id);
-                                }
-                            }),
-                            
+                         Select::make('edge_id')
+    ->label('Край')
+    ->options(Edge::all()->pluck('title', 'id'))
+    ->searchable()
+    ->reactive()
+    ->afterStateUpdated(function ($state, callable $set) {
+        $set('area_id', null);
+        $set('city_id', null); 
+        $set('cemetery_id', null);
+    })
+    ->afterStateHydrated(function (Select $component, $record) {
+        // Получаем edge_id через цепочку от кладбища
+        if ($record && $record->cemetery_id) {
+            $cemetery = Cemetery::with('city.area.edge')->find($record->cemetery_id);
+            if ($cemetery && $cemetery->city && $cemetery->city->area && $cemetery->city->area->edge) {
+                $component->state($cemetery->city->area->edge_id);
+            }
+        }
+    })
+    ->dehydrated(false),
+
+Select::make('area_id')
+    ->label('Округ')
+    ->options(function ($get) {
+        $edgeId = $get('edge_id');
+        
+        if (!$edgeId) {
+            return [];
+        }
+        
+        return Area::where('edge_id', $edgeId)->pluck('title', 'id');
+    })
+    ->searchable()
+    ->reactive()
+    ->afterStateUpdated(function ($state, callable $set) {
+        $set('city_id', null);
+        $set('cemetery_id', null);
+    })
+    ->afterStateHydrated(function (Select $component, $record) {
+        // Получаем area_id через цепочку от кладбища
+        if ($record && $record->cemetery_id) {
+            $cemetery = Cemetery::with('city.area')->find($record->cemetery_id);
+            if ($cemetery && $cemetery->city && $cemetery->city->area) {
+                $component->state($cemetery->city->area_id);
+            }
+        }
+    })
+    ->dehydrated(false),
+
+Select::make('city_id')
+    ->label('Город')
+    ->options(function ($get) {
+        $areaId = $get('area_id');
+        if (!$areaId) {
+            return [];
+        }
+        
+        return City::where('area_id', $areaId)->pluck('title', 'id');
+    })
+    ->searchable()
+    ->reactive()
+    ->afterStateUpdated(function ($state, callable $set) {
+        $set('cemetery_id', null);
+    })
+    ->afterStateHydrated(function (Select $component, $record) {
+        // Получаем city_id от кладбища
+        if ($record && $record->cemetery_id) {
+            $cemetery = Cemetery::with('city')->find($record->cemetery_id);
+            if ($cemetery && $cemetery->city) {
+                $component->state($cemetery->city_id);
+            }
+        }
+    })
+    ->dehydrated(false),
+
+Select::make('cemetery_id')
+    ->label('Кладбище')
+    ->options(function ($get) {
+        $cityId = $get('city_id');
+        
+        if (!$cityId) {
+            return [];
+        }
+        
+        return Cemetery::where('city_id', $cityId)->pluck('title', 'id');
+    })
+    ->searchable()
+    ->required()
+    ->afterStateHydrated(function (Select $component, $record) {
+        if ($record) {
+            $component->state($record->cemetery_id);
+        }
+    }),
 
 
 
@@ -209,22 +214,21 @@ class BurialResource extends Resource
                         ->hidden(fn ($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
 
                     // Поле для загрузки файла (отображается только если выбран вариант "Файл на сайте")
-                    FileUpload::make('img_file')
-                        ->label('Загрузить изображение')
-                        ->directory('/uploads_burials') // Директория для хранения файлов
-                        ->image()
-                        ->maxSize(2048)
-                        ->reactive()
-                        ->required(fn ($get) => intval($get('href_img')) === 0)
-                        ->hidden(fn ($get) => intval($get('href_img')) === 1), // Скрыто, если выбрано "Ссылка"
+                   FileUpload::make('img_file')
+    ->label('Загрузить изображение')
+    ->directory('/uploads_burials')
+    ->image()
+    ->maxSize(2048)
+    ->reactive()
+    ->required(fn ($get) => intval($get('href_img')) === 0)
+    ->hidden(fn ($get) => intval($get('href_img')) === 1),
 
-                    // Отображение текущего изображения (если запись уже существует)
-                    View::make('image')
-                        ->label('Текущее изображение')
-                        ->view('filament.forms.components.custom-image-burial') // Указываем путь к Blade-шаблону
-                        ->extraAttributes(['class' => 'custom-image-class'])
-                        ->columnSpan('full')
-                        ->hidden(fn ($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
+View::make('image')
+    ->label('Текущее изображение')
+    ->view('filament.forms.components.custom-image-burial')
+    ->extraAttributes(['class' => 'custom-image-class'])
+    ->columnSpan('full')
+    ->hidden(fn ($get) => intval($get('href_img')) === 0),
 
                        
 
@@ -531,7 +535,10 @@ class BurialResource extends Resource
                         // Экспорт в Excel
                         return (new FastExcel($burials))->download('burials.xlsx');
                     }),
-            ]);
+            ])
+
+            ->paginated([10, 25, 50, 100, 200, 300, 400, 'all']);
+
     }
 
     public static function getRelations(): array

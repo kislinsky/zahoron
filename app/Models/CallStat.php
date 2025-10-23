@@ -202,55 +202,99 @@ class CallStat extends Model
      * Скачивает запись звонка по URL и сохраняет локально
      */
     private static function downloadCallRecord(string $recordUrl): ?string
-    {
-        try {
-            // Создаем папку если не существует
-            $storagePath = storage_path('files_calls');
-            if (!file_exists($storagePath)) {
-                mkdir($storagePath, 0755, true);
+{
+    try {
+        $storagePath = storage_path('app/public/files_calls');
+        
+        // Создаем директорию с проверкой прав
+        if (!file_exists($storagePath)) {
+            if (!mkdir($storagePath, 0755, true) && !is_dir($storagePath)) {
+                Log::error('Failed to create directory', ['path' => $storagePath]);
+                return null;
             }
+        }
 
-            // Генерируем уникальное имя файла
-            $extension = pathinfo(parse_url($recordUrl, PHP_URL_PATH), PATHINFO_EXTENSION);
-            if (empty($extension)) {
-                $extension = 'mp3'; // или другой формат по умолчанию
-            }
-            
-            $filename = 'call_record_' . uniqid() . '_' . time() . '.' . $extension;
-            $filePath = $storagePath . '/' . $filename;
-
-            // Скачиваем файл
-            $client = new \GuzzleHttp\Client();
-            $response = $client->get($recordUrl, [
-                'sink' => $filePath,
-                'timeout' => 30, // 30 секунд таймаут
-                'headers' => [
-                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                ]
-            ]);
-
-            // Проверяем успешность скачивания
-            if ($response->getStatusCode() === 200 && file_exists($filePath)) {
-                Log::info('Call record downloaded successfully', [
-                    'url' => $recordUrl,
-                    'local_path' => $filePath,
-                    'file_size' => filesize($filePath)
-                ]);
-                
-                return 'files_calls/' . $filename; // Возвращаем относительный путь для БД
-            }
-
-            return null;
-
-        } catch (\Exception $e) {
-            Log::error('Failed to download call record', [
-                'url' => $recordUrl,
-                'error' => $e->getMessage()
-            ]);
-            
+        // Проверяем права на запись
+        if (!is_writable($storagePath)) {
+            Log::error('Directory not writable', ['path' => $storagePath]);
             return null;
         }
+
+        // Получаем расширение файла
+        $urlPath = parse_url($recordUrl, PHP_URL_PATH);
+        $extension = pathinfo($urlPath, PATHINFO_EXTENSION);
+        
+        if (empty($extension)) {
+            $extension = self::detectFileExtension($recordUrl) ?? 'mp3';
+        }
+
+        $filename = 'call_record_' . uniqid() . '_' . time() . '.' . $extension;
+        $filePath = $storagePath . DIRECTORY_SEPARATOR . $filename;
+
+        // Скачиваем файл
+        $client = new \GuzzleHttp\Client([
+            'timeout' => 30,
+            'connect_timeout' => 10,
+        ]);
+
+        $response = $client->get($recordUrl, [
+            'sink' => $filePath,
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            ],
+        ]);
+
+        // Проверяем успешность
+        if ($response->getStatusCode() === 200 && 
+            file_exists($filePath) && 
+            filesize($filePath) > 0) {
+            
+            Log::info('Call record downloaded successfully', [
+                'url' => $recordUrl,
+                'local_path' => $filePath,
+                'file_size' => filesize($filePath)
+            ]);
+            
+            return 'files_calls/' . $filename;
+        }
+
+        // Если файл пустой или не существует, удаляем его
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+
+        return null;
+
+    } catch (\Exception $e) {
+        Log::error('Failed to download call record', [
+            'url' => $recordUrl,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        return null;
     }
+}
+
+private static function detectFileExtension(string $url): ?string
+{
+    try {
+        $client = new \GuzzleHttp\Client();
+        $response = $client->head($url);
+        $contentType = $response->getHeaderLine('Content-Type');
+        
+        $mimeToExt = [
+            'audio/mpeg' => 'mp3',
+            'audio/wav' => 'wav',
+            'audio/ogg' => 'ogg',
+            'audio/x-wav' => 'wav',
+        ];
+        
+        return $mimeToExt[$contentType] ?? null;
+    } catch (\Exception $e) {
+        return null;
+    }
+}
 
     /**
      * Извлекает organization_id из различных источников

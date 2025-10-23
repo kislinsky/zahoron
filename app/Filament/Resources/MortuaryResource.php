@@ -43,10 +43,23 @@ class MortuaryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->label('Название')
-                    ->required()
-                    ->maxLength(255),
+                 TextInput::make('title')
+            ->label('Название ')
+            ->required()
+            ->live(debounce: 1000)
+            ->afterStateUpdated(function ($state, $set, $get) {
+                if (!empty($state) && strlen($state) > 3) {
+                    $set('slug', generateUniqueSlug($state, Mortuary::class, $get('id')));
+                }
+            }),
+
+        TextInput::make('slug')
+            ->required()
+            ->label('Slug')
+            
+            ->unique(ignoreRecord: true)
+            ->formatStateUsing(fn ($state) => slug($state))
+            ->dehydrateStateUsing(fn ($state, $get) => generateUniqueSlug($state, Mortuary::class, $get('id'))),
 
 
                 Forms\Components\TextInput::make('width')
@@ -86,7 +99,7 @@ class MortuaryResource extends Resource
                     ->reactive()
                     ->afterStateUpdated(function ($state, callable $set) {
                         $set('area_id', null); // Сбрасываем значение района при изменении края
-                        $set('city_id', null); // Сбрасываем значение города при изменении края
+                        $set('city_id', null); // СбCрасываем значение города при изменении края
                     })
                     ->afterStateHydrated(function (Select $component, $record) {
                         // Устанавливаем начальное значение для edge_id при редактировании
@@ -148,8 +161,8 @@ class MortuaryResource extends Resource
                     ->label('Метро')
                     ->maxLength(255),
 
-                Forms\Components\TextInput::make('next_to')
-                    ->label('Рядом с')
+                Forms\Components\TextInput::make('time_difference')
+                    ->label('Разница во времени')
                     ->maxLength(255),
 
                
@@ -182,6 +195,7 @@ class MortuaryResource extends Resource
                         'undo', 'redo', // отмена/возврат действия
                     ])
                     ->disableLabel(false) // Показывать метку
+                    ->required()
                     ->placeholder('Введите HTML-контент здесь...'),
 
                     
@@ -189,6 +203,7 @@ class MortuaryResource extends Resource
                     
                     Forms\Components\TextInput::make('adres')
                     ->label('Адрес')
+                    ->required()
                     ->maxLength(255),
                     
                     Radio::make('href_img')

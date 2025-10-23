@@ -61,7 +61,7 @@ $prices = ActivityCategoryOrganization::whereIn('category_children_id', [32, 33,
                                                 Уточняйте
                                             </a>
                                         @else
-                                            <a href='tel:{{ $organization->phone }}' class=" price-link"> 
+                                            <a href='tel:{{ $organization->phone }}' class="price-link"> 
                                                 Уточняйте
                                             </a>
                                         @endif

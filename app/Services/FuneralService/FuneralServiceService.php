@@ -99,6 +99,7 @@ class FuneralServiceService {
         }
         
         sendMessage('soobshhenie-pri-zaiavke-pop-up-ritualnye-uslugi',[],$user);
+        sendMessagesOrganizations(selectCity()->organizations,'sms-soobshhenie-dlia-organizacii-pri-zaiavke-rit-uslug','email-soobshhenie-dlia-organizacii-pri-zaiavke-rit-uslug');
 
         CloseApplicationJob::dispatch($funeral_service)->delay($time);
 

@@ -454,7 +454,7 @@ class AgencyOrganizationService {
         if($data['price_sale']>$data['price']){
             return redirect()->back()->with('error','Обычная цена больше скидочной');
         }
-        
+
         $product=Product::create([
             'title'=>$data['title'],
             'content'=>$data['content'],

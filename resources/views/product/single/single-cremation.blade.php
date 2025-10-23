@@ -84,7 +84,7 @@
                     <div class="strong_gray_text">
                         Партнёр: <a href='{{$organization->route()}}'class="blue_mini_text">{{$organization->title}}</a>
                     </div>
-                    <div class="title_rewies">ОГРН {{$agent->ogrn}}</div>
+                    <div class="title_rewies">ОГРН {{$organization->ogrn}}</div>
                     <div class="flex_main_price">
                         <div class="title_middle">Стоимость</div>
                         <div class="title_middle"><span price='{{ priceProduct($product) }}'>{{ priceProduct($product) }}</span> ₽</div>

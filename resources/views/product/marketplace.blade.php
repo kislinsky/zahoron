@@ -20,7 +20,6 @@
 <section class="product_market">
     <div class="container">
        
-       
         <div class="grid_product_two">
             <div class="one_block_market">
                 {{ view("product.components.catalog.filters", compact('layerings','sort','materials_filter','category','cemeteries_all','districts_all','cemetery','district')) }}

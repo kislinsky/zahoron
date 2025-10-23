@@ -35,6 +35,9 @@ class Beautification extends Model
     function changeStatus($status){
         if($this->status==0 && $this->organization==null){
             $this->update(['status'=>$status]);
+            if($status==4){
+                sendSms($this->user->phone,"К сожалению ваша заявка не была принята не одной организацией в течении часа.");
+            }
         }
     }
 

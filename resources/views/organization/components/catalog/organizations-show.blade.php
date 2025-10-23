@@ -17,10 +17,10 @@
             <div class="info_li_org_mobile li_org_mobile">
                 
                 @if($organization->urlImgMain()=='default')
-                    <img class='white_img_org img_logo_organization' src="{{$organization->defaultMainImg()[0]}}" alt="">   
-                    <img class='black_img_org img_logo_organization' src="{{$organization->defaultMainImg()[1]}}" alt="">   
+                    <a href='{{ $organization->route() }}' ><img class='white_img_org img_logo_organization' src="{{$organization->defaultMainImg()[0]}}" alt=""></a>   
+                    <a href='{{ $organization->route() }}' ><img class='black_img_org img_logo_organization' src="{{$organization->defaultMainImg()[1]}}" alt=""> </a>  
                 @else
-                    <img class='img_logo_organization' src="{{$organization->urlImgMain()}}" alt="">   
+                    <a href='{{ $organization->route() }}' ><img class='img_logo_organization' src="{{$organization->urlImgMain()}}" alt=""></a>
                 @endif
 
                 <div class="info_li_organization">
@@ -41,10 +41,10 @@
 
             <div class="li_logo_organization li_org_dekstop">
                 @if($organization->urlImg()=='default')
-                    <img class='white_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[0]}}" alt="">   
-                    <img class='black_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[1]}}" alt="">   
+                     <a href='{{ $organization->route() }}' ><img class='white_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[0]}}" alt="">   </a>
+                     <a href='{{ $organization->route() }}' ><img class='black_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[1]}}" alt="">  </a> 
                 @else
-                    <img class='img_logo_organization' src="{{$organization->urlImg()}}" alt="">   
+                     <a href='{{ $organization->route() }}' ><img class='img_logo_organization' src="{{$organization->urlImg()}}" alt="">   </a>
                 @endif
                 <div class="flex_stars">
                     <img src="{{asset('storage/uploads/Frame 334.svg')}}" alt=""> <div class="text_black">{{$organization->rating}}</div>

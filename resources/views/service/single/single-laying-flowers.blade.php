@@ -31,7 +31,7 @@ use App\Models\Service;
         @if($service->video_1!=null)
             <div class="video_service">
                 <img class='btn_play_video' src="{{asset('storage/uploads/Group 34.svg')}}" alt="">
-                <video controls src="{{asset('storage/uploads_service/'. $service->video_1 )}}"></video>
+                <video controls src="{{asset('storage/'. $service->video_1 )}}"></video>
             </div>
         @endif
        

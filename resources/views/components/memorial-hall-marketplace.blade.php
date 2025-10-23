@@ -1,9 +1,5 @@
 <?php
-use App\Models\Product;
- $city=selectCity();
- $products_memorial_hall=Product::whereHas('organization', function ($query) use ($city) {
-    $query->where('city_id', $city->id);
-})->where('view',1)->where('category_id',47)->get();
+ $products_memorial_hall=getProductsByCategories([47]);
 ?>
 
 @if(count($products_memorial_hall)>0)
@@ -47,7 +43,7 @@ use App\Models\Product;
             </div>
 
             <div class="swiper-button-next swiper_button_next_memorial_hall"><img src='{{asset('storage/uploads/Переключатель.svg')}}'></div>
-            <div class="swiper-button-prev swiper_button_prev_memorial_hall"><img src='{{asset('storage/uploads/Переключатель (1).svg')}}'></div>
+            <div class="swiper-button-prev swiper_button_prev_memorial_hall"><img src='{{asset('storage/uploads/Переключатель (1) copy.svg')}}'></div>
     </div>
 </section>
 @endif

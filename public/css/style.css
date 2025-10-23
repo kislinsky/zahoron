@@ -2866,6 +2866,11 @@ text-align: left;
 }
 
 .raiting_table a:hover{
+    transition: all ease-in-out 0.3s;
+    color: #0069B0;
+}
+
+.raiting_table a.price-link{
     color: #0069B0;
 }
 
@@ -3660,6 +3665,7 @@ left: -15px;
 .video_service video{
     width: 100%;
     min-width: 100%;
+    max-height: 700px;
     min-height: 100%;
 }
 .content_stage_service{
@@ -3866,7 +3872,7 @@ align-items: center;
     left: -1%;
     background-color: white;
     min-height: 100%;
-    max-height: 116px;
+    max-height: 111px;
     overflow-y: scroll;
     width: 100%;    
 }
@@ -8768,6 +8774,10 @@ color: #0080D7;
 
 .black_theme a.li_cat_news:hover, .black_theme a.title_label:hover, .black_theme a.text_li:hover, .black_theme a.title_rewies:hover, .black_theme a.content_block:hover, .black_theme a.title_memorial_hall:hover, .black_theme a.title_text_block:hover, .black_theme a.title_memorial_dinner:hover, .black_theme a.title_organization:hover, .black_theme a.mini_text_product:hover, .black_theme .price_product_monuments_grave:hover, .black_theme a.title_li:hover, .black_theme a.text_middle_index:hover, .black_theme a.title:hover, .black_theme a.mini_text:hover, .black_theme a.text_black:hover, .black_theme .li_location:hover, .black_theme a.title_news:hover, .black_theme a.text_block:hover, .black_theme .raiting_table th{
     color: #0080D7;
+}
+
+.ul_childern_cats_marketplace li{
+    padding-left: 10px;
 }
 
 .black_theme .gray_index_block_service{

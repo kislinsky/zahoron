@@ -336,6 +336,8 @@ class CemeteryResource extends Resource
                     }
                 }),
 
+
+ 
                 // SelectFilter::make('has_phone')
                 // ->label('Отсутсвуют координаты')
                 // ->options([
@@ -356,6 +358,8 @@ class CemeteryResource extends Resource
                     'yes' => 'Да',
                     'no' => 'Нет',
                 ])
+
+
                 ->query(function ($query, $state) {
                     if ($state['value'] === 'yes') {
                         $query->whereDoesntHave('burials');

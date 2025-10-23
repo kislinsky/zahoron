@@ -23,20 +23,55 @@ class CityService {
         
     }
 
-    public static function ajaxCity($data){
-        $url=$data['url'];
-        $cities = DB::table('cities')
+    public static function ajaxCity($data)
+{
+    $url = $data['url'];
+    $searchTerm = trim($data['city_id']);
+    
+    if (strlen($searchTerm) < 2) {
+        return view('components.components_form.cities', [
+            'cities' => collect(), 
+            'url' => $url
+        ]);
+    }
+
+    $cities = DB::table('cities')
         ->select('cities.*')
-        ->join('organizations', 'organizations.city_id', '=', 'cities.id')
         ->join('areas', 'cities.area_id', '=', 'areas.id')
         ->join('edges', 'areas.edge_id', '=', 'edges.id')
-        ->where('cities.title', 'like', $data['city_id'] . '%') // Используем начало строки для индекса
         ->where('edges.is_show', 1)
-        ->groupBy('cities.id')
-        ->orderBy('cities.title', 'asc')
+        ->whereExists(function ($query) {
+            $query->select(DB::raw(1))
+                  ->from('organizations')
+                  ->whereColumn('organizations.city_id', 'cities.id')
+                  ->limit(1);
+        })
+        ->where(function($query) use ($searchTerm) {
+            // Основной поиск по началу названия (быстрее всего)
+            $query->where('cities.title', 'LIKE', $searchTerm . '%');
+            
+            // Дополнительный поиск по отдельным словам
+            $words = explode(' ', $searchTerm);
+            foreach ($words as $word) {
+                if (strlen($word) > 2) {
+                    $query->orWhere('cities.title', 'LIKE', '% ' . $word . '%');
+                }
+            }
+        })
+        ->orderByRaw("
+            CASE 
+                WHEN cities.title = ? THEN 1
+                WHEN cities.title LIKE ? THEN 2
+                ELSE 3
+            END",
+            [$searchTerm, $searchTerm . '%']
+        )
+        ->orderBy('cities.title', 'ASC')
+        ->limit(30)
         ->get();
-        return view('components.components_form.cities',compact('cities','url'));
-    }
+
+    return view('components.components_form.cities', compact('cities', 'url'));
+}
 
     public static function ajaxCityFromEdge($edge_id){
         $cities=City::orderBy('title','asc')->where('edge_id',$edge_id)->get();
@@ -44,16 +79,41 @@ class CityService {
     }
 
     public static function ajaxCityInInput($city){
-         $cities = DB::table('cities')
-    ->select('cities.*')
-    ->join('organizations', 'organizations.city_id', '=', 'cities.id')
-    ->join('areas', 'cities.area_id', '=', 'areas.id')
-    ->join('edges', 'areas.edge_id', '=', 'edges.id')
-    ->where('cities.title', 'like', $city . '%') // Используем начало строки для индекса
-    ->where('edges.is_show', 1)
-    ->groupBy('cities.id')
-    ->orderBy('cities.title', 'asc')
-    ->get();
+        $searchTerm = trim($city);
+       $cities = DB::table('cities')
+        ->select('cities.*')
+        ->join('areas', 'cities.area_id', '=', 'areas.id')
+        ->join('edges', 'areas.edge_id', '=', 'edges.id')
+        ->where('edges.is_show', 1)
+        ->whereExists(function ($query) {
+            $query->select(DB::raw(1))
+                  ->from('organizations')
+                  ->whereColumn('organizations.city_id', 'cities.id')
+                  ->limit(1);
+        })
+        ->where(function($query) use ($city) {
+            // Основной поиск по началу названия (быстрее всего)
+            $query->where('cities.title', 'LIKE', $city . '%');
+            
+            // Дополнительный поиск по отдельным словам
+            $words = explode(' ', $city);
+            foreach ($words as $word) {
+                if (strlen($word) > 2) {
+                    $query->orWhere('cities.title', 'LIKE', '% ' . $word . '%');
+                }
+            }
+        })
+        ->orderByRaw("
+            CASE 
+                WHEN cities.title = ? THEN 1
+                WHEN cities.title LIKE ? THEN 2
+                ELSE 3
+            END",
+            [$city, $city . '%']
+        )
+        ->orderBy('cities.title', 'ASC')
+        ->limit(30)
+        ->get();
         return view('components.components_form.cities-input',compact('cities'));
     }
 
@@ -61,16 +121,42 @@ class CityService {
     public static function ajaxCitySearchInInput($data){
         $cities=[];
         if(isset($data['s']) && $data['s']!=null){
-             $cities = DB::table('cities')
-            ->select('cities.*')
-            ->join('organizations', 'organizations.city_id', '=', 'cities.id')
-            ->join('areas', 'cities.area_id', '=', 'areas.id')
-            ->join('edges', 'areas.edge_id', '=', 'edges.id')
-            ->where('cities.title', 'like', $data['s'] . '%') // Используем начало строки для индекса
-            ->where('edges.is_show', 1)
-            ->groupBy('cities.id')
-            ->orderBy('cities.title', 'asc')
-            ->get();
+                $searchTerm = trim($data['s']);
+
+            $cities = DB::table('cities')
+        ->select('cities.*')
+        ->join('areas', 'cities.area_id', '=', 'areas.id')
+        ->join('edges', 'areas.edge_id', '=', 'edges.id')
+        ->where('edges.is_show', 1)
+        ->whereExists(function ($query) {
+            $query->select(DB::raw(1))
+                  ->from('organizations')
+                  ->whereColumn('organizations.city_id', 'cities.id')
+                  ->limit(1);
+        })
+        ->where(function($query) use ($searchTerm) {
+            // Основной поиск по началу названия (быстрее всего)
+            $query->where('cities.title', 'LIKE', $searchTerm . '%');
+            
+            // Дополнительный поиск по отдельным словам
+            $words = explode(' ', $searchTerm);
+            foreach ($words as $word) {
+                if (strlen($word) > 2) {
+                    $query->orWhere('cities.title', 'LIKE', '% ' . $word . '%');
+                }
+            }
+        })
+        ->orderByRaw("
+            CASE 
+                WHEN cities.title = ? THEN 1
+                WHEN cities.title LIKE ? THEN 2
+                ELSE 3
+            END",
+            [$searchTerm, $searchTerm . '%']
+        )
+        ->orderBy('cities.title', 'ASC')
+        ->limit(30)
+        ->get();
         }
         return view('components.components_form.cities-input-search',compact('cities'));
     }

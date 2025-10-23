@@ -432,8 +432,11 @@ function serviceDepartureBrigadeCalculation($service){
 }
 
 function priceProduct($product){
-    if($product->price_sale!=null){
+    if($product->price_sale!=null && $product->price_sale!=0){
         return $product->price_sale;
+    }
+    if($product->price==0){
+        return 'Уточняйте';
     }
     return $product->price;
 }
@@ -2411,7 +2414,7 @@ function addView($entityType, $entityId, $userId = null, $source = null)
     View::create([
         'entity_type' => $entityType,
         'entity_id' => $entityId,
-        'user_id' => $userId,
+        'user_id' => auth()->id ?? null,
         'session_id' => request()->session()->getId(),
         'source' => $source,
         'ip_address' => request()->ip(),
@@ -2720,19 +2723,19 @@ function sendMessage($name_form,$attributes,$user){
         $message = $template->compile($attributes);
 
         if ($template->type === 'email') {
-            sendMail('toni.vinogradov.06@inbox.ru',$template->subject,$message);
+            //sendMail('toni.vinogradov.06@inbox.ru',$template->subject,$message);
+            sendMail($user->email,$template->subject,$message);
         }
 
         // Для SMS
         if ($template->type === 'sms') {
+            //sendSms('+79625582224',$message);
             sendSms($user->phone,$message);
         }
         return true;
     }
 
     return false;
-   
-
 }
 
 function transformId($num, $mode = 'encode') {
@@ -2812,4 +2815,60 @@ function generateBreadcrumbMicrodata($pages_navigation)
     return '<script type="application/ld+json">' . 
            json_encode($microdata, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . 
            '</script>';
+}
+
+
+function sendMessagesOrganizations($organizations,$template_for_sms,$template_for_email,){
+    if($organizations!=null && $organizations->count()>0){
+        foreach ($organizations as $organization){
+            if($organization->user==null){
+                sendMessage($template_for_sms,[],$organization);
+                if($organization->email!=null){
+                    sendMessage($template_for_email,[],$organization);
+                }
+            }   
+        }
+        return true;
+    }
+    return false;
+}
+
+
+function getProductsByCategories(array $categoryIds, $city = null, ?int $limit = 10, int $cacheTime = 3600)
+{
+    if (!$city) {
+        $city = selectCity();
+    }
+    
+    $cityId = is_object($city) ? $city->id : $city;
+    sort($categoryIds);
+    
+    $cacheKey = "products_categories:" . implode('_', $categoryIds) . 
+                "_city:{$cityId}_limit:{$limit}";
+    
+    // Проверяем, есть ли уже закэшированные ID продуктов
+    $cachedProductIds = Cache::store('redis')->get($cacheKey);
+    
+    if ($cachedProductIds) {
+        // Если есть кэш ID, загружаем продукты по этим ID
+        return Product::with(['organization:id,city_id,title'])
+                    ->whereIn('id', $cachedProductIds)
+                    ->get();
+    }
+    
+    // Если кэша нет, выполняем запрос и кэшируем
+    $products = Product::where('view', 1)
+        ->whereIn('category_id', $categoryIds)
+        ->with(['organization:id,city_id,title'])
+        ->whereHas('organization', function ($query) use ($cityId) {
+            $query->where('city_id', $cityId);
+        })
+        ->limit($limit)
+        ->get();
+    
+    // Кэшируем только ID продуктов (меньше данных)
+    $productIds = $products->pluck('id')->toArray();
+    Cache::store('redis')->put($cacheKey, $productIds, $cacheTime * 60);
+    
+    return $products;
 }

@@ -53,7 +53,7 @@ class BeautificationService {
         }
         
         sendMessage('soobshhenie-pri-zaiavke-pop-up-oblogorazivanie',[],$user);
-
+        sendMessagesOrganizations(selectCity()->organizations,'sms-soobshhenie-dlia-organizacii-pri-zaiavke-oblagorazivaniia','email-soobshhenie-dlia-organizacii-pri-zaiavke-oblagorazivaniia');
 
         CloseApplicationJob::dispatch($beautification)->delay($time);
 
