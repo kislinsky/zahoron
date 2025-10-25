@@ -375,6 +375,11 @@ class CemeteryResource extends Resource
                 Tables\Actions\DeleteAction::make(), // Удалить продукт
 
             ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ])
            ->headerActions([
     \Filament\Tables\Actions\Action::make('export')
         ->label('Экспорт в Excel')

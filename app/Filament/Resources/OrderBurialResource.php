@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrderBurialResource\Pages;
 use App\Filament\Resources\OrderBurialResource\RelationManagers;
+use App\Models\Burial;
 use App\Models\OrderBurial;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -26,10 +27,15 @@ class OrderBurialResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('burial_id')
-                    ->label('Захоронение')
-                    ->relationship('burial', 'id') // предполагается, что у вас есть модель Burial
-                    ->required(),
+               Forms\Components\Select::make('burial_id')
+    ->label('Захоронение')
+    ->relationship('burial', 'name') // базовое поле для связи
+    ->getOptionLabelFromRecordUsing(fn (Burial $record) => 
+        "{$record->surname} {$record->name} {$record->patronymic}"
+    )
+    ->searchable(['surname', 'name', 'patronymic']) // поля для поиска
+    ->required(),
+
                 Forms\Components\Select::make('user_id')
                     ->label('Пользователь')
                     ->relationship('user', 'id') // предполагается, что у вас есть модель User

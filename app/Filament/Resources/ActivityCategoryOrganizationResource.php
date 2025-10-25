@@ -206,6 +206,11 @@ class ActivityCategoryOrganizationResource extends Resource
                             $query->where('price', 0);
                         }
                     }),
+
+                SelectFilter::make('organization_id')
+                    ->label('Организация')
+                    ->relationship('organization', 'title')
+                    ->searchable(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

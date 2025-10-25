@@ -56,7 +56,7 @@ class Burial extends Model
         if($this->href_img==0){
             return asset('storage/'.$this->img_file);
         }
-        return $this->img_url;
+        return $this->img_original_url;
     }
 
    
