@@ -19,10 +19,30 @@ use Illuminate\Support\Facades\Hash;
 class AgentService {
 
      
-    public static function index(){
-        $user=user();
-        $orders_services=OrderService::orderBy('id','desc')->where('status',0)->where('worker_id',null)->whereIn('cemetery_id',json_decode($user->cemetery_ids))->get();
-        return view('account.agent.index',compact('user','orders_services'));
+   public static function index()
+    {
+        $user = user();
+        
+        // Проверяем, что пользователь существует и у него есть cemetery_ids
+        if (!$user || empty($user->cemetery_ids)) {
+            $orders_services = collect(); // возвращаем пустую коллекцию
+        } else {
+            // Декодируем JSON и проверяем результат
+            $cemeteryIds = json_decode($user->cemetery_ids);
+            
+            // Проверяем, что декодирование прошло успешно и это массив
+            if (json_last_error() !== JSON_ERROR_NONE || !is_array($cemeteryIds) || empty($cemeteryIds)) {
+                $orders_services = collect();
+            } else {
+                $orders_services = OrderService::orderBy('id', 'desc')
+                    ->where('status', 0)
+                    ->whereNull('worker_id')
+                    ->whereIn('cemetery_id', $cemeteryIds)
+                    ->get();
+            }
+        }
+        
+        return view('account.agent.index', compact('user', 'orders_services'));
     }
 
 

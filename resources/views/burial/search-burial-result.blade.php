@@ -31,15 +31,15 @@
                             <div class="li_product">
                                 <div class="one_block_li_product">
                                     @if($product->urlImg()=='default')
-                                        <img class='white_img_org' src="{{$product->defaultImg()[0]}}" alt="">   
-                                        <img class='black_img_org' src="{{$product->defaultImg()[1]}}" alt="">
+                                        <a href='{{ $product->route() }}' ><img class='white_img_org' src="{{$product->defaultImg()[0]}}" alt=""></a>
+                                        <a href='{{ $product->route() }}' ><img class='black_img_org' src="{{$product->defaultImg()[1]}}" alt=""></a>
                                     @else
-                                        <img src="{{$product->urlImg() }}" alt="">
+                                        <a href='{{ $product->route() }}' ><img src="{{$product->urlImg() }}" alt=""></a>
                                     @endif
                                     <div class="btn_gray">{{ $product->who }}</div>
                                 </div>
                                 <div class="two_block_li_product">
-                                    <div class="text_middle_index decoration_on">{{ $product->surname }} {{ $product->name }} {{ $product->patronymic }}</div>
+                                    <a href='{{ $product->route() }}' class="text_middle_index decoration_on">{{ $product->surname }} {{ $product->name }} {{ $product->patronymic }}</a>
                                     <div class="mini_flex_li_product">
                                         <div class="title_label">Даты захоронения:</div>
                                         <div class="text_li">{{ $product->date_birth }}-{{ $product->date_death }}</div>
@@ -50,7 +50,14 @@
                                     </div>
 
                                     <div class="flex_btn_li_product">
-                                        <a href='{{ route('burial.add',$product->id) }}'class="blue_btn">Получить координаты</a>
+                                         @if($product->cemetery->price_burial_location==0 || $product->cemetery->price_burial_location==null || $product->userHave())
+                                            <div adres='{{ $product->width }},{{ $product->longitude }}'class="blue_btn copy_adres">Скопировать</div>
+                                        @else
+                                            <form action="{{ route('order.burial.add.pay',$product->id) }}" method="post">
+                                                @csrf
+                                                <button class="blue_btn">Получить координаты</button>
+                                            </form>
+                                        @endif
                                         <a href='{{ $product->route() }}'class="btn_border_blue">Подробнее</a>
                                         <a href='{{ route('favorite.add',$product->id) }}'class="btn_border_blue img_mini_star"><img src="{{ asset('storage/uploads/Star 1 (1).svg')}}" alt=""></a>
                                     </div>

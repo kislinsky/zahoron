@@ -101,7 +101,7 @@ return [
     'web',
         Authenticate::class, // Стандартный middleware Filament
 
-        AdminMiddleware::class, // Ваш middleware
+        //AdminMiddleware::class, // Ваш middleware
     ],
     
 'exports' => [

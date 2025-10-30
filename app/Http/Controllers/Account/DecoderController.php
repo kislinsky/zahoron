@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
-use App\Services\Account\DecoderService;
+use App\Services\Account\Decoder\DecoderService;
 use Illuminate\Http\Request;
 
 class DecoderController extends Controller

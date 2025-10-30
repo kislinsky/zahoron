@@ -426,7 +426,7 @@ $( ".copy_adres" ).on( "click", function() {
 	inputc.select();
 	document.execCommand('copy');
 	inputc.parentNode.removeChild(inputc);
-	alert("Ссылка скопирована");
+	alert("Скопировано");
 })
 
 

@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Edge;
+use App\Models\OrderBurial;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -54,8 +55,23 @@ class YooMoneyController extends Controller
             $payment = $this->client->getPaymentInfo($paymentId);
 
             $metadata=$payment->getMetadata();
-            $wallet=Wallet::find($metadata['wallet_id']);
-            $wallet->deposit($metadata['count'],[],'Пополнение баланса');
+            if($payment->getStatus()=='succeeded'){
+                if(isset($metadata['type']) && $metadata['type']=='wallet_update'){
+                    $wallet=Wallet::find($metadata['wallet_id']);
+                    $wallet->deposit($metadata['count'],[],'Пополнение баланса');
+                }
+                if(isset($metadata['type'])  && $metadata['type']=='burial_buy'){
+                    OrderBurial::create([
+                        'user_id'=>$metadata['user_id'],
+                        'buril_id'=>$metadata['burial_id'],
+                        'price'=>$metadata['count'],
+                        'date_pay'=>$payment->getCreatedAt()->format('Y-m-d H:i:s')
+                    ]);
+                }
+            }
+
+            
+            
 
             return response()->json([
                 'status' => $payment->getStatus(),

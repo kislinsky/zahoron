@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Account;
+namespace App\Services\Account\Decoder;
 
 use App\Models\Burial;
 use App\Models\Task;

@@ -9,14 +9,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        if(Auth::check() && auth()->user()->role!=='admin'){
+        // Пропускаем страницу логина
+        if ($request->is('admin/login') || $request->is('filament/login')) {
+            return $next($request);
+        }
+
+        // Проверяем авторизацию и роль для всех остальных страниц админки
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
             abort(404);
         }
         

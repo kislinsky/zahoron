@@ -74,6 +74,7 @@
 
                     {{view('organization.components.map',compact('organization'))}}
 
+                    @if($organization->inn!=null)
                         <div class="block_content_organization_single info_about_organization">
                             <div class="title_li title_li_organization_single">ООО “{{ $organization->title }}”</div>
                             <div class="text_black">Адрес (ответственного лица): {{$organization->address_responsible_person}} </div>
@@ -82,7 +83,7 @@
                             <div class="text_black">Ответственное лицо (ФИО): {{ $organization->responsible_person_full_name }}</div>
                             <div class="text_black">ОКВЭД: {{ $organization->okved }} </div>
                         </div>
-
+                    @endif
                     {{view('organization.components.similar-organizations',compact('similar_organizations'))}}
 
                 </div>

@@ -273,6 +273,10 @@ class RegisterController extends Controller
         $code = generateSixDigitCode();
         $token = generateRandomString(10);
 
+        if(isset($data['organizations']) && $data['organizations']!=null){
+            $data['organizations']=json_encode($data['organizations']);
+        }
+
         OtpCodes::create([
             'code' => $code,
             'phone' => $data['phone'],
@@ -282,7 +286,7 @@ class RegisterController extends Controller
             'contragent' => $data['contragent'],
             'role' => $data['role'],
             'organization_form' => $data['organization_form'],
-            'organization_ids' => json_encode($data['organizations']) ?? null,
+            'organization_ids' => $data['organizations'] ?? null,
         ]);
 
         if(env('API_WORK') == 'true'){

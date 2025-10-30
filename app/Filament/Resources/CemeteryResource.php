@@ -192,6 +192,14 @@ class CemeteryResource extends Resource
                     ->label('Телефон')
                     ->maxLength(255),
 
+                    Radio::make('show_img')
+                        ->label('Какое фото показывать')
+                        ->options([
+                            0 => 'Показывать фото',
+                            1 => 'Показывать заглушку'
+                        ])
+                        ->inline(),
+
                     Radio::make('href_img')
                         ->label('Выберите источник изображения')
                         ->options([
@@ -202,6 +210,9 @@ class CemeteryResource extends Resource
                         ->live(), // Автоматически обновляет форму при изменении
 
                     // Поле для ссылки (отображается только если выбран вариант "Ссылка")
+
+                    
+
                     TextInput::make('img_url')
                         ->label('Ссылка на изображение')
                         ->placeholder('https://example.com/image.jpg')

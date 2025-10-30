@@ -398,6 +398,7 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
 
 
     Route::group(['prefix'=>'order'], function() {
+        Route::post('/burial/{burial}/add/pay', [OrderBurialController::class, 'orderAddWithPay'])->name('order.burial.add.pay')->middleware('auth');
         Route::post('/burial/add', [OrderBurialController::class, 'orderAdd'])->name('order.burial.add');
         Route::post('/product/add', [OrderProductController::class, 'orderAdd'])->name('order.product.add');
         Route::post('/service/add', [OrderServiceController::class, 'orderAdd'])->name('order.service.add');

@@ -6,11 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Services\Account\Admin\AdminService as AdminAdminService;
 use App\Services\Account\Admin\AdminService;
 use App\Services\Account\Agency\AgencyService;
+use App\Services\Account\Agent\AgentService;
+use App\Services\Account\Decoder\DecoderService;
+use App\Services\Account\User\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Services\Account\User\UserService;
-use App\Services\Account\Agent\AgentService;
-use App\Services\Account\DecoderService;
 
 class HomeController extends Controller
 {

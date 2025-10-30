@@ -96,13 +96,17 @@ class Cemetery extends Model
     
 
     public function urlImg(){
-        if($this->href_img==0){
-            return asset('storage/'.$this->img_file);
+        if(!$this->show_img){
+            if($this->href_img==0){
+                return asset('storage/'.$this->img_file);
+            }
+            if($this->img_url=='default'){
+                return 'default';
+            }
+            return $this->img_url;
         }
-        if($this->img_url=='default'){
-            return 'default';
-        }
-        return $this->img_url;
+        return 'default';
+        
     }
 
     function defaultImg(){

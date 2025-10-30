@@ -12,7 +12,7 @@
                     <div class="li_organization_similar">
                         <img class='white_img_org logo_organization_similar' src="{{$similar_mortuary->defaultImg()[0]}}" alt="">   
                             <img class='black_img_org logo_organization_similar' src="{{$similar_mortuary->defaultImg()[1]}}" alt="">   
-                        <a href='{{route('mortuary.single',$similar_mortuary->id)}}'class="title_news">{{$similar_mortuary->title}} </a>
+                        <a href='{{$similar_mortuary->route()}}'class="title_news">{{$similar_mortuary->title}} </a>
                         <div class="flex_stars">
                             <img src="{{asset('storage/uploads/Frame 334.svg')}}" alt="">
                             <div class="text_black_mini">{{$similar_mortuary->rating}}</div>

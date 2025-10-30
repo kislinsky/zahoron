@@ -736,6 +736,7 @@ class AgencyOrganizationService {
     }
 
     public static function walletUpdateBalance($data){
+        $data['type']='wallet_update';
         $object=new YooMoneyService();
         return $object->createPayment($data['count'],route('account.agency.organization.wallets'),'Пополнение баланса',$data);
     }

@@ -3,8 +3,9 @@
 namespace App\Services\Order;
 
 use App\Models\Burial;
-use App\Models\User;
 use App\Models\OrderBurial;
+use App\Models\User;
+use App\Services\YooMoneyService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -49,6 +50,16 @@ class OrderBurialService
 
     }
 
+    public static function orderAddWithPay($burial){
+        $data=[
+            'burial_id'=>$burial->id,
+            'user_id'=>user()->id,
+            'count'=>$burial->cemetery->price_burial_location,
+            'type'=>'burial_buy'
+        ];
+        $object=new YooMoneyService();
+        return $object->createPayment($burial->cemetery->price_burial_location,route('account.user.burial'),'Оплата геолокаци',$data);
+    }
     
     public static function burialDelete($id){
         $order=OrderBurial::findOrFail($id);

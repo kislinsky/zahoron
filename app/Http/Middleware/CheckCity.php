@@ -67,7 +67,17 @@ class CheckCity
         $path = $request->path();
         
         // Пропускаем специальные маршруты
-        $excludedRoutes = ['livewire', 'admin', 'api', 'storage', 'vendor', 'css', 'js', 'img', 'fonts'];
+        $excludedRoutes = ['admin*',
+            'filament*',
+            'livewire*',
+            'api*',
+            'storage*',
+            'vendor*',
+            'css/*',
+            'js/*',
+            'img/*',
+            'fonts/*',
+            'docs*',];
         if (in_array($citySlug, $excludedRoutes) || $request->is($excludedRoutes)) {
             return $next($request);
         }

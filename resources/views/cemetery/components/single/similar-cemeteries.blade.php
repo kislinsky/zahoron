@@ -13,7 +13,7 @@
                         <img class='white_img_org logo_organization_similar' src="{{$similar_cemetery->defaultImg()[0]}}" alt="">   
                         <img class='black_img_org logo_organization_similar' src="{{$similar_cemetery->defaultImg()[1]}}" alt="">   
                        
-                        <a href='{{route('cemeteries.single',$similar_cemetery->id)}}'class="title_news">{{$similar_cemetery->title}} </a>
+                        <a href='{{$similar_cemetery->route()}}'class="title_news">{{$similar_cemetery->title}} </a>
                         <div class="flex_stars">
                             <img src="{{asset('storage/uploads/Frame 334.svg')}}" alt="">
                             <div class="text_black_mini">{{$similar_cemetery->rating}}</div>

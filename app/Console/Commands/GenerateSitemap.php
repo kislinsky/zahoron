@@ -210,6 +210,7 @@ class GenerateSitemap extends Command
                 );
             }
         }
+        
 
         // Organization category routes
         $categories = CategoryProduct::where('display', 1)
@@ -247,6 +248,50 @@ class GenerateSitemap extends Command
             });
     }
 
+
+
+    protected function addProducts()
+    {
+        $this->info('Processing products with strict counting...');
+        
+        // Base organization routes
+        $this->addUrlWithStrictCounting(
+            Url::create($this->baseUrl . '/marketplace')
+                ->setLastModificationDate($this->now)
+                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                ->setPriority(0.6)
+        );
+
+        // City organization routes
+        $cityIdsWithOrgs = Organization::whereIn('city_id', array_keys($this->citySlugs))
+            ->select('city_id')
+            ->distinct()
+            ->pluck('city_id');
+            
+        
+        
+
+        // Organization category routes
+        $categories = CategoryProduct::where('display', 1)
+            ->where('parent_id', '!=', null)
+            ->pluck('slug');
+            
+        foreach ($cityIdsWithOrgs as $cityId) {
+            if (isset($this->citySlugs[$cityId])) {
+                foreach ($categories as $categorySlug) {
+                    $this->addUrlWithStrictCounting(
+                        Url::create($this->baseUrl . "/{$this->citySlugs[$cityId]}/marketplace/{$categorySlug}")
+                            ->setLastModificationDate($this->now)
+                            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                            ->setPriority(0.7)
+                    );
+                }
+            }
+        }
+
+        
+    }
+
     protected function processEntityWithPreciseCounting($model, $listRoute, $detailRoutePattern, $name)
     {
         $this->info("Processing {$name} with strict counting...");
@@ -265,7 +310,7 @@ class GenerateSitemap extends Command
                 Url::create($this->baseUrl . "/{$citySlug}{$listRoute}")
                     ->setLastModificationDate($this->now)
                     ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                    ->setPriority(0.6)
+                    ->setPriority(0.4)
             );
         }
         
@@ -287,7 +332,7 @@ class GenerateSitemap extends Command
                             Url::create($url)
                                 ->setLastModificationDate($entity->updated_at)
                                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                                ->setPriority(0.5)
+                                ->setPriority(0.3)
                         );
                     }
                 }

@@ -76,6 +76,9 @@ class OrderProductService
         
         $product=Product::find($data['product_id']);
         $price_product=priceProduct($product);
+        if($price_product=='Уточняйте'){
+            $price_product=0;
+        }
         $mortuary=null;
         if(isset($data['no_have_mortuary']) || !isset($data['mortuary_id'])){
              $mortuary=null;
@@ -161,6 +164,8 @@ class OrderProductService
         }
         
         sendMessage('soobshhenie-pri-zaiavke-pop-up-oblogorazivanie',['name'=>$user->name],$user);
+        sendMessage('sms-soobshhenie-pri-zaiavke-produkta',[],$product->organization);
+        sendMessage('email-soobshhenie-pri-zaiavke-produkta',[],$product->organization);
         
         $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
         return redirect()->back()->with('message_order_burial',$message);

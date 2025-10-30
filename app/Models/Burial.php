@@ -114,9 +114,9 @@ class Burial extends Model
             if($order>0){
                 return true;
             }
-            return null;
+            return false;
         }
-        return null;
+        return false;
     }
 
 }

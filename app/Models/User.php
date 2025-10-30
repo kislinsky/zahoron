@@ -197,5 +197,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(Organization::class, 'like_organizations', 'user_id', 'organization_id')
             ->withTimestamps();
     }
+
+    public function canAccessFilament(): bool
+    {
+        return $this->role === 'admin';
+    }
      
 }
