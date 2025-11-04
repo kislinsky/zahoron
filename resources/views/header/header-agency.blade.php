@@ -21,7 +21,7 @@
         <link rel="stylesheet" href="{{asset('css/style.css')}}">
         
 
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="https://api-maps.yandex.ru/1.1/index.xml" type="text/javascript"></script>
         <script src="https://api-maps.yandex.ru/2.1/?apikey=373ac95d-ec8d-4dfc-a70c-e48083741c72&lang=ru_RU"></script>
     </head>

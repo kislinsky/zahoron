@@ -2414,7 +2414,7 @@ function addView($entityType, $entityId, $userId = null, $source = null)
     View::create([
         'entity_type' => $entityType,
         'entity_id' => $entityId,
-        'user_id' => auth()->id ?? null,
+        'user_id' => auth()->id() ,
         'session_id' => request()->session()->getId(),
         'source' => $source,
         'ip_address' => request()->ip(),

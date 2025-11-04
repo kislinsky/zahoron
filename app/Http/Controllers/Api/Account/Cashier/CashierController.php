@@ -38,6 +38,7 @@ public function getCemeteries(): JsonResponse
         ->map(function ($cemetery) {
             return [
                 'id' => (string)$cemetery->id,
+                'status'=>$cemetery->status,
                 'title' => $cemetery->title,
                 'city_id' => (string)$cemetery->city_id,
                 'adres' => $cemetery->adres,
@@ -103,7 +104,7 @@ public function getMorgues(): JsonResponse
             ]]);
         }
 
-        $organizationId = $user->organizationBranch->organization_id;
+        $organizationId = $user->organizationBranch->id;
         
         $query = CallStat::where('organization_id', $organizationId)
     ->leftJoin('cities', 'cities.title', '=', 'call_stats.city') // Предполагаем, что есть поле city_name
@@ -261,7 +262,7 @@ public function getMorgues(): JsonResponse
 
 
 
-    public static function orderProducts(Request $request)
+   public static function orderProducts(Request $request)
     {
         $user = Auth::user();
         
@@ -271,13 +272,11 @@ public function getMorgues(): JsonResponse
                     $query->orderBy('created_at', 'asc')->limit(1);
                 },
                 'cemetery',
-                'city',
                 'mortuary',
                 'user'
             ])
-            ->whereHas('user.organizationBranch', function($query) use ($user) {
-                $query->where('organization_id', $user->organizationBranch->organization_id);
-            })
+           ->where('organization_id',$user->organization_id_branch)
+
             ->when($request->has('category_id'), function($query) use ($request) {
                 $query->whereHas('product', function($q) use ($request) {
                     $q->where('category_id', $request->category_id);

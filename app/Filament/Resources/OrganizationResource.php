@@ -273,7 +273,7 @@ class OrganizationResource extends Resource
                         ->label('Страница пользователя')
                         ->icon('heroicon-s-eye')
                         ->url(function ($record) {
-                            return '/'.selectCity()->slug.'/admin/users/'.$record->user_id.'/edit';
+                            return '/admin/users/'.$record->user_id.'/edit';
                         })
                         ->openUrlInNewTab()
                     )->hidden(fn (?Organization $record) => is_null($record)),
@@ -287,18 +287,49 @@ class OrganizationResource extends Resource
                 ->required()
                 ,
 
-                Select::make('cemetery_ids')
-                ->label('Кладбища, на которых работает организация')
-                ->options(fn ($get) => getCemeteriesOptions($get))
-                ->multiple()
-                ->searchable()
-                ->required()
-                ->formatStateUsing(function ($state) {
-                    return $state ? array_map('intval', explode(',', trim($state, ','))) : [];
-                })
-                ->preload()
-                ->dehydrateStateUsing(fn ($state) => implode(',', (array) $state).','),
-
+       Select::make('cemetery_ids')
+    ->label('Кладбища, на которых работает организация')
+    ->options(function () {
+        return Cemetery::query()
+            ->orderBy('title')
+            ->pluck('title', 'id')
+            ->toArray();
+    })
+    ->multiple()
+    ->searchable()
+    ->required()
+    ->preload()
+    ->formatStateUsing(function ($state) {
+        if (empty($state)) return [];
+        
+        // Если это строка (из БД)
+        if (is_string($state)) {
+            $state = trim($state, ',');
+            if (empty($state)) return [];
+            
+            // Оставляем как строки, не преобразуем в int!
+            return collect(explode(',', $state))
+                ->map(fn($id) => trim($id))
+                ->filter(fn($id) => !empty($id) && is_numeric($id))
+                ->toArray();
+        }
+        
+        // Если уже массив, просто возвращаем
+        return (array) $state;
+    })
+    ->dehydrateStateUsing(function ($state) {
+        if (empty($state)) return '';
+        
+        // Фильтруем пустые значения, оставляем как строки
+        $state = collect($state)
+            ->filter(fn($value) => !empty($value) && is_numeric($value))
+            ->toArray();
+            
+        if (empty($state)) return '';
+        
+        // Преобразуем массив в строку
+        return implode(',', $state);
+    }),
                 Forms\Components\Textarea::make('comment_admin')
                 ->label('Комментарий админа'),
 
@@ -310,17 +341,13 @@ class OrganizationResource extends Resource
 
 
              Forms\Components\TextInput::make('responsible_organization')
-                ->label('Ответственная организация')
-                ->required(),
+                ->label('Ответственная организация') ,
                  Forms\Components\TextInput::make('address_responsible_person')
-                ->label('Адрес (ответственного лица)')
-                ->required(),
+                ->label('Адрес (ответственного лица)'),
                  Forms\Components\TextInput::make('responsible_person_full_name')
-                ->label('Ответственное лицо (ФИО)')
-                ->required(),
+                ->label('Ответственное лицо (ФИО)'),
                  Forms\Components\TextInput::make('okved')
                 ->label('Okved')
-                ->required(),
             ]);
     }
 

@@ -226,6 +226,13 @@ function organizationPages(){
             ['Входящие','account.agency.organization.calls.stats']
            ]
         ],
+
+        ['Статистика','storage/uploads/Icon_sidebar_2.svg',
+           [
+            ['Визиты','account.agency.organization.statistics.sessions']
+           ]
+        ],
+
         
         [ 'Подчиненные','storage/uploads/Icon_sidebar_2.svg',
            [
@@ -611,6 +618,13 @@ function mobilePagesAccountAgency() {
            [
                 ['Входящие',route('account.agency.organization.calls.stats')]
            ]
+        ],
+
+        [
+            ['Статистика',''],
+            [
+                    ['Визиты',route('account.agency.organization.statistics.sessions')]
+            ]
         ],
 
 

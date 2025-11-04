@@ -19,6 +19,8 @@ use App\Models\TypeService;
 use App\Models\UserRequestsCount;
 use App\Models\WorkingHoursOrganization;
 use App\Services\YooMoneyService;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AgencyOrganizationService {
 
@@ -761,5 +763,288 @@ class AgencyOrganizationService {
     
         return view('account.agency.organization.calls.stats', compact('calls','organization'));
     }
+
+public static function sessions()
+{
+    $entityId = auth()->user()->organization_id;
+    
+    $statistics = self::getSessionStatistics($entityId);
+    $chartData = self::getChartData($entityId);
+    
+    // Получаем статистику по товарам
+    $productStatistics = self::getProductStatistics($entityId);
+    $productChartData = self::getProductChartData($entityId);
+    
+    // Получаем все данные просмотров для передачи в JS
+    $views = self::getAllViewsData($entityId);
+    
+    return view('account.agency.organization.statistics.sessions', compact(
+        'statistics', 
+        'chartData', 
+        'views',
+        'productStatistics',
+        'productChartData'
+    ));
+}
+
+    private static function getAllViewsData($entityId)
+    {
+        $now = Carbon::now();
+        $startDate = $now->copy()->subYear()->startOfMonth();
+        
+        return DB::table('views')
+            ->where('entity_type', 'organization')
+            ->where('entity_id', $entityId)
+            ->where('timestamp', '>=', $startDate)
+            ->select(
+                'id',
+                'created_at',
+                'updated_at',
+                'entity_type',
+                'entity_id', 
+                'user_id',
+                'session_id',
+                'timestamp',
+                'source',
+                'ip_address',
+                'device',
+                'location'
+            )
+            ->orderBy('timestamp', 'asc')
+            ->get()
+            ->toArray();
+    }
+
+    private static function getChartData($entityId)
+    {
+        $now = Carbon::now();
+        $startDate = $now->copy()->subYear()->startOfMonth();
+        
+        $monthlyData = DB::table('views')
+            ->where('entity_type', 'organization')
+            ->where('entity_id', $entityId)
+            ->where('timestamp', '>=', $startDate)
+            ->select(
+                DB::raw('YEAR(timestamp) as year'),
+                DB::raw('MONTH(timestamp) as month'),
+                DB::raw('COUNT(*) as total_views'),
+                DB::raw('COUNT(DISTINCT session_id) as unique_views')
+            )
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
+
+        // Формируем данные для всех месяцев года
+        $labels = [];
+        $totalViews = [];
+        $uniqueViews = [];
+        
+        $currentDate = $startDate->copy();
+        
+        for ($i = 0; $i < 12; $i++) {
+            $labels[] = self::getMonthName($currentDate->month);
+            
+            $monthData = $monthlyData->first(function ($item) use ($currentDate) {
+                return $item->year == $currentDate->year && $item->month == $currentDate->month;
+            });
+            
+            $totalViews[] = $monthData ? $monthData->total_views : 0;
+            $uniqueViews[] = $monthData ? $monthData->unique_views : 0;
+            
+            $currentDate->addMonth();
+        }
+
+        return [
+            'labels' => $labels,
+            'total_views' => $totalViews,
+            'unique_views' => $uniqueViews
+        ];
+    }
+
+    private static function getMonthName($monthNumber)
+    {
+        $months = [
+            1 => 'Янв', 2 => 'Фев', 3 => 'Март', 4 => 'Апр', 
+            5 => 'Май', 6 => 'Июнь', 7 => 'Июль', 8 => 'Авг',
+            9 => 'Сен', 10 => 'Окт', 11 => 'Ноя', 12 => 'Дек'
+        ];
+        
+        return $months[$monthNumber] ?? '';
+    }
+
+    private static function getSessionStatistics($entityId)
+    {
+        $now = Carbon::now();
+        
+        return [
+            'year' => self::getPeriodStatistics($entityId, $now->copy()->subYear(), $now),
+            'month' => self::getPeriodStatistics($entityId, $now->copy()->subMonth(), $now),
+            'week' => self::getPeriodStatistics($entityId, $now->copy()->subWeek(), $now),
+            'day' => self::getPeriodStatistics($entityId, $now->copy()->subDay(), $now),
+        ];
+    }
+
+    private static function getPeriodStatistics($entityId, $startDate, $endDate)
+    {
+        $currentCount = DB::table('views')
+            ->where('entity_type', 'organization')
+            ->where('entity_id', $entityId)
+            ->whereBetween('timestamp', [$startDate, $endDate])
+            ->count();
+
+        $previousStart = $startDate->copy()->sub($endDate->diff($startDate));
+        $previousEnd = $startDate;
+        
+        $previousCount = DB::table('views')
+            ->where('entity_type', 'organization')
+            ->where('entity_id', $entityId)
+            ->whereBetween('timestamp', [$previousStart, $previousEnd])
+            ->count();
+
+        $percentageChange = self::calculatePercentageChange($previousCount, $currentCount);
+        
+        return [
+            'count' => $currentCount,
+            'percentage' => $percentageChange,
+            'trend' => $percentageChange >= 0 ? 'up' : 'down'
+        ];
+    }
+
+    private static function calculatePercentageChange($previous, $current)
+    {
+        if ($previous == 0) {
+            return $current > 0 ? 100 : 0;
+        }
+        
+        return round((($current - $previous) / $previous) * 100, 1);
+    }
+
+    private static function getProductStatistics($organizationId)
+{
+    $now = Carbon::now();
+    
+    return [
+        'year' => self::getProductPeriodStatistics($organizationId, $now->copy()->subYear(), $now),
+        'month' => self::getProductPeriodStatistics($organizationId, $now->copy()->subMonth(), $now),
+        'week' => self::getProductPeriodStatistics($organizationId, $now->copy()->subWeek(), $now),
+        'day' => self::getProductPeriodStatistics($organizationId, $now->copy()->subDay(), $now),
+    ];
+}
+
+private static function getProductPeriodStatistics($organizationId, $startDate, $endDate)
+{
+    // Получаем ID всех товаров организации
+    $productIds = DB::table('products')
+        ->where('organization_id', $organizationId)
+        ->pluck('id')
+        ->toArray();
+
+    if (empty($productIds)) {
+        return [
+            'count' => 0,
+            'percentage' => 0,
+            'trend' => 'up'
+        ];
+    }
+
+    $currentCount = DB::table('views')
+        ->where('entity_type', 'product')
+        ->whereIn('entity_id', $productIds)
+        ->whereBetween('timestamp', [$startDate, $endDate])
+        ->count();
+
+    $previousStart = $startDate->copy()->sub($endDate->diff($startDate));
+    $previousEnd = $startDate;
+    
+    $previousCount = DB::table('views')
+        ->where('entity_type', 'product')
+        ->whereIn('entity_id', $productIds)
+        ->whereBetween('timestamp', [$previousStart, $previousEnd])
+        ->count();
+
+    $percentageChange = self::calculatePercentageChange($previousCount, $currentCount);
+    
+    return [
+        'count' => $currentCount,
+        'percentage' => $percentageChange,
+        'trend' => $percentageChange >= 0 ? 'up' : 'down'
+    ];
+}
+
+private static function getProductChartData($organizationId)
+{
+    $now = Carbon::now();
+    $startDate = $now->copy()->subYear()->startOfMonth();
+    
+    // Получаем ID всех товаров организации
+    $productIds = DB::table('products')
+        ->where('organization_id', $organizationId)
+        ->pluck('id')
+        ->toArray();
+
+    if (empty($productIds)) {
+        // Возвращаем нулевые данные если нет товаров
+        return [
+            'labels' => self::generateMonthLabels($startDate),
+            'total_views' => array_fill(0, 12, 0),
+            'unique_views' => array_fill(0, 12, 0)
+        ];
+    }
+
+    $monthlyData = DB::table('views')
+        ->where('entity_type', 'product')
+        ->whereIn('entity_id', $productIds)
+        ->where('timestamp', '>=', $startDate)
+        ->select(
+            DB::raw('YEAR(timestamp) as year'),
+            DB::raw('MONTH(timestamp) as month'),
+            DB::raw('COUNT(*) as total_views'),
+            DB::raw('COUNT(DISTINCT session_id) as unique_views')
+        )
+        ->groupBy('year', 'month')
+        ->orderBy('year', 'asc')
+        ->orderBy('month', 'asc')
+        ->get();
+
+    // Формируем данные для всех месяцев года
+    $labels = [];
+    $totalViews = [];
+    $uniqueViews = [];
+    
+    $currentDate = $startDate->copy();
+    
+    for ($i = 0; $i < 12; $i++) {
+        $labels[] = self::getMonthName($currentDate->month);
+        
+        $monthData = $monthlyData->first(function ($item) use ($currentDate) {
+            return $item->year == $currentDate->year && $item->month == $currentDate->month;
+        });
+        
+        $totalViews[] = $monthData ? $monthData->total_views : 0;
+        $uniqueViews[] = $monthData ? $monthData->unique_views : 0;
+        
+        $currentDate->addMonth();
+    }
+
+    return [
+        'labels' => $labels,
+        'total_views' => $totalViews,
+        'unique_views' => $uniqueViews
+    ];
+}
+
+private static function generateMonthLabels($startDate)
+{
+    $labels = [];
+    $currentDate = $startDate->copy();
+    
+    for ($i = 0; $i < 12; $i++) {
+        $labels[] = self::getMonthName($currentDate->month);
+        $currentDate->addMonth();
+    }
+    
+    return $labels;
+}
 }
 

@@ -118,7 +118,7 @@ class OrderProductService
             ]);
              
         }
-        if($product->category->slug=='otpravka-gruz-200'){
+        if($product->category->slug=='podgotovka-otpravki-gruza-200'){
             $order=OrderProduct::create([
              'product_id'=>$product->id,
              'user_id'=>$user->id,

@@ -319,4 +319,8 @@ class AgencyOrganizationController extends Controller
         
         return AgencyOrganizationService::callStats($validated,$request);
     }
+
+    public static function sessions(){
+        return AgencyOrganizationService::sessions();
+    }
 }

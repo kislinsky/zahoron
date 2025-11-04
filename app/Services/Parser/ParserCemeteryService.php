@@ -104,7 +104,7 @@ class ParserCemeteryService
                         }
 
                         $status = 1;
-                        if ($cemeteryRow[$columns['Статус']] != null && $cemeteryRow[$columns['Статус']] != 'Действующая организация') {
+                        if ($cemeteryRow[$columns['Статус']] == null || $cemeteryRow[$columns['Статус']] != 'Действующая организация') {
                             $status = 0;
                         }                        
 

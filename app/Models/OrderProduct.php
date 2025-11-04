@@ -16,12 +16,16 @@ class OrderProduct extends Model
     }
 
     function additionals(){
-        return AdditionProduct::whereIn('id',json_decode($this->additional))->get();
+        if($this->additional!=null){
+            return AdditionProduct::whereIn('id',json_decode($this->additional))->get();
+        }
+        return null;
     }
 
     function user(){
         return $this->belongsTo(User::class);
     }
+
 
     function cemetery(){
         return $this->belongsTo(Cemetery::class);

@@ -6496,6 +6496,121 @@ text-align: left;
     gap: 10px;
 }
 
+
+.statistics_sessions{
+    padding: 20px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+}
+.block_statistics_session{
+    max-width: 200px;
+    background: white;
+    width: 100%;
+    box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+    padding: 20px;
+    min-height: 92px;
+}
+.count_sessions{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+}
+.procent_sessions{
+    font-family: Golos Text;
+font-weight: 400;
+font-style: Regular;
+font-size: 13px;
+line-height: 150%;
+display: flex;
+letter-spacing: 0%;
+gap: 5px;
+text-align: right;
+}
+.procent_sessions.up{
+    color: #579C00;
+}
+.procent_sessions.down{
+    color: #D72700;
+}
+
+.procent_sessions img{
+    display: none;
+}
+
+.procent_sessions.up img.up{
+    display: block;
+}
+.procent_sessions.down img.down{
+    display: block;
+}
+ .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+
+        .products-stat {
+            border-left-color: #28a745;
+        }
+
+        .services-stat {
+            border-left-color: #dc3545;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .products-value {
+            color: #28a745;
+        }
+
+        .services-value {
+            color: #dc3545;
+        }
+
+        .tooltip {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            pointer-events: none;
+            position: absolute;
+            z-index: 1000;
+            transform: translate(-50%, -100%);
+            margin-top: -10px;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.8);
+        }
 .no_have_burial{
     display: flex;
     flex-direction: column;

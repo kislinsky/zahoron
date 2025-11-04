@@ -545,6 +545,11 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                         Route::get('/create', [TicketController::class, 'create'])->name('account.agency.tickets.create');
                     });
 
+                    Route::group(['prefix'=>'statistics'], function() {
+                        Route::get('/sessions', [AgencyOrganizationController::class, 'sessions'])->name('account.agency.organization.statistics.sessions');
+                    });
+
+
                     Route::group(['prefix'=>'users'], function() {
                         Route::get('/', [AgencyController::class, 'users'])->name('account.agency.users');
                         Route::post('/store', [AgencyController::class, 'store'])->name('account.agency.users.store');
