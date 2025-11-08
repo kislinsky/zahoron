@@ -36,7 +36,9 @@ class BurialResource extends Resource
     protected static ?string $model = Burial::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Захоронения'; // Название в меню
+    protected static ?string $navigationLabel = 'Список';
+    protected static ?string $navigationGroup = 'Захоронения';
+
 
     public static function form(Form $form): Form
     {

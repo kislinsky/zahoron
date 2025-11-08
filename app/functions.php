@@ -1216,6 +1216,13 @@ function user(){
 }
 
 
+function admin(){
+
+    $user=User::where('role','admin')->first();
+    return $user;
+}
+
+
 function slug($item){
     $generator = new SlugGenerator(); 
     if($item!=null){

@@ -1,8 +1,10 @@
 <?php 
 namespace App\Http\Controllers;
 
+use App\Models\Burial;
 use App\Models\Edge;
 use App\Models\OrderBurial;
+use App\Models\OrderService;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -56,22 +58,106 @@ class YooMoneyController extends Controller
 
             $metadata=$payment->getMetadata();
             if($payment->getStatus()=='succeeded'){
-                if(isset($metadata['type']) && $metadata['type']=='wallet_update'){
-                    $wallet=Wallet::find($metadata['wallet_id']);
-                    $wallet->deposit($metadata['count'],[],'Пополнение баланса');
+
+                if(isset($metadata['type'])){
+
+                    if( $metadata['type']=='wallet_update'){
+                        $wallet=Wallet::find($metadata['wallet_id']);
+                        $wallet->deposit($metadata['count'],[],'Пополнение баланса');
+                    }
+
+                   elseif( $metadata['type']=='burial_buy'){
+                        // Создаем запись о покупке геолокации
+                        OrderBurial::create([
+                            'user_id' => $metadata['user_id'],
+                            'burial_id' => $metadata['order_id'],
+                            'price' => $metadata['count'],
+                            'date_pay' => $payment->getCreatedAt()->format('Y-m-d H:i:s')
+                        ]);
+
+                        // Получаем информацию о заказе
+                        $orderService = OrderService::find($metadata['order_id']);
+                        if ($orderService) {
+                            $burialId = $orderService->burial_id;
+                            $userId = $metadata['user_id'];
+                            
+                            // Получаем стоимость геолокации
+                            $burial = Burial::find($burialId);
+                            $burialPrice = $burial->cemetery->price_burial_location ?? 0;
+
+                            // Находим все неоплаченные заказы услуг этого пользователя для этого захоронения
+                            // которые были созданы ДО момента оплаты геолокации
+                            $unpaidOrders = OrderService::where('user_id', $userId)
+                                ->where('burial_id', $burialId)
+                                ->where('status', 0)
+                                ->where('created_at', '<=', $payment->getCreatedAt()->format('Y-m-d H:i:s'))
+                                ->get();
+
+                            foreach ($unpaidOrders as $unpaidOrder) {
+                                // Вычитаем только если в заказе изначально была включена стоимость геолокации
+                                if (!$unpaidOrder->burial_purchased && $unpaidOrder->price > $burialPrice) {
+                                    $servicesPrice = $unpaidOrder->price - $burialPrice;
+                                    $unpaidOrder->update([
+                                        'price' => max(0, $servicesPrice),
+                                        'burial_purchased' => true
+                                    ]);
+                                }
+                            }
+
+                            // Обновляем статус текущего заказа
+                            $orderService->update(['status' => 1]);
+                        }
+                    }
+                    elseif( $metadata['type']=='services_pay'){
+                        // Обновляем заказ услуг
+                        $orderService = OrderService::find($metadata['order_id']);
+                        if ($orderService) {
+                            $orderService->update([
+                                'paid' => 1,
+                                'date_pay' => $payment->getCreatedAt()->format('Y-m-d H:i:s'),
+                                'status' => 2 // или другой статус для оплаченных услуг
+                            ]);
+                        }
+
+                        // Проверяем, была ли уже куплена геолокация для этого захоронения
+                        $isBurialPurchased = OrderBurial::where('burial_id', $orderService->burial_id)
+                            ->where('user_id', $metadata['user_id'])
+                            ->where('status', 1)
+                            ->exists();
+
+                        // Если геолокация не была оплачена, создаем или обновляем заказ геолокации
+                        if (!$isBurialPurchased) {
+                            // Проверяем, существует ли уже запись о геолокации (но не оплачена)
+                            $existingOrderBurial = OrderBurial::where('burial_id', $orderService->burial_id)
+                                ->where('user_id', $metadata['user_id'])
+                                ->first();
+
+                            if ($existingOrderBurial) {
+                                // Обновляем существующую запись
+                                $existingOrderBurial->update([
+                                    'status' => 1,
+                                    'paid' => 1,
+                                    'date_pay' => $payment->getCreatedAt()->format('Y-m-d H:i:s'),
+                                    'price' => $metadata['original_price'] - $metadata['count'] // стоимость геолокации
+                                ]);
+                            } else {
+                                // Создаем новую запись о покупке геолокации
+                                OrderBurial::create([
+                                    'user_id' => $metadata['user_id'],
+                                    'burial_id' => $orderService->burial_id,
+                                    'price' => $metadata['original_price'] - $metadata['count'], // стоимость геолокации
+                                    'date_pay' => $payment->getCreatedAt()->format('Y-m-d H:i:s'),
+                                    'status' => 1,
+                                    'paid' => 1
+                                ]);
+                            }
+                        }
+                    }
                 }
-                if(isset($metadata['type'])  && $metadata['type']=='burial_buy'){
-                    OrderBurial::create([
-                        'user_id'=>$metadata['user_id'],
-                        'buril_id'=>$metadata['burial_id'],
-                        'price'=>$metadata['count'],
-                        'date_pay'=>$payment->getCreatedAt()->format('Y-m-d H:i:s')
-                    ]);
-                }
+                
             }
 
-            
-            
+        
 
             return response()->json([
                 'status' => $payment->getStatus(),

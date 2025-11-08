@@ -22,10 +22,17 @@
                                 </div>
 
                                 <div class="flex_btn_li_product">
-                                    <a href='{{ route('burial.add',$burial->id) }}'class="blue_btn">Получить координаты</a>
-                                    <a href='{{ $burial->route() }}'class="btn_border_blue">Подробнее</a>
-                                    <a href='{{ route('favorite.add',$burial->id) }}'class="btn_border_blue img_mini_star"><img src="{{ asset('storage/uploads/Star 1 (1).svg')}}" alt=""></a>
-                                </div>
+                                         @if($burial->cemetery->price_burial_location==0 || $burial->cemetery->price_burial_location==null || $burial->userHave())
+                                            <div adres='{{ $burial->width }},{{ $burial->longitude }}'class="blue_btn copy_adres">Скопировать</div>
+                                        @else
+                                            <form action="{{ route('order.burial.add.pay',$burial->id) }}" method="post">
+                                                @csrf
+                                                <button class="blue_btn">Получить координаты</button>
+                                            </form>
+                                        @endif
+                                        <a href='{{ $burial->route() }}'class="btn_border_blue">Подробнее</a>
+                                        <a href='{{ route('favorite.add',$burial->id) }}'class="btn_border_blue img_mini_star"><img src="{{ asset('storage/uploads/Star 1 (1).svg')}}" alt=""></a>
+                                    </div>
                                 
                             </div>
                         </div>

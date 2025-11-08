@@ -3,20 +3,15 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrderServiceResource\Pages;
-use App\Filament\Resources\OrderServiceResource\RelationManagers;
 use App\Models\OrderService;
-use App\Models\City;
+use App\Models\Service;
 use Filament\Forms;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class OrderServiceResource extends Resource
 {
@@ -80,36 +75,46 @@ class OrderServiceResource extends Resource
                 Forms\Components\Select::make('burial_id')
                     ->label('Захоронение')
                     ->relationship('burial', 'id')
+                    ->searchable()
                     ->required(),
                     
-                Select::make('services_id')
+                // Заменяем relationship на обычный Select с кастомной логикой
+                Forms\Components\Select::make('services_id')
                     ->label('Услуги')
-                    ->relationship('services', 'title')
                     ->multiple()
                     ->preload()
                     ->searchable()
                     ->required()
-                    ->options(\App\Models\Service::pluck('title', 'id'))
-                    ->getOptionLabelFromRecordUsing(fn (\App\Models\Service $service) => $service->title)
-                    ->afterStateHydrated(function (Select $component, $state) {
+                    ->options(Service::pluck('title', 'id'))
+                    ->getOptionLabelsUsing(function ($values) {
+                        if (empty($values)) return [];
+                        
+                        return Service::whereIn('id', $values)->pluck('title', 'id');
+                    })
+                    ->afterStateHydrated(function (Forms\Components\Select $component, $state) {
                         if (is_string($state)) {
-                            $state = json_decode($state, true);
+                            $state = json_decode($state, true) ?? [];
                         }
                         $component->state($state);
                     })
-                    ->dehydrateStateUsing(fn ($state) => json_encode($state)),
+                    ->dehydrateStateUsing(function ($state) {
+                        return json_encode($state ?? []);
+                    }),
 
                 Forms\Components\Select::make('user_id')
                     ->label('Пользователь')
-                    ->relationship('user', 'id') // Изменено на отображение имени
+                    ->relationship('user', 'name')
+                    ->searchable()
                     ->required()
                     ->disabled($isRestrictedUser),
 
-                Select::make('status')
+                Forms\Components\Select::make('status')
                     ->label('Статус')
                     ->options([
-                        0 => 'Не оплачен',
-                        1 => 'Оплачен',
+                        0 => 'Не принят',
+                        3 => 'Принят',
+                        4 => 'На проверке',
+                        5 => 'Выполнен',
                     ])
                     ->required()
                     ->default(0),
@@ -118,7 +123,7 @@ class OrderServiceResource extends Resource
                     ->label('Размер')
                     ->required(),
 
-                Forms\Components\TextInput::make('date_pay')
+                Forms\Components\DatePicker::make('date_pay')
                     ->label('Дата оплаты')
                     ->nullable(),
 
@@ -132,7 +137,8 @@ class OrderServiceResource extends Resource
 
                 Forms\Components\Select::make('worker_id')
                     ->label('Работник')
-                    ->relationship('worker', 'id') // Изменено на отображение имени
+                    ->relationship('worker', 'name')
+                    ->searchable()
                     ->nullable(),
 
                 Forms\Components\Select::make('cemetery_id')
@@ -141,11 +147,13 @@ class OrderServiceResource extends Resource
                     ->searchable()
                     ->preload()
                     ->options(function() use ($userCityIds, $isRestrictedUser) {
-                        if ($isRestrictedUser) {
-                            return \App\Models\Cemetery::whereIn('city_id', $userCityIds)
-                                ->pluck('title', 'id');
+                        $query = \App\Models\Cemetery::query();
+                        
+                        if ($isRestrictedUser && !empty($userCityIds)) {
+                            $query->whereIn('city_id', $userCityIds);
                         }
-                        return \App\Models\Cemetery::pluck('title', 'id');
+                        
+                        return $query->pluck('title', 'id');
                     })
                     ->nullable()
                     ->disabled($isRestrictedUser),
@@ -155,7 +163,7 @@ class OrderServiceResource extends Resource
                     ->numeric()
                     ->required(),
 
-                Select::make('paid')
+                Forms\Components\Select::make('paid')
                     ->label('Оплачено')
                     ->options([
                         0 => 'Не оплачен',
@@ -170,85 +178,102 @@ class OrderServiceResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')
+                Tables\Columns\TextColumn::make('id')
                     ->label('ID')
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('burial.id')
+                Tables\Columns\TextColumn::make('burial.id')
                     ->label('ID захоронения')
                     ->sortable(),
 
-                TextColumn::make('user.id')
+                Tables\Columns\TextColumn::make('user.name')
                     ->label('Пользователь')
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('status')
+                Tables\Columns\TextColumn::make('status')
                     ->label('Статус')
                     ->formatStateUsing(fn (int $state): string => match ($state) {
-                        0 => 'Не оплачен',
-                        1 => 'Оплачен',
+                        0 => 'Не принят',
+                        1 => 'Принят',
+                        2 => 'Выполнен',
+                        default => 'Неизвестно',
                     })
                     ->sortable(),
 
-                TextColumn::make('date_pay')
+                // Колонка для отображения услуг
+                Tables\Columns\TextColumn::make('services_id')
+                    ->label('Услуги')
+                    ->formatStateUsing(function ($state) {
+                        if (empty($state)) return 'Нет услуг';
+                        
+                        $serviceIds = is_string($state) ? json_decode($state, true) : $state;
+                        if (empty($serviceIds)) return 'Нет услуг';
+                        
+                        $services = Service::whereIn('id', $serviceIds)->pluck('title')->toArray();
+                        return implode(', ', $services);
+                    })
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('date_pay')
                     ->label('Дата оплаты')
                     ->date('d.m.Y')
                     ->sortable(),
 
-                TextColumn::make('price')
+                Tables\Columns\TextColumn::make('price')
                     ->label('Цена')
+                    ->money('RUB')
                     ->sortable(),
 
-                TextColumn::make('paid')
+                Tables\Columns\TextColumn::make('paid')
                     ->label('Оплачено')
                     ->formatStateUsing(fn (int $state): string => match ($state) {
                         0 => 'Не оплачен',
                         1 => 'Оплачен',
+                        default => 'Неизвестно',
                     })
                     ->sortable(),
 
-                TextColumn::make('cemetery.title')
+                Tables\Columns\TextColumn::make('cemetery.title')
                     ->label('Кладбище')
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('cemetery.city.title')
+                Tables\Columns\TextColumn::make('cemetery.city.title')
                     ->label('Город')
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('created_at')
                     ->label('Дата создания')
-                    ->dateTime('d.m.Y')
+                    ->dateTime('d.m.Y H:i')
                     ->sortable(),
             ])
             ->filters([
-                SelectFilter::make('status')
+                Tables\Filters\SelectFilter::make('status')
                     ->label('Статус')
                     ->options([
-                        0 => 'Не оплачен',
-                        1 => 'Оплачен',
-                    ])
-                    ->default(0)
-                    ->attribute('status'),
+                        0 => 'Не принят',
+                        1 => 'Принят',
+                        2 => 'Выполнен',
+                    ]),
 
-                SelectFilter::make('city')
+                Tables\Filters\SelectFilter::make('city')
                     ->label('Город')
                     ->relationship('cemetery.city', 'title')
                     ->searchable()
                     ->hidden(static::isRestrictedUser()),
 
-                SelectFilter::make('cemetery')
+                Tables\Filters\SelectFilter::make('cemetery')
                     ->label('Кладбище')
                     ->relationship('cemetery', 'title')
                     ->searchable()
                     ->preload(),
 
-                SelectFilter::make('worker')
+                Tables\Filters\SelectFilter::make('worker')
                     ->label('Исполнитель')
-                    ->relationship('worker', 'id')
+                    ->relationship('worker', 'name')
                     ->searchable()
                     ->preload(),
             ])
@@ -265,9 +290,7 @@ class OrderServiceResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

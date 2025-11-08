@@ -184,17 +184,11 @@ class OrganizationService
             'organization_id'=>$data['organization_id']
         ]);
 
-        // $organization=Organization::find($data['organization_id']);
-        // изменить когда админ будет одабривать 
-        // $organization->update([
-        //     'rating'=>raitingOrganization($organization),
-        // ]);
-        // $cat_organizations=ActivityCategoryOrganization::where('organization_id',$organization->id)->get();
-        // foreach($cat_organizations as $cat_organization){
-        //     $cat_organization->update([
-        //         'rating'=>$organization->rating,
-        //     ]);
-        // }
+
+        $message="ID организации:".$data['organization_id']."n Рейтинг:".$rating." \n Сообщение:".$data['content_review'];
+
+        sendMail(admin()->email, 'Новый отзыв с сайта zahoron.ru', $message); 
+
         return redirect()->back()->with('message_words_memory','Сообщение отправлено на проверку.');
     }
 

@@ -89,7 +89,8 @@ class SearchBurialService
                  'location'=>$data['location'],
                  'user_id'=>Auth::user()->id,
              ]);
-             return redirect()->back()->with("message_words_memory", "В ближайшее время с Вами свяжутся наши Партнеры по товарам которые вы заказали.");
+            sendMail(admin()->email,"Новая заявка на поиск захоронения",'Ответьте на заявку');
+            return redirect()->back()->with("message_words_memory", "В ближайшее время с Вами свяжутся наши Партнеры по товарам которые вы заказали.");
         }
         else{
             $user_email=User::where('email',$data['email_customer'])->get();
@@ -113,7 +114,8 @@ class SearchBurialService
                      'location'=>$data['location'],
                      'user_id'=>Auth::user()->id,
                  ]);
-                 return redirect()->back()->with("message_words_memory", "В ближайшее время с Вами свяжутся наши Партнеры по товарам которые вы заказали.");
+                sendMail(admin()->email,"Новая заявка на поиск захоронения",'Ответьте на заявку');
+                return redirect()->back()->with("message_words_memory", "В ближайшее время с Вами свяжутся наши Партнеры по товарам которые вы заказали.");
             }
             return redirect()->back()->with("error", 'Такой телефон или почта уже зарегестрированы.');
         }

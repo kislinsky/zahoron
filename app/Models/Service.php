@@ -19,11 +19,10 @@ class Service extends Model
     {
         if($cemeteryId!=null){
             $price=$this->priceService->where('cemetery_id', $cemeteryId)->first();
-            if($price==null){
+            if($price==null ){
                 return $this->price;
             }
         }
-        
         return  $price->price;
     }
 

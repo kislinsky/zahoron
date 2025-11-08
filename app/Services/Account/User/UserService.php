@@ -3,8 +3,10 @@
 namespace App\Services\Account\User;
 
 
-use App\Models\OrderService;
+use App\Models\Burial;
 
+use App\Models\OrderBurial;
+use App\Models\OrderService;
 use App\Models\User;
 use App\Services\YooMoneyService;
 use Illuminate\Support\Facades\Hash;
@@ -187,15 +189,54 @@ class UserService {
     }
 
 
-    public static function payService($order){
-        $balance=user()->currentWallet()->withdraw($order->price,[],'Покупка услуг по облогораживанию');
-        if($balance==false){
-            return redirect()->back()->with('error','Недостаточно средств на балансе');
-        }
-        $order->update(['status'=>2, 'date_pay'=>now(),'paid'=>1]);  
-        return redirect()->back()->with('message_cart','Услуги успешно куплена');
-    }
 
+    public static function payService($order){
+
+        // $balance=user()->currentWallet()->withdraw($order->price,[],'Покупка услуг по облогораживанию');
+        // if($balance==false){
+        //     return redirect()->back()->with('error','Недостаточно средств на балансе');
+        // }
+        // $order->update(['status'=>2, 'date_pay'=>now(),'paid'=>1]);  
+        //return redirect()->back()->with('message_cart','Услуги успешно куплена');
+
+        // Проверяем, была ли уже куплена геолокация для этого захоронения
+
+        $isBurialPurchased = OrderBurial::where('burial_id', $order->burial_id)
+            ->where('user_id', user()->id)
+            ->where('status', 1)
+            ->exists();
+
+        $finalPrice = $order->price;
+        $paymentDescription = 'Оплата геолокации и услуг';
+
+        // Если геолокация уже куплена, убираем ее стоимость
+        if ($isBurialPurchased) {
+            // Получаем захоронение и стоимость геолокации
+            $burial = Burial::find($order->burial_id);
+            $burialPrice = $burial->cemetery->price_burial_location ?? 0;
+            
+            // Вычитаем стоимость геолокации из общей цены
+            $finalPrice = max(0, $order->price - $burialPrice);
+            $paymentDescription = 'Оплата услуг по уходу';
+        }
+
+        $data = [
+            'order_id' => $order->id,
+            'user_id' => user()->id,
+            'count' => $finalPrice,
+            'type' => 'services_pay',
+            'original_price' => $order->price, // Сохраняем оригинальную цену
+            'burial_purchased' => $isBurialPurchased // Сохраняем статус геолокации
+        ];
+
+        $object = new YooMoneyService();
+        return $object->createPayment(
+            $finalPrice, 
+            route('account.user.services.index'), 
+            $paymentDescription, 
+            $data
+        );
+    }
 
     public static function payBurialRequest($order){
         $balance=user()->currentWallet()->withdraw($order->price,[],'Покупка геолокации');

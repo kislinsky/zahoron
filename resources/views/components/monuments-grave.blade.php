@@ -1,5 +1,6 @@
 <?php
  $products_monuments_grave=getProductsByCategories([29]);
+ $city=selectCity();
 ?>
 
 @if(count($products_monuments_grave)>0)
