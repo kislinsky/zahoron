@@ -16,6 +16,7 @@ use App\Models\Edge;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\MultiSelect;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
@@ -60,7 +61,7 @@ class BurialResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-            
+
 
                 Forms\Components\TextInput::make('date_birth')
                     ->label('Дата рождения')
@@ -71,7 +72,7 @@ class BurialResource extends Resource
                     ->label('Дата смерти')
                     ->required()
                     ->maxLength(255),
-                            
+
                     Forms\Components\TextInput::make('width')
                     ->label('Широта')
                     ->required()
@@ -81,7 +82,7 @@ class BurialResource extends Resource
                     ->label('Долгота')
                     ->required()
                     ->maxLength(255),
-                   
+
 
                     TextInput::make('map_link')
                         ->label('Ссылка на карту')
@@ -108,7 +109,7 @@ class BurialResource extends Resource
     ->reactive()
     ->afterStateUpdated(function ($state, callable $set) {
         $set('area_id', null);
-        $set('city_id', null); 
+        $set('city_id', null);
         $set('cemetery_id', null);
     })
     ->afterStateHydrated(function (Select $component, $record) {
@@ -126,11 +127,11 @@ Select::make('area_id')
     ->label('Округ')
     ->options(function ($get) {
         $edgeId = $get('edge_id');
-        
+
         if (!$edgeId) {
             return [];
         }
-        
+
         return Area::where('edge_id', $edgeId)->pluck('title', 'id');
     })
     ->searchable()
@@ -157,7 +158,7 @@ Select::make('city_id')
         if (!$areaId) {
             return [];
         }
-        
+
         return City::where('area_id', $areaId)->pluck('title', 'id');
     })
     ->searchable()
@@ -180,11 +181,11 @@ Select::make('cemetery_id')
     ->label('Кладбище')
     ->options(function ($get) {
         $cityId = $get('city_id');
-        
+
         if (!$cityId) {
             return [];
         }
-        
+
         return Cemetery::where('city_id', $cityId)->pluck('title', 'id');
     })
     ->searchable()
@@ -232,9 +233,9 @@ View::make('image')
     ->columnSpan('full')
     ->hidden(fn ($get) => intval($get('href_img')) === 0),
 
-                       
 
-                           
+
+
 
                 Forms\Components\TextInput::make('location_death')
                     ->label('Место смерти')
@@ -258,7 +259,7 @@ View::make('image')
                     ->required()
                     ->unique(ignoreRecord: true) // Игнорировать текущую запись при редактировании
                     ->label('Slug')
-                    
+
                     ->maxLength(255),
 
                 Select::make('status') // Поле для статуса
@@ -271,12 +272,41 @@ View::make('image')
                     ->required() // Поле обязательно для заполнения
                     ->default(1), // Значение по умолчанию
 
-                  
+
             ]);
     }
 
     public static function table(Table $table): Table
     {
+        $columnsMap = [
+            'id' => 'ID',
+            'name' => 'Имя',
+            'surname' => 'Фамилия',
+            'patronymic' => 'Отчество',
+            'date_birth' => 'Дата рождения',
+            'date_death' => 'Дата смерти',
+            'width' => 'Широта',
+            'longitude' => 'Долгота',
+            'cemetery_id' => 'Кладбище',
+            'location_death' => 'Место смерти',
+            'who' => 'Вид захоронения',
+            'information' => 'Информация',
+            'photographer' => 'Фотограф',
+            'comment' => 'Комментарий',
+            'decoder_id' => 'Расшифровщик',
+            'status' => 'Статус',
+            'agent_id' => 'Агент',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
+            'url' => 'URL',
+            'href_img' => 'Ссылка на изображение',
+            'img_url' => 'Изображение (URL)',
+            'img_original_url' => 'Оригинальное изображение (URL)',
+            'img_file' => 'Файл изображения',
+            'img_original_file' => 'Оригинальный файл изображения',
+            'slug' => 'Слаг',
+        ];
+
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
@@ -327,7 +357,7 @@ View::make('image')
 
             ])
 
-            
+
             ->filters([
                 SelectFilter::make('status')
                     ->label('Статус')
@@ -392,16 +422,16 @@ View::make('image')
                         ->label('Город')
                         ->relationship('cemetery.city', 'title') // Используем вложенное отношение
                         ->searchable(),
-                    
+
                     SelectFilter::make('cemetery_id')
                         ->label('Кладбище')
                         ->relationship('cemetery', 'title') // Используем отношение и поле для отображения
                         ->searchable() // Добавляем поиск
                         ->preload(), // Предзагрузка данных
-            
-             
-               
-                 
+
+
+
+
             ])
             ->actions([
                 Tables\Actions\Action::make('view_burial')
@@ -410,12 +440,12 @@ View::make('image')
                 ->icon('heroicon-o-eye') // Иконка "глаза"
                 ->color('primary') // Цвет кнопки
                 ->openUrlInNewTab(),
-                
+
 
                 Tables\Actions\Action::make('Геолокация')
                 ->url(fn (Burial $record): string =>  "https://yandex.ru/maps/?rtext=~{$record->width},{$record->longitude}")
                 ->openUrlInNewTab(),
-                
+
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(), // Удалить продукт
             ])
@@ -427,118 +457,66 @@ View::make('image')
             ->headerActions([
                 \Filament\Tables\Actions\Action::make('export')
                     ->label('Экспорт в Excel')
-                    ->action(function (HasTable $livewire) {
-                        // Получаем текущий запрос таблицы
-                        $query = Burial::query();
+                    ->action(function ($livewire, array $data) use ($columnsMap) {
+                        $fileName = 'burials_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
 
-                        // Применяем фильтры таблицы, если они есть
-                        if (property_exists($livewire, 'tableFilters') && !empty($livewire->tableFilters)) {
-                            foreach ($livewire->tableFilters as $filterName => $filterValue) {
-                                if (!empty($filterValue)) {
-                                    // Обработка сложных фильтров (например, диапазонов дат)
-                                    if (is_array($filterValue)) {
-                                        if (isset($filterValue['start']) && isset($filterValue['end'])) {
-                                            // Пример для фильтрации по диапазону дат
-                                            $query->whereBetween($filterName, [$filterValue['start'], $filterValue['end']]);
-                                        } elseif (isset($filterValue['value'])) {
-                                            // Пример для фильтрации по значению
-                                            $query->where($filterName, $filterValue['value']);
-                                        }
-                                    } else {
-                                        // Простая фильтрация по значению
-                                        switch ($filterName) {
-                                            case 'city_id':
-                                                // Фильтрация по city_id через отношение cemetery
-                                                $query->whereHas('cemetery', function ($q) use ($filterValue) {
-                                                    $q->where('city_id', $filterValue);
-                                                });
-                                                break;
-                                            case 'area_id':
-                                                // Фильтрация по area_id через отношение cemetery.city
-                                                $query->whereHas('cemetery.city', function ($q) use ($filterValue) {
-                                                    $q->where('area_id', $filterValue);
-                                                });
-                                                break;
-                                            case 'edge_id':
-                                                // Фильтрация по edge_id через отношение cemetery.city.area
-                                                $query->whereHas('cemetery.city.area', function ($q) use ($filterValue) {
-                                                    $q->where('edge_id', $filterValue);
-                                                });
-                                                break;
-                                            default:
-                                                // Простая фильтрация по полям таблицы burials
-                                                $query->where($filterName, $filterValue);
-                                                break;
-                                        }
+                        $columns = $data['columns'] ?: array_keys($columnsMap);
+
+                        $query = $livewire->getFilteredTableQuery()->with(['cemetery']);
+
+                        $generator = function() use ($query, $columns, $columnsMap) {
+                            foreach ($query->cursor() as $item) {
+                                $row = [];
+                                foreach ($columns as $col) {
+                                    $value = $item->{$col};
+
+                                    if ($col === 'id') {
+                                        $value = (string) $value;
                                     }
-                                }
-                            }
-                        }
-                        
-                        // Применяем сортировку таблицы, если она есть
-                        if (property_exists($livewire, 'tableSortColumn') && $livewire->tableSortColumn) {
-                            $query->orderBy($livewire->tableSortColumn, $livewire->tableSortDirection ?? 'asc');
-                        }
-                        
-                        // Получаем данные с учётом фильтров и сортировки (или всю таблицу, если фильтров нет)
-                        $burials = $query->with(['cemetery.city.area.edge']) // Предзагрузка отношений
-                            ->get()
-                            ->map(function ($burial) {
-                                return [
-                                    'ID' => $burial->id,
-                                    'Имя' => $burial->name,
-                                    'Фамилия' => $burial->surname,
-                                    'Отчество' => $burial->patronymic,
-                                    'Дата рождения' => $burial->date_birth,
-                                    'Дата смерти' => $burial->date_death,
-                                    'Край' => $burial->cemetery->city->area->edge->title ?? 'Не указано',
-                                    'Округ' => $burial->cemetery->city->area->title ?? 'Не указано',
-                                    'Город' => $burial->cemetery->city->title ?? 'Не указано',
-                                    'Кладбище' => $burial->cemetery->title ?? 'Не указано',
-                                    'Вид захоронения' => $burial->who,
-                                    'Статус' => match ($burial->status) {
-                                        0 => 'Не распознан',
-                                        1 => 'Распознан',
-                                        2 => 'Отправлен на проверку',
-                                        default => 'Неизвестно',
-                                    },
-                                ];
-                            });
-                        
-                        // Если данные пустые, возвращаем сообщение
-                        if ($burials->isEmpty()) {
-                            $burials = Burial::query()
-                                ->with(['cemetery.city.area.edge']) // Предзагрузка отношений
-                                ->orderBy('name') // Сортировка по названию
-                                ->get()
-                                ->map(function ($burial) {
-                                    return [
-                                        'ID' => $burial->id,
-                                        'Имя' => $burial->name,
-                                        'Фамилия' => $burial->surname,
-                                        'Отчество' => $burial->patronymic,
-                                        'Дата рождения' => $burial->date_birth,
-                                        'Дата смерти' => $burial->date_death,
-                                        'Край' => $burial->cemetery->city->area->edge->title ?? 'Не указано',
-                                        'Округ' => $burial->cemetery->city->area->title ?? 'Не указано',
-                                        'Город' => $burial->cemetery->city->title ?? 'Не указано',
-                                        'Кладбище' => $burial->cemetery->title ?? 'Не указано',
-                                        'Вид захоронения' => $burial->who,
-                                        'Статус' => match ($burial->status) {
+
+                                    if ($col === 'cemetery_id') {
+                                        $value = optional($item->cemetery)->title;
+                                    }
+
+                                    if ($col === 'status') {
+                                        $value = match ($value) {
                                             0 => 'Не распознан',
                                             1 => 'Распознан',
                                             2 => 'Отправлен на проверку',
                                             default => 'Неизвестно',
-                                        },
-                                    ];
-                                });
-                        }
-                        
-                        // Экспорт в Excel
-                        return (new FastExcel($burials))->download('burials.xlsx');
-                    }),
-            ])
+                                        };
+                                    }
 
+                                    if ($col === 'href_img') {
+                                        $value = match ($value) {
+                                            0 => 'Файл на сайте',
+                                            1 => 'Ссылка (URL)',
+                                            default => 'Отсутствует',
+                                        };
+                                    }
+
+                                    if ($value instanceof \Illuminate\Support\Carbon) {
+                                        $value = $value->format('d.m.Y H:i:s');
+                                    }
+
+                                    $row[$columnsMap[$col] ?? $col] = $value;
+                                }
+
+                                yield $row;
+                            }
+                        };
+
+                        return (new FastExcel($generator()))->download($fileName);
+                    })
+                    ->form([
+                        MultiSelect::make('columns')
+                            ->label('Выберите колонки для экспорта')
+                            ->options($columnsMap)
+                            ->helperText('Если ничего не выбрано, будут экспортированы все колонки')
+                    ])
+                    ->modalAutofocus(false)
+                    ->modalSubmitActionLabel('Скачать Excel')
+            ])
             ->paginated([10, 25, 50, 100, 200, 300, 400, 'all']);
 
     }

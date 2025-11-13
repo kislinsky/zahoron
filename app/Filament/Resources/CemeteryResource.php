@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CemeteryResource\Pages;
@@ -13,6 +14,7 @@ use App\Models\Edge;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\MultiSelect;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
@@ -25,6 +27,7 @@ use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class CemeteryResource extends Resource
 {
@@ -43,7 +46,7 @@ class CemeteryResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                 Forms\Components\TextInput::make('slug')
+                Forms\Components\TextInput::make('slug')
                     ->label('slug')
                     ->required()
                     ->maxLength(255),
@@ -58,7 +61,7 @@ class CemeteryResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                    TextInput::make('map_link')
+                TextInput::make('map_link')
                     ->label('Ссылка на карту')
                     ->disabled()
                     ->suffixAction(
@@ -74,9 +77,9 @@ class CemeteryResource extends Resource
                                 return "https://yandex.ru/maps/?rtext=~{$latitude},{$longitude}";
                             })
                             ->openUrlInNewTab()
-                        ),
+                    ),
 
-                    Select::make('edge_id')
+                Select::make('edge_id')
                     ->label('Край')
                     ->options(Edge::all()->pluck('title', 'id')) // Список всех краёв
                     ->searchable() // Добавляем поиск по тексту
@@ -92,16 +95,16 @@ class CemeteryResource extends Resource
                         }
                     })
                     ->dehydrated(false), // Не сохранять значение в базу данных
-                
+
                 Select::make('area_id')
                     ->label('Округ')
                     ->options(function ($get) {
                         $edgeId = $get('edge_id'); // Получаем выбранный край
-                
+
                         if (!$edgeId) {
                             return []; // Если край не выбран, возвращаем пустой список
                         }
-                
+
                         // Возвращаем список районов, привязанных к выбранному краю
                         return Area::where('edge_id', $edgeId)->pluck('title', 'id');
                     })
@@ -117,16 +120,16 @@ class CemeteryResource extends Resource
                         }
                     })
                     ->dehydrated(false), // Не сохранять значение в базу данных
-                
+
                 Select::make('city_id')
                     ->label('Город')
                     ->options(function ($get) {
                         $areaId = $get('area_id'); // Получаем выбранный район
-                
+
                         if (!$areaId) {
                             return []; // Если район не выбран, возвращаем пустой список
                         }
-                
+
                         // Возвращаем список городов, привязанных к выбранному району
                         return City::where('area_id', $areaId)->pluck('title', 'id');
                     })
@@ -139,50 +142,49 @@ class CemeteryResource extends Resource
                         }
                     }),
 
-                    Forms\Components\TextInput::make('adres')
+                Forms\Components\TextInput::make('adres')
                     ->label('Ориентир')
                     ->maxLength(255),
 
-                    Forms\Components\TextInput::make('price_burial_location')
+                Forms\Components\TextInput::make('price_burial_location')
                     ->label('Цена за геопозицию')
                     ->numeric()
                     ->required()
                     ->maxLength(255),
 
 
-                    Forms\Components\TextInput::make('cost_sponsorship_call')
+                Forms\Components\TextInput::make('cost_sponsorship_call')
                     ->label('Цена за звонок')
                     ->numeric()
                     ->required()
                     ->maxLength(255),
 
-                    Forms\Components\TextInput::make('square')
+                Forms\Components\TextInput::make('square')
                     ->label('Площадь')
                     ->maxLength(255),
 
                 Forms\Components\TextInput::make('responsible')
                     ->label('Отвественный')
                     ->maxLength(255),
-                
+
                 Forms\Components\TextInput::make('responsible_person_address')
                     ->label('Адрес отвественного')
                     ->maxLength(255),
-                    
+
                 Forms\Components\TextInput::make('cadastral_number')
                     ->label('кадастровый номер')
                     ->maxLength(1000),
 
 
                 Forms\Components\TextInput::make('cost_sponsorship_call')
-                ->label('Стоимость спонсорства звонка с кладбища')
-                ->maxLength(1000),
+                    ->label('Стоимость спонсорства звонка с кладбища')
+                    ->maxLength(1000),
 
 
                 Forms\Components\TextInput::make('responsible_person_full_name')
-                ->label('Ответственное лицо (ФИО)')
-                ->maxLength(1000),
-                    
-               
+                    ->label('Ответственное лицо (ФИО)')
+                    ->maxLength(1000),
+
 
                 Forms\Components\TextInput::make('email')
                     ->label('email')
@@ -192,102 +194,143 @@ class CemeteryResource extends Resource
                     ->label('Телефон')
                     ->maxLength(255),
 
-                    Radio::make('show_img')
-                        ->label('Какое фото показывать')
-                        ->options([
-                            0 => 'Показывать фото',
-                            1 => 'Показывать заглушку'
-                        ])
-                        ->inline(),
+                Radio::make('show_img')
+                    ->label('Какое фото показывать')
+                    ->options([
+                        0 => 'Показывать фото',
+                        1 => 'Показывать заглушку'
+                    ])
+                    ->inline(),
 
-                    Radio::make('href_img')
-                        ->label('Выберите источник изображения')
-                        ->options([
-                            0 => 'Файл на сайте',
-                            1 => 'Ссылка (URL)'
-                        ])
-                        ->inline()
-                        ->live(), // Автоматически обновляет форму при изменении
+                Radio::make('href_img')
+                    ->label('Выберите источник изображения')
+                    ->options([
+                        0 => 'Файл на сайте',
+                        1 => 'Ссылка (URL)'
+                    ])
+                    ->inline()
+                    ->live(), // Автоматически обновляет форму при изменении
 
-                    // Поле для ссылки (отображается только если выбран вариант "Ссылка")
+                // Поле для ссылки (отображается только если выбран вариант "Ссылка")
 
-                    
 
-                    TextInput::make('img_url')
-                        ->label('Ссылка на изображение')
-                        ->placeholder('https://example.com/image.jpg')
-                        ->reactive()
-                        ->required(fn ($get) => intval($get('href_img')) === 1)
-                        ->hidden(fn ($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
+                TextInput::make('img_url')
+                    ->label('Ссылка на изображение')
+                    ->placeholder('https://example.com/image.jpg')
+                    ->reactive()
+                    ->required(fn($get) => intval($get('href_img')) === 1)
+                    ->hidden(fn($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
 
-                    // Поле для загрузки файла (отображается только если выбран вариант "Файл на сайте")
-                    FileUpload::make('img_file')
-                        ->label('Загрузить изображение')
-                        ->directory('/uploads_cemeteries') // Директория для хранения файлов
-                        ->image()
-                        ->maxSize(2048)
-                        ->reactive()
-                        ->required(fn ($get) => intval($get('href_img')) === 0)
-                        ->hidden(fn ($get) => intval($get('href_img')) === 1), // Скрыто, если выбрано "Ссылка"
+                // Поле для загрузки файла (отображается только если выбран вариант "Файл на сайте")
+                FileUpload::make('img_file')
+                    ->label('Загрузить изображение')
+                    ->directory('/uploads_cemeteries') // Директория для хранения файлов
+                    ->image()
+                    ->maxSize(2048)
+                    ->reactive()
+                    ->required(fn($get) => intval($get('href_img')) === 0)
+                    ->hidden(fn($get) => intval($get('href_img')) === 1), // Скрыто, если выбрано "Ссылка"
 
-                    // Отображение текущего изображения (если запись уже существует)
-                    View::make('image')
-                        ->label('Текущее изображение')
-                        ->view('filament.forms.components.custom-image') // Указываем путь к Blade-шаблону
-                        ->extraAttributes(['class' => 'custom-image-class'])
-                        ->columnSpan('full')
-                        ->hidden(fn ($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
+                // Отображение текущего изображения (если запись уже существует)
+                View::make('image')
+                    ->label('Текущее изображение')
+                    ->view('filament.forms.components.custom-image') // Указываем путь к Blade-шаблону
+                    ->extraAttributes(['class' => 'custom-image-class'])
+                    ->columnSpan('full')
+                    ->hidden(fn($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
 
                 RichEditor::make('content') // Поле для редактирования HTML-контента
-                    ->label('Описание') // Соответствующая подпись
-                    ->toolbarButtons([
-                        'attachFiles', // возможность прикрепить файлы
-                        'bold', // жирный текст
-                        'italic', // курсив
-                        'underline', // подчеркивание
-                        'strike', // зачеркнутый текст
-                        'link', // вставка ссылок
-                        'orderedList', // нумерованный список
-                        'bulletList', // маркированный список
-                        'blockquote', // цитата
-                        'h2', 'h3', 'h4', // заголовки второго, третьего и четвертого уровня
-                        'codeBlock', // блок кода
-                        'undo', 'redo', // отмена/возврат действия
-                    ])
+                ->label('Описание') // Соответствующая подпись
+                ->toolbarButtons([
+                    'attachFiles', // возможность прикрепить файлы
+                    'bold', // жирный текст
+                    'italic', // курсив
+                    'underline', // подчеркивание
+                    'strike', // зачеркнутый текст
+                    'link', // вставка ссылок
+                    'orderedList', // нумерованный список
+                    'bulletList', // маркированный список
+                    'blockquote', // цитата
+                    'h2', 'h3', 'h4', // заголовки второго, третьего и четвертого уровня
+                    'codeBlock', // блок кода
+                    'undo', 'redo', // отмена/возврат действия
+                ])
                     ->disableLabel(false) // Показывать метку
                     ->placeholder('Введите HTML-контент здесь...'),
 
-                
-                   
-                
-                    Placeholder::make('created_at')
+
+                Placeholder::make('created_at')
                     ->label('Дата создания')
-                    ->content(fn (?Model $record): string => $record?->created_at?->format('d.m.Y H:i:s') ?? ''),
-                
-                    TextInput::make('rating')
+                    ->content(fn(?Model $record): string => $record?->created_at?->format('d.m.Y H:i:s') ?? ''),
+
+                TextInput::make('rating')
                     ->label('Рейтинг'),
 
-                    TextInput::make('date_foundation')
+                TextInput::make('date_foundation')
                     ->label('Год основания'),
-                
-                       Radio::make('priority')
-                        ->label('В приоритете')
-                        ->options([
-                            0 => 'Нет',
-                            1 => 'Да'
-                        ])
-                        ->inline(),             
+
+                Radio::make('priority')
+                    ->label('В приоритете')
+                    ->options([
+                        0 => 'Нет',
+                        1 => 'Да'
+                    ])
+                    ->inline(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
+        $columnsMap = [
+            'id' => 'ID',
+            'title' => 'Название',
+            'slug' => 'Слаг',
+            'width' => 'Широта',
+            'longitude' => 'Долгота',
+            'city_id' => 'Город',
+            'area_id' => 'Район',
+            'adres' => 'Ориентир',
+            'price_burial_location' => 'Цена за геопозицию',
+            'cost_sponsorship_call' => 'Цена за звонок',
+            'square' => 'Площадь',
+            'responsible' => 'Ответственный',
+            'responsible_person_address' => 'Адрес ответственного',
+            'cadastral_number' => 'Кадастровый номер',
+            'responsible_person_full_name' => 'Ответственное лицо (ФИО)',
+            'email' => 'Email',
+            'phone' => 'Телефон',
+            'show_img' => 'Какое фото показывать',
+            'href_img' => 'Источник изображения',
+            'img_url' => 'Ссылка на изображение',
+            'img_file' => 'Файл картинки',
+            'content' => 'Описание',
+            'rating' => 'Рейтинг',
+            'date_foundation' => 'Дата основания',
+            'priority' => 'В приоритете',
+            'responsible_organization' => 'Организация',
+            'okved' => 'ОКВЭД',
+            'inn' => 'ИНН',
+            'mini_content' => 'Краткое описание',
+            'characteristics' => 'Характеристики',
+            'district_id' => 'Район',
+            'underground' => 'Метро',
+            'next_to' => 'Рядом с',
+            'price_decode' => 'Цена расшифровки',
+            'village' => 'Село/Поселок',
+            'time_difference' => 'Часовой пояс',
+            'two_gis_link' => '2GIS ссылка',
+            'status' => 'Статус',
+            'address_responsible_person' => 'Адрес ответственного',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
+        ];
+
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                ->label('id')
-                ->searchable()
-                ->sortable(),
+                    ->label('id')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('title')
                     ->label('Название')
                     ->searchable()
@@ -299,56 +342,55 @@ class CemeteryResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('edge_id')
-                ->label('Край')
-                ->relationship('city.area.edge', 'title') // Вложенное отношение
-                ->searchable()
-                ->preload(),
+                    ->label('Край')
+                    ->relationship('city.area.edge', 'title') // Вложенное отношение
+                    ->searchable()
+                    ->preload(),
 
 
-             // Фильтр по округу
-            SelectFilter::make('area_id')
-                ->label('Округ')
-                ->relationship('city.area', 'title') // Вложенное отношение
-                ->searchable()
-                ->preload(),
+                // Фильтр по округу
+                SelectFilter::make('area_id')
+                    ->label('Округ')
+                    ->relationship('city.area', 'title') // Вложенное отношение
+                    ->searchable()
+                    ->preload(),
 
-            // Фильтр по городу
-            SelectFilter::make('city_id')
-                ->label('Город')
-                ->relationship('city', 'title') // Используем вложенное отношение
-                ->searchable(),
+                // Фильтр по городу
+                SelectFilter::make('city_id')
+                    ->label('Город')
+                    ->relationship('city', 'title') // Используем вложенное отношение
+                    ->searchable(),
 
                 SelectFilter::make('has_phone')
-                ->label('Отсутсвует телефон')
-                ->options([
-                    'yes' => 'Да',
-                    'no' => 'Нет',
-                ])
-                ->query(function ($query, $state) {
-                    if ($state['value'] === 'no') {
-                        $query->whereNotNull('phone');
-                    } elseif ($state['value'] === 'yes') {
-                        $query->whereNull('phone');
-                    }
-                }),
+                    ->label('Отсутсвует телефон')
+                    ->options([
+                        'yes' => 'Да',
+                        'no'  => 'Нет',
+                    ])
+                    ->query(function ($query, $state) {
+                        if ($state['value'] === 'no') {
+                            $query->whereNotNull('phone');
+                        } elseif ($state['value'] === 'yes') {
+                            $query->whereNull('phone');
+                        }
+                    }),
 
 
                 SelectFilter::make('has_cadastral')
-                ->label('Отсутсвует кадастр')
-                ->options([
-                    'yes' => 'Да',
-                    'no' => 'Нет',
-                ])
-                ->query(function ($query, $state) {
-                    if ($state['value'] === 'no') {
-                        $query->whereNotNull('cadastral_number');
-                    } elseif ($state['value'] === 'yes') {
-                        $query->whereNull('cadastral_number');
-                    }
-                }),
+                    ->label('Отсутсвует кадастр')
+                    ->options([
+                        'yes' => 'Да',
+                        'no'  => 'Нет',
+                    ])
+                    ->query(function ($query, $state) {
+                        if ($state['value'] === 'no') {
+                            $query->whereNotNull('cadastral_number');
+                        } elseif ($state['value'] === 'yes') {
+                            $query->whereNull('cadastral_number');
+                        }
+                    }),
 
 
- 
                 // SelectFilter::make('has_phone')
                 // ->label('Отсутсвуют координаты')
                 // ->options([
@@ -364,22 +406,20 @@ class CemeteryResource extends Resource
                 // }),
 
                 SelectFilter::make('has_burials')
-                ->label('Отсутсвуют захоронения')
-                ->options([
-                    'yes' => 'Да',
-                    'no' => 'Нет',
-                ])
+                    ->label('Отсутсвуют захоронения')
+                    ->options([
+                        'yes' => 'Да',
+                        'no'  => 'Нет',
+                    ])
+                    ->query(function ($query, $state) {
+                        if ($state['value'] === 'yes') {
+                            $query->whereDoesntHave('burials');
+                        } elseif ($state['value'] === 'no') {
+                            $query->whereHas('burials');
+                        }
+                    }),
 
 
-                ->query(function ($query, $state) {
-                    if ($state['value'] === 'yes') {
-                        $query->whereDoesntHave('burials');
-                    } elseif ($state['value'] === 'no') {
-                        $query->whereHas('burials');
-                    }
-                }),
-
-                
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -391,47 +431,78 @@ class CemeteryResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-           ->headerActions([
-    \Filament\Tables\Actions\Action::make('export')
-        ->label('Экспорт в Excel')
-        ->action(function ($livewire) {
-            $fileName = 'cemeteries_'.now()->format('Y-m-d_H-i-s').'.xlsx';
-            $query = $livewire->getFilteredTableQuery()->with(['city.area.edge']);
-            
-            // Уменьшаем нагрузку на память
-            ini_set('memory_limit', '512M');
-            set_time_limit(300); // 5 минут
-            
-            return response()->streamDownload(function () use ($query) {
-                $exporter = new \Rap2hpoutre\FastExcel\FastExcel(
-                    $query->get() 
-                );
-                
-                $exporter->export('php://output', function ($record) {
-                    return [
-                        'ID' => $record->id,
-                        'Название' => $record->title,
-                        'Край' => optional($record->city->area->edge)->title,
-                        'Округ' => optional($record->city->area)->title,
-                        'Город' => optional($record->city)->title,
-                        'Адрес' => $record->adres,
-                        'Широта' => $record->width,
-                        'Долгота' => $record->longitude,
-                        'Площадь' => $record->square,
-                        'Цена за геопозицию' => $record->price_burial_location,
-                        'Ответственный' => $record->responsible,
-                        'Адрес ответственного' => $record->responsible_person_address,
-                        'Кадастровый номер' => $record->cadastral_number,
-                        'Email' => $record->email,
-                        'Телефон' => $record->phone,
-                        'Год основания' => $record->date_foundation,
-                        'Рейтинг' => $record->rating,
-                        'Дата создания' => $record->created_at->format('d.m.Y H:i:s')
-                    ];
-                });
-            }, $fileName);
-        })
-    ]);
+            ->headerActions([
+                \Filament\Tables\Actions\Action::make('export')
+                    ->label('Экспорт в Excel')
+                    ->action(function ($livewire, array $data) use ($columnsMap) {
+                        $fileName = 'cemeteries_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
+                        $query = $livewire->getFilteredTableQuery()->with(['city', 'area']);
+
+                        $columns = $data['columns'] ?: array_keys($columnsMap);
+
+                        $collection = $query->get()->map(function ($item) use ($columns, $columnsMap) {
+                            return collect($columns)->mapWithKeys(function ($col) use ($item, $columnsMap) {
+                                $value = $item->{$col};
+
+                                if ($col === 'id') {
+                                    $value = (string) $value;
+                                }
+
+                                if ($col === 'city_id') {
+                                    $value = optional($item->city)->title;
+                                }
+
+                                if ($col === 'area_id') {
+                                    $value = optional($item->area)->title;
+                                }
+
+                                if ($col === 'district_id') {
+                                    $value = optional($item->district)->title;
+                                }
+
+                                if ($col === 'show_img') {
+                                    $value = match ($value) {
+                                        0 => 'Показывать фото',
+                                        1 => 'Показывать заглушку',
+                                        default => 'Не указано',
+                                    };
+                                }
+
+                                if ($col === 'href_img') {
+                                    $value = match ($value) {
+                                        0 => 'Файл на сайте',
+                                        1 => 'Ссылка (URL)',
+                                        default => 'Отсутствует',
+                                    };
+                                }
+
+                                if ($col === 'priority') {
+                                    $value = match ($value) {
+                                        1 => 'Да',
+                                        default => 'Нет',
+                                    };
+                                }
+
+                                if ($value instanceof \Illuminate\Support\Carbon) {
+                                    $value = $value->format('d.m.Y H:i:s');
+                                }
+
+                                return [$columnsMap[$col] ?? $col => $value];
+                            })->toArray();
+                        });
+
+                        return (new FastExcel($collection))->download($fileName);
+                    })
+                    ->form([
+                        MultiSelect::make('columns')
+                            ->label('Выберите колонки для экспорта')
+                            ->options($columnsMap)
+                            ->helperText('Если ничего не выбрано, будут экспортированы все колонки')
+                    ])
+                    ->modalAutofocus(false)
+                    ->modalSubmitActionLabel('Скачать Excel')
+            ]);
     }
 
     public static function getRelations(): array
@@ -448,15 +519,15 @@ class CemeteryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCemeteries::route('/'),
+            'index'  => Pages\ListCemeteries::route('/'),
             'create' => Pages\CreateCemetery::route('/create'),
-            'edit' => Pages\EditCemetery::route('/{record}/edit'),
+            'edit'   => Pages\EditCemetery::route('/{record}/edit'),
         ];
     }
-    
+
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->role === 'admin' ;
+        return auth()->user()->role === 'admin';
     }
 
     public static function canViewAny(): bool

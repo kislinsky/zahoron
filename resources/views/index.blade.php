@@ -54,59 +54,7 @@
             </div>
 
         </div>
-        <div class="grid_two ">
-            <div class="gray_index_block_service">
-                <h2 class="title_li">Найти могилу в городе {{$city->title}}</h2>
-                <div class="flex_text_service_index">
-                    <div class="text_middle_index">Найдите могилу и закажите уход за ней</div>
-                    <img style='max-width:117px;'src="{{asset('storage/uploads/Похороны-Photoroom 2.svg')}}" alt="" class="img_index_service">
-                </div>
-                <form method='get' action="{{route('search.burial.result')}}" class='index_search'>
-                    @csrf
-                    <div class="grid_btn">
-                        <input class='blue_input'type="text" name='surname' placeholder='Фамилия'>
-                        <input class='blue_input'type="text" name='name' placeholder='Имя'>
-                    </div>
-                    <div class="grid_btn">
-                        <input class='blue_input'type="text" name='patronymic' placeholder='Отчество'>
-                        <button class='blue_btn border_radius_btn' type='submit'>Найти</button>
-                    </div>  
-                </form>
-            </div>
-            <div class="grid_two mobile_grid_index">
-                    <div class="gray_index_block_service">
-                        <h2><a href='{{ route('mortuaries') }}' class="title_li">Морги в г. {{$city->title}}</a></h2>
-                        <div class="flex_text_service_index">
-                            <a href='{{ route('mortuaries') }}' class="title_li title_li_mobile">Морги в г. {{$city->title}}</a>
-
-                            <div class="mini_text">Узнайте информацию по
-                                умершему</div>
-                            <img class='img_light_theme mini_index_img'src="{{asset('storage/uploads/mortuary.svg')}}" alt="" class="img_index_service">
-                            <img class='img_black_theme mini_index_img'src="{{asset('storage/uploads/menu 1 (1)_black.svg')}}" alt="" class="img_index_service">
-                            
-                        </div>
-                        @if(versionProject())
-                            <a href='{{ route('mortuaries') }}'  class="blue_btn border_radius_btn" >узнать</a>
-                        @else
-                            <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#dead_form">узнать</div>
-                        @endif
-                    </div>
-                    <div class="gray_index_block_service">
-                        <h2><a href='{{ route('cemeteries') }}' class="title_li">Кладбища 
-                            г. {{$city->title}}</a></h2>
-                        <div class="flex_text_service_index">
-                            <a href='{{ route('cemeteries') }}' class="title_li title_li_mobile">Кладбища 
-                                г. {{$city->title}}</a>
-                            <div class="mini_text">Узнайте рабочий режим кладбища, позвоните или
-                                узнайте как
-                                добраться.</div>
-                                <img class='img_light_theme mini_index_img'src="{{asset('storage/uploads/menu 1.svg')}}" alt="" >
-                                <img class='img_black_theme mini_index_img'src="{{asset('storage/uploads/menu 1 (2)_black.svg')}}" alt="" >
-                            </div>
-                        <a href='{{ route('cemeteries') }}' class="blue_btn border_radius_btn">Позвонить</a>
-                    </div>
-                </div>
-            </div>
+        
 
         <div class="grid_two">
             <div class="grid_two dekstop_index_block">
@@ -230,6 +178,59 @@
                 </div>
             </div>
         </div>
+        <div class="grid_two ">
+            <div class="gray_index_block_service">
+                <h2 class="title_li">Найти могилу в городе {{$city->title}}</h2>
+                <div class="flex_text_service_index">
+                    <div class="text_middle_index">Найдите могилу и закажите уход за ней</div>
+                    <img style='max-width:117px;'src="{{asset('storage/uploads/Похороны-Photoroom 2.svg')}}" alt="" class="img_index_service">
+                </div>
+                <form method='get' action="{{route('search.burial.result')}}" class='index_search'>
+                    @csrf
+                    <div class="grid_btn">
+                        <input class='blue_input'type="text" name='surname' placeholder='Фамилия'>
+                        <input class='blue_input'type="text" name='name' placeholder='Имя'>
+                    </div>
+                    <div class="grid_btn">
+                        <input class='blue_input'type="text" name='patronymic' placeholder='Отчество'>
+                        <button class='blue_btn border_radius_btn' type='submit'>Найти</button>
+                    </div>  
+                </form>
+            </div>
+            <div class="grid_two mobile_grid_index">
+                    <div class="gray_index_block_service">
+                        <h2><a href='{{ route('mortuaries') }}' class="title_li">Морги в г. {{$city->title}}</a></h2>
+                        <div class="flex_text_service_index">
+                            <a href='{{ route('mortuaries') }}' class="title_li title_li_mobile">Морги в г. {{$city->title}}</a>
+
+                            <div class="mini_text">Узнайте информацию по
+                                умершему</div>
+                            <img class='img_light_theme mini_index_img'src="{{asset('storage/uploads/mortuary.svg')}}" alt="" class="img_index_service">
+                            <img class='img_black_theme mini_index_img'src="{{asset('storage/uploads/menu 1 (1)_black.svg')}}" alt="" class="img_index_service">
+                            
+                        </div>
+                        @if(versionProject())
+                            <a href='{{ route('mortuaries') }}'  class="blue_btn border_radius_btn" >узнать</a>
+                        @else
+                            <div class="blue_btn border_radius_btn" data-bs-toggle="modal" data-bs-target="#dead_form">узнать</div>
+                        @endif
+                    </div>
+                    <div class="gray_index_block_service">
+                        <h2><a href='{{ route('cemeteries') }}' class="title_li">Кладбища 
+                            г. {{$city->title}}</a></h2>
+                        <div class="flex_text_service_index">
+                            <a href='{{ route('cemeteries') }}' class="title_li title_li_mobile">Кладбища 
+                                г. {{$city->title}}</a>
+                            <div class="mini_text">Узнайте рабочий режим кладбища, позвоните или
+                                узнайте как
+                                добраться.</div>
+                                <img class='img_light_theme mini_index_img'src="{{asset('storage/uploads/menu 1.svg')}}" alt="" >
+                                <img class='img_black_theme mini_index_img'src="{{asset('storage/uploads/menu 1 (2)_black.svg')}}" alt="" >
+                            </div>
+                        <a href='{{ route('cemeteries') }}' class="blue_btn border_radius_btn">Позвонить</a>
+                    </div>
+                </div>
+            </div>
     </div>
 </section>
 

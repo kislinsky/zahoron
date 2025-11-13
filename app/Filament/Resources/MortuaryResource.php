@@ -14,6 +14,7 @@ use App\Models\Mortuary;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\MultiSelect;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
@@ -43,23 +44,22 @@ class MortuaryResource extends Resource
     {
         return $form
             ->schema([
-                 TextInput::make('title')
-            ->label('Название ')
-            ->required()
-            ->live(debounce: 1000)
-            ->afterStateUpdated(function ($state, $set, $get) {
-                if (!empty($state) && strlen($state) > 3) {
-                    $set('slug', generateUniqueSlug($state, Mortuary::class, $get('id')));
-                }
-            }),
+                TextInput::make('title')
+                    ->label('Название ')
+                    ->required()
+                    ->live(debounce: 1000)
+                    ->afterStateUpdated(function ($state, $set, $get) {
+                        if (!empty($state) && strlen($state) > 3) {
+                            $set('slug', generateUniqueSlug($state, Mortuary::class, $get('id')));
+                        }
+                    }),
 
-        TextInput::make('slug')
-            ->required()
-            ->label('Slug')
-            
-            ->unique(ignoreRecord: true)
-            ->formatStateUsing(fn ($state) => slug($state))
-            ->dehydrateStateUsing(fn ($state, $get) => generateUniqueSlug($state, Mortuary::class, $get('id'))),
+                TextInput::make('slug')
+                    ->required()
+                    ->label('Slug')
+                    ->unique(ignoreRecord: true)
+                    ->formatStateUsing(fn($state) => slug($state))
+                    ->dehydrateStateUsing(fn($state, $get) => generateUniqueSlug($state, Mortuary::class, $get('id'))),
 
 
                 Forms\Components\TextInput::make('width')
@@ -68,7 +68,7 @@ class MortuaryResource extends Resource
                     ->maxLength(255),
 
 
-                    TextInput::make('map_link')
+                TextInput::make('map_link')
                     ->label('Ссылка на карту')
                     ->disabled()
                     ->suffixAction(
@@ -84,15 +84,15 @@ class MortuaryResource extends Resource
                                 return "https://yandex.ru/maps/?rtext=~{$latitude},{$longitude}";
                             })
                             ->openUrlInNewTab()
-                        ),
-                        
+                    ),
+
                 Forms\Components\TextInput::make('longitude')
                     ->label('Долгота')
                     ->required()
                     ->maxLength(255),
 
 
-                    Select::make('edge_id')
+                Select::make('edge_id')
                     ->label('Край')
                     ->options(Edge::all()->pluck('title', 'id')) // Список всех краёв
                     ->searchable() // Добавляем поиск по тексту
@@ -108,16 +108,16 @@ class MortuaryResource extends Resource
                         }
                     })
                     ->dehydrated(false), // Не сохранять значение в базу данных
-                
+
                 Select::make('area_id')
                     ->label('Округ')
                     ->options(function ($get) {
                         $edgeId = $get('edge_id'); // Получаем выбранный край
-                
+
                         if (!$edgeId) {
                             return []; // Если край не выбран, возвращаем пустой список
                         }
-                
+
                         // Возвращаем список районов, привязанных к выбранному краю
                         return Area::where('edge_id', $edgeId)->pluck('title', 'id');
                     })
@@ -133,16 +133,16 @@ class MortuaryResource extends Resource
                         }
                     })
                     ->dehydrated(false), // Не сохранять значение в базу данных
-                
+
                 Select::make('city_id')
                     ->label('Город')
                     ->options(function ($get) {
                         $areaId = $get('area_id'); // Получаем выбранный район
-                
+
                         if (!$areaId) {
                             return []; // Если район не выбран, возвращаем пустой список
                         }
-                
+
                         // Возвращаем список городов, привязанных к выбранному району
                         return City::where('area_id', $areaId)->pluck('title', 'id');
                     })
@@ -156,7 +156,6 @@ class MortuaryResource extends Resource
                     }),
 
 
-               
                 Forms\Components\TextInput::make('underground')
                     ->label('Метро')
                     ->maxLength(255),
@@ -165,7 +164,6 @@ class MortuaryResource extends Resource
                     ->label('Разница во времени')
                     ->maxLength(255),
 
-               
 
                 Forms\Components\TextInput::make('email')
                     ->label('email')
@@ -175,92 +173,116 @@ class MortuaryResource extends Resource
                     ->label('Телефон')
                     ->maxLength(255),
 
-        
-                
 
                 RichEditor::make('content') // Поле для редактирования HTML-контента
-                    ->label('Описание') // Соответствующая подпись
-                    ->toolbarButtons([
-                        'attachFiles', // возможность прикрепить файлы
-                        'bold', // жирный текст
-                        'italic', // курсив
-                        'underline', // подчеркивание
-                        'strike', // зачеркнутый текст
-                        'link', // вставка ссылок
-                        'orderedList', // нумерованный список
-                        'bulletList', // маркированный список
-                        'blockquote', // цитата
-                        'h2', 'h3', 'h4', // заголовки второго, третьего и четвертого уровня
-                        'codeBlock', // блок кода
-                        'undo', 'redo', // отмена/возврат действия
-                    ])
+                ->label('Описание') // Соответствующая подпись
+                ->toolbarButtons([
+                    'attachFiles', // возможность прикрепить файлы
+                    'bold', // жирный текст
+                    'italic', // курсив
+                    'underline', // подчеркивание
+                    'strike', // зачеркнутый текст
+                    'link', // вставка ссылок
+                    'orderedList', // нумерованный список
+                    'bulletList', // маркированный список
+                    'blockquote', // цитата
+                    'h2', 'h3', 'h4', // заголовки второго, третьего и четвертого уровня
+                    'codeBlock', // блок кода
+                    'undo', 'redo', // отмена/возврат действия
+                ])
                     ->disableLabel(false) // Показывать метку
                     ->required()
                     ->placeholder('Введите HTML-контент здесь...'),
 
-                    
-               
-                    
-                    Forms\Components\TextInput::make('adres')
+
+                Forms\Components\TextInput::make('adres')
                     ->label('Адрес')
                     ->required()
                     ->maxLength(255),
-                    
-                    Radio::make('href_img')
-                        ->label('Выберите источник изображения')
-                        ->options([
-                            0 => 'Файл на сайте',
-                            1 => 'Ссылка (URL)'
-                        ])
-                        ->inline()
-                        ->live(), // Автоматически обновляет форму при изменении
 
-                    // Поле для ссылки (отображается только если выбран вариант "Ссылка")
-                    TextInput::make('img_url')
-                        ->label('Ссылка на изображение')
-                        ->placeholder('https://example.com/image.jpg')
-                        ->reactive()
-                        ->required(fn ($get) => intval($get('href_img')) === 1)
-                        ->hidden(fn ($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
+                Radio::make('href_img')
+                    ->label('Выберите источник изображения')
+                    ->options([
+                        0 => 'Файл на сайте',
+                        1 => 'Ссылка (URL)'
+                    ])
+                    ->inline()
+                    ->live(), // Автоматически обновляет форму при изменении
 
-                    // Поле для загрузки файла (отображается только если выбран вариант "Файл на сайте")
-                    FileUpload::make('img_file')
-                        ->label('Загрузить изображение')
-                        ->directory('/uploads_mortuaries') // Директория для хранения файлов
-                        ->image()
-                        ->maxSize(2048)
-                        ->reactive()
-                        ->required(fn ($get) => intval($get('href_img')) === 0)
-                        ->hidden(fn ($get) => intval($get('href_img')) === 1), // Скрыто, если выбрано "Ссылка"
+                // Поле для ссылки (отображается только если выбран вариант "Ссылка")
+                TextInput::make('img_url')
+                    ->label('Ссылка на изображение')
+                    ->placeholder('https://example.com/image.jpg')
+                    ->reactive()
+                    ->required(fn($get) => intval($get('href_img')) === 1)
+                    ->hidden(fn($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
 
-                    // Отображение текущего изображения (если запись уже существует)
-                    View::make('image')
-                        ->label('Текущее изображение')
-                        ->view('filament.forms.components.custom-image') // Указываем путь к Blade-шаблону
-                        ->extraAttributes(['class' => 'custom-image-class'])
-                        ->columnSpan('full')
-                        ->hidden(fn ($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
+                // Поле для загрузки файла (отображается только если выбран вариант "Файл на сайте")
+                FileUpload::make('img_file')
+                    ->label('Загрузить изображение')
+                    ->directory('/uploads_mortuaries') // Директория для хранения файлов
+                    ->image()
+                    ->maxSize(2048)
+                    ->reactive()
+                    ->required(fn($get) => intval($get('href_img')) === 0)
+                    ->hidden(fn($get) => intval($get('href_img')) === 1), // Скрыто, если выбрано "Ссылка"
+
+                // Отображение текущего изображения (если запись уже существует)
+                View::make('image')
+                    ->label('Текущее изображение')
+                    ->view('filament.forms.components.custom-image') // Указываем путь к Blade-шаблону
+                    ->extraAttributes(['class' => 'custom-image-class'])
+                    ->columnSpan('full')
+                    ->hidden(fn($get) => intval($get('href_img')) === 0), // Скрыто, если выбрано "Файл"
 
 
-                    Placeholder::make('created_at')
+                Placeholder::make('created_at')
                     ->label('Дата создания')
-                    ->content(fn (?Model $record): string => $record?->created_at?->format('d.m.Y H:i:s') ?? ''),
-                
-                    TextInput::make('rating')
+                    ->content(fn(?Model $record): string => $record?->created_at?->format('d.m.Y H:i:s') ?? ''),
+
+                TextInput::make('rating')
                     ->label('Рейтинг')
-                
-                                    
+
+
             ]);
     }
 
     public static function table(Table $table): Table
     {
+        $columnsMap = [
+            'id'              => 'ID',
+            'title'           => 'Название',
+            'slug'            => 'Слаг',
+            'city_id'         => 'Город',
+            'width'           => 'Широта',
+            'longitude'       => 'Долгота',
+            'content'         => 'Описание',
+            'mini_content'    => 'Краткое описание',
+            'img_url'         => 'URL картинки',
+            'img_file'        => 'Файл картинки',
+            'adres'           => 'Адрес',
+            'rating'          => 'Рейтинг',
+            'next_to'         => 'Рядом с',
+            'underground'     => 'Метро',
+            'characteristics' => 'Характеристики',
+            'district_id'     => 'Район',
+            'phone'           => 'Телефон',
+            'href_img'        => 'Ссылка на изображение',
+            'village'         => 'Село/Поселок',
+            'email'           => 'Email',
+            'time_difference' => 'Часовой пояс',
+            'url_site'        => 'Сайт',
+            'two_gis_link'    => '2GIS ссылка',
+            'created_at'      => 'Дата создания',
+            'updated_at'      => 'Дата обновления',
+        ];
+
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                ->label('id')
-                ->searchable()
-                ->sortable(),
+                    ->label('id')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('title')
                     ->label('Название')
                     ->searchable()
@@ -272,38 +294,38 @@ class MortuaryResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('edge_id')
-                ->label('Край')
-                ->relationship('city.area.edge', 'title') // Вложенное отношение
-                ->searchable()
-                ->preload(),
+                    ->label('Край')
+                    ->relationship('city.area.edge', 'title') // Вложенное отношение
+                    ->searchable()
+                    ->preload(),
 
 
-             // Фильтр по округу
-            SelectFilter::make('area_id')
-                ->label('Округ')
-                ->relationship('city.area', 'title') // Вложенное отношение
-                ->searchable()
-                ->preload(),
+                // Фильтр по округу
+                SelectFilter::make('area_id')
+                    ->label('Округ')
+                    ->relationship('city.area', 'title') // Вложенное отношение
+                    ->searchable()
+                    ->preload(),
 
-            // Фильтр по городу
-            SelectFilter::make('city_id')
-                ->label('Город')
-                ->relationship('city', 'title') // Используем вложенное отношение
-                ->searchable(),
+                // Фильтр по городу
+                SelectFilter::make('city_id')
+                    ->label('Город')
+                    ->relationship('city', 'title') // Используем вложенное отношение
+                    ->searchable(),
 
                 SelectFilter::make('has_phone')
-                ->label('Отсутсвует телефон')
-                ->options([
-                    'yes' => 'Да',
-                    'no' => 'Нет',
-                ])
-                ->query(function ($query, $state) {
-                    if ($state['value'] === 'no') {
-                        $query->whereNotNull('phone');
-                    } elseif ($state['value'] === 'yes') {
-                        $query->whereNull('phone');
-                    }
-                }),
+                    ->label('Отсутсвует телефон')
+                    ->options([
+                        'yes' => 'Да',
+                        'no'  => 'Нет',
+                    ])
+                    ->query(function ($query, $state) {
+                        if ($state['value'] === 'no') {
+                            $query->whereNotNull('phone');
+                        } elseif ($state['value'] === 'yes') {
+                            $query->whereNull('phone');
+                        }
+                    }),
                 // SelectFilter::make('has_phone')
                 // ->label('Отсутсвуют координаты')
                 // ->options([
@@ -324,100 +346,51 @@ class MortuaryResource extends Resource
 
             ])
             ->headerActions([
-                // Другие действия
                 \Filament\Tables\Actions\Action::make('export')
                     ->label('Экспорт в Excel')
-                    ->action(function (HasTable $livewire) {
-        // Получаем текущий запрос таблицы
-        $query = Mortuary::query();
+                    ->action(function ($livewire, array $data) use ($columnsMap) {
+                        $fileName = 'mortuaries_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
 
-        // Применяем фильтры таблицы, если они есть
-        if (property_exists($livewire, 'tableFilters') && !empty($livewire->tableFilters)) {
-            foreach ($livewire->tableFilters as $filterName => $filterValue) {
-                if (!empty($filterValue['value'])) {
-                    $filterValue=$filterValue['value'];
-                    switch ($filterName) {
-                        case 'edge_id':
-                            $query->whereHas('city.area.edge', function ($q) use ($filterValue) {
-                                $q->where('id', $filterValue);
-                            });
-                            break;
-                        case 'area_id':
-                            $query->whereHas('city.area', function ($q) use ($filterValue) {
-                                $q->where('id', $filterValue);
-                            });
-                            break;
-                        case 'city_id':
-                            $query->whereHas('city', function ($q) use ($filterValue) {
-                                $q->where('id', $filterValue);
-                            });
-                            break;
-                        case 'has_phone':
-                            if ($filterValue === 'no') {
-                                $query->whereNotNull('phone');
-                            } elseif ($filterValue === 'yes') {
-                                $query->whereNull('phone');
-                            }
-                            break;
-                       
-                    }
-                }
-            }
-        }
+                        $query = $livewire->getFilteredTableQuery();
 
-        // Применяем сортировку таблицы, если она есть
-        if (property_exists($livewire, 'tableSortColumn') && $livewire->tableSortColumn) {
-            $query->orderBy($livewire->tableSortColumn, $livewire->tableSortDirection ?? 'asc');
-        }
+                        $columns = $data['columns'] ?: array_keys($columnsMap);
 
-        // Получаем данные с учётом фильтров и сортировки
-        $cemeteries = $query->with(['city.area.edge', 'city.area', 'city'])
-            ->get()
-            ->map(function ($mortuary) {
-                return [
-                    'ID' => $mortuary->id,
-                    'Название' => $mortuary->title,
-                    'Ширина' => $mortuary->width,
-                    'Долгота' => $mortuary->longitude,
-                    'Ссылка на карту' => $mortuary->map_link,
-                    'Край' => $mortuary->city->area->edge->title ?? 'Не указано',
-                    'Округ' => $mortuary->city->area->title ?? 'Не указано',
-                    'Город' => $mortuary->city->title ?? 'Не указано',
-                    'Ориентир' => $mortuary->adres,
-                    'Email' => $mortuary->email,
-                    'Телефон' => $mortuary->phone,
-                    'Рейтинг' => $mortuary->rating,
-                ];
-            });
+                        $collection = $query->get()->map(function ($item) use ($columns, $columnsMap) {
+                            return collect($columns)->mapWithKeys(function ($col) use ($item, $columnsMap) {
+                                $value = $item->{$col};
 
-        // Если данные пустые, возвращаем все записи
-        if ($cemeteries->isEmpty()) {
-            $cemeteries = Mortuary::query()
-                ->with(['city.area.edge', 'city.area', 'city'])
-                ->orderBy('title')
-                ->get()
-                ->map(function ($mortuary) {
-                    return [
-                        'ID' => $mortuary->id,
-                        'Название' => $mortuary->title,
-                        'Ширина' => $mortuary->width,
-                        'Долгота' => $mortuary->longitude,
-                        'Ссылка на карту' => $mortuary->map_link,
-                        'Край' => $mortuary->city->area->edge->title ?? 'Не указано',
-                        'Округ' => $mortuary->city->area->title ?? 'Не указано',
-                        'Город' => $mortuary->city->title ?? 'Не указано',
-                        'Ориентир' => $mortuary->adres,
-                        'Email' => $mortuary->email,
-                        'Телефон' => $mortuary->phone,
-                        'Рейтинг' => $mortuary->rating,
-                    ];
-                });
-        }
+                                if ($col === 'id') {
+                                    $value = (string) $value;
+                                }
 
-        // Экспорт в Excel
-        return (new FastExcel($cemeteries))->download('columbariums.xlsx');
-    }),
-])
+                                if ($col === 'city_id') {
+                                    $value = optional($item->city)->title;
+                                }
+
+                                if ($col === 'district_id') {
+                                    $value = optional($item->district)->title;
+                                }
+
+                                if ($value instanceof \Illuminate\Support\Carbon) {
+                                    $value = $value->format('d.m.Y H:i:s');
+                                }
+
+                                return [$columnsMap[$col] => $value];
+                            })->toArray();
+                        });
+
+                        return (new FastExcel($collection))->download($fileName);
+                    })
+                    ->form([
+                        MultiSelect::make('columns')
+                            ->label('Выберите колонки для экспорта')
+                            ->options($columnsMap)
+                            ->helperText('Если ничего не выбрано, будут экспортированы все колонки')
+                    ])
+                    ->modalAutofocus(false)
+                    ->modalSubmitActionLabel('Скачать Excel')
+
+            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -438,15 +411,15 @@ class MortuaryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMortuaries::route('/'),
+            'index'  => Pages\ListMortuaries::route('/'),
             'create' => Pages\CreateMortuary::route('/create'),
-            'edit' => Pages\EditMortuary::route('/{record}/edit'),
+            'edit'   => Pages\EditMortuary::route('/{record}/edit'),
         ];
     }
-    
+
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->role === 'admin' ;
+        return auth()->user()->role === 'admin';
     }
 
     public static function canViewAny(): bool
