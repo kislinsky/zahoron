@@ -14,22 +14,23 @@ use App\Models\SearchBurial;
 use Illuminate\Http\Request;
 use App\Models\FavouriteBurial;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AgentService {
 
-     
+
    public static function index()
     {
         $user = user();
-        
+
         // Проверяем, что пользователь существует и у него есть cemetery_ids
         if (!$user || empty($user->cemetery_ids)) {
             $orders_services = collect(); // возвращаем пустую коллекцию
         } else {
             // Декодируем JSON и проверяем результат
             $cemeteryIds = json_decode($user->cemetery_ids);
-            
+
             // Проверяем, что декодирование прошло успешно и это массив
             if (json_last_error() !== JSON_ERROR_NONE || !is_array($cemeteryIds) || empty($cemeteryIds)) {
                 $orders_services = collect();
@@ -41,7 +42,7 @@ class AgentService {
                     ->get();
             }
         }
-        
+
         return view('account.agent.index', compact('user', 'orders_services'));
     }
 
@@ -54,7 +55,7 @@ class AgentService {
             if($data['status']==2){
                 $orders_services=OrderService::orderBy('id','desc')->where('paid',1)->where('worker_id',$user->id)->paginate(6);
             }
-            
+
             else{
                 $orders_services=OrderService::orderBy('id','desc')->where('status',$data['status'])->where('worker_id',$user->id)->paginate(6);
             }
@@ -85,7 +86,7 @@ class AgentService {
         return redirect()->back();
     }
 
-    
+
 
     public static function agentSettings(){
         $page=5;
@@ -133,7 +134,7 @@ class AgentService {
                         $user->update([
                             'password'=>Hash::make($data['password_new'])
                         ]);
-                        
+
                         return redirect()->back();
 
                     }
@@ -162,7 +163,7 @@ class AgentService {
             return redirect()->back();
         }
         return redirect()->back()->with("error", 'Такой телефон или email уже существует');
-        
+
     }
 
 
@@ -203,19 +204,24 @@ class AgentService {
     }
 
 
-    public static function addCemetery($data){
-        if(isset($data['id_location'])){
-            $cemetery=Cemetery::findOrFail($data['id_location']);
-            return response()->json(['adres'=>$cemetery->adres,'id_cemetery'=>$cemetery->id]);
-        }else{
-            $cemetery=Cemetery::where('title',$data['name_location'])->get();
-            if(count($cemetery)>0){
-                return response()->json(['adres'=>$cemetery[0]->adres,'id_cemetery'=>$cemetery[0]->id]);
-            }else{
-                return response()->json(['error'=>'Такого кладбища нет']);
+    public static function addCemetery($data)
+    {
+        if (isset($data['id_location']) && $data['id_location']) {
+            $cemetery = Cemetery::find($data['id_location']);
+
+            if ($cemetery) {
+                return response()->json(['adres' => $cemetery->adres, 'id_cemetery' => $cemetery->id]);
+            } else {
+                return response()->json(['error' => 'Кладбище с таким ID не найдено']);
+            }
+        } else {
+            $cemetery = Cemetery::where('title', $data['name_location'])->first();
+
+            if ($cemetery) {
+                return response()->json(['adres' => $cemetery->adres, 'id_cemetery' => $cemetery->id]);
+            } else {
+                return response()->json(['error' => 'Такого кладбища нет']);
             }
         }
-
     }
-
 }

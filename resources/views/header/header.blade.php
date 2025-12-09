@@ -11,6 +11,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
+        <link rel="icon" type="image/x-icon" href="{{ asset('storage/uploads/favicon.ico') }}">
 
         {!! SEOTools::generate() !!}
 
@@ -85,7 +86,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
                Ритуальные услуги
                 <div class='children_pages'>
                     <a href='{{ route('organizations.category','organizacia-pohoron') }}'class="btn_bac_gray">Ритуальные агенства </a>
-                    <a href=''class="btn_bac_gray">Ритуальные товары, услуги </a>
+                    <a href='{{route('marketplace.category','organizacia-pohoron')}}'class="btn_bac_gray">Ритуальные товары, услуги </a>
                 </div>
                 <img class='img_light_theme' src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>
                 <img class='img_black_theme' src='{{asset('storage/uploads/Vector 9_black.svg')}}'>

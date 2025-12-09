@@ -18,6 +18,7 @@ use App\Models\FaqService;
 use App\Models\ImageService;
 use App\Models\MessageTemplate;
 use App\Models\Mortuary;
+use App\Models\Notification;
 use App\Models\OrderProduct;
 use App\Models\Organization;
 use App\Models\Page;
@@ -50,6 +51,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
 use Stevebauman\Location\Facades\Location;
+
 
 
 
@@ -1291,16 +1293,43 @@ function allCemetery(){
 }
 
 
-function getCoordinatesCity($city,$area){
-    $apiKey=env('DADATA_API_KEY');
-    $client = new Client();
-    $response = $client->get("https://api.opencagedata.com/geocode/v1/json?q=Город в россии в {$area} - {$city}&key={$apiKey}");
-    if(isset(json_decode($response->getBody(), true)['results'][0]['geometry'])){
-        return $data = json_decode($response->getBody(), true)['results'][0]['geometry'];
-    }
-    return null;
+function getCoordinatesCity($city, $area) {
+    $apiKey = env('DADATA_API_KEY');
+    $secretKey = env('DADATA_SECRET_KEY'); 
     
-} 
+    $client = new Client([
+        'base_uri' => 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/',
+        'headers' => [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => 'Token ' . $apiKey,
+        ]
+    ]);
+    
+    $address = "{$area}, {$city}";
+    
+    try {
+        $response = $client->post('geolocate/address', [
+            'json' => [
+                'query' => $address,
+                'count' => 1
+            ]
+        ]);
+        
+        $data = json_decode($response->getBody(), true);
+        
+        if(isset($data['suggestions'][0]['data']['geo_lat'])) {
+            return [
+                'lat' => (float)$data['suggestions'][0]['data']['geo_lat'],
+                'lng' => (float)$data['suggestions'][0]['data']['geo_lon']
+            ];
+        }
+        return null;
+    } catch (\Exception $e) {
+        \Log::error('Dadata geocoding error: ' . $e->getMessage());
+        return null;
+    }
+}
 
 
 
@@ -2878,4 +2907,75 @@ function getProductsByCategories(array $categoryIds, $city = null, ?int $limit =
     Cache::store('redis')->put($cacheKey, $productIds, $cacheTime * 60);
     
     return $products;
+}
+
+
+function getCounts($type = null, $userId = null, $organizationId = null)
+{
+    $query = \App\Models\Notification::query();
+    
+    // Фильтр по типу уведомления
+    if ($type) {
+        if (is_array($type)) {
+            $query->whereIn('type', $type);
+        } else {
+            $query->where('type', $type);
+        }
+    }
+    
+    // Фильтр по пользователю
+    if ($userId) {
+        $query->where('user_id', $userId);
+    }
+    
+    // Фильтр по организации
+    if ($organizationId) {
+        $query->where('organization_id', $organizationId);
+    }
+    
+    // Только непрочитанные
+    $query->where('is_read', false);
+    
+    // Если переданы и userId и organizationId - сложный запрос
+    if ($userId && $organizationId) {
+        $query = \App\Models\Notification::where(function($q) use ($userId, $organizationId) {
+            $q->where('user_id', $userId)
+              ->orWhere(function($q2) use ($organizationId) {
+                  $q2->where('organization_id', $organizationId)
+                     ->whereNull('user_id');
+              });
+        });
+        
+        if ($type) {
+            if (is_array($type)) {
+                $query->whereIn('type', $type);
+            } else {
+                $query->where('type', $type);
+            }
+        }
+        
+        $query->where('is_read', false);
+    }
+    
+    return $query->count();
+}
+
+
+function deleteNotifications($type, $user_id = null, $organization_id = null) {
+
+
+    $notifications = Notification::where('type', $type);
+    
+    if ($user_id !== null) {
+        $notifications = $notifications->where('user_id', $user_id);
+    }
+    
+    if ($organization_id !== null) {
+        $notifications = $notifications->where('organization_id', $organization_id);
+    }
+    
+    $count = $notifications->count();
+    $notifications->delete();
+    
+    return $count;
 }

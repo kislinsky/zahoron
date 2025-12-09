@@ -117,7 +117,7 @@
             
             <div class="two_block_li_product">
                 <div class="mini_flex_li_product">
-                    <h1 class="index_title">{{ $product->surname }} {{ $product->name }} {{ $product->patronymic }}</h1>
+                    <h1 class="index_title">{{ $title_h1 }} </h1>
                     <div class="text_li">{{timeDifference( $product->date_birth,$product->date_death)->y}} лет</div>
                 </div>
                 <div class="mini_flex_li_product">
@@ -229,11 +229,25 @@
                     <div class="title_middle">Выберите размер участка</div>
                         <form enctype='multipart/form-data' action="{{ route('burial.service.add',$product->id) }}"  method='get' class='form_services_add'>
                             @csrf
-                            <select name="size" id="">
-                                <option value="200x230">200x230</option>
-                                <option value="200x240">200x240</option>
-                                <option value="200x250">200x250</option>
-                            </select>
+                            @php
+    $sizes = get_acf(20, 'ul_sizes_plot');
+@endphp
+
+@if($sizes && !empty(trim($sizes)))
+    @php
+        $sizeArray = array_map('trim', explode('|', $sizes));
+        $sizeArray = array_filter($sizeArray);
+    @endphp
+    
+    @if(!empty($sizeArray))
+        <select name="size" id="size-select">
+            <option value="">Выберите размер</option>
+            @foreach($sizeArray as $size)
+                <option value="{{ $size }}">{{ $size }}</option>
+            @endforeach
+        </select>
+    @endif
+@endif
                             @if (isset($services))
                                 @if ($services->count()>0)
                                     @foreach ($services as $service)

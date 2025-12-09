@@ -2,7 +2,6 @@
 @section('title', 'Настройки организации')
 
 @section('content')
-@include('forms.location-2')
 
     <form enctype='multipart/form-data' action="{{route('account.agency.organization.settings.update')}}" method='post' class="update_settings_organization">
         @csrf
@@ -14,7 +13,7 @@
                 <div class='error-text'>{{ $message }}</div>
             @enderror
         </div>
-       
+
 
         <div class="block_input">
             <div class="mb-3">
@@ -24,7 +23,7 @@
             @error('img_main')
                 <div class='error-text'>{{ $message }}</div>
             @enderror
-            
+
             <img class='logo_org_setting' src="{{ $organization->urlImgMain() }}" alt="">
 
         </div>
@@ -37,7 +36,7 @@
             @error('img')
                 <div class='error-text'>{{ $message }}</div>
             @enderror
-            
+
             <img class='logo_org_setting' src="{{ $organization->urlImg() }}" alt="">
 
         </div>
@@ -55,25 +54,25 @@
             @enderror
         </div>
 
-        
 
-        
+
+
 
         {{view('account.agency.components.settings-organization.cats',compact('categories','categories_children','categories_organization','organization'))}}
-        
+
         {{view('account.agency.components.settings-organization.contacts',compact('organization'))}}
 
         {{view('account.agency.components.settings-organization.work-time',compact('organization','days'))}}
 
-        
-        {{view('account.agency.components.settings-organization.cemeteries',compact('cemeteries'))}}
-        
 
-        
+        {{view('account.agency.components.settings-organization.cemeteries',compact('cemeteries'))}}
+
+
+
 
         <button type="submit" class='blue_btn'>Сохранить настройки</button>
     </form>
-    
+    {{view('forms.multilocation')}}
 @endsection
 
 

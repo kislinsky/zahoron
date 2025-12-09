@@ -8,7 +8,8 @@ class AgencyBeautificationAplicationOrganization {
 
     public static function new(){
         $organization=user()->organization();
-       $aplications=collect();
+        deleteNotifications('beautification_new',null,$organization->id);
+        $aplications=collect();
         if($organization!=null){
             $aplications=Beautification::orderBy('id','desc')->where('status',0)->where('city_id',$organization->city->id)->paginate(6);
         }

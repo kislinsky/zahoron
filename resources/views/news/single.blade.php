@@ -3,7 +3,7 @@
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-            <h1 class="index_title"> {{ $title_h1 }}</h1>    
+            <h1 class="index_title"> {{ formatContent($title_h1) }}</h1>    
             <div class="text_li">{{ $news->created_at->format('d.m.Y') }}</div>
  
         </div>
@@ -18,7 +18,7 @@
     <div class="container grid_two_page">
         <div class="content_news_single">
             <img class='img_main_single_news'src="{{asset('storage/'. $news->img )}}" alt="">
-            {!!$news->content!!}
+            {!!formatContent($news->content)!!}
         </div>
         <div class="sidebar">
             <div class="btn_border_blue"  data-bs-toggle="modal" data-bs-target="#beautification_form"><img src="{{asset('storage/uploads/Frame (20).svg')}}" alt="">Облагородить могилу</div>

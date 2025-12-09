@@ -51,16 +51,26 @@ class OrderBurialService
     }
 
     public static function orderAddWithPay($burial){
-        $data=[
-            'burial_id'=>$burial->id,
-            'user_id'=>user()->id,
-            'count'=>$burial->cemetery->price_burial_location,
-            'type'=>'burial_buy'
-        ];
-        $object=new YooMoneyService();
-        return $object->createPayment($burial->cemetery->price_burial_location,route('account.user.burial'),'Оплата геолокаци',$data);
-    }
+    $user = user(); // Получаем пользователя
     
+    $data = [
+        'burial_id' => $burial->id,
+        'user_id' => $user->id,
+        'count' => $burial->cemetery->price_burial_location,
+        'type' => 'burial_buy'
+    ];
+    
+    $object = new YooMoneyService();
+    
+    // Передаем email пользователя (обязательно для чека)
+    return $object->createPayment(
+        $burial->cemetery->price_burial_location,
+        route('account.user.burial'),
+        'Оплата места захоронения', // Исправил описание
+        $data,
+        $user->email // Передаем email пользователя
+    );
+}
     public static function burialDelete($id){
         $order=OrderBurial::findOrFail($id);
         if($order->status==0){

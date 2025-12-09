@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Account\Agency\AuthAgencyController;
 use App\Http\Controllers\Api\Account\Cashier\AuthCashierController;
 use App\Http\Controllers\Api\Account\Cashier\CashierController;
 use App\Http\Controllers\Swagger\TestController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,25 +20,25 @@ Route::prefix('app')->group(function () {
 
         Route::post('/send-code', [AgencyController::class, 'sendCode']);
         Route::post('/accept-code', [AgencyController::class, 'acceptCode']);
-        
+
         // Незащищенные маршруты (публичные)
         Route::post('/delete/{user}', [AuthAgencyController::class, 'deleteAccountTest']);
         Route::post('/user/{user}/find', [AgencyController::class, 'findUser']);
-        
+
         // Регистрация и авторизация
         Route::post('/register', [AuthAgencyController::class, 'register']);
         Route::post('/register/confirm-info', [AuthAgencyController::class, 'confirmInfo']);
         Route::post('/register/confirm-phone', [AuthAgencyController::class, 'confirmPhone']);
-        
+
         // Авторизация
         Route::post('/auth', [AuthAgencyController::class, 'authInit']);
         Route::post('/auth/confirm', [AuthAgencyController::class, 'authConfirm']);
-        
+
         // Публичные API
         Route::post('/organizations/{city}', [AgencyController::class, 'organizationsCity']);
         Route::post('/cities/search', [AgencyController::class, 'citySearch']);
         Route::post('/edges/search', [AgencyController::class, 'edgeSearch']);
-        
+
         Route::get('/cemeteries', [AgencyController::class, 'getCemeteries']);
         Route::get('/cemeteries/{id}', [AgencyController::class, 'getCemetery']);
 
@@ -63,7 +64,7 @@ Route::prefix('app')->group(function () {
                     Route::get('/current-organization', [AgencyController::class, 'getCurrentOrganization']);
 
                     Route::get('/wallets', [AgencyController::class, 'userWallets']);
-                    
+
                     Route::group(['prefix' => 'wallet'], function() {
                         Route::delete('/{wallet}/delete', [AgencyController::class, 'deleteWallet']);
                         Route::post('/balance/update', [AgencyController::class, 'walletUpdateBalance']);
@@ -78,17 +79,22 @@ Route::prefix('app')->group(function () {
                         Route::post('/buy', [AgencyController::class, 'buyPriority']);
                     });
 
-                   
+
+
 
                     Route::group(['prefix' => 'organization'], function() {
                         Route::post('/create', [AgencyController::class, 'createOrganization']);
                         Route::post('/update', [AgencyController::class, 'updateOrganization']);
+                        Route::post('/attach-cashier', [AgencyController::class, 'attachCashierToOrganization']);
+                        Route::put('/unlink-cashier', [AgencyController::class, 'unlinkCashierFromOrganization']);
+                        Route::get('/call-stats', [AgencyController::class, 'getCallStats']);
+                        Route::get('/cemeteries', [AgencyController::class, 'getOrganizationCemeteries']);
                     });
 
                     Route::group(['prefix' => 'organization-provider'], function() {
                         Route::post('/create-requests-cost', [AgencyController::class, 'addRequestsCostProductSuppliers']);
                         Route::delete('/delete-requests-cost/{request}', [AgencyController::class, 'deleteRequestCostProductProvider']);
-                        Route::post('/offer/add', [AgencyController::class, 'createProviderOffer']);    
+                        Route::post('/offer/add', [AgencyController::class, 'createProviderOffer']);
                         Route::delete('/offer/{id}/delete', [AgencyController::class, 'deleteProviderOffer']);
                     });
 
@@ -109,13 +115,15 @@ Route::prefix('app')->group(function () {
                     });
 
                     Route::post('/settings/update', [AgencyController::class, 'settingsUserUpdate']);
-                    
+
                     Route::prefix('products')->group(function () {
                         Route::get('/', [AgencyController::class, 'products']);
                         Route::post('/', [AgencyController::class, 'addProduct']);
                         Route::post('/{product}/update', [AgencyController::class, 'updateProduct']);
                         Route::delete('/{product}', [AgencyController::class, 'deleteProduct']);
                     });
+
+                    Route::get('orders/products', [AgencyController::class, 'getOrderProducts']);
                 });
             });
         });
@@ -132,7 +140,7 @@ Route::prefix('app')->group(function () {
         Route::post('/validate-token', [AuthCashierController::class, 'checkJwtToken']);
         // Проверка JWT токена из заголовка
         Route::get('/validate-token-header', [AuthCashierController::class, 'checkJwtTokenFromHeader']);
-        
+
         // Авторизация
         Route::post('/auth/init', [AuthCashierController::class, 'authInit']);
         Route::post('/auth/confirm', [AuthCashierController::class, 'authConfirm']);
@@ -149,11 +157,11 @@ Route::prefix('app')->group(function () {
                     Route::get('/morgues', [CashierController::class, 'getMorgues']);
                     Route::get('/call-stats', [CashierController::class, 'getCallStats']);
                     Route::get('/orders', [CashierController::class, 'orderProducts']);
-                    
+
                 });
             });
         });
-      
-        
+
+
     });
 });

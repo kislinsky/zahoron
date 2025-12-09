@@ -9,6 +9,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Log;
 
 class RepliesRelationManager extends RelationManager
 {
@@ -85,7 +86,80 @@ class RepliesRelationManager extends RelationManager
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->label('Добавить ответ')
-                    ->icon('heroicon-o-plus'),
+                    ->icon('heroicon-o-plus')
+                    ->after(function ($record) {
+                        $ticket = $this->getOwnerRecord();
+                        
+                        Log::info('=== FILAMENT REPLY CREATED ===');
+                        Log::info('Reply ID: ' . $record->id);
+                        Log::info('Reply User ID: ' . $record->user_id);
+                        Log::info('Ticket User ID: ' . $ticket->user_id);
+                        Log::info('Ticket Assigned To: ' . $ticket->assigned_to);
+                        Log::info('Is Internal: ' . $record->is_internal);
+                        
+                        try {
+                            // Если это не внутреннее сообщение
+                            if (!$record->is_internal) {
+                                // Если ответил не автор тикета - уведомляем автора
+                                if ($record->user_id != $ticket->user_id) {
+                                    \App\Models\Notification::create([
+                                        'user_id' => $ticket->user_id,
+                                        'organization_id' => null,
+                                        'type' => 'ticket_reply',
+                                        'title' => 'Новый ответ в тикете',
+                                        'message' => "Новый ответ в тикете: {$ticket->subject}",
+                                        'is_read' => false
+                                    ]);
+                                    Log::info('Notification created for ticket author');
+                                }
+                                // Если автор тикета ответил, уведомляем назначенного сотрудника
+                                elseif ($record->user_id == $ticket->user_id && $ticket->assigned_to) {
+                                    \App\Models\Notification::create([
+                                        'user_id' => $ticket->assigned_to,
+                                        'organization_id' => null,
+                                        'type' => 'ticket_reply',
+                                        'title' => 'Новый ответ клиента',
+                                        'message' => "Клиент ответил в тикете: {$ticket->subject}",
+                                        'is_read' => false
+                                    ]);
+                                    Log::info('Notification created for assigned staff');
+                                }
+                            } 
+                            // Если это внутреннее сообщение
+                            else {
+                                // Уведомляем назначенного сотрудника (если ответил не он)
+                                if ($ticket->assigned_to && $record->user_id != $ticket->assigned_to) {
+                                    \App\Models\Notification::create([
+                                        'user_id' => $ticket->assigned_to,
+                                        'organization_id' => null,
+                                        'type' => 'ticket_internal_reply',
+                                        'title' => 'Внутренний комментарий',
+                                        'message' => "Новый внутренний комментарий в тикете: {$ticket->subject}",
+                                        'is_read' => false
+                                    ]);
+                                    Log::info('Internal notification created for assigned staff');
+                                }
+                                
+                                // Уведомляем автора тикета (если это не он)
+                                if ($record->user_id != $ticket->user_id) {
+                                    \App\Models\Notification::create([
+                                        'user_id' => $ticket->user_id,
+                                        'organization_id' => null,
+                                        'type' => 'ticket_internal_reply',
+                                        'title' => 'Внутренний комментарий',
+                                        'message' => "Новый внутренний комментарий в вашем тикете: {$ticket->subject}",
+                                        'is_read' => false
+                                    ]);
+                                    Log::info('Internal notification created for ticket author');
+                                }
+                            }
+                            
+                            Log::info('Notifications created successfully');
+                        } catch (\Exception $e) {
+                            Log::error('Error creating notification: ' . $e->getMessage());
+                            Log::error('Trace: ' . $e->getTraceAsString());
+                        }
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

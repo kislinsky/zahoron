@@ -145,7 +145,7 @@ class AgencyController extends Controller
      */
     public static function products(Request $request)
     {
-        //  существующий код метода 
+        //  существующий код метода
     }
 
 
@@ -1066,12 +1066,12 @@ public static function update(Request $request) {}
  *             @OA\Property(property="organization_id", type="integer", example=1),
  *             @OA\Property(property="user_id", type="integer", example=1),
  *             @OA\Property(
- *                 property="products", 
+ *                 property="products",
  *                 type="array",
  *                 @OA\Items(type="integer", example=1)
  *             ),
  *             @OA\Property(
- *                 property="count", 
+ *                 property="count",
  *                 type="array",
  *                 @OA\Items(type="integer", example=1)
  *             ),
@@ -1189,7 +1189,7 @@ public static function addRequestsCostProductSuppliers(Request $request){}
  *                     example=1,
  *                     description="Category ID (optional)"
  *                 ),
- * 
+ *
  *              @OA\Property(
  *                     property="delivery_required",
  *                     type="integer",
@@ -1197,7 +1197,7 @@ public static function addRequestsCostProductSuppliers(Request $request){}
  *                     example=1,
  *                     description="Whether delivery is required (optional)"
  *                 ),
- *                
+ *
  *             )
  *         )
  *     ),
@@ -2418,7 +2418,7 @@ public static function payApplication(Request $request){}
  *             required={"type_priority", "priority"},
  *             @OA\Property(property="type_priority", type="string", enum={"1"}, example="1"),
  *             @OA\Property(
- *                 property="priority", 
+ *                 property="priority",
  *                 type="string",
  *                 enum={"priority-list-companies-1-3", "priority-list-companies-4-6"},
  *                 example="priority-list-companies-1-3"
@@ -2523,7 +2523,7 @@ public static function findUser(User $user){}
  *         description="Успешное получение категорий",
  *         @OA\JsonContent(
  *             @OA\Property(property="success", type="boolean", example=true),
- *             @OA\Property(property="data", type="array", 
+ *             @OA\Property(property="data", type="array",
  *                 @OA\Items(
  *                     @OA\Property(property="id", type="integer", example=1),
  *                     @OA\Property(property="name", type="string", example="Электроника"),
@@ -3080,4 +3080,388 @@ public static function getCurrentOrganization(){}
  * )
  */
     public static function destroyUser(User $user){}
+
+    /**
+     * @OA\Get(
+     * path="/app/organization/account/agency/orders/products",
+     * summary="Получение списка заказов товаров организации",
+     * tags={"Заказы организации"},
+     * security={{"bearerAuth":{}}},
+     * description="Возвращает список заказов с фильтрацией по статусу и категории, включая детали о кладбище, морге и логистике.",
+     * @OA\Parameter(
+     *     name="organization_id",
+     *     in="query",
+     *     required=true,
+     *     @OA\Schema(type="string", example=12345678912345678),
+     *     description="ID организации"
+     * ),
+     * @OA\Parameter(
+     *     name="status",
+     *     in="query",
+     *     required=false,
+     *     @OA\Schema(type="integer", enum={0, 1, 2}, example=0),
+     *     description="Статус заказа: 0-новый, 1-в работе, 2-архив"
+     * ),
+     * @OA\Parameter(
+     *     name="category_id",
+     *     in="query",
+     *     required=false,
+     *     @OA\Schema(type="integer", example=5),
+     *     description="ID категории товара для фильтрации"
+     * ),
+     * @OA\Parameter(
+     *     name="page",
+     *     in="query",
+     *     required=false,
+     *     @OA\Schema(type="integer", example=1),
+     *     description="Номер страницы"
+     * ),
+     * @OA\Parameter(name="limit",
+     *     in="query",
+     *     required=false,
+     *     @OA\Schema(type="integer", example=10),
+     *     description="Количество записей на странице"
+     * ),
+     * @OA\Response(
+     *     response=200,
+     *     description="Успешное получение списка",
+     *     @OA\JsonContent(
+     *          @OA\Property(property="success", type="boolean", example=true),
+     *          @OA\Property(property="data", type="array",
+     *              @OA\Items(
+     *                      @OA\Property(property="id", type="integer", example=105),
+     *                      @OA\Property(property="status", type="integer", example=0),
+     *                      @OA\Property(property="status_text", type="string", example="Новый"),
+     *                      @OA\Property(property="count", type="integer", example=2),
+     *                      @OA\Property(property="price", type="integer", example=5000),
+     *                      @OA\Property(property="all_price", type="integer", example=10000),
+     *                      @OA\Property(property="customer_comment", type="string", example="Срочный заказ", nullable=true),
+     *                      @OA\Property(property="size", type="string", example="150*150*150", nullable=true),
+     *                      @OA\Property(property="additional", type="string", nullable=true),
+     *                      @OA\Property(property="date", type="string", format="date", example="2023-12-31", nullable=true),
+     *                      @OA\Property(property="time", type="string", example="14:30", nullable=true),
+     *                      @OA\Property(property="city_from", type="string", example="Москва", nullable=true),
+     *                      @OA\Property(property="city_to", type="string", example="Казань", nullable=true),
+     *                      @OA\Property(property="created_at", type="string", example="2023-12-31 12:00"),
+     *                      @OA\Property(property="cemetery", type="object", nullable=true,
+     *                              @OA\Property(property="id", type="integer", example=123456789123456),
+     *                              @OA\Property(property="title", type="string", example="Восточное кладбище"),
+     *                      ),
+     *                      @OA\Property(property="mortuary", type="object", nullable=true,
+     *                              @OA\Property(property="id", type="integer", example=123456789123456),
+     *                              @OA\Property(property="title", type="string", example="Городской морг №1"),
+     *                      ),
+     *                      @OA\Property(property="product", type="object",
+     *                              @OA\Property(property="id", type="integer", example=55),
+     *                              @OA\Property(property="title", type="string", example="Гроб лакированный"),
+     *                              @OA\Property(property="slug", type="string", example="grob-lakirovanniy"),
+     *                              @OA\Property(property="category", type="string", example="Гробы"),
+     *                              @OA\Property(property="image", type="string", example="uploads/img.jpg", nullable=true)
+     *                      ),
+     *                      @OA\Property(property="user", type="object",
+     *                              @OA\Property(property="id", type="integer", example=10),
+     *                              @OA\Property(property="name", type="string", example="Иванов Иван Иванович"),
+     *                              @OA\Property(property="phone", type="string", example="+79001234567"),
+     *                              @OA\Property(property="email", type="string", example="ivan@mail.ru")
+     *                      )
+     *
+     *              ),
+     *          ),
+     *          @OA\Property(property="pagination", type="object",
+     *                  @OA\Property(property="total", type="integer", example=50),
+     *                  @OA\Property(property="current_page", type="integer", example=1),
+     *                  @OA\Property(property="per_page", type="integer", example=10),
+     *                  @OA\Property(property="last_page", type="integer", example=5)
+     *          )
+     *      )
+     * ),
+     * @OA\Response(response=403, description="Нет доступа к организации"),
+     * @OA\Response(response=404, description="Организация не найдена"),
+     * @OA\Response(response=422, description="Ошибка валидации")
+     * )
+     */
+    public function getOrderProducts(Request $request)
+    {
+        // ... код метода ...
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/app/organization/account/agency/organization/attach-cashier",
+     *     summary="Привязать кассира к организации",
+     *     description="Привязывает кассира по номеру телефона к организации. Если кассир не существует, создаёт нового. Требует аутентификации владельца организации.",
+     *     tags={"Организация"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"organization_id", "phone"},
+     *             @OA\Property(property="organization_id", type="string", example="123456789123456", description="ID организации"),
+     *             @OA\Property(property="phone", type="string", example="+79123456789", minLength=12, maxLength=12, pattern="^\+\d{11}$", description="Номер телефона кассира (обязательно 12 символов, начинается с '+')")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Успешная привязка или создание кассира",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Кассир успешно привязан к выбранной организации"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="user_id", type="integer", example=123)
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Нет доступа или кассир не найден/не является кассиром",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Нет доступа")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Организация не найдена",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Организация не найдена")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Ошибка валидации",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Ошибка валидации"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Внутренняя ошибка сервера",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Ошибка при создании нового кассира"),
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
+     */
+    public function attachCashierToOrganization(Request $request){}
+
+    /**
+     * @OA\Post(
+     *     path="/app/organization/account/agency/organization/unlink-cashier",
+     *     summary="Отвязать кассира от организации",
+     *     description="Отвязывает кассира от организации. Кассир должен принадлежать владельцу организации и иметь роль 'cashier'. Требует аутентификации владельца организации.",
+     *     tags={"Организация"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"organization_id", "cashier_id"},
+     *             @OA\Property(property="organization_id", type="string", example="123456789123456", description="ID организации"),
+     *             @OA\Property(property="cashier_id", type="integer", example=456, description="ID кассира")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Успешная отвязка кассира",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="success", type="boolean", example=true),
+     *              @OA\Property(property="message", type="string", example="Кассир успешно отвязан от выбранной организации"),
+     *              @OA\Property(property="data", type="object",
+     *                  @OA\Property(property="user_id", type="integer", example=123)
+     *              )
+     *          )
+     *      ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Нет доступа или кассир не принадлежит владельцу/не является кассиром",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Нет доступа")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Организация или кассир не найдены",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Организация не найдена")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Ошибка валидации",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Ошибка валидации"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
+     */
+    public function unlinkCashierFromOrganization(Request $request) {}
+
+    /**
+     * @OA\Get(
+     *     path="/app/organization/account/agency/organization/call-stats",
+     *     summary="Получить статистику звонков организации",
+     *     description="Возвращает пагинированный список звонков для указанной организации с фильтром по статусу. Только для владельца организации.",
+     *     tags={"Организация"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="organization_id",
+     *         description="ID организации",
+     *         required=true,
+     *         in="query",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         description="Статус звонка (optional): accepted, rejected, no_status",
+     *         required=false,
+     *         in="query",
+     *         @OA\Schema(type="string", enum={"accepted", "rejected", "no_status"})
+     *     ),
+     *     @OA\Parameter(
+     *         name="limit",
+     *         description="Количество записей на страницу (1-100)",
+     *         required=false,
+     *         in="query",
+     *         @OA\Schema(type="integer", minimum=1, maximum=100, default=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         description="Номер страницы",
+     *         required=false,
+     *         in="query",
+     *         @OA\Schema(type="integer", minimum=1, default=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Успешный ответ",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Список звонков организации"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="organization_id", type="string", nullable=true),
+     *                     @OA\Property(property="date_start", type="string", format="date-time", example="2023-10-01 14:30", nullable=true),
+     *                     @OA\Property(property="call_status", type="integer", example="1101", nullable=true),
+     *                     @OA\Property(property="status_text", type="string", example="Принят", nullable=true),
+     *                     @OA\Property(property="city", type="string", nullable=true),
+     *                     @OA\Property(property="record_url", type="string", nullable=true)
+     *                 )
+     *             ),
+     *             @OA\Property(
+     *                 property="pagination",
+     *                 type="object",
+     *                 @OA\Property(property="total", type="integer"),
+     *                 @OA\Property(property="per_page", type="integer"),
+     *                 @OA\Property(property="current_page", type="integer"),
+     *                 @OA\Property(property="last_page", type="integer")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Ошибка валидации",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Ошибка валидации"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Нет доступа к организации",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Нет доступа")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Организация не найдена",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Организация не найдена")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Не авторизован"
+     *     )
+     * )
+     */
+    public function getCallStats(Request $request){}
+
+    /**
+     * @OA\Get(
+     *     path="/app/organization/account/agency/organization/cemeteries",
+     *     summary="Получить список кладбищ организации",
+     *     description="Возвращает список кладбищ, на которых работает указанная организация. Только для владельца организации.",
+     *     tags={"Организация"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="organization_id",
+     *         description="ID организации",
+     *         required=true,
+     *         in="query",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Успешный ответ",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Список кладбищ на которых работает организация"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="string", example="1"),
+     *                     @OA\Property(property="title", type="string", example="Центральное кладбище"),
+     *                     @OA\Property(property="latitude", type="number", format="float", example=55.7558),
+     *                     @OA\Property(property="longitude", type="number", format="float", example=37.6176)
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Ошибка валидации",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Ошибка валидации"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Нет доступа к организации",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Нет доступа")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Организация не найдена",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Организация не найдена")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Не авторизован"
+     *     )
+     * )
+     */
+    public function getOrganizationCemeteries(Request $request){}
 }

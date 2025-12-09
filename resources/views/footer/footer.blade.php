@@ -63,6 +63,7 @@
       <div>
          <div class="block_info_footer">Все права защищены © <?php echo date("Y"); ?> Ритуал.реестр</div>
          <a href='{{ route('terms-user') }}' class="block_info_footer">Пользовательское соглашение</a>
+         <a href='https://t.me/@chelik_msk' class="block_info_footer">Разработка сайта - @chelik_msk</a>
       </div>
    </div>
  </footer>

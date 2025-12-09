@@ -2,11 +2,25 @@
     <div class="title_middle">Выберите размер участка</div>
     <form   method='get' class='form_services_add'>
         @csrf
-        <select name="size" id="">
-            <option value="200x230">200x230</option>
-            <option value="200x240">200x240</option>
-            <option value="200x250">200x250</option>
+       @php
+    $sizes = get_acf(20, 'ul_sizes_plot');
+@endphp
+
+@if($sizes && !empty(trim($sizes)))
+    @php
+        $sizeArray = array_map('trim', explode('|', $sizes));
+        $sizeArray = array_filter($sizeArray);
+    @endphp
+    
+    @if(!empty($sizeArray))
+        <select name="size" id="size-select">
+            <option value="">Выберите размер</option>
+            @foreach($sizeArray as $size)
+                <option value="{{ $size }}">{{ $size }}</option>
+            @endforeach
         </select>
+    @endif
+@endif
         @if (isset($services))
             @if ($services->count()>0)
                 @foreach ($services as $service)

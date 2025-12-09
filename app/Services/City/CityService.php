@@ -15,22 +15,22 @@ use Illuminate\Support\Facades\DB;
 
 
 class CityService {
-    
+
     public static function selectCity($id){
         $city=City::findOrFail($id);
         $new_url = insert_city_into_url(url()->previous(), $city->slug);
         return redirect($new_url);
-        
+
     }
 
     public static function ajaxCity($data)
 {
     $url = $data['url'];
     $searchTerm = trim($data['city_id']);
-    
+
     if (strlen($searchTerm) < 2) {
         return view('components.components_form.cities', [
-            'cities' => collect(), 
+            'cities' => collect(),
             'url' => $url
         ]);
     }
@@ -49,7 +49,7 @@ class CityService {
         ->where(function($query) use ($searchTerm) {
             // Основной поиск по началу названия (быстрее всего)
             $query->where('cities.title', 'LIKE', $searchTerm . '%');
-            
+
             // Дополнительный поиск по отдельным словам
             $words = explode(' ', $searchTerm);
             foreach ($words as $word) {
@@ -59,7 +59,7 @@ class CityService {
             }
         })
         ->orderByRaw("
-            CASE 
+            CASE
                 WHEN cities.title = ? THEN 1
                 WHEN cities.title LIKE ? THEN 2
                 ELSE 3
@@ -94,7 +94,7 @@ class CityService {
         ->where(function($query) use ($city) {
             // Основной поиск по началу названия (быстрее всего)
             $query->where('cities.title', 'LIKE', $city . '%');
-            
+
             // Дополнительный поиск по отдельным словам
             $words = explode(' ', $city);
             foreach ($words as $word) {
@@ -104,7 +104,7 @@ class CityService {
             }
         })
         ->orderByRaw("
-            CASE 
+            CASE
                 WHEN cities.title = ? THEN 1
                 WHEN cities.title LIKE ? THEN 2
                 ELSE 3
@@ -137,7 +137,7 @@ class CityService {
         ->where(function($query) use ($searchTerm) {
             // Основной поиск по началу названия (быстрее всего)
             $query->where('cities.title', 'LIKE', $searchTerm . '%');
-            
+
             // Дополнительный поиск по отдельным словам
             $words = explode(' ', $searchTerm);
             foreach ($words as $word) {
@@ -147,7 +147,7 @@ class CityService {
             }
         })
         ->orderByRaw("
-            CASE 
+            CASE
                 WHEN cities.title = ? THEN 1
                 WHEN cities.title LIKE ? THEN 2
                 ELSE 3
@@ -195,7 +195,7 @@ class CityService {
                 // Получаем родительский город (city) для кладбища
                 $city = Cemetery::find($data['id'])->city;
                 $parent_id = $city->area_id;
-                
+
                 // Получаем города в этой области (area), у которых есть кладбища
                 $objects = City::whereHas('cemeteries')
                     ->where('area_id', $parent_id)
@@ -207,7 +207,7 @@ class CityService {
                 // Получаем родительскую область (area) для города
                 $area = City::find($data['id'])->area;
                 $parent_id = $area->edge_id;
-                
+
                 // Получаем области в этом крае (edge), у которых есть города с кладбищами
                 $objects = Area::whereHas('cities', function($query) {
                         $query->whereHas('cemeteries');
@@ -229,7 +229,49 @@ class CityService {
                 $type = 'edge';
             }
         }
-        
+
         return view('components.components_form.ul-location',compact('objects','type'));
+    }
+
+    public static function getEdgesForSelector(){
+        $edges = Edge::whereHas('area', function($query) {
+            $query->whereHas('cities', function($query) {
+                $query->whereHas('cemeteries');
+            });
+        })
+            ->orderBy('title', 'asc')
+            ->get();
+
+        return view('components.components_form.ul-edge-selector', compact('edges'));
+    }
+
+    public static function getAreasForSelector($edge_id, $selected_cemetery_ids = []) {
+        $areas = Area::where('edge_id', $edge_id)
+            ->whereHas('cities.cemeteries')
+            ->orderBy('title', 'asc')
+            ->get();
+
+        $selectedAreaIds = [];
+
+        if (!empty($selected_cemetery_ids)) {
+            $selectedCemeteries = Cemetery::whereIn('id', $selected_cemetery_ids)
+                ->with('city.area')
+                ->get();
+
+            $selectedAreaIds = $selectedCemeteries->pluck('city.area.id')->unique()->filter()->toArray();
+        }
+
+        $edge_id = $edge_id;
+
+        return view('components.components_form.ul-area-cemetery-selector', compact('areas', 'edge_id', 'selectedAreaIds'));
+    }
+    public static function getCemeteriesForSelector($area_id){
+        $cemeteries = Cemetery::whereHas('city', function($query) use ($area_id) {
+            $query->where('area_id', $area_id);
+        })
+            ->orderBy('title', 'asc')
+            ->get();
+
+        return view('components.components_form.ul-cemeteries-list', compact('cemeteries'));
     }
 }

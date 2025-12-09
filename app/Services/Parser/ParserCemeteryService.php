@@ -27,7 +27,6 @@ class ParserCemeteryService
             'import_type' => 'required|in:create,update',
             'columns_to_update' => 'nullable|array',
         ]);
-
         $files = $request->file('files');
         $price = $request->input('price_geo');
         $importAction = $request->input('import_type', 'create');
@@ -54,7 +53,7 @@ class ParserCemeteryService
                 $columns = array_flip($filteredTitles);
 
                 // Проверка наличия обязательных колонок
-                $requiredColumns = ['ID 2GIS', 'Название кладбища', 'Широта', 'Долгота'];
+                $requiredColumns = ['ID 2GIS', 'Название кладбища', ];
                 foreach ($requiredColumns as $col) {
                     if (!isset($columns[$col])) {
                         $errors[] = "В файле {$file->getClientOriginalName()} отсутствует обязательная колонка: {$col}";
@@ -77,17 +76,20 @@ class ParserCemeteryService
                             $skippedRows++;
                             continue;
                         }
-                                               
-                        // Проверка координат
-                        if (empty($cemeteryRow[$columns['Широта']])) {
-                            $skippedRows++;
-                            continue;
-                        }
+                             
+                        dd($request);
+
+
+                        // // Проверка координат
+                        // if (empty($cemeteryRow[$columns['Широта']])) {
+                        //     $skippedRows++;
+                        //     continue;
+                        // }
     
-                        if (empty($cemeteryRow[$columns['Долгота']])) {
-                            $skippedRows++;
-                            continue;
-                        }
+                        // if (empty($cemeteryRow[$columns['Долгота']])) {
+                        //     $skippedRows++;
+                        //     continue;
+                        // }
 
                         $objects = linkRegionDistrictCity(
                             $cemeteryRow[$columns['Регион'] ?? null],
@@ -193,6 +195,9 @@ class ParserCemeteryService
                             }
 
                         } elseif ($importAction === 'update') {
+
+
+
                             // Ищем кладбище по two_gis_link или ID
                             $cemetery = Cemetery::where('two_gis_link', $objectId)
                                                 ->orWhere('id', $objectId)

@@ -2,11 +2,10 @@
 @section('title', 'Создание организации')
 
 @section('content')
-@include('forms.location-2')
 
     <form enctype='multipart/form-data' action="{{route('account.agency.organization.create')}}" method='post' class="update_settings_organization">
         @csrf
-        
+
 
         <div class="block_input">
             <label for="">Название</label>
@@ -15,7 +14,7 @@
                 <div class='error-text'>{{ $message }}</div>
             @enderror
         </div>
-       
+
 
         <div class="block_input">
             <div class="mb-3">
@@ -37,7 +36,7 @@
         @enderror
         </div>
 
-      
+
 
         <div class="block_input">
             <label for="">Обширное описание</label>
@@ -47,23 +46,24 @@
             @enderror
         </div>
 
-        
+
         {{view('account.agency.components.create-organization.cats',compact('categories','categories_children'))}}
-        
-        {{view('account.agency.components.create-organization.contacts')}}
+
+        {{view('account.agency.components.settings-organization.contacts')}}
 
         {{view('account.agency.components.create-organization.work-time')}}
 
-        
-        {{view('account.agency.components.create-organization.cemeteries',compact('cemeteries'))}}
-        
+
+        {{view('account.agency.components.settings-organization.cemeteries',compact('cemeteries'))}}
+
 
         {{view('account.agency.components.product.add-uploads')}}
 
-       
+
         <button type="submit" class='blue_btn'>Отправить на модерацию</button>
     </form>
-    
+
+    {{view('forms.multilocation')}}
 @endsection
 
 

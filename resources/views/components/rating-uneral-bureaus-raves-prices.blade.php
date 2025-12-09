@@ -39,11 +39,11 @@ $prices = ActivityCategoryOrganization::whereIn('category_children_id', [29, 30,
                         ?>
                         <tr>
                             <td class='name_organization'>
-                                @if($organization->urlImg() == 'default')
+                                @if($organization->urlImgMain() == 'default')
                                     <img class='white_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[0]}}" alt="">   
                                     <img class='black_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[1]}}" alt="">   
                                 @else
-                                    <img src="{{$organization->urlImg()}}" alt="">   
+                                    <img src="{{$organization->urlImgMain()}}" alt="">   
                                 @endif
                                 <a href='{{$organization->route()}}' class="title_organization">{{$organization->name_type}}: 
                                     "{{$organization->title}}"</a>
@@ -66,7 +66,14 @@ $prices = ActivityCategoryOrganization::whereIn('category_children_id', [29, 30,
                                             </a>
                                         @endif
                                     @else
-                                        {{ $price_1 ? $price_1->priceHtml() : '—' }}
+                                        <a href='javascript:void(0)' class="mgo-call-button price-link" 
+                                          data-key="{{ 1 }}"
+                                          data-org-id="{{ $organization->id }}"
+                                          data-phone="{{ str_replace('+', '', $organization->phone) }}"
+                                          data-default-number="{{ $organization->phone }}"
+                                          data-calls="{{ $organization->haveCalls() }}">
+                                          {{ $price_1 ? $price_1->priceHtml() : '—' }}
+                                        </a>
                                     @endif
                                 </div>
                             </td>
@@ -88,7 +95,14 @@ $prices = ActivityCategoryOrganization::whereIn('category_children_id', [29, 30,
                                             </a>
                                         @endif
                                     @else
-                                        {{ $price_2 ? $price_2->priceHtml() : '—' }}
+                                        <a href='javascript:void(0)' class="mgo-call-button price-link" 
+                                          data-key="{{ 1 }}"
+                                          data-org-id="{{ $organization->id }}"
+                                          data-phone="{{ str_replace('+', '', $organization->phone) }}"
+                                          data-default-number="{{ $organization->phone }}"
+                                          data-calls="{{ $organization->haveCalls() }}">
+                                          {{ $price_2 ? $price_2->priceHtml() : '—' }}
+                                        </a>
                                     @endif
                                 </div>
                             </td>
@@ -110,7 +124,14 @@ $prices = ActivityCategoryOrganization::whereIn('category_children_id', [29, 30,
                                             </a>
                                         @endif
                                     @else
-                                        {{ $price_3 ? $price_3->priceHtml() : '—' }}
+                                        <a href='javascript:void(0)' class="mgo-call-button price-link" 
+                                          data-key="{{ 1 }}"
+                                          data-org-id="{{ $organization->id }}"
+                                          data-phone="{{ str_replace('+', '', $organization->phone) }}"
+                                          data-default-number="{{ $organization->phone }}"
+                                          data-calls="{{ $organization->haveCalls() }}">
+                                          {{ $price_3 ? $price_3->priceHtml() : '—' }}
+                                        </a>
                                     @endif
                                 </div>
                             </td>

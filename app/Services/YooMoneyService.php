@@ -26,30 +26,57 @@ class YooMoneyService
      * @return array Возвращает массив с результатом и информацией о платеже.
      */
     
-    public function createPayment($value,$redirect_url='https://zahoron.ru/elizovo',$description,$metadata=[])
-    {
-
-        // Параметры платежа
-        $payment = $this->client->createPayment(
-        [
-            'amount' => [
-                'value' => $value, // Сумма платежа
-                'currency' => 'RUB', // Валюта
-            ],
-            'confirmation' => [
-                'type' => 'redirect',
-                'return_url' => $redirect_url, // URL для возврата после оплаты
-            ],
-            'metadata' => $metadata,
-            'capture' => true,
-            'description' => $description, // Описание платежа
+  public function createPayment($value, $redirect_url = 'https://zahoron.ru/elizovo', $description, $metadata = [], $customerEmail = null, $customerPhone = null)
+{
+    // Базовые параметры платежа
+    $paymentData = [
+        'amount' => [
+            'value' => $value,
+            'currency' => 'RUB',
         ],
-        uniqid('', true) // Уникальный идентификатор платежа
+        'confirmation' => [
+            'type' => 'redirect',
+            'return_url' => $redirect_url,
+        ],
+        'metadata' => $metadata,
+        'capture' => true,
+        'description' => $description,
+        'receipt' => [
+            'customer' => [],
+            'items' => [
+                [
+                    'description' => $description, // Название товара/услуги
+                    'quantity' => 1, // Количество
+                    'amount' => [
+                        'value' => $value,
+                        'currency' => 'RUB'
+                    ],
+                    'vat_code' => 1, // Ставка НДС (1 = 20%, 2 = 10%, 3 = 0%, 4 = без НДС, 5 = 20/120, 6 = 10/110)
+                    'payment_mode' => 'full_payment', // Полный расчет
+                    'payment_subject' => 'service' // Услуга (или 'commodity' для товара)
+                ]
+            ]
+        ]
+    ];
+
+    // Добавляем контактные данные покупателя (email или телефон - обязательно)
+    if ($customerEmail) {
+        $paymentData['receipt']['customer']['email'] = $customerEmail;
+    } elseif ($customerPhone) {
+        $paymentData['receipt']['customer']['phone'] = $customerPhone;
+    } else {
+        // Если нет контактов - убираем чек (но лучше всегда передавать контакт)
+        unset($paymentData['receipt']);
+    }
+
+    // Создаем платеж
+    $payment = $this->client->createPayment(
+        $paymentData,
+        uniqid('', true)
     );
 
-        // Перенаправляем пользователя на страницу оплаты
-        return redirect($payment->getConfirmation()->getConfirmationUrl());
-    }
+    return redirect($payment->getConfirmation()->getConfirmationUrl());
+}
 
     /**
      * Обрабатывает callback от YooMoney.

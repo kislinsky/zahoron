@@ -30,10 +30,10 @@ class OrderProductResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
-        
+
         if (static::isRestrictedUser()) {
             $cityIds = static::getUserCityIds();
-            
+
             if (!empty($cityIds)) {
                 $query->whereHas('organization', function($q) use ($cityIds) {
                     $q->whereIn('city_id', $cityIds);
@@ -42,7 +42,7 @@ class OrderProductResource extends Resource
                 $query->whereNull('organization_id');
             }
         }
-        
+
         return $query;
     }
 
@@ -55,19 +55,19 @@ class OrderProductResource extends Resource
     {
         $user = auth()->user();
         $cityIds = [];
-        
+
         if (!empty($user->city_ids)) {
             $decoded = json_decode($user->city_ids, true);
-            
+
             if (is_array($decoded)) {
                 $cityIds = $decoded;
             } else {
                 $cityIds = array_filter(explode(',', trim($user->city_ids, '[],"')));
             }
-            
+
             $cityIds = array_map('intval', array_filter($cityIds));
         }
-        
+
         return $cityIds;
     }
 
@@ -75,7 +75,7 @@ class OrderProductResource extends Resource
     {
         $isRestrictedUser = static::isRestrictedUser();
         $userCityIds = $isRestrictedUser ? static::getUserCityIds() : [];
-        
+
         return $form
             ->schema([
                 TextInput::make('additional')
@@ -85,6 +85,8 @@ class OrderProductResource extends Resource
                 Select::make('product_id')
                     ->label('Товар')
                     ->relationship('product', 'title')
+                    ->searchable()
+                    ->preload()
                     ->required(),
 
                 Select::make('user_id')
@@ -124,6 +126,8 @@ class OrderProductResource extends Resource
                 Select::make('cemetery_id')
                     ->label('Кладбище')
                     ->relationship('cemetery', 'title')
+                    ->searchable()
+                    ->preload()
                     ->nullable(),
 
                 TextInput::make('date')
@@ -138,6 +142,8 @@ class OrderProductResource extends Resource
                 Select::make('mortuary_id')
                     ->label('Морг')
                     ->relationship('mortuary', 'title')
+                    ->searchable()
+                    ->preload()
                     ->nullable(),
 
                 TextInput::make('city_from')
@@ -150,16 +156,17 @@ class OrderProductResource extends Resource
 
                 Select::make('organization_id')
                     ->label('Организация')
-                    ->relationship('organization', 'title')
+                    ->relationship('organization', 'title', function (Builder $query) use ($userCityIds, $isRestrictedUser) {
+                        if ($isRestrictedUser) {
+                            $query->whereIn('city_id', $userCityIds);
+                        }
+
+                        $query->orderBy('title');
+
+                        return $query;
+                    })
                     ->searchable()
                     ->preload()
-                    ->options(function() use ($userCityIds, $isRestrictedUser) {
-                        if ($isRestrictedUser) {
-                            return \App\Models\Organization::whereIn('city_id', $userCityIds)
-                                ->pluck('title', 'id');
-                        }
-                        return \App\Models\Organization::pluck('title', 'id');
-                    })
                     ->nullable()
                     ->disabled($isRestrictedUser),
             ]);
@@ -228,15 +235,21 @@ class OrderProductResource extends Resource
 
                 Tables\Filters\SelectFilter::make('cemetery_id')
                     ->label('Кладбище')
-                    ->relationship('cemetery', 'title'),
+                    ->relationship('cemetery', 'title')
+                    ->searchable()
+                    ->preload(),
 
                 Tables\Filters\SelectFilter::make('mortuary_id')
                     ->label('Морг')
-                    ->relationship('mortuary', 'title'),
+                    ->relationship('mortuary', 'title')
+                    ->searchable()
+                    ->preload(),
 
                 Tables\Filters\SelectFilter::make('organization_id')
                     ->label('Организация')
                     ->relationship('organization', 'title')
+                    ->searchable()
+                    ->preload()
                     ->hidden(static::isRestrictedUser()),
             ])
             ->actions([
@@ -265,10 +278,10 @@ class OrderProductResource extends Resource
             'edit' => Pages\EditOrderProduct::route('/{record}/edit'),
         ];
     }
-    
+
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->role === 'admin' || 
+        return auth()->user()->role === 'admin' ||
                in_array(auth()->user()->role, ['deputy-admin', 'manager']);
     }
 
@@ -282,17 +295,17 @@ class OrderProductResource extends Resource
         if (auth()->user()->role === 'admin') {
             return true;
         }
-        
+
         if (static::isRestrictedUser()) {
             $userCityIds = static::getUserCityIds();
             return $record->organization && in_array($record->organization->city_id, $userCityIds);
         }
-        
+
         return false;
     }
 
     public static function canCreate(): bool
-    {   
+    {
         return false;
     }
 

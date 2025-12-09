@@ -16,42 +16,41 @@ class AgencyOrganizationController extends Controller
         return AgencyOrganizationService::createPage();
     }
 
-    public static function create(Request $request){
-
+    public static function create(Request $request)
+    {
         $data = $request->validate([
-            'title' => ['string', 'required'],
-            'content' => ['string', 'nullable'],
-            'cemetery_ids' => ['nullable'],
-            'phone' => ['string', 'nullable'],
-            'telegram' => ['string', 'nullable'],
-            'whatsapp' => ['string', 'nullable'],
-            'email' => ['string', 'nullable'],
-            'city_id' => ['integer', 'required'],
-            'next_to' => ['string', 'nullable'],
-            'underground' => ['string', 'nullable'],
-            'adres' => ['string', 'required'],
-            'width' => ['numeric', 'required'],
-            'longitude' => ['numeric', 'required'],
-            'available_installments' => ['boolean', 'nullable'],
-            'found_cheaper' => ['boolean', 'nullable'],
-            'сonclusion_contract' => ['boolean', 'nullable'],
-            'state_compensation' => ['boolean', 'nullable'],
+            'title'                   => ['string', 'required'],
+            'content'                 => ['string', 'nullable'],
+            'phone'                   => ['string', 'nullable'],
+            'telegram'                => ['string', 'nullable'],
+            'whatsapp'                => ['string', 'nullable'],
+            'email'                   => ['string', 'nullable'],
+            'city_id'                 => ['integer', 'required'],
+            'next_to'                 => ['string', 'nullable'],
+            'underground'             => ['string', 'nullable'],
+            'adres'                   => ['string', 'required'],
+            'width'                   => ['numeric', 'required'],
+            'longitude'               => ['numeric', 'required'],
+            'available_installments'  => ['boolean', 'nullable'],
+            'found_cheaper'           => ['boolean', 'nullable'],
+            'сonclusion_contract'     => ['boolean', 'nullable'],
+            'state_compensation'      => ['boolean', 'nullable'],
             'categories_organization' => ['nullable', 'array'],
             'price_cats_organization' => ['nullable', 'array'],
-            'working_day' => ['nullable', 'array'],
-            'holiday_day' => ['nullable', 'array'],
-            'cemetery_ids' => 'required|array', // Здесь вы ограничиваете количество изображений до 5
-            'img' => 'required|max:2048',
-            'img_main' => 'required|max:2048',
-            'images' => 'array|max:5', // Здесь вы ограничиваете количество изображений до 5
-            'images.0' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
-            'images.1' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
-            'images.2' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
-            'images.3' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
-            'images.4' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
+            'working_day'             => ['nullable', 'array'],
+            'holiday_day'             => ['nullable', 'array'],
+            'cemetery_ids'            => 'required|array',
+            'img'                     => 'nullable|max:2048',
+            'img_main'                => 'nullable|max:2048',
+            'images'                  => 'array|max:5', // Здесь вы ограничиваете количество изображений до 5
+            'images.0'                => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
+            'images.1'                => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
+            'images.2'                => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
+            'images.3'                => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
+            'images.4'                => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
         ]);
-        return AgencyOrganizationService::create($data);
 
+        return AgencyOrganizationService::create($data);
     }
 
     public static function settings($id){
@@ -59,40 +58,41 @@ class AgencyOrganizationController extends Controller
     }
 
 
-    public static function update(Request $request){
-        $data=request()->validate([
-            'images' => ['nullable'], // Поле может быть пустым
-            'images.*' => ['nullable', function ($attribute, $value, $fail) {
+    public static function update(Request $request)
+    {
+        $data = request()->validate([
+            'images'                  => ['nullable'], // Поле может быть пустым
+            'images.*'                => ['nullable', function ($attribute, $value, $fail) {
                 // Проверяем, является ли значение файлом или ссылкой
                 if (!is_string($value) && !($value instanceof \Illuminate\Http\UploadedFile)) {
                     $fail('Поле ' . $attribute . ' должно быть файлом или ссылкой.');
                 }
             }],
-            'img' => 'max:2048',
-            'img_main' => 'max:2048',
-            'cemetery_ids.*'=>['nullable'],
-            'id'=>['integer','required'],
-            'title'=>['string','required'],
-            'content'=>['string','nullable'],
-            'phone'=>['string','nullable'],
-            'telegram'=>['string','nullable'],
-            'whatsapp'=>['string','nullable'],
-            'email'=>['string','nullable'],
-            'city_id'=>['integer','required'],
-            'next_to'=>['string','nullable'],
-            'underground'=>['string','nullable'],
-            'adres'=>['string','required'],
-            'width'=>['string','required'],
-            'longitude'=>['string','required'],
-            'categories_organization'=>['nullable'],
-            'price_cats_organization'=>['nullable'],
-            'working_day'=>['nullable'],
-            'holiday_day'=>['nullable'],
-            'available_installments'=>['nullable'],
-            'found_cheaper'=>['nullable'],
-            'сonclusion_contract'=>['nullable'],
-            'state_compensation'=>['nullable'],
-    
+            'img'                     => ['nullable','max:2048'],
+            'img_main'                => ['nullable','max:2048'],
+            'cemetery_ids.*'          => ['nullable'],
+            'id'                      => ['integer', 'required'],
+            'title'                   => ['string', 'required'],
+            'content'                 => ['string', 'nullable'],
+            'phone'                   => ['string', 'nullable'],
+            'telegram'                => ['string', 'nullable'],
+            'whatsapp'                => ['string', 'nullable'],
+            'email'                   => ['string', 'nullable'],
+            'city_id'                 => ['integer', 'required'],
+            'next_to'                 => ['string', 'nullable'],
+            'underground'             => ['string', 'nullable'],
+            'adres'                   => ['string', 'required'],
+            'width'                   => ['string', 'required'],
+            'longitude'               => ['string', 'required'],
+            'categories_organization' => ['nullable'],
+            'price_cats_organization' => ['nullable'],
+            'working_day'             => ['nullable'],
+            'holiday_day'             => ['nullable'],
+            'available_installments'  => ['nullable'],
+            'found_cheaper'           => ['nullable'],
+            'сonclusion_contract'     => ['nullable'],
+            'state_compensation'      => ['nullable'],
+
         ]);
 
         return AgencyOrganizationService::update($data);
@@ -105,9 +105,9 @@ class AgencyOrganizationController extends Controller
         ]);
         return AgencyOrganizationService::searchOrganizations($data);
     }
-   
+
     public static function aplications(){
-        
+
         return AgencyOrganizationService::aplications();
     }
 
@@ -182,8 +182,8 @@ class AgencyOrganizationController extends Controller
 
         return AgencyOrganizationService::createProduct($data);
     }
-   
-            
+
+
     public static function reviewsOrganization(){
         return AgencyOrganizationService::reviewsOrganization();
     }
@@ -249,7 +249,7 @@ class AgencyOrganizationController extends Controller
         ]);
         return AgencyOrganizationService::updateOrganizationResponseReviewProduct($data);
     }
-  
+
 
     public static function ordersNew(){
         return AgencyOrganizationService::ordersNew();
@@ -270,7 +270,7 @@ class AgencyOrganizationController extends Controller
     public static function orderAccept(OrderProduct $order){
         return AgencyOrganizationService::orderAccept($order);
     }
-    
+
     public static function payApplication(TypeService $type_service,Request $request){
         $data=request()->validate([
             'count'=>['required','integer'],
@@ -306,7 +306,7 @@ class AgencyOrganizationController extends Controller
 
         return AgencyOrganizationService::walletUpdateBalance($data);
     }
- 
+
     public function callStats(Request $request)
     {
         // Валидация входных параметров
@@ -316,7 +316,7 @@ class AgencyOrganizationController extends Controller
             'sort' => 'nullable|in:asc,desc',
             'date_to' => 'nullable|required_if:period,custom|date|after_or_equal:date_from'
         ]);
-        
+
         return AgencyOrganizationService::callStats($validated,$request);
     }
 

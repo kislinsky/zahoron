@@ -391,4 +391,26 @@ private static function detectFileExtension(string $url): ?string
         }
         
     }
+
+
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::created(function ($call) {
+
+            if($call->organization_id!=null){
+                // Для организации о новом звонке
+                Notification::create([
+                    'user_id' => null,
+                    'organization_id' => $call->organization_id,
+                    'type' => 'call',
+                    'title' => 'Новый звонок',
+                    'message' => "Зафиксирован новый входящий звонок",
+                    'is_read' => false
+                ]);
+            }
+        });
+    }
+
 }

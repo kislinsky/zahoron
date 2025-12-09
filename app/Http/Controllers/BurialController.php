@@ -48,27 +48,39 @@ class BurialController extends Controller
     public static function searchProductRequest(){
         $page=3;
 
-        $seo="Поиск захоронения";
+        SEOTools::setTitle(formatContent(getSeo('page-search-request','title')));
+        SEOTools::setDescription(formatContent(getSeo('page-search-request','description')));
+        $title_h1=formatContent(getSeo('page-search-request','h1'));
 
-        SEOTools::setTitle($seo);
-        SEOTools::setDescription($seo);
-
-        return view('burial.search-big-product',compact('page'));
+        return view('burial.search-big-product',compact('page','title_h1'));
     }
 
-    public static function searchProductRequestAdd(Request $request){
-        $data=request()->validate([
+   public static function searchProductRequestAdd(Request $request)
+    {
+        
+        $data = request()->validate([
             'g-recaptcha-response' => ['required', new RecaptchaRule],
-            'surname'=>['required','string'],
-            'name'=>['required','string'],
-            'patronymic'=>['required','string'],
-            'date_birth'=>['required','date'],
-            'date_death'=>['required','date'],
-            'location'=>['required','string'],
-            'name_customer'=>['required','string'],
-            'email_customer'=>['required','email'],
-            'phone_customer'=>['required','string'],
+            'surname' => ['required', 'string'],
+            'name' => ['required', 'string'],
+            'patronymic' => ['required', 'string'],
+            'date_birth' => ['required', 'date'],
+            'date_death' => ['required', 'date'],
+            'landmark' => ['nullable', 'string', 'max:500'], // Новое поле
+            'location' => ['required', 'string'],
+            'name_customer' => ['required', 'string'],
+            'email_customer' => ['required', 'email'],
+            'phone_customer' => ['required', 'string'],
+            'photos' => ['nullable', 'array', 'max:5'], // Новое поле для фото
+            'photos.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'], // 5MB
         ]);
+    
+        // Добавляем файлы в данные
+        if ($request->hasFile('photos')) {
+            $data['photos'] = $request->file('photos');
+        } else {
+            $data['photos'] = [];
+        }
+    
         return SearchBurialService::searchProductRequestAdd($data);
     }
     

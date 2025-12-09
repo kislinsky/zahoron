@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Hash;
 class SearchBurialService
 {
     public static function searchProductFilter($data){
-
         $seo="Поиск ".$data['name'] . $data['surname'] . $data['patronymic'] . $data['who'];
 
         SEOTools::setTitle($seo);
@@ -27,6 +26,7 @@ class SearchBurialService
     }
 
     public static function searchBurialResult($data){
+
         $cemetery_ids = selectCity()->area->cities->flatMap(function($city) {
             return $city->cemeteries->pluck('id');
         });
@@ -72,56 +72,92 @@ class SearchBurialService
 
 
     public static function searchBurial(){
+        SEOTools::setTitle(formatContent(getSeo('page-search-burial','title')));
+        SEOTools::setDescription(formatContent(getSeo('page-search-burial','description')));
+        $title_h1=formatContent(getSeo('page-search-burial','h1'));
+        
         $services = Service::orderBy('id', 'desc')->get();
         $burials=Burial::where('date_death', 'LIKE', date('d.m').'%')->whereIn('cemetery_id',selectCity()->cemeteries->pluck('id'))->get();
         $news=News::orderBy('id', 'desc')->take(2)->get();
-        return view('burial.search-burial',compact('news','services','burials'));
+        return view('burial.search-burial',compact('news','services','burials','title_h1'));
     }
     
-    public static function searchProductRequestAdd($data){
-        if(Auth::check()){
-            SearchBurial::create([
-                'surname'=>$data['surname'],
-                 'name'=>$data['name'],
-                 'patronymic'=>$data['patronymic'],
-                 'date_birth'=>$data['date_birth'],
-                 'date_death'=>$data['date_death'],
-                 'location'=>$data['location'],
-                 'user_id'=>Auth::user()->id,
-             ]);
-            sendMail(admin()->email,"Новая заявка на поиск захоронения",'Ответьте на заявку');
-            return redirect()->back()->with("message_words_memory", "В ближайшее время с Вами свяжутся наши Партнеры по товарам которые вы заказали.");
-        }
-        else{
-            $user_email=User::where('email',$data['email_customer'])->get();
-            $user_phone=User::where('phone',$data['phone_customer'])->get();
-            if(!isset($user_email[0]) && !isset($user_phone[0])){
-                $password=generateRandomString(8);
-                // mail($data['email'], 'Ваш пароль', $password);
-                $last_id=User::create([
-                'name'=>$data['name_customer'],
-                'phone'=>$data['phone_customer'],
-                'email'=>$data['email_customer'],
-                'password'=>Hash::make('123456789'),
-                ]);
-
-                SearchBurial::create([
-                    'surname'=>$data['surname'],
-                     'name'=>$data['name'],
-                     'patronymic'=>$data['patronymic'],
-                     'date_birth'=>$data['date_birth'],
-                     'date_death'=>$data['date_death'],
-                     'location'=>$data['location'],
-                     'user_id'=>Auth::user()->id,
-                 ]);
-                sendMail(admin()->email,"Новая заявка на поиск захоронения",'Ответьте на заявку');
-                return redirect()->back()->with("message_words_memory", "В ближайшее время с Вами свяжутся наши Партнеры по товарам которые вы заказали.");
+     public static function searchProductRequestAdd($data)
+    {
+        try {
+            // Обработка загрузки фото
+            $imageAttachments = [];
+            
+            // Проверяем наличие загруженных файлов
+            if (isset($data['photos']) && is_array($data['photos'])) {
+                foreach ($data['photos'] as $photo) {
+                    if ($photo && $photo->isValid()) {
+                        $filename = uniqid() . '_' . time() . '.jpeg';
+                        $path = $photo->storeAs('uploads_order', $filename, 'public');
+                        
+                        if ($path) {
+                            $imageAttachments[] = [
+                                'filename' => $filename,
+                                'path' => $path,
+                                'uploaded_at' => now()->toDateTimeString()
+                            ];
+                        }
+                    }
+                }
             }
-            return redirect()->back()->with("error", 'Такой телефон или почта уже зарегестрированы.');
+    
+            if (Auth::check()) {
+                SearchBurial::create([
+                    'surname' => $data['surname'],
+                    'name' => $data['name'],
+                    'patronymic' => $data['patronymic'],
+                    'date_birth' => $data['date_birth'],
+                    'date_death' => $data['date_death'],
+                    'landmark' => $data['landmark'] ?? null, // Исправлено
+                    'location' => $data['location'],
+                    'image_attachments' => !empty($imageAttachments) ? json_encode($imageAttachments) : null,
+                    'user_id' => Auth::user()->id,
+                ]);
+                
+                sendMail(admin()->email, "Новая заявка на поиск захоронения", 'Ответьте на заявку');
+                return redirect()->back()->with("message_words_memory", "Ваша заявка успешно отправлена.");
+            } else {
+                $user_email = User::where('email', $data['email_customer'])->first();
+                $user_phone = User::where('phone', $data['phone_customer'])->first();
+                
+                if (!$user_email && !$user_phone) {
+                    $last_id = User::create([
+                        'name' => $data['name_customer'],
+                        'phone' => $data['phone_customer'],
+                        'email' => $data['email_customer'],
+                        'password' => Hash::make('123456789'),
+                    ]);
+    
+                    SearchBurial::create([
+                        'surname' => $data['surname'],
+                        'name' => $data['name'],
+                        'patronymic' => $data['patronymic'],
+                        'date_birth' => $data['date_birth'],
+                        'date_death' => $data['date_death'],
+                        'landmark' => $data['landmark'] ?? null, // Исправлено
+                        'location' => $data['location'],
+                        'image_attachments' => !empty($imageAttachments) ? json_encode($imageAttachments) : null,
+                        'user_id' => $last_id->id,
+                    ]);
+                    
+                    sendMail(admin()->email, "Новая заявка на поиск захоронения", 'Ответьте на заявку');
+                    return redirect()->back()->with("message_words_memory", "Ваша заявка успешно отправлена.");
+                }
+                
+                return redirect()->back()->with("error", 'Такой телефон или почта уже зарегистрированы.');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with("error", 'Ошибка при отправке заявки: ' . $e->getMessage());
         }
     }
 
     public static function searchProductFilterPage(){
+
         $page=1;
         $seo="Установить судьбу";
 

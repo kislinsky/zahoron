@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Auth;
 <section class="order_page bac_gray">
     <div class="container order_page_search">
         <div class="content_order_page search_request">
-            <h1 class="index_title">Поиск захоронения</h1>    
+            <h1 class="index_title">{!! $title_h1 !!}</h1>    
             <div class="text_block">Сотрудники проекта внесут в базу и предоставят Вам фотографии с места<br>захоронения. Чтобы места захоронения, где покоятся Ваши родные, не были признаны<br>заброшенными и не исчезли, позаботьтесь о них сейчас.</div>
-            <form method='get' action="{{route('search.burial.request')}}" class="search_application">
+            <form method='post' enctype="multipart/form-data" action="{{route('search.burial.request')}}" class="search_application">
                 @csrf
                 <div class="flex_search_form">
                     <div class="block_inpit_form_search">
@@ -57,6 +57,29 @@ use Illuminate\Support\Facades\Auth;
                             <div class='error-text'>{{ $message }}</div>
                         @enderror
                         <div class="text_input">Впишите название кладбища (или района/области) либо нажмите "+" и выберите из списка</div>
+                    </div>
+                </div>
+                <div class="flex_search_form">
+                    <div class="block_inpit_form_search">
+                        <input type="text" name='landmark' placeholder='Ориентир нахождения захоронения'>
+                        @error('landmark')
+                            <div class='error-text'>{{ $message }}</div>
+                        @enderror
+                    </div>
+                    
+
+                    <div class="block_inpit_form_search">
+                        <input type="file" 
+                               name="photos[]" 
+                               id="burial_photos"
+                               multiple
+                               accept="image/*"
+                               class="form-control">
+                        
+                        <div class="text_input">Фото могилы</div>
+                        @error('photos')
+                            <div class='error-text'>{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
                 @if(Auth::check())

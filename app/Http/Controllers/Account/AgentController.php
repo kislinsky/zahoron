@@ -32,7 +32,7 @@ class AgentController extends Controller
         return AgentService::agentSettings();
     }
 
-    
+
 
     public static function agentSettingsUpdate(Request $request){
         $data=request()->validate([
@@ -55,7 +55,7 @@ class AgentController extends Controller
            'number_cart'=>['nullable','string'],
            'bank'=>['nullable','string'],
            'cemetery_ids'=>['nullable']
-           
+
 
         ]);
 
@@ -69,7 +69,7 @@ class AgentController extends Controller
 
         return AgentService::addUploadSeal($data);
     }
-    
+
 
 
     public static function deleteUploadSeal($id){
@@ -85,16 +85,21 @@ class AgentController extends Controller
     }
 
 
-   
+    public static function addCemetery(Request $request)
+    {
+        $errorMessage = __('Укажите корректное название кладбища или выберите из списка');
 
-    public static function addCemetery(Request $request){
-        $data=request()->validate([
-            'id_location'=>["nullable",'integer'],
-            'name_location'=>["required",'string'],
-        ]);
+        $messages = [
+            'id_location.string'     => $errorMessage,
+            'name_location.required' => $errorMessage,
+            'name_location.string'   => $errorMessage,
+        ];
+
+        $data = $request->validate([
+            'id_location'   => ["nullable", 'string'],
+            'name_location' => ["required", 'string'],
+        ], $messages);
 
         return AgentService::addCemetery($data);
     }
-    
-    
 }

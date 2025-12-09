@@ -9220,6 +9220,50 @@ color: white;
 
 }
 
+
+
+/* Основной бейдж для пунктов меню */
+.notification-badge {
+    background-color: #ff4444;
+    color: white;
+    border-radius: 50%;
+    min-width: 23px;
+    min-height: 20px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    font-weight: bold;
+    position: relative;
+}
+
+/* Малый бейдж для подпунктов */
+.notification-badge-small {
+    background-color: #ff4444;
+    color: white;
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-size: 10px;
+    margin-left: 8px;
+    font-weight: bold;
+    float: right;
+}
+
+.li_children_page_sidebar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 10px;
+}
+
+/* Если нужно, чтобы бейдж был рядом с текстом */
+.li_children_page_sidebar span {
+    margin-left: auto;
+}
+
+
+
 .black_theme .li_children_page_sidebar{
     border-left:5px solid #0F0F0F;
 }

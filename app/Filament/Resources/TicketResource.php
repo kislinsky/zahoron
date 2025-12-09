@@ -213,13 +213,64 @@ class TicketResource extends Resource
                     ->label('Просмотр'),
                 
                 Tables\Actions\EditAction::make()
-                    ->label('Редактировать'),
+                    ->label('Редактировать')
+                    ->after(function ($record, $data) {
+                        // Уведомление при изменении статуса
+                        if (isset($data['status_id']) && $record->wasChanged('status_id')) {
+                            $status = $record->status;
+                            \App\Models\Notification::create([
+                                'user_id' => $record->user_id,
+                                'organization_id' => null,
+                                'type' => 'ticket_status',
+                                'title' => 'Статус тикета изменен',
+                                'message' => "Статус вашего тикета '{$record->subject}' изменен",
+                                'is_read' => false
+                            ]);
+                        }
+                        
+                        // Уведомление при изменении назначенного сотрудника
+                        if (isset($data['assigned_to']) && $record->wasChanged('assigned_to')) {
+                            if ($record->assigned_to) {
+                                // Уведомляем нового назначенного сотрудника
+                                \App\Models\Notification::create([
+                                    'user_id' => $record->assigned_to,
+                                    'organization_id' => null,
+                                    'type' => 'ticket_assigned',
+                                    'title' => 'Тикет назначен',
+                                    'message' => "Вам назначен тикет: {$record->subject}",
+                                    'is_read' => false
+                                ]);
+                            }
+                            
+                            // Уведомляем автора об изменении назначения
+                            \App\Models\Notification::create([
+                                'user_id' => $record->user_id,
+                                'organization_id' => null,
+                                'type' => 'ticket_assigned',
+                                'title' => 'Назначен исполнитель',
+                                'message' => "Для вашего тикета '{$record->subject}' назначен исполнитель",
+                                'is_read' => false
+                            ]);
+                        }
+                    }),
                 
                 Tables\Actions\Action::make('close')
                     ->label('Закрыть')
                     ->icon('heroicon-o-lock-closed')
                     ->color('danger')
-                    ->action(fn (Ticket $record) => $record->update(['closed_at' => now()]))
+                    ->action(function (Ticket $record) {
+                        $record->update(['closed_at' => now()]);
+                        
+                        // Уведомление о закрытии тикета
+                        \App\Models\Notification::create([
+                            'user_id' => $record->user_id,
+                            'organization_id' => null,
+                            'type' => 'ticket_closed',
+                            'title' => 'Тикет закрыт',
+                            'message' => "Ваш тикет '{$record->subject}' был закрыт",
+                            'is_read' => false
+                        ]);
+                    })
                     ->hidden(fn (Ticket $record) => $record->closed_at !== null)
                     ->requiresConfirmation(),
                 
@@ -227,7 +278,19 @@ class TicketResource extends Resource
                     ->label('Открыть')
                     ->icon('heroicon-o-lock-open')
                     ->color('success')
-                    ->action(fn (Ticket $record) => $record->update(['closed_at' => null]))
+                    ->action(function (Ticket $record) {
+                        $record->update(['closed_at' => null]);
+                        
+                        // Уведомление об открытии тикета
+                        \App\Models\Notification::create([
+                            'user_id' => $record->user_id,
+                            'organization_id' => null,
+                            'type' => 'ticket_reopened',
+                            'title' => 'Тикет открыт',
+                            'message' => "Ваш тикет '{$record->subject}' был открыт",
+                            'is_read' => false
+                        ]);
+                    })
                     ->hidden(fn (Ticket $record) => $record->closed_at === null)
                     ->requiresConfirmation(),
             ])
@@ -240,14 +303,42 @@ class TicketResource extends Resource
                         ->label('Закрыть выбранные')
                         ->icon('heroicon-o-lock-closed')
                         ->color('danger')
-                        ->action(fn ($records) => $records->each->update(['closed_at' => now()]))
+                        ->action(function ($records) {
+                            foreach ($records as $record) {
+                                $record->update(['closed_at' => now()]);
+                                
+                                // Уведомление о закрытии тикета
+                                \App\Models\Notification::create([
+                                    'user_id' => $record->user_id,
+                                    'organization_id' => null,
+                                    'type' => 'ticket_closed',
+                                    'title' => 'Тикет закрыт',
+                                    'message' => "Ваш тикет '{$record->subject}' был закрыт",
+                                    'is_read' => false
+                                ]);
+                            }
+                        })
                         ->requiresConfirmation(),
                     
                     Tables\Actions\BulkAction::make('reopenSelected')
                         ->label('Открыть выбранные')
                         ->icon('heroicon-o-lock-open')
                         ->color('success')
-                        ->action(fn ($records) => $records->each->update(['closed_at' => null]))
+                        ->action(function ($records) {
+                            foreach ($records as $record) {
+                                $record->update(['closed_at' => null]);
+                                
+                                // Уведомление об открытии тикета
+                                \App\Models\Notification::create([
+                                    'user_id' => $record->user_id,
+                                    'organization_id' => null,
+                                    'type' => 'ticket_reopened',
+                                    'title' => 'Тикет открыт',
+                                    'message' => "Ваш тикет '{$record->subject}' был открыт",
+                                    'is_read' => false
+                                ]);
+                            }
+                        })
                         ->requiresConfirmation(),
                 ]),
             ])

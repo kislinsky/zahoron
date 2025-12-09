@@ -20,7 +20,6 @@ class BeautificationService {
             $user=createUserWithPhone($data['phone_beautification'],$data['name_beautification']);
         }
 
-        $time=60*30;
         $time_now=convertToCarbon($data['time_now']);
 
         $beautification=Beautification::create([
@@ -43,20 +42,13 @@ class BeautificationService {
         if(isset($data['call_time'])){
             if($data['call_time']!=null){
                 $beautification->update(['call_time'=>$data['call_time']]);
-                $time=secondsUntilAM($data['call_time'],$time_now)+30*60;
             }
         }
         if(isset($data['call_tomorrow'])){
             $d = strtotime("+1 day");
             $beautification->update(['call_time'=>date("d.m.Y", $d)]);
-            $time=secondsUntilEndOfTomorrow($time_now)+30*60;
         }
         
-        sendMessage('soobshhenie-pri-zaiavke-pop-up-oblogorazivanie',[],$user);
-        sendMessagesOrganizations(selectCity()->organizations,'sms-soobshhenie-dlia-organizacii-pri-zaiavke-oblagorazivaniia','email-soobshhenie-dlia-organizacii-pri-zaiavke-oblagorazivaniia');
-
-        CloseApplicationJob::dispatch($beautification)->delay($time);
-
         return redirect()->back()->with("message_words_memory", 'В ближайшее время в личном кабинете вы сможете оплатить услугу');
     }
 }

@@ -168,153 +168,236 @@ function agentPages(){
 
 
 function organizationPages(){
-    $organizations=user()->organizations;
-    $ul_organizations=[];
-    foreach($organizations as $organization){
-        $ul_organizations[]=[$organization->title,'account.agency.organization.settings',$organization->id];
-    }
-    $ul_organizations[]=['Привязать организацию','account.agency.add.organization'];
-    $ul_organizations[]=['Создать организацию','account.agency.organization.create-page'];
+    $user = user();
+    $userId = $user ? $user->id : null;
+    $organizationId = $user && $user->organizations->first() ? $user->organizations->first()->id : null;
+    
+    // Инициализируем счетчики
+    $reviewCounts = [
+        'organization_reviews' => 0,  // Отзывы об организации
+        'product_comments' => 0,      // Комментарии к товарам
+        'total' => 0                  // Общее количество
+    ];
+    
+    $notificationCounts = [
+        'reviews' => 0,
+        'applications' => 0,
+        'services' => 0,
+        'calls' => 0,
+        'total' => 0
+    ];
 
-       $pages=[
-        ['Организации','storage/uploads/Icon_sidebar_2.svg',
+
+    if ($userId) {
+        // Счетчик тикетов (только для пользователя)
+        $ticketCount = \App\Models\Notification::where('user_id', $userId)
+            ->whereIn('type', [
+                'ticket_reply',
+                'ticket_status', 
+                'ticket_closed',
+                'ticket_assigned',
+                'ticket_internal_reply'
+            ])
+            ->where('is_read', false)
+            ->count();
+        
+        $notificationCounts['tickets'] = $ticketCount;
+    }
+    
+    // Если есть организация, получаем реальные счетчики
+    if ($organizationId) {
+        // Счетчики отзывов и комментариев
+        $reviewCounts['organization_reviews'] = \App\Models\Notification::where('organization_id', $organizationId)
+            ->where('type', 'review')
+            ->where('is_read', false)
+            ->count();
+            
+        $reviewCounts['product_comments'] = \App\Models\Notification::where('organization_id', $organizationId)
+            ->where('type', 'comment')
+            ->where('is_read', false)
+            ->count();
+            
+        $reviewCounts['total'] = $reviewCounts['organization_reviews'] + $reviewCounts['product_comments'];
+        
+        // Другие счетчики
+        $notificationCounts['reviews'] = $reviewCounts['total'];
+
+        $notificationCounts['orders'] = \App\Models\Notification::where('organization_id', $organizationId)
+            ->whereIn('type', ['order_product'])
+            ->where('is_read', false)
+            ->count();
+            
+        $notificationCounts['beautification'] = \App\Models\Notification::where('organization_id', $organizationId)
+            ->whereIn('type', ['beautification_new'])
+            ->where('is_read', false)
+            ->count();
+
+        $notificationCounts['funeral_service'] = \App\Models\Notification::where('organization_id', $organizationId)
+            ->whereIn('type', ['funeral_service_new'])
+            ->where('is_read', false)
+            ->count();
+            
+        $notificationCounts['calls'] = \App\Models\Notification::where('organization_id', $organizationId)
+            ->where('type', 'call')
+            ->where('is_read', false)
+            ->count();
+            
+        // Общее количество (личные + организационные)
+        $notificationCounts['total'] = \App\Models\Notification::where(function($query) use ($userId, $organizationId) {
+                $query->where('user_id', $userId)
+                      ->orWhere(function($q) use ($organizationId) {
+                          $q->where('organization_id', $organizationId)
+                            ->whereNull('user_id');
+                      });
+            })
+            ->where('is_read', false)
+            ->count();
+    }
+
+    $organizations = $user ? $user->organizations : [];
+    $ul_organizations = [];
+    foreach($organizations as $organization){
+        $ul_organizations[] = [$organization->title, 'account.agency.organization.settings', $organization->id];
+    }
+    $ul_organizations[] = ['Привязать организацию', 'account.agency.add.organization'];
+    $ul_organizations[] = ['Создать организацию', 'account.agency.organization.create-page'];
+
+    $pages = [
+        ['Организации', 'storage/uploads/Icon_sidebar_2.svg',
             $ul_organizations
         ],
 
-        ['Заявки по умершему','storage/uploads/Vector (17).svg',
+        ['Заявки по умершему', 'storage/uploads/Vector (17).svg',
             [
-                ['Новые','account.agency.organization.aplication.dead.new'],  
-                ['В работе','account.agency.organization.aplication.dead.in-work'],                
-                ['Завершенные','account.agency.organization.aplication.dead.completed'],                
-                // ['Незавершенные','account.agency.organization.aplication.dead.not-completed'],                
-            ]
+                ['Новые', 'account.agency.organization.aplication.dead.new'],  
+                ['В работе', 'account.agency.organization.aplication.dead.in-work'],                
+                ['Завершенные', 'account.agency.organization.aplication.dead.completed'],                
+            ],
+            'applications'
         ],
 
-        ['Заявки по поминкам','storage/uploads/Vector (17).svg',
+        ['Заявки по поминкам', 'storage/uploads/Vector (17).svg',
             [
-                ['Новые','account.agency.organization.aplication.memorial.new'], 
-                ['В работе','account.agency.organization.aplication.memorial.in-work'],
-                ['Завершенные','account.agency.organization.aplication.memorial.completed'],                
-                ['Незавершенные','account.agency.organization.aplication.memorial.not-completed'],                
-            ]
+                ['Новые', 'account.agency.organization.aplication.memorial.new'], 
+                ['В работе', 'account.agency.organization.aplication.memorial.in-work'],
+                ['Завершенные', 'account.agency.organization.aplication.memorial.completed'],                
+            ],
+            'applications'
         ],
 
-
-        ['Заявки по облогораживанию','storage/uploads/Vector (17).svg',
+        ['Заявки по благоустройству', 'storage/uploads/Vector (17).svg',
             [
-                ['Новые','account.agency.organization.aplication.beautification.new'],                
-                ['В работе','account.agency.organization.aplication.beautification.in-work'],  
-                ['Завершенные','account.agency.organization.aplication.beautification.completed'],         
-                ['Незавершенные','account.agency.organization.aplication.beautification.not-completed'],                
-       
-
-                              
-            ]
+                ['Новые', 'account.agency.organization.aplication.beautification.new'],                
+                ['В работе', 'account.agency.organization.aplication.beautification.in-work'],  
+                ['Завершенные', 'account.agency.organization.aplication.beautification.completed'],         
+            ],
+            'beautification'
         ],
 
-        ['Заявки по ритуальным услугам','storage/uploads/Vector (17).svg',
+        ['Заявки по ритуальным услугам', 'storage/uploads/Vector (17).svg',
             [
-                ['Новые','account.agency.organization.aplication.funeral-service.new'],    
-                ['В работе','account.agency.organization.aplication.funeral-service.in-work'], 
-                ['Завершенные','account.agency.organization.aplication.funeral-service.completed'],                
-                ['Незавершенные','account.agency.organization.aplication.funeral-service.not-completed'],                
-            ]
+                ['Новые', 'account.agency.organization.aplication.funeral-service.new'],    
+                ['В работе', 'account.agency.organization.aplication.funeral-service.in-work'], 
+                ['Завершенные', 'account.agency.organization.aplication.funeral-service.completed'],                
+            ],
+            'funeral_service'
         ],
 
-        ['Звонки','storage/uploads/Icon_calls.svg',
+        ['Звонки', 'storage/uploads/Icon_calls.svg',
            [
-            ['Входящие','account.agency.organization.calls.stats']
+            ['Входящие', 'account.agency.organization.calls.stats']
+           ],
+           'calls'
+        ],
+
+        ['Статистика', 'storage/uploads/Icon_sidebar_2.svg',
+           [
+            ['Визиты', 'account.agency.organization.statistics.sessions']
            ]
         ],
 
-        ['Статистика','storage/uploads/Icon_sidebar_2.svg',
+        ['Подчиненные', 'storage/uploads/Icon_sidebar_2.svg',
            [
-            ['Визиты','account.agency.organization.statistics.sessions']
+                ['Список', 'account.agency.users']
            ]
         ],
 
+        ['Техподдержка', 'storage/uploads/icon_sidebar.svg',
+            [
+                ['Главная', 'account.agency.tickets.index'],
+                ['Создать заявку', 'account.agency.tickets.create'],
+            ],
+            'tickets'
+        ],
         
-        [ 'Подчиненные','storage/uploads/Icon_sidebar_2.svg',
+        ['Настройки', 'storage/uploads/icon_sidebar.svg',
            [
-                ['Список','account.agency.users']
+            ['Настройки', 'account.agency.settings']
            ]
         ],
 
-
-        ['Техподдержка','storage/uploads/icon_sidebar.svg',
+        ['Оплаты', 'storage/uploads/Icon_pay_aplication.svg',
             [
-                ['Главная','account.agency.tickets.index'],
-                ['Создать заявку','account.agency.tickets.create'],
-            ]
-        ],
-        
-        ['Настройки','storage/uploads/icon_sidebar.svg',
-           [
-            ['Настройки','account.agency.settings']
-           ]
-        ],
-
-
-        ['Оплаты','storage/uploads/Icon_pay_aplication.svg',
-            [
-                ['Кошельки','account.agency.organization.wallets'],
-                ['Заявки','account.agency.applications'],
-                ['Приоритет','account.agency.priority.buy']
+                ['Кошельки', 'account.agency.organization.wallets'],
+                ['Заявки', 'account.agency.applications'],
+                ['Приоритет', 'account.agency.priority.buy']
             ]
         ],
 
-        
-
-
-        ['Товар','storage/uploads/Icon_sidebar_2.svg',
+        ['Товар', 'storage/uploads/Icon_sidebar_2.svg',
             [
-                ['Создать товар','account.agency.add.product'],
-                ['Все товары','account.agency.products'],
+                ['Создать товар', 'account.agency.add.product'],
+                ['Все товары', 'account.agency.products'],
             ]
         ],
 
-
-        ['Отзывы','storage/uploads/Icon_reviews.svg',
+        ['Отзывы', 'storage/uploads/Icon_reviews.svg',
             [
-                ['Об организации','account.agency.reviews.organization'],
-                ['О товарах','account.agency.reviews.product'],
-                
-            ]
+                // Добавляем счетчики к названиям подпунктов
+                ['Об организации', 'account.agency.reviews.organization', null, $reviewCounts['organization_reviews']],
+                ['О товарах', 'account.agency.reviews.product', null, $reviewCounts['product_comments']],
+            ],
+            'reviews' // Для основного пункта меню используем общее количество
         ],
 
-        ['Заказы с маркетплэйса','storage/uploads/Icon_sidebar_2.svg',
+        ['Заказы с маркетплейса', 'storage/uploads/Icon_sidebar_2.svg',
             [
-                ['Новые','account.agency.product.orders.new'],            
-                ['В работе','account.agency.product.orders.in-work'],                
-                ['Завершенные','account.agency.product.orders.completed'],                
+                ['Новые', 'account.agency.product.orders.new'],            
+                ['В работе', 'account.agency.product.orders.in-work'],                
+                ['Завершенные', 'account.agency.product.orders.completed'],                
+            ],
+            'orders'
+        ],
+
+        ['Поставщики', 'storage/uploads/Icon_provider.svg',
+            [
+                ['Заявки', 'account.agency.provider.requests.products.add'],
+                ['Созданные заявки', 'account.agency.provider.requests.products.created'],
+                ['Ответы на заявки', 'account.agency.provider.requests.products.answer'],
+                ['Избранное', 'account.agency.provider.like.organizations'],
+                ['Акции', 'account.agency.provider.stocks'],
+                ['Скидки', 'account.agency.provider.discounts'],
+                ['Создание запроса', 'account.agency.provider.offer.add'],
+                ['Созданные запросы', 'account.agency.provider.offer.created'],
+                ['Ответы на запросы', 'account.agency.provider.offer.answers'],  
             ]
         ],
-       
-
-
-        ['Поставщики','storage/uploads/Icon_provider.svg',
-            [
-                ['Заявки','account.agency.provider.requests.products.add'],
-                ['Созданные заявки','account.agency.provider.requests.products.created'],
-                ['Ответы на заявки','account.agency.provider.requests.products.answer'],
-                ['Избранное','account.agency.provider.like.organizations'],
-                ['Акции','account.agency.provider.stocks'],
-                ['Скидки','account.agency.provider.discounts'],
-                ['Создание запроса','account.agency.provider.offer.add'],
-                ['Созданные запросы','account.agency.provider.offer.created'],
-                ['Ответы на запросы','account.agency.provider.offer.answers'],  
-            ]
-        ],
-        
-
-        
-       
     ];
+    
+    // Добавляем счетчики в массив страниц
+    foreach ($pages as &$page) {
+        $page['notification_count'] = 0;
+        if (isset($page[3]) && $page[3]) { // Если есть 4-й элемент (тип уведомлений)
+            $type = $page[3];
+            $page['notification_count'] = $notificationCounts[$type] ?? 0;
+        }
+    }
+    
+    // Сохраняем детальные счетчики для отзывов
+    $pages['review_details'] = $reviewCounts;
+    
     return $pages;
 }
-
-
-
 
 function mobilePages(){
     
@@ -652,7 +735,7 @@ function mobilePagesAccountAgency() {
             ['Оплаты',''],
             [
                 ['Кошельки',route('account.agency.organization.wallets')],
-                ['Зявки',route('account.agency.applications')],
+                //['Зявки',route('account.agency.applications')],
                 ['Приориет',route('account.agency.priority.buy')]
             ]
         ],

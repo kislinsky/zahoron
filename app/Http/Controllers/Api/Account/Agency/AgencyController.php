@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Api\Account\Agency;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityCategoryOrganization;
+use App\Models\CallStat;
 use App\Models\CategoryProduct;
 use App\Models\Cemetery;
 use App\Models\City;
 use App\Models\CommentProduct;
 use App\Models\ImageOrganization;
 use App\Models\ImageProduct;
+use App\Models\OrderProduct;
 use App\Models\Organization;
 use App\Models\Product;
 use App\Models\ProductRequestToSupplier;
@@ -37,18 +39,18 @@ class AgencyController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'organization_id' => 'required|integer',
-            'category' => 'nullable|string',
-            'subcategory' => 'nullable|string',
-            'search_text' => 'nullable|string',
-            'limit' => 'nullable|integer|min:1|max:100',
-            'page' => 'nullable|integer|min:1',
+            'category'        => 'nullable|string',
+            'subcategory'     => 'nullable|string',
+            'search_text'     => 'nullable|string',
+            'limit'           => 'nullable|integer|min:1|max:100',
+            'page'            => 'nullable|integer|min:1',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation errors',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 40);
         }
 
@@ -71,79 +73,79 @@ class AgencyController extends Controller
 
         // Фильтр по категории
         if ($request->filled('category')) {
-            $query->whereHas('category', function($q) use ($request) {
+            $query->whereHas('category', function ($q) use ($request) {
                 $q->where('title', $request->category)
-                  ->whereNull('parent_id'); // Категории верхнего уровня
+                    ->whereNull('parent_id'); // Категории верхнего уровня
             });
         }
 
         // Фильтр по подкатегории
         if ($request->filled('subcategory')) {
-            $query->whereHas('category', function($q) use ($request) {
+            $query->whereHas('category', function ($q) use ($request) {
                 $q->where('title', $request->subcategory)
-                  ->whereNotNull('parent_id'); // Подкатегории
+                    ->whereNotNull('parent_id'); // Подкатегории
             });
         }
 
         // Пагинация
-        $limit = $request->limit ?? 10  ;
+        $limit = $request->limit ?? 10;
         $products = $query->paginate($limit, ['*'], 'page', $request->page ?? 1);
 
         // Форматируем ответ согласно спецификации
         $response = [
-            'current_category' => $request->category ?? null,
+            'current_category'    => $request->category ?? null,
             'current_subcategory' => $request->subcategory ?? null,
-            'products' => $products->map(function ($product) {
+            'products'            => $products->map(function ($product) {
                 return [
-                    'name' => $product->title,
-                    'price' => $product->total_price,
-                    'features' => [
-                        'size' => $product->size ?? '',
+                    'name'          => $product->title,
+                    'price'         => $product->total_price,
+                    'features'      => [
+                        'size'     => $product->size ?? '',
                         'material' => $product->material ?? '',
-                        'color' => $product->color ?? '',
+                        'color'    => $product->color ?? '',
                     ],
-                    'stars' => $product->rating ?? 5.0,
+                    'stars'         => $product->rating ?? 5.0,
                     'reviews_count' => $product->reviews->count() ?? 0
                 ];
             }),
-            'pagination' => [
-                'total' => $products->total(),
-                'per_page' => $products->perPage(),
+            'pagination'          => [
+                'total'        => $products->total(),
+                'per_page'     => $products->perPage(),
                 'current_page' => $products->currentPage(),
-                'last_page' => $products->lastPage(),
+                'last_page'    => $products->lastPage(),
             ]
         ];
 
         return response()->json([
             'success' => true,
-            'data' => $response
+            'data'    => $response
         ]);
     }
 
     public function addProduct(Request $request)
-{
-    
-    $validator = Validator::make($request->all(), [
-        'organization_id' => 'required|integer|exists:organizations,id',
-        'title' => 'required|string|max:255',
-        'content' => 'nullable|string',
-        'price' => 'required|numeric|min:0',
-        'price_sale' => 'nullable|numeric|min:0|max:100',
-        'category_id' => 'required|integer|exists:category_products,id',
-        'images' => 'nullable|array|max:5',
-        'images.*' => 'required|image|mimes:jpeg,png,jpg,gif,webp', // 5MB max per file
-        'size' => 'nullable|string',
-        'material' => 'nullable|string',
-        'color' => 'nullable|string',
-    ]);
+    {
 
-    if ($validator->fails()) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Validation errors',
-            'errors' => $validator->errors()
-        ], 400);
-    }
+        $validator = Validator::make($request->all(), [
+            'organization_id' => 'required|integer|exists:organizations,id',
+            'title'           => 'required|string|max:255',
+            'content'         => 'nullable|string',
+            'price'           => 'required|numeric|min:0',
+            'price_sale'      => 'nullable|numeric|min:0|max:100',
+            'category_id'     => 'required|integer|exists:category_products,id',
+            'images'          => 'nullable|array|max:5',
+            'images.*'        => 'required|image|mimes:jpeg,png,jpg,gif,webp', // 5MB max per file
+            'size'            => 'nullable|string',
+            'material'        => 'nullable|string',
+            'color'           => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors'  => $validator->errors()
+            ], 400);
+        }
 
         $organization = Organization::find($request->organization_id);
         if (!$organization) {
@@ -165,20 +167,20 @@ class AgencyController extends Controller
         $product->material = $request->material;
         $product->color = $request->color;
         $product->total_price = $request->price;
-        if($request->price_sale!=null){
+        if ($request->price_sale != null) {
             $product->total_price = $request->price_sale;
         }
         // Обработка изображений
-        
+
         $product->save();
 
         if ($request->hasFile('images') && count($request->images) > 0) {
-            foreach($request->images as $image){
-                $filename=generateRandomString().".jpeg";
+            foreach ($request->images as $image) {
+                $filename = generateRandomString() . ".jpeg";
                 $image->storeAs("uploads_product", $filename, "public");
                 ImageProduct::create([
-                    'title'=>'uploads_product/'.$filename,
-                    'product_id'=>$product->id,
+                    'title'      => 'uploads_product/' . $filename,
+                    'product_id' => $product->id,
                 ]);
             }
         }
@@ -186,7 +188,7 @@ class AgencyController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Product added successfully',
-            'data' => $product
+            'data'    => $product
         ], 201);
     }
 
@@ -195,26 +197,26 @@ class AgencyController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'organization_id' => 'required|integer|exists:organizations,id',
-            'title' => 'nullable|string|max:255',
-            'content' => 'nullable|string',
-            'price' => 'nullable|numeric|min:0',
-            'price_sale' => 'nullable|numeric|min:0',
-            'category_id' => 'nullable|integer|exists:category_products,id',
-            'images' => 'nullable|array|max:5',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif',
-            'size' => 'nullable|string',
-            'material' => 'nullable|string',
-            'color' => 'nullable|string',
+            'title'           => 'nullable|string|max:255',
+            'content'         => 'nullable|string',
+            'price'           => 'nullable|numeric|min:0',
+            'price_sale'      => 'nullable|numeric|min:0',
+            'category_id'     => 'nullable|integer|exists:category_products,id',
+            'images'          => 'nullable|array|max:5',
+            'images.*'        => 'image|mimes:jpeg,png,jpg,gif',
+            'size'            => 'nullable|string',
+            'material'        => 'nullable|string',
+            'color'           => 'nullable|string',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation errors',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 400);
         }
-    
+
         $product = Product::find($productId);
         if (!$product) {
             return response()->json([
@@ -222,7 +224,7 @@ class AgencyController extends Controller
                 'message' => 'Product not found'
             ], 404);
         }
-    
+
         // Проверка владельца товара
         if ($product->organization_id != $request->organization_id) {
             return response()->json([
@@ -230,7 +232,7 @@ class AgencyController extends Controller
                 'message' => 'Product does not belong to this organization'
             ], 403);
         }
-    
+
         // Обновляем только переданные поля
         $fields = ['title', 'content', 'price', 'price_sale', 'category_id', 'size', 'material', 'color'];
         foreach ($fields as $field) {
@@ -238,36 +240,36 @@ class AgencyController extends Controller
                 $product->$field = $request->$field;
             }
         }
-    
+
         // Пересчет итоговой цены
         if ($request->has('price') || $request->has('price_sale')) {
             $product->total_price = $request->price_sale ?? $request->price ?? $product->price;
         }
-    
+
         // Обновление slug если изменился title
         if ($request->has('title')) {
             $product->slug = slugCheckProduct($request->title);
         }
-    
+
         // Обновление изображений
         if ($request->hasFile('images')) {
             $product->images()->delete();
             foreach ($request->file('images') as $image) {
-                $filename = generateRandomString().".jpeg";
+                $filename = generateRandomString() . ".jpeg";
                 $image->storeAs("uploads_product", $filename, "public");
                 ImageProduct::create([
-                    'title' => 'uploads_product/'.$filename,
+                    'title'      => 'uploads_product/' . $filename,
                     'product_id' => $product->id,
                 ]);
             }
         }
-    
+
         $product->save();
-    
+
         return response()->json([
             'success' => true,
             'message' => 'Product updated successfully',
-            'data' => $product
+            'data'    => $product
         ]);
     }
 
@@ -282,7 +284,7 @@ class AgencyController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation errors',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 400);
         }
 
@@ -311,73 +313,74 @@ class AgencyController extends Controller
         ]);
     }
 
-    public static function getLinksOrganization(){
+    public static function getLinksOrganization()
+    {
 
     }
 
 
     public static function settingsUserUpdate(Request $request)
     {
-        
+
         // Общие правила валидации
         $commonRules = [
-            'user_id'=>'required|integer',
-            'phone' => 'required|string',
-            'address' => 'string|nullable',
-            'email' => 'email|nullable',
-            'whatsapp' => 'string|nullable',
-            'telegram' => 'string|nullable',
-            'password' => 'nullable|string|min:8',
-            'password_new' => 'nullable|string|min:8',
-            'password_new_2' => 'nullable|string|min:8',
+            'user_id'             => 'required|integer',
+            'phone'               => 'required|string',
+            'address'             => 'string|nullable',
+            'email'               => 'email|nullable',
+            'whatsapp'            => 'string|nullable',
+            'telegram'            => 'string|nullable',
+            'password'            => 'nullable|string|min:8',
+            'password_new'        => 'nullable|string|min:8',
+            'password_new_2'      => 'nullable|string|min:8',
             'email_notifications' => 'nullable|boolean',
-            'sms_notifications' => 'nullable|boolean',
-            'language' => 'nullable|integer',
-            'acting_basis_of'=>'nullable|string',
-            'theme' => 'nullable|string',
-            'inn' => 'required|string',
-            'name_organization' => 'nullable|string',
-            'city_id' => 'required|integer',
-            'edge_id' => 'required|integer',
+            'sms_notifications'   => 'nullable|boolean',
+            'language'            => 'nullable|integer',
+            'acting_basis_of'     => 'nullable|string',
+            'theme'               => 'nullable|string',
+            'inn'                 => 'required|string',
+            'name_organization'   => 'nullable|string',
+            'city_id'             => 'required|integer',
+            'edge_id'             => 'required|integer',
         ];
 
         // Правила для ИП
         $epRules = [
-            'name' => 'string|nullable',
-            'surname' => 'string|nullable',
+            'name'       => 'string|nullable',
+            'surname'    => 'string|nullable',
             'patronymic' => 'string|nullable',
-            'ogrnip' => 'nullable|string',
+            'ogrnip'     => 'nullable|string',
         ];
 
         // Правила для организаций
         $orgRules = [
-            'in_face' => 'required|string',
+            'in_face'    => 'required|string',
             'regulation' => 'required|string',
-            'ogrn' => 'nullable|string',
-            'kpp' => 'nullable|string',
+            'ogrn'       => 'nullable|string',
+            'kpp'        => 'nullable|string',
 
         ];
 
-        $user=null;
-        if($request->user_id!=null){
+        $user = null;
+        if ($request->user_id != null) {
             $user = User::find($request->user_id);
-            if ($user==null) {
+            if ($user == null) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Несуществующий или недействующий пользователь'
                 ], 400);
             }
-            if ($user->organizational_form==null) {
+            if ($user->organizational_form == null) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Пользователь не является организацией'
                 ], 400);
             }
         }
-       
+
         // Объединяем правила в зависимости от типа организации
-        $validationRules = $user->organizational_form == 'ep' 
-            ? array_merge($commonRules, $epRules) 
+        $validationRules = $user->organizational_form == 'ep'
+            ? array_merge($commonRules, $epRules)
             : array_merge($commonRules, $orgRules);
 
         $validator = Validator::make($request->all(), $validationRules);
@@ -386,19 +389,17 @@ class AgencyController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation errors',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
         $data = $validator->validated();
 
 
-       
-
         // Проверка организации через API, если включено
         if (env('API_WORK') == 'true') {
             $organizationData = checkOrganizationInn($data['inn']);
-            
+
             if (!$organizationData || $organizationData['state']['status'] != 'ACTIVE') {
                 return response()->json([
                     'success' => false,
@@ -431,20 +432,20 @@ class AgencyController extends Controller
 
         // Подготовка данных для обновления
         $updateData = [
-            'phone' => $data['phone'],
-            'address' => $data['address'] ?? null,
-            'email' => $data['email'],
-            'whatsapp' => $data['whatsapp'] ?? null,
-            'telegram' => $data['telegram'] ?? null,
-            'language' => $data['language'] ?? null,
-            'theme' => $data['theme'] ?? null,
-            'inn' => $data['inn'],
-            'acting_basis_of'=>$data['acting_basis_of'] ?? null,
-            'name_organization' => $data['name_organization'] ?? null,
-            'city_id' => $data['city_id'],
-            'edge_id' => $data['edge_id'],
+            'phone'               => $data['phone'],
+            'address'             => $data['address'] ?? null,
+            'email'               => $data['email'],
+            'whatsapp'            => $data['whatsapp'] ?? null,
+            'telegram'            => $data['telegram'] ?? null,
+            'language'            => $data['language'] ?? null,
+            'theme'               => $data['theme'] ?? null,
+            'inn'                 => $data['inn'],
+            'acting_basis_of'     => $data['acting_basis_of'] ?? null,
+            'name_organization'   => $data['name_organization'] ?? null,
+            'city_id'             => $data['city_id'],
+            'edge_id'             => $data['edge_id'],
             'email_notifications' => $data['email_notifications'] ?? false,
-            'sms_notifications' => $data['sms_notifications'] ?? false,
+            'sms_notifications'   => $data['sms_notifications'] ?? false,
         ];
 
         // Добавляем специфичные поля для ИП
@@ -453,7 +454,7 @@ class AgencyController extends Controller
             $updateData['surname'] = $data['surname'] ?? null;
             $updateData['patronymic'] = $data['patronymic'] ?? null;
             $updateData['ogrnip'] = $data['ogrnip'] ?? null;
-            
+
         } else {
             $updateData['in_face'] = $data['in_face'];
             $updateData['regulation'] = $data['regulation'];
@@ -488,7 +489,7 @@ class AgencyController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Настройки успешно обновлены',
-                'data' => $user
+                'data'    => $user
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -499,298 +500,295 @@ class AgencyController extends Controller
     }
 
 
-    public static function createOrganization(Request $request) 
+    public static function createOrganization(Request $request)
     {
         // Validate the request data
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'content' => 'nullable|string',
-            'cemetery_ids' => 'required|array',
-            'cemetery_ids.*' => 'integer',
-            'phone' => 'nullable|string|max:20',
-            'telegram' => 'nullable|string|max:50',
-            'whatsapp' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'city_id' => 'required|integer|exists:cities,id',
-            'next_to' => 'nullable|string|max:255',
-            'underground' => 'nullable|string|max:255',
-            'adres' => 'required|string|max:255',
-            'width' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'available_installments' => 'nullable|boolean',
-            'found_cheaper' => 'nullable|boolean',
-            'сonclusion_contract' => 'nullable|boolean',
-            'state_compensation' => 'nullable|boolean',
-            'user_id' => 'required|integer|exists:users,id',
-            
+            'title'                     => 'required|string|max:255',
+            'content'                   => 'nullable|string',
+            'cemetery_ids'              => 'required|array',
+            'cemetery_ids.*'            => 'integer',
+            'phone'                     => 'nullable|string|max:20',
+            'telegram'                  => 'nullable|string|max:50',
+            'whatsapp'                  => 'nullable|string|max:20',
+            'email'                     => 'nullable|email|max:255',
+            'city_id'                   => 'required|integer|exists:cities,id',
+            'next_to'                   => 'nullable|string|max:255',
+            'underground'               => 'nullable|string|max:255',
+            'adres'                     => 'required|string|max:255',
+            'width'                     => 'required|numeric',
+            'longitude'                 => 'required|numeric',
+            'available_installments'    => 'nullable|boolean',
+            'found_cheaper'             => 'nullable|boolean',
+            'сonclusion_contract'       => 'nullable|boolean',
+            'state_compensation'        => 'nullable|boolean',
+            'user_id'                   => 'required|integer|exists:users,id',
+
             // Categories and prices
-            'categories_organization' => 'nullable|array',
+            'categories_organization'   => 'nullable|array',
             'categories_organization.*' => 'integer|exists:category_products,id',
-            'price_cats_organization' => 'nullable|array',
+            'price_cats_organization'   => 'nullable|array',
             'price_cats_organization.*' => 'numeric',
-            
+
             // Working hours
-            'working_day' => 'nullable|array',
-            'working_day.*' => 'nullable|string',
-            'holiday_day' => 'nullable|array',
-            'holiday_day.*' => 'string|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
-            
+            'working_day'               => 'nullable|array',
+            'working_day.*'             => 'nullable|string',
+            'holiday_day'               => 'nullable|array',
+            'holiday_day.*'             => 'string|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
+
             // Images
-            'img' => 'nullable|mimes:jpeg,jpg,png|max:5048',
-            'img_main' => 'nullable|mimes:jpeg,jpg,png|max:5048',
-            'images' => 'nullable|array|max:5',
-            'images.*' => 'nullable|image|mimes:jpeg,jpg,png|max:5120',
+            'img'                       => 'nullable|mimes:jpeg,jpg,png|max:5048',
+            'img_main'                  => 'nullable|mimes:jpeg,jpg,png|max:5048',
+            'images'                    => 'nullable|array|max:5',
+            'images.*'                  => 'nullable|image|mimes:jpeg,jpg,png|max:5120',
         ]);
-       
+
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation errors',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
-      
+
         try {
             DB::beginTransaction();
-            
+
             $data = $validator->validated();
-            
-           
+
 
             // Process cemetery_ids
             $data['cemetery_ids'] = implode(",", $data['cemetery_ids']) . ',';
-    
-        // Handle file uploads
-        if (!empty($data['img']) && $data['img'] instanceof \Illuminate\Http\UploadedFile) {
-            $filename = Str::random(40) . '.jpeg';
-            $data['img']->storeAs("uploads_organization", $filename, "public");
-            $imgPath = 'uploads_organization/' . $filename;
-            $hrefImg = 0; // не дефолтная картинка
-        } else {
-            $imgPath = 'default';
-            $hrefImg = 1; // дефолтная картинка
-        }
 
-        if (!empty($data['img_main']) && $data['img_main'] instanceof \Illuminate\Http\UploadedFile) {
-            $filename_main = Str::random(40) . '.jpeg';
-            $data['img_main']->storeAs("uploads_organization", $filename_main, "public");
-            $imgMainPath = 'uploads_organization/' . $filename_main;
-            $hrefImgMain = 0; // не дефолтная картинка
-        } else {
-            $imgMainPath = 'default';
-            $hrefImgMain = 1; // дефолтная картинка
-        }
+            // Handle file uploads
+            if (!empty($data['img']) && $data['img'] instanceof \Illuminate\Http\UploadedFile) {
+                $filename = Str::random(40) . '.jpeg';
+                $data['img']->storeAs("uploads_organization", $filename, "public");
+                $imgPath = 'uploads_organization/' . $filename;
+                $hrefImg = 0; // не дефолтная картинка
+            } else {
+                $imgPath = 'default';
+                $hrefImg = 1; // дефолтная картинка
+            }
 
-        // Create organization
-        $organization = Organization::create([
-            'title' => $data['title'],
-            'status' => 0,
-            'content' => $data['content'],
-            'cemetery_ids' => $data['cemetery_ids'],
-            'phone' => normalizePhone($data['phone']) ?? null,
-            'telegram' => $data['telegram'] ?? null,
-            'user_id' => $data['user_id'],
-            'img_file' => $imgPath,
-            'img_main_file' => $imgMainPath,
-            'href_img' => $hrefImg, // 1 если дефолтная, 0 если загруженная
-            'href_main_img' => $hrefImgMain, // 1 если дефолтная, 0 если загруженная
-            'whatsapp' => $data['whatsapp'] ?? null,
-            'email' => $data['email'] ?? null,
-            'city_id' => $data['city_id'],
-            'slug' => slugOrganization($data['title']),
-            'next_to' => $data['next_to'] ?? null,
-            'underground' => $data['underground'] ?? null,
-            'adres' => $data['adres'],
-            'width' => $data['width'],
-            'longitude' => $data['longitude'],
-            'available_installments' => $data['available_installments'] ?? 0,
-            'found_cheaper' => $data['found_cheaper'] ?? 0,
-            'state_compensation' => $data['state_compensation'] ?? 0,
-            'conclusion_contract' => $data['conclusion_contract'] ?? 0,
-        ]);
-    
+            if (!empty($data['img_main']) && $data['img_main'] instanceof \Illuminate\Http\UploadedFile) {
+                $filename_main = Str::random(40) . '.jpeg';
+                $data['img_main']->storeAs("uploads_organization", $filename_main, "public");
+                $imgMainPath = 'uploads_organization/' . $filename_main;
+                $hrefImgMain = 0; // не дефолтная картинка
+            } else {
+                $imgMainPath = 'default';
+                $hrefImgMain = 1; // дефолтная картинка
+            }
 
-           
-            
+            // Create organization
+            $organization = Organization::create([
+                'title'                  => $data['title'],
+                'status'                 => 0,
+                'content'                => $data['content'],
+                'cemetery_ids'           => $data['cemetery_ids'],
+                'phone'                  => normalizePhone($data['phone']) ?? null,
+                'telegram'               => $data['telegram'] ?? null,
+                'user_id'                => $data['user_id'],
+                'img_file'               => $imgPath,
+                'img_main_file'          => $imgMainPath,
+                'href_img'               => $hrefImg, // 1 если дефолтная, 0 если загруженная
+                'href_main_img'          => $hrefImgMain, // 1 если дефолтная, 0 если загруженная
+                'whatsapp'               => $data['whatsapp'] ?? null,
+                'email'                  => $data['email'] ?? null,
+                'city_id'                => $data['city_id'],
+                'slug'                   => slugOrganization($data['title']),
+                'next_to'                => $data['next_to'] ?? null,
+                'underground'            => $data['underground'] ?? null,
+                'adres'                  => $data['adres'],
+                'width'                  => $data['width'],
+                'longitude'              => $data['longitude'],
+                'available_installments' => $data['available_installments'] ?? 0,
+                'found_cheaper'          => $data['found_cheaper'] ?? 0,
+                'state_compensation'     => $data['state_compensation'] ?? 0,
+                'conclusion_contract'    => $data['conclusion_contract'] ?? 0,
+            ]);
+
+
             // Create category relationships
             if (!empty($data['categories_organization']) && !empty($data['price_cats_organization'])) {
                 $categoryData = [];
-                
+
                 foreach ($data['categories_organization'] as $key => $categoryId) {
                     $cat = CategoryProduct::find($categoryId);
                     if ($cat) {
                         $categoryData[] = [
-                            'organization_id' => $organization->id,
-                            'category_main_id' => $cat->parent_id,
+                            'organization_id'      => $organization->id,
+                            'category_main_id'     => $cat->parent_id,
                             'category_children_id' => $cat->id,
-                            'rating' => $organization->rating,
-                            'price' => $data['price_cats_organization'][$key],
-                            'created_at' => now(),
-                            'updated_at' => now(),
+                            'rating'               => $organization->rating,
+                            'price'                => $data['price_cats_organization'][$key],
+                            'created_at'           => now(),
+                            'updated_at'           => now(),
                         ];
                     }
-                   
+
                 }
-                
+
                 if (!empty($categoryData)) {
                     ActivityCategoryOrganization::insert($categoryData);
                 }
             }
-    
-           // Process working hours
-        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        $workingHoursData = [];
 
-        foreach ($days as $key => $day) {
-            $isHoliday = in_array($day, $data['holiday_day'] ?? []);
-            
-            if ($isHoliday) {
-                $workingHoursData[] = [
-                    'day' => $day,
-                    'holiday' => 1,
-                    'time_start_work' => null,
-                    'time_end_work' => null,
-                    'organization_id' => $organization->id,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            } else {
-                
-                // Берем соответствующий день из массива
-                $timeRange = $data['working_day'][$key] ?? null;
-                
-                // Разбиваем диапазон времени с учетом пробелов вокруг дефиса
-                $times = $timeRange ? array_map('trim', explode(' - ', $timeRange)) : [null, null];
-               
-                // Проверяем, что получили 2 значения времени
-                if (count($times) === 2) {
-                    $startTime = trim($times[0]);
-                    $endTime = trim($times[1]);
+            // Process working hours
+            $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            $workingHoursData = [];
+
+            foreach ($days as $key => $day) {
+                $isHoliday = in_array($day, $data['holiday_day'] ?? []);
+
+                if ($isHoliday) {
+                    $workingHoursData[] = [
+                        'day'             => $day,
+                        'holiday'         => 1,
+                        'time_start_work' => null,
+                        'time_end_work'   => null,
+                        'organization_id' => $organization->id,
+                        'created_at'      => now(),
+                        'updated_at'      => now(),
+                    ];
                 } else {
-                    $startTime = null;
-                    $endTime = null;
-                }
-                
-                $workingHoursData[] = [
-                    'day' => $day,
-                    'holiday' => 0,
-                    'time_start_work' => $startTime,
-                    'time_end_work' => $endTime,
-                    'organization_id' => $organization->id,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-        }
 
-        WorkingHoursOrganization::insert($workingHoursData);
-    
+                    // Берем соответствующий день из массива
+                    $timeRange = $data['working_day'][$key] ?? null;
+
+                    // Разбиваем диапазон времени с учетом пробелов вокруг дефиса
+                    $times = $timeRange ? array_map('trim', explode(' - ', $timeRange)) : [null, null];
+
+                    // Проверяем, что получили 2 значения времени
+                    if (count($times) === 2) {
+                        $startTime = trim($times[0]);
+                        $endTime = trim($times[1]);
+                    } else {
+                        $startTime = null;
+                        $endTime = null;
+                    }
+
+                    $workingHoursData[] = [
+                        'day'             => $day,
+                        'holiday'         => 0,
+                        'time_start_work' => $startTime,
+                        'time_end_work'   => $endTime,
+                        'organization_id' => $organization->id,
+                        'created_at'      => now(),
+                        'updated_at'      => now(),
+                    ];
+                }
+            }
+
+            WorkingHoursOrganization::insert($workingHoursData);
+
             // Handle additional images
             if ($request->hasFile('images') && count($request->images) > 0) {
                 $imagesData = [];
-                
+
                 foreach ($data['images'] as $image) {
-                    if($image!=null){
-                        $filename=generateRandomString().".jpeg";
+                    if ($image != null) {
+                        $filename = generateRandomString() . ".jpeg";
                         $image->storeAs("uploads_organization", $filename, "public");
-                        
+
                         $imagesData[] = [
-                            'img_file' => 'uploads_organization/' . $filename,
-                            'href_img' => 0,
+                            'img_file'        => 'uploads_organization/' . $filename,
+                            'href_img'        => 0,
                             'organization_id' => $organization->id,
-                            'created_at' => now(),
-                            'updated_at' => now(),
+                            'created_at'      => now(),
+                            'updated_at'      => now(),
                         ];
                     }
-                    
+
                 }
-                
+
                 ImageOrganization::insert($imagesData);
             }
-    
+
             DB::commit();
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Organization submitted for moderation',
-                'data' => $organization->load(['activityCategories', 'workingHours', 'images'])
+                'data'    => $organization->load(['activityCategories', 'workingHours', 'images'])
             ], 201);
-    
+
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error creating organization',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
 
 
-
-    public static function updateOrganization(Request $request) {
+    public static function updateOrganization(Request $request)
+    {
         try {
             // Валидация входных данных
             $data = $request->validate([
-                'images' => ['nullable', 'array'],
-                'images.*' => ['nullable'],
-                'img' => ['nullable', 'file', 'max:2048'],
-                'img_main' => ['nullable', 'file', 'max:2048'],
-                'cemetery_ids' => ['nullable', 'array'],
-                'cemetery_ids.*' => ['nullable', 'integer'],
-                'id' => ['required', 'integer'],
-                'title' => ['required', 'string', 'max:255'],
-                'content' => ['nullable', 'string'],
-                'phone' => ['nullable', 'string', 'max:20'],
-                'telegram' => ['nullable', 'string', 'max:50'],
-                'whatsapp' => ['nullable', 'string', 'max:20'],
-                'email' => ['nullable', 'string', 'email', 'max:255'],
-                'city_id' => ['required', 'integer'],
-                'next_to' => ['nullable', 'string', 'max:255'],
-                'underground' => ['nullable', 'string', 'max:255'],
-                'adres' => ['required', 'string', 'max:255'],
-                'width' => ['required', 'string', 'max:50'],
-                'longitude' => ['required', 'string', 'max:50'],
+                'images'                  => ['nullable', 'array'],
+                'images.*'                => ['nullable'],
+                'img'                     => ['nullable', 'file', 'max:2048'],
+                'img_main'                => ['nullable', 'file', 'max:2048'],
+                'cemetery_ids'            => ['nullable', 'array'],
+                'cemetery_ids.*'          => ['nullable', 'integer'],
+                'id'                      => ['required', 'integer'],
+                'title'                   => ['required', 'string', 'max:255'],
+                'content'                 => ['nullable', 'string'],
+                'phone'                   => ['nullable', 'string', 'max:20'],
+                'telegram'                => ['nullable', 'string', 'max:50'],
+                'whatsapp'                => ['nullable', 'string', 'max:20'],
+                'email'                   => ['nullable', 'string', 'email', 'max:255'],
+                'city_id'                 => ['required', 'integer'],
+                'next_to'                 => ['nullable', 'string', 'max:255'],
+                'underground'             => ['nullable', 'string', 'max:255'],
+                'adres'                   => ['required', 'string', 'max:255'],
+                'width'                   => ['required', 'string', 'max:50'],
+                'longitude'               => ['required', 'string', 'max:50'],
                 'categories_organization' => ['nullable', 'array'],
                 'price_cats_organization' => ['nullable', 'array'],
-                'working_day' => ['nullable', 'array'],
-                'holiday_day' => ['nullable', 'array'],
-                'available_installments' => ['nullable', 'boolean'],
-                'found_cheaper' => ['nullable', 'boolean'],
-                'conclusion_contract' => ['nullable', 'boolean'],
-                'state_compensation' => ['nullable', 'boolean'],
+                'working_day'             => ['nullable', 'array'],
+                'holiday_day'             => ['nullable', 'array'],
+                'available_installments'  => ['nullable', 'boolean'],
+                'found_cheaper'           => ['nullable', 'boolean'],
+                'conclusion_contract'     => ['nullable', 'boolean'],
+                'state_compensation'      => ['nullable', 'boolean'],
             ]);
-    
+
             // Поиск организации
             $organization = Organization::findOrFail($data['id']);
-    
+
             // Обновление основных данных
             $cemeteries = isset($data['cemetery_ids']) ? implode(",", $data['cemetery_ids']) . ',' : '';
-            
+
             $organization->update([
-                'title' => $data['title'],
-                'slug'=> slugOrganization($data['title']),
-                'content' => $data['content'] ?? null,
-                'cemetery_ids' => $cemeteries,
-                'phone' => $data['phone'] ?? null,
-                'telegram' => $data['telegram'] ?? null,
-                'whatsapp' => $data['whatsapp'] ?? null,
-                'email' => $data['email'] ?? null,
-                'city_id' => $data['city_id'],
-                'next_to' => $data['next_to'] ?? null,
-                'underground' => $data['underground'] ?? null,
-                'adres' => $data['adres'],
-                'width' => $data['width'],
-                'longitude' => $data['longitude'],
+                'title'                  => $data['title'],
+                'slug'                   => slugOrganization($data['title']),
+                'content'                => $data['content'] ?? null,
+                'cemetery_ids'           => $cemeteries,
+                'phone'                  => $data['phone'] ?? null,
+                'telegram'               => $data['telegram'] ?? null,
+                'whatsapp'               => $data['whatsapp'] ?? null,
+                'email'                  => $data['email'] ?? null,
+                'city_id'                => $data['city_id'],
+                'next_to'                => $data['next_to'] ?? null,
+                'underground'            => $data['underground'] ?? null,
+                'adres'                  => $data['adres'],
+                'width'                  => $data['width'],
+                'longitude'              => $data['longitude'],
                 'available_installments' => $data['available_installments'] ?? false,
-                'found_cheaper' => $data['found_cheaper'] ?? false,
-                'conclusion_contract' => $data['conclusion_contract'] ?? false,
-                'state_compensation' => $data['state_compensation'] ?? false,
+                'found_cheaper'          => $data['found_cheaper'] ?? false,
+                'conclusion_contract'    => $data['conclusion_contract'] ?? false,
+                'state_compensation'     => $data['state_compensation'] ?? false,
             ]);
-            
-    
+
+
             // Обработка основного изображения
             if ($request->hasFile('img')) {
                 $filename = generateRandomString() . ".jpeg";
@@ -800,7 +798,7 @@ class AgencyController extends Controller
                     'href_img' => 0,
                 ]);
             }
-    
+
             // Обработка главного изображения
             if ($request->hasFile('img_main')) {
                 $filename_main = generateRandomString() . ".jpeg";
@@ -810,69 +808,69 @@ class AgencyController extends Controller
                     'href_main_img' => 0,
                 ]);
             }
-    
+
             // Обновление категорий организации
             ActivityCategoryOrganization::where('organization_id', $organization->id)->delete();
-            if (isset($data['categories_organization']) && count($data['categories_organization'])>0) {
+            if (isset($data['categories_organization']) && count($data['categories_organization']) > 0) {
                 foreach ($data['categories_organization'] as $key => $category_organization) {
                     $cat = CategoryProduct::find($category_organization);
-                    if($cat!=null){
+                    if ($cat != null) {
                         ActivityCategoryOrganization::create([
-                            'organization_id' => $organization->id,
-                            'category_main_id' => $cat->parent_id,
+                            'organization_id'      => $organization->id,
+                            'category_main_id'     => $cat->parent_id,
                             'category_children_id' => $cat->id,
-                            'rating' => $organization->rating,
-                            'price' => $data['price_cats_organization'][$key] ?? null,
+                            'rating'               => $organization->rating,
+                            'price'                => $data['price_cats_organization'][$key] ?? null,
                         ]);
                     }
                 }
             }
-    
+
             // Обновление рабочих часов
             WorkingHoursOrganization::where('organization_id', $organization->id)->delete();
             $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             $holidays = $data['holiday_day'] ?? [];
             $working_days = $data['working_day'] ?? [];
-    
+
             foreach ($days as $key => $day) {
                 if (in_array($day, $holidays)) {
                     WorkingHoursOrganization::create([
-                        'day' => $day,
-                        'holiday' => 1,
+                        'day'             => $day,
+                        'holiday'         => 1,
                         'organization_id' => $organization->id,
                     ]);
                 } elseif (isset($working_days[$key])) {
                     $times = explode(' - ', $working_days[$key]);
                     if (count($times) === 2) {
                         WorkingHoursOrganization::create([
-                            'day' => $day,
+                            'day'             => $day,
                             'time_start_work' => $times[0],
-                            'time_end_work' => $times[1],
+                            'time_end_work'   => $times[1],
                             'organization_id' => $organization->id,
                         ]);
                     }
                 }
             }
-    
+
             // Обработка изображений
-            if (isset($data['images']) && count($data['images'])>0) {
+            if (isset($data['images']) && count($data['images']) > 0) {
                 // Удаляем старые изображения
                 $organization->images()->delete();
-    
+
                 foreach ($data['images'] as $image) {
                     if ($image instanceof \Illuminate\Http\UploadedFile) {
                         $filename = uniqid() . '.' . $image->getClientOriginalExtension();
                         $path = $image->storeAs('uploads_organization', $filename, 'public');
-                        
+
                         ImageOrganization::create([
-                            'img_file' => $path,
-                            'href_img' => 0,
+                            'img_file'        => $path,
+                            'href_img'        => 0,
                             'organization_id' => $organization->id,
                         ]);
                     } elseif (filter_var($image, FILTER_VALIDATE_URL)) {
                         ImageOrganization::create([
-                            'img_url' => $image,
-                            'href_img' => 1,
+                            'img_url'         => $image,
+                            'href_img'        => 1,
                             'organization_id' => $organization->id,
                         ]);
                     } elseif (str_starts_with($image, 'data:image')) {
@@ -880,27 +878,27 @@ class AgencyController extends Controller
                         $filename = uniqid() . '.jpg';
                         $path = 'uploads_organization/' . $filename;
                         file_put_contents(public_path('storage/' . $path), $imageData);
-                        
+
                         ImageOrganization::create([
-                            'img_file' => $path,
-                            'href_img' => 0,
+                            'img_file'        => $path,
+                            'href_img'        => 0,
                             'organization_id' => $organization->id,
                         ]);
                     }
                 }
             }
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Организация успешно обновлена',
-                'data' => $organization->fresh()->load('images', 'workingHours', 'activityCategories')
+                'data'    => $organization->fresh()->load('images', 'workingHours', 'activityCategories')
             ]);
-    
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибка валидации',
-                'errors' => $e->errors()
+                'errors'  => $e->errors()
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
@@ -910,21 +908,316 @@ class AgencyController extends Controller
         }
     }
 
+    public function attachCashierToOrganization(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'organization_id' => 'required|string|exists:organizations,id',
+            'phone'           => 'required|string|size:12|regex:/^\+\d{11}$/'
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
 
- public function addRequestsCostProductSuppliers(Request $request)
+        $user = auth()->user();
+
+        $organization = Organization::find($request->organization_id);
+
+        if (!$organization) {
+            return response()->json(['success' => false, 'message' => 'Организация не найдена'], 404);
+        }
+
+//        if ($organization->user_id !== $user->id) {
+//            return response()->json(['success' => false, 'message' => 'Нет доступа'], 403);
+//        }
+
+        $cashier = User::where('phone', $request->phone)->first();
+
+        if ($cashier) {
+            if ($cashier->parent_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Пользователь с таким номером телефона не найден.'
+                ], 403);
+            }
+
+            if ($cashier->role !== 'cashier') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Пользователь с таким номером телефона не является кассиром.'
+                ], 403);
+            }
+
+            $cashier->organization_id_branch = $organization->id;
+            $cashier->save();
+
+            return response()->json([
+                'success' => true,
+                'data'    => [
+                    'user_id' => $cashier->id
+                ],
+                'message' => 'Кассир успешно привязан к выбранной организации'
+            ]);
+        } else {
+            try {
+                $cashier = User::create([
+                    'parent_id'              => $user->id,
+                    'phone'                  => $request->phone,
+                    'role'                   => 'cashier',
+                    'organization_id_branch' => $organization->id
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'data'    => [
+                        'user_id' => $cashier->id
+                    ],
+                    'message' => 'Кассир успешно создан привязан к выбранной организации'
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ошибка при создании нового кассира',
+                    'error'   => $e->getMessage()
+                ], 500);
+            }
+
+        }
+    }
+
+    public function unlinkCashierFromOrganization(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'organization_id' => 'required|string|exists:organizations,id',
+            'cashier_id'      => 'required|integer|exists:users,id'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        $user = auth()->user();
+
+        $organization = Organization::find($request->organization_id);
+
+        if (!$organization) {
+            return response()->json(['success' => false, 'message' => 'Организация не найдена'], 404);
+        }
+
+        if ($organization->user_id !== $user->id) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа'], 403);
+        }
+
+        $cashier = User::find($request->cashier_id);
+
+        if ($cashier) {
+            if ($cashier->parent_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Кассир не найден.'
+                ], 403);
+            }
+
+            if ($cashier->role !== 'cashier') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Пользователь с таким номером телефона не является кассиром.'
+                ], 403);
+            }
+
+            $cashier->organization_id_branch = null;
+            $cashier->save();
+
+            return response()->json([
+                'success' => true,
+                'data'    => [
+                    'user_id' => $cashier->id
+                ],
+                'message' => 'Кассир успешно отвязан от выбранной организации'
+            ]);
+
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Кассир не найден'
+            ], 403);
+        }
+    }
+
+    public function getCallStats(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'organization_id' => 'required|string|exists:organizations,id',
+            'status'          => 'nullable|string|in:accepted,rejected,no_status',
+            'limit'           => 'nullable|integer|min:1|max:100',
+            'page'            => 'nullable|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        $user = auth()->user();
+
+        $organization = Organization::find($request->organization_id);
+
+        if (!$organization) {
+            return response()->json(['success' => false, 'message' => 'Организация не найдена'], 404);
+        }
+
+        if ($organization->user_id !== $user->id) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа'], 403);
+        }
+
+        $query = CallStat::query()
+            ->where('organization_id', $organization->id)
+            ->latest();
+
+        if ($request->filled('status')) {
+            $status = $request->status;
+
+            $query->where(function ($q) use ($status) {
+                switch ($status) {
+                    case 'accepted':
+                        $q->where('call_status', 'like', '11%');
+                        break;
+                    case 'rejected':
+                        $q->whereNotNull('call_status')
+                            ->whereNot('call_status', 'like', '11%');
+                        break;
+                    case 'no_status':
+                        $q->whereNull('call_status');
+                        break;
+                }
+            });
+        }
+
+        $limit = $request->limit ?? 10;
+        $calls = $query->paginate($limit, ['*'], 'page', $request->page ?? 1);
+
+        $getStatusText = function ($callStatus) {
+            if ($callStatus === null) return 'Без статуса';
+            if (str_starts_with($callStatus, '11')) return 'Принят';
+            return 'Отклонён';
+        };
+
+        $items = $calls->getCollection()->map(function ($call) use ($getStatusText) {
+            return [
+                'organization_id' => (string)$call->organization_id,
+                'date_start'      => $call->date_start->format('Y-m-d H:i'),
+                'call_status'     => $call->call_status,
+                'status_text'     => $getStatusText($call->call_status),
+                'city'            => $call->city,
+                'record_url'      => $call->record_url
+            ];
+        })->toArray();
+
+        return response()->json([
+            'success'    => true,
+            'message'    => 'Список звонков организации',
+            'data'       => $items,
+            'pagination' => [
+                'total'        => $calls->total(),
+                'per_page'     => $calls->perPage(),
+                'current_page' => $calls->currentPage(),
+                'last_page'    => $calls->lastPage(),
+            ]
+        ]);
+    }
+
+    public function getOrganizationCemeteries(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'organization_id' => 'required|string|exists:organizations,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        $user = auth()->user();
+
+        $organization = Organization::find($request->organization_id);
+
+        if (!$organization) {
+            return response()->json(['success' => false, 'message' => 'Организация не найдена'], 404);
+        }
+
+        if ($organization->user_id !== $user->id) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа'], 403);
+        }
+
+        $cemeteryIdsString = $organization->cemetery_ids;
+
+        if (empty($cemeteryIdsString)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Нет кладбищ на которых работает организация',
+                'data'    => []
+            ]);
+        }
+
+        $cemeteryIds = array_map('trim', explode(',', $cemeteryIdsString));
+        $cemeteryIds = array_filter($cemeteryIds, function ($id) {
+            return !empty($id);
+        });
+
+        if (empty($cemeteryIds)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Нет кладбищ, на которых работает организация',
+                'data'    => []
+            ]);
+        }
+
+        $cemeteries = Cemetery::whereIn('id', $cemeteryIds)
+            ->orderBy('title')->get();
+
+        $items = $cemeteries->map(function ($cemetery) {
+            return [
+                'id'        => (string)$cemetery->id,
+                'title'     => $cemetery->title,
+                'latitude'  => $cemetery->width,
+                'longitude' => $cemetery->longitude
+            ];
+        })->toArray();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Список кладбищ на которых работает организация',
+            'data'    => $items
+        ]);
+    }
+
+    public function addRequestsCostProductSuppliers(Request $request)
     {
         // Упрощенная валидация
         $validated = $request->validate([
             'organization_id' => 'required|integer',
-            'user_id' => 'required|integer',
-            'products' => 'required|array|min:1',
-            'products.*' => 'integer',
-            'count' => 'required|array|min:1',
-            'count.*' => 'integer|min:1',
-            'lcs' => 'nullable|array',
-            'lcs.*' => 'string',
-            'all_lcs' => 'nullable|boolean'
+            'user_id'         => 'required|integer',
+            'products'        => 'required|array|min:1',
+            'products.*'      => 'integer',
+            'count'           => 'required|array|min:1',
+            'count.*'         => 'integer|min:1',
+            'lcs'             => 'nullable|array',
+            'lcs.*'           => 'string',
+            'all_lcs'         => 'nullable|boolean'
         ]);
 
         // Проверка соответствия массивов
@@ -943,7 +1236,7 @@ class AgencyController extends Controller
         }
 
         // Формирование данных
-        $products = array_map(function($product, $count) {
+        $products = array_map(function ($product, $count) {
             return [(int)$product, (int)$count, 0];
         }, $validated['products'], $validated['count']);
 
@@ -952,9 +1245,9 @@ class AgencyController extends Controller
 
         try {
             $requestCost = RequestsCostProductsSupplier::create([
-                'organization_id' => $validated['organization_id'],
-                'products' => json_encode($products),
-                'transport_companies' => json_encode($transportCompanies),
+                'organization_id'             => $validated['organization_id'],
+                'products'                    => json_encode($products),
+                'transport_companies'         => json_encode($transportCompanies),
                 'categories_provider_product' => json_encode($validated['products']),
             ]);
 
@@ -963,36 +1256,36 @@ class AgencyController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Ошибка при создании заявки',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
 
     public function deleteRequestCostProductProvider($request)
     {
-        $aplication=RequestsCostProductsSupplier::findOrFail($request)->delete();
+        $aplication = RequestsCostProductsSupplier::findOrFail($request)->delete();
 
-         return response()->json([
-                'success' => true,
-                'message' => 'Заявка успешно удалена.'
-            ], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Заявка успешно удалена.'
+        ], 200);
 
     }
 
-     public function createProviderOffer(Request $request)
+    public function createProviderOffer(Request $request)
     {
         // Validate request data
         $validator = Validator::make($request->all(), [
-            'title' => ['required', 'string', 'max:255'],
-            'content' => ['required', 'string'],
-            'images' => ['required', 'array', 'max:5'],
-            'images.*' => [
+            'title'             => ['required', 'string', 'max:255'],
+            'content'           => ['required', 'string'],
+            'images'            => ['required', 'array', 'max:5'],
+            'images.*'          => [
                 'required',
                 'image',
                 'mimes:jpeg,jpg,png,gif,svg,webp',
                 'max:2048'
             ],
-            'category_id' => ['nullable', 'integer'],
+            'category_id'       => ['nullable', 'integer'],
             'delivery_required' => ['nullable', 'integer'],
         ]);
 
@@ -1000,14 +1293,14 @@ class AgencyController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
         try {
             // Get authenticated user's organization
             $organization = auth()->user()->organization;
-            
+
             if (!$organization) {
                 return response()->json([
                     'success' => false,
@@ -1033,43 +1326,43 @@ class AgencyController extends Controller
 
             // Create the offer
             $offer = ProductRequestToSupplier::create([
-                'title' => $request->title,
-                'content' => $request->content,
-                'organization_id' => $organization->id,
-                'images' => json_encode($imagePaths),
-                'category_id' => $request->category_id,
+                'title'             => $request->title,
+                'content'           => $request->content,
+                'organization_id'   => $organization->id,
+                'images'            => json_encode($imagePaths),
+                'category_id'       => $request->category_id,
                 'delivery_required' => $request->boolean('delivery_required'),
             ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Offer created successfully',
-                'data' => $offer
+                'data'    => $offer
             ], 201);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create offer',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
 
 
-   public static function deleteProviderOffer($id)
+    public static function deleteProviderOffer($id)
     {
         $offer = ProductRequestToSupplier::find($id);
-        
+
         if (!$offer) {
             return response()->json([
                 'success' => false,
                 'message' => 'Offer not found'
             ], 404);
         }
-        
+
         $offer->delete();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Product request to supplier deleted successfully.'
@@ -1103,11 +1396,11 @@ class AgencyController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $reviews
+            'data'    => $reviews
         ]);
     }
-    
-    
+
+
     public function getProductComments($organizationId)
     {
         // Валидация ID организации
@@ -1128,23 +1421,23 @@ class AgencyController extends Controller
         }
 
         // Получаем комментарии к товарам организации
-        $comments = CommentProduct::whereHas('product', function($query) use ($organizationId) {
-                $query->where('organization_id', $organizationId);
-            })
+        $comments = CommentProduct::whereHas('product', function ($query) use ($organizationId) {
+            $query->where('organization_id', $organizationId);
+        })
             ->with(['product']) // Загружаем товар
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         return response()->json([
             'success' => true,
-            'data' => $comments
+            'data'    => $comments
         ]);
     }
 
 
-        /**
-    * Удаление отзыва об организации
-    */
+    /**
+     * Удаление отзыва об организации
+     */
     public function deleteReview($reviewId)
     {
         // Валидация ID отзыва
@@ -1176,9 +1469,9 @@ class AgencyController extends Controller
     }
 
 
-        /**
-    * Одобрение отзыва (установка статуса 1)
-    */
+    /**
+     * Одобрение отзыва (установка статуса 1)
+     */
     public function approveReview($reviewId)
     {
         // Валидация ID
@@ -1207,14 +1500,14 @@ class AgencyController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Отзыв одобрен',
-            'data' => $review
+            'data'    => $review
         ]);
     }
 
 
-        /**
-    * Редактирование текста отзыва
-    */
+    /**
+     * Редактирование текста отзыва
+     */
     public function updateReviewContent(Request $request, $reviewId)
     {
         // Валидация
@@ -1225,7 +1518,7 @@ class AgencyController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
@@ -1243,19 +1536,16 @@ class AgencyController extends Controller
 
         // Обновление
         $review->update([
-            'content' => $request->content,
+            'content'   => $request->content,
             'edited_at' => now() // метка редактирования
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Отзыв обновлен',
-            'data' => $review
+            'data'    => $review
         ]);
     }
-
-
-
 
 
     /**
@@ -1292,7 +1582,7 @@ class AgencyController extends Controller
     }
 
 
-        /**
+    /**
      * Одобрение комментария о товаре
      */
     public function approveProductComment($commentId)
@@ -1321,12 +1611,12 @@ class AgencyController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Комментарий одобрен',
-            'data' => $comment
+            'data'    => $comment
         ]);
     }
 
 
-        /**
+    /**
      * Обновление текста комментария о товаре
      */
     public function updateProductCommentContent(Request $request, $commentId)
@@ -1339,7 +1629,7 @@ class AgencyController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
@@ -1356,14 +1646,14 @@ class AgencyController extends Controller
 
         // Обновление
         $comment->update([
-            'content' => $request->content,
+            'content'   => $request->content,
             'edited_at' => now()
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Комментарий обновлен',
-            'data' => $comment
+            'data'    => $comment
         ]);
     }
 
@@ -1377,12 +1667,12 @@ class AgencyController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
         $review = ReviewsOrganization::find($reviewId);
-        
+
         if (!$review) {
             return response()->json([
                 'success' => false,
@@ -1396,11 +1686,11 @@ class AgencyController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Ответ организации сохранен',
-            'data' => $review
+            'data'    => $review
         ]);
     }
 
-    
+
     public function addProductCommentResponse(Request $request, $commentId)
     {
         $validator = Validator::make($request->all(), [
@@ -1410,12 +1700,12 @@ class AgencyController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
         $comment = CommentProduct::find($commentId);
-        
+
         if (!$comment) {
             return response()->json([
                 'success' => false,
@@ -1429,59 +1719,61 @@ class AgencyController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Ответ организации сохранен',
-            'data' => $comment
+            'data'    => $comment
         ]);
     }
 
-public static function organizationsCity(City $city, Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'name' => 'sometimes|string|max:255'
-    ]);
+    public static function organizationsCity(City $city, Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|string|max:255'
+        ]);
 
-    if ($validator->fails()) {
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        // Прямой запрос к организациям с фильтрацией по городу
+        $query = Organization::where('city_id', $city->id)
+            ->select('id', 'title', 'name_type', 'phone', 'status', 'adres', 'two_gis_link')
+            ->where('status', '1');
+
+        if ($request->has('name') && !empty($request->name)) {
+            $query->where('title', 'like', '%' . $request->name . '%');
+        }
+
+        $organizations = $query->get();
+
+        // Преобразуем все числовые ID в строки для корректной передачи в JSON
+        $organizations->transform(function ($org) {
+            return [
+                'id'           => (string)$org->id, // Преобразуем ID в строку
+                'title'        => $org->title,
+                'name_type'    => $org->name_type,
+                'phone'        => $org->phone,
+                'status'       => $org->status,
+                'adres'        => $org->adres,
+                'two_gis_link' => $org->two_gis_link
+            ];
+        });
+
         return response()->json([
-            'success' => false,
-            'message' => 'Ошибка валидации',
-            'errors' => $validator->errors()
-        ], 422);
+            'success'       => true,
+            'message'       => 'Организации успешно найдены',
+            'organizations' => $organizations,
+            'city'          => [
+                'id'    => (string)$city->id, // Также преобразуем ID города в строку
+                'title' => $city->title
+            ],
+        ]);
     }
 
-    // Прямой запрос к организациям с фильтрацией по городу
-    $query = Organization::where('city_id', $city->id)
-        ->select('id', 'title', 'name_type', 'phone', 'status', 'adres', 'two_gis_link')
-        ->where('status', '1');
-    
-    if ($request->has('name') && !empty($request->name)) {
-        $query->where('title', 'like', '%' . $request->name . '%');
-    }
-    
-    $organizations = $query->get();
-
-    // Преобразуем все числовые ID в строки для корректной передачи в JSON
-    $organizations->transform(function($org) {
-        return [
-            'id' => (string)$org->id, // Преобразуем ID в строку
-            'title' => $org->title,
-            'name_type' => $org->name_type,
-            'phone' => $org->phone,
-            'status' => $org->status,
-            'adres' => $org->adres,
-            'two_gis_link' => $org->two_gis_link
-        ];
-    });
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Организации успешно найдены',
-        'organizations' => $organizations,
-        'city' => [
-            'id' => (string)$city->id, // Также преобразуем ID города в строку
-            'title' => $city->title
-        ],
-    ]);
-}
-    public static function citySearch(Request $request){
+    public static function citySearch(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'city' => 'required|string|max:3000'
         ]);
@@ -1500,47 +1792,47 @@ public static function organizationsCity(City $city, Request $request)
         return response()->json([
             'success' => true,
             'message' => 'Города успешно найдены',
-            'cities' => $cities, // Теперь cities содержат только id и title
+            'cities'  => $cities, // Теперь cities содержат только id и title
         ]);
     }
 
-   public static function edgeSearch(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'edge' => 'nullable|string|max:3000'
-    ]);
+    public static function edgeSearch(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'edge' => 'nullable|string|max:3000'
+        ]);
 
-    if ($validator->fails()) {
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        $query = DB::table('edges')
+            ->select('edges.*')
+            ->where('edges.is_show', 1)
+            // Исключаем записи, где title содержит JSON-структуру
+            ->where(function ($q) {
+                $q->where('edges.title', 'not like', '{%')
+                    ->where('edges.title', 'not like', '{"%');
+            });
+
+        // Добавляем условие поиска только если edge не пустое
+        if (!empty($request->edge)) {
+            $query->where('edges.title', 'like', $request->edge . '%');
+        }
+
+        $edges = $query->orderBy('edges.title', 'asc')
+            ->get();
+
         return response()->json([
-            'success' => false,
-            'message' => 'Ошибка валидации',
-            'errors' => $validator->errors()
-        ], 422);
+            'success' => true,
+            'message' => 'Регионы успешно найдены',
+            'edges'   => $edges,
+        ]);
     }
-
-    $query = DB::table('edges')
-        ->select('edges.*')
-        ->where('edges.is_show', 1)
-        // Исключаем записи, где title содержит JSON-структуру
-        ->where(function($q) {
-            $q->where('edges.title', 'not like', '{%')
-              ->where('edges.title', 'not like', '{"%');
-        });
-
-    // Добавляем условие поиска только если edge не пустое
-    if (!empty($request->edge)) {
-        $query->where('edges.title', 'like', $request->edge . '%');
-    }
-
-    $edges = $query->orderBy('edges.title', 'asc')
-        ->get();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Регионы успешно найдены',
-        'edges' => $edges,
-    ]);
-}
 
     public function sendCode(Request $request)
     {
@@ -1551,10 +1843,10 @@ public static function organizationsCity(City $city, Request $request)
         $organization = Organization::find($request->organization_id);
         $code = generateRandomNumber(); // Генерация кода (например, 4-6 цифр)
 
-        if($organization->type_phone=='mobile'){
-            sendSms($organization->phone,$code);
-        }else{
-            $send_code=sendCode($organization->phone,$code);
+        if ($organization->type_phone == 'mobile') {
+            sendSms($organization->phone, $code);
+        } else {
+            $send_code = sendCode($organization->phone, $code);
         }
 
         // Сохраняем хеш кода в кеш (вместо куки) на 20 минут
@@ -1572,7 +1864,7 @@ public static function organizationsCity(City $city, Request $request)
     {
         $request->validate([
             'organization_id' => 'required|exists:organizations,id',
-            'code' => 'required|string|min:4|max:6',
+            'code'            => 'required|string|min:4|max:6',
         ]);
 
         $cacheKey = "verification_code:{$request->organization_id}";
@@ -1600,30 +1892,32 @@ public static function organizationsCity(City $city, Request $request)
     }
 
 
-    public static function userWallets(){
-        $wallets = auth()->user()->wallets; 
-    
+    public static function userWallets()
+    {
+        $wallets = auth()->user()->wallets;
+
         return response()->json([
             'success' => true,
             'message' => 'Кошельки успешно найдены',
             'wallets' => $wallets
         ]);
     }
-    
-    public static function deleteWallet(Wallet $wallet){
+
+    public static function deleteWallet(Wallet $wallet)
+    {
         $wallet->delete();
         return response()->json([
             'success' => true,
             'message' => 'Кошелек успешно удален',
         ]);
     }
-    
+
 
     public static function walletUpdateBalance(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'wallet_id' => 'required|exists:wallets,id',
-            'count' => 'required|integer|min:1',
+            'count'     => 'required|integer|min:1',
             'deep_link' => ['required', 'regex:/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\/.+/'] // Кастомная валидация для deep links
         ], [
             'deep_link.regex' => 'Значение поля deep link имеет ошибочный формат URL.'
@@ -1633,7 +1927,7 @@ public static function organizationsCity(City $city, Request $request)
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибка валидации',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
@@ -1641,7 +1935,7 @@ public static function organizationsCity(City $city, Request $request)
         $service = new YooMoneyService();
         $metadata = [
             'wallet_id' => $data['wallet_id'],
-            'count' => $data['count'],
+            'count'     => $data['count'],
             'deep_link' => $data['deep_link']
         ];
 
@@ -1654,9 +1948,9 @@ public static function organizationsCity(City $city, Request $request)
             );
 
             return response()->json([
-                'success' => true,
+                'success'     => true,
                 'payment_url' => $payment['confirmation_url'],
-                'payment_id' => $payment['id']
+                'payment_id'  => $payment['id']
             ]);
 
         } catch (\Exception $e) {
@@ -1671,7 +1965,7 @@ public static function organizationsCity(City $city, Request $request)
     {
         // Получаем активные типы заявок, доступные для покупки организациями
         $applicationTypes = TypeApplication::where('buy_for_organization', 1)
-            ->with(['typeService' => function($query) {
+            ->with(['typeService' => function ($query) {
                 $query->where('is_show', 1)
                     ->select('id', 'type_application_id', 'title', 'title_ru');
             }])
@@ -1683,8 +1977,8 @@ public static function organizationsCity(City $city, Request $request)
 
         foreach ($applicationTypes as $appType) {
             $typeData = [
-                'id' => $appType->id,
-                'title' => $appType->title,
+                'id'       => $appType->id,
+                'title'    => $appType->title,
                 'title_ru' => $appType->title_ru,
                 'services' => []
             ];
@@ -1696,10 +1990,10 @@ public static function organizationsCity(City $city, Request $request)
                     ->first();
 
                 $typeData['services'][] = [
-                    'id' => $service->id,
-                    'title' => $service->title,
-                    'title_ru' => $service->title_ru,
-                    'purchased_count' => $purchased ? $purchased->count : 0,
+                    'id'                => $service->id,
+                    'title'             => $service->title,
+                    'title_ru'          => $service->title_ru,
+                    'purchased_count'   => $purchased ? $purchased->count : 0,
                     'last_purchased_at' => $purchased ? $purchased->created_at->toDateTimeString() : null
                 ];
             }
@@ -1711,7 +2005,7 @@ public static function organizationsCity(City $city, Request $request)
 
         return response()->json([
             'success' => true,
-            'data' => $result
+            'data'    => $result
         ]);
     }
 
@@ -1719,7 +2013,7 @@ public static function organizationsCity(City $city, Request $request)
     public static function payApplication(Request $request)
     {
         $data = $request->validate([
-            'count' => ['required', 'integer', 'min:1'],
+            'count'           => ['required', 'integer', 'min:1'],
             'type_service_id' => ['required', 'exists:type_services,id']
         ]);
 
@@ -1739,7 +2033,7 @@ public static function organizationsCity(City $city, Request $request)
         DB::transaction(function () use ($user, $typeService, $data, $price, $description) {
             // Списание средств
             $balance = $user->currentWallet()->withdraw($price, [], $description);
-            
+
             // Обновление или создание счетчика заявок
             UserRequestsCount::updateOrCreate(
                 [
@@ -1747,30 +2041,30 @@ public static function organizationsCity(City $city, Request $request)
                     'type_service_id' => $typeService->id
                 ],
                 [
-                    'count' => DB::raw("count + {$data['count']}"),
+                    'count'               => DB::raw("count + {$data['count']}"),
                     'type_application_id' => $typeService->type_application_id
                 ]
             );
         });
 
         return response()->json([
-            'success' => true,
-            'message' => 'Заявки успешно приобретены',
-            'balance' => $user->currentWallet()->fresh()->balance,
+            'success'         => true,
+            'message'         => 'Заявки успешно приобретены',
+            'balance'         => $user->currentWallet()->fresh()->balance,
             'purchased_count' => $data['count']
         ]);
     }
 
 
-   public static function buyPriority(Request $request)
+    public static function buyPriority(Request $request)
     {
         $validated = $request->validate([
             'type_priority' => 'required|string|in:1',
-            'priority' => 'required|string|in:priority-list-companies-1-3,priority-list-companies-4-6'
+            'priority'      => 'required|string|in:priority-list-companies-1-3,priority-list-companies-4-6'
         ]);
 
         $user = auth()->user();
-        
+
         // Проверяем, есть ли у пользователя организация
         if (!$user->organization) {
             return response()->json([
@@ -1781,7 +2075,7 @@ public static function organizationsCity(City $city, Request $request)
 
         $organization = $user->organization(); // Без скобок!
         $typeService = getTypeService($validated['priority']);
-        
+
         // Проверяем, найден ли тип услуги
         if (!$typeService) {
             return response()->json([
@@ -1789,9 +2083,9 @@ public static function organizationsCity(City $city, Request $request)
                 'message' => 'Услуга не найдена'
             ], 400);
         }
-        
+
         $price = $typeService->price;
-        
+
         // Проверка баланса
         if (!$user->currentWallet()->hasSufficientBalance($price)) {
             return response()->json([
@@ -1801,7 +2095,7 @@ public static function organizationsCity(City $city, Request $request)
         }
 
         // Определение уровня приоритета
-        $priorityLevel = match($validated['priority']) {
+        $priorityLevel = match ($validated['priority']) {
             'priority-list-companies-1-3' => 1,
             'priority-list-companies-4-6' => 2,
             default => 0
@@ -1810,16 +2104,16 @@ public static function organizationsCity(City $city, Request $request)
         DB::transaction(function () use ($user, $organization, $price, $priorityLevel) {
             // Списание средств
             $user->currentWallet()->withdraw($price, [], 'Покупка приоритета организации');
-            
+
             // Обновление приоритета
             $organization->update(['priority' => $priorityLevel]);
         });
 
         return response()->json([
-            'success' => true,
-            'message' => 'Приоритет организации успешно обновлен',
+            'success'      => true,
+            'message'      => 'Приоритет организации успешно обновлен',
             'new_priority' => $priorityLevel,
-            'balance' => $user->currentWallet()->fresh()->balance
+            'balance'      => $user->currentWallet()->fresh()->balance
         ]);
     }
 
@@ -1828,10 +2122,10 @@ public static function organizationsCity(City $city, Request $request)
         return response()->json([
             'success' => true,
             'message' => 'Пользователь успешно найден',
-            'data' => $user
+            'data'    => $user
         ]);
     }
-    
+
 
     public function getMainCategories(): JsonResponse
     {
@@ -1839,11 +2133,11 @@ public static function organizationsCity(City $city, Request $request)
             $categories = CategoryProduct::whereNull('parent_id')
                 ->where('display', true)
                 ->orderBy('title')
-                ->get(['id', 'title', 'slug', ]);
+                ->get(['id', 'title', 'slug',]);
 
             return response()->json([
                 'success' => true,
-                'data' => $categories,
+                'data'    => $categories,
                 'message' => 'Основные категории успешно получены'
             ]);
 
@@ -1851,18 +2145,18 @@ public static function organizationsCity(City $city, Request $request)
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибка при получении категорий',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
 
-   
+
     public function getSubcategories(int $categoryId): JsonResponse
     {
         try {
             // Проверяем существование категории
             $mainCategory = CategoryProduct::find($categoryId);
-            
+
             if (!$mainCategory) {
                 return response()->json([
                     'success' => false,
@@ -1877,7 +2171,7 @@ public static function organizationsCity(City $city, Request $request)
 
             return response()->json([
                 'success' => true,
-                'data' => [
+                'data'    => [
                     'main_category' => $mainCategory->only(['id', 'title', 'slug']),
                     'subcategories' => $subcategories
                 ],
@@ -1888,169 +2182,169 @@ public static function organizationsCity(City $city, Request $request)
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибка при получении подкатегорий',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
 
-public function getCemeteries(Request $request): JsonResponse
-{
-    try {
-        $query = Cemetery::with([
-            'city' => function($q) {
-                $q->select('id', 'title', 'area_id');
-            },
-            'city.area' => function($q) {
-                $q->select('id', 'title', 'edge_id');
-            },
-            'city.area.edge' => function($q) {
-                $q->select('id', 'title');
-            }
-        ])->orderBy('priority');
+    public function getCemeteries(Request $request): JsonResponse
+    {
+        try {
+            $query = Cemetery::with([
+                'city'           => function ($q) {
+                    $q->select('id', 'title', 'area_id');
+                },
+                'city.area'      => function ($q) {
+                    $q->select('id', 'title', 'edge_id');
+                },
+                'city.area.edge' => function ($q) {
+                    $q->select('id', 'title');
+                }
+            ])->orderBy('priority');
 
-        // Проверяем существование сущностей для фильтров
-        if ($request->has('city_id') && $request->city_id) {
-            $cityExists = \App\Models\City::where('id', $request->city_id)->exists();
-            if (!$cityExists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Город с указанным ID не найден'
-                ], 404);
+            // Проверяем существование сущностей для фильтров
+            if ($request->has('city_id') && $request->city_id) {
+                $cityExists = \App\Models\City::where('id', $request->city_id)->exists();
+                if (!$cityExists) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Город с указанным ID не найден'
+                    ], 404);
+                }
+                $query->where('city_id', $request->city_id);
             }
-            $query->where('city_id', $request->city_id);
-        }
 
-        if ($request->has('area_id') && $request->area_id) {
-            $areaExists = \App\Models\Area::where('id', $request->area_id)->exists();
-            if (!$areaExists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Район с указанным ID не найден'
-                ], 404);
+            if ($request->has('area_id') && $request->area_id) {
+                $areaExists = \App\Models\Area::where('id', $request->area_id)->exists();
+                if (!$areaExists) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Район с указанным ID не найден'
+                    ], 404);
+                }
+                $query->whereHas('city', function ($q) use ($request) {
+                    $q->where('area_id', $request->area_id);
+                });
             }
-            $query->whereHas('city', function ($q) use ($request) {
-                $q->where('area_id', $request->area_id);
+
+            if ($request->has('edge_id') && $request->edge_id) {
+                $edgeExists = \App\Models\Edge::where('id', $request->edge_id)->exists();
+                if (!$edgeExists) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Край с указанным ID не найден'
+                    ], 404);
+                }
+                $query->whereHas('city.area', function ($q) use ($request) {
+                    $q->where('edge_id', $request->edge_id);
+                });
+            }
+
+            $cemeteries = $query->get();
+
+            // Преобразуем ID в строки для всей коллекции
+            $transformedCemeteries = $cemeteries->map(function ($cemetery) {
+                return [
+                    'id'       => (string)$cemetery->id,
+                    'title'    => $cemetery->title,
+                    'city_id'  => (string)$cemetery->city_id,
+                    'adres'    => $cemetery->adres,
+                    'priority' => $cemetery->priority,
+                    'city'     => $cemetery->city ? [
+                        'id'      => (string)$cemetery->city->id,
+                        'title'   => $cemetery->city->title,
+                        'area_id' => $cemetery->city->area_id ? (string)$cemetery->city->area_id : null,
+                        'area'    => $cemetery->city->area ? [
+                            'id'      => (string)$cemetery->city->area->id,
+                            'title'   => $cemetery->city->area->title,
+                            'edge_id' => $cemetery->city->area->edge_id ? (string)$cemetery->city->area->edge_id : null,
+                            'edge'    => $cemetery->city->area->edge ? [
+                                'id'    => (string)$cemetery->city->area->edge->id,
+                                'title' => $cemetery->city->area->edge->title,
+                            ] : null
+                        ] : null
+                    ] : null
+                ];
             });
-        }
 
-        if ($request->has('edge_id') && $request->edge_id) {
-            $edgeExists = \App\Models\Edge::where('id', $request->edge_id)->exists();
-            if (!$edgeExists) {
+            return response()->json([
+                'success' => true,
+                'data'    => $transformedCemeteries,
+                'filters' => $request->only(['city_id', 'area_id', 'edge_id']),
+                'count'   => $cemeteries->count(),
+                'message' => $cemeteries->count() > 0
+                    ? 'Кладбища успешно получены'
+                    : 'Кладбища не найдены по заданным фильтрам'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при получении кладбищ',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getCemetery(int $id): JsonResponse
+    {
+        try {
+            $cemetery = Cemetery::with([
+                'city'           => function ($q) {
+                    $q->select('id', 'title', 'area_id');
+                },
+                'city.area'      => function ($q) {
+                    $q->select('id', 'title', 'edge_id');
+                },
+                'city.area.edge' => function ($q) {
+                    $q->select('id', 'title');
+                }
+            ])->find($id);
+
+            if (!$cemetery) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Край с указанным ID не найден'
+                    'message' => 'Кладбище не найдено'
                 ], 404);
             }
-            $query->whereHas('city.area', function ($q) use ($request) {
-                $q->where('edge_id', $request->edge_id);
-            });
-        }
 
-        $cemeteries = $query->get();
-
-        // Преобразуем ID в строки для всей коллекции
-        $transformedCemeteries = $cemeteries->map(function ($cemetery) {
-            return [
-                'id' => (string)$cemetery->id,
-                'title' => $cemetery->title,
-                'city_id' => (string)$cemetery->city_id,
-                'adres' => $cemetery->adres,
+            // Создаем преобразованный массив вручную
+            $transformedCemetery = [
+                'id'       => (string)$cemetery->id,
+                'title'    => $cemetery->title,
+                'city_id'  => (string)$cemetery->city_id,
+                'adres'    => $cemetery->adres,
                 'priority' => $cemetery->priority,
-                'city' => $cemetery->city ? [
-                    'id' => (string)$cemetery->city->id,
-                    'title' => $cemetery->city->title,
+                'city'     => $cemetery->city ? [
+                    'id'      => (string)$cemetery->city->id,
+                    'title'   => $cemetery->city->title,
                     'area_id' => $cemetery->city->area_id ? (string)$cemetery->city->area_id : null,
-                    'area' => $cemetery->city->area ? [
-                        'id' => (string)$cemetery->city->area->id,
-                        'title' => $cemetery->city->area->title,
+                    'area'    => $cemetery->city->area ? [
+                        'id'      => (string)$cemetery->city->area->id,
+                        'title'   => $cemetery->city->area->title,
                         'edge_id' => $cemetery->city->area->edge_id ? (string)$cemetery->city->area->edge_id : null,
-                        'edge' => $cemetery->city->area->edge ? [
-                            'id' => (string)$cemetery->city->area->edge->id,
+                        'edge'    => $cemetery->city->area->edge ? [
+                            'id'    => (string)$cemetery->city->area->edge->id,
                             'title' => $cemetery->city->area->edge->title,
                         ] : null
                     ] : null
                 ] : null
             ];
-        });
 
-        return response()->json([
-            'success' => true,
-            'data' => $transformedCemeteries,
-            'filters' => $request->only(['city_id', 'area_id', 'edge_id']),
-            'count' => $cemeteries->count(),
-            'message' => $cemeteries->count() > 0 
-                ? 'Кладбища успешно получены' 
-                : 'Кладбища не найдены по заданным фильтрам'
-        ]);
+            return response()->json([
+                'success' => true,
+                'data'    => $transformedCemetery,
+                'message' => 'Информация о кладбище успешно получена'
+            ]);
 
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Ошибка при получении кладбищ',
-            'error' => $e->getMessage()
-        ], 500);
-    }
-}
-
-public function getCemetery(int $id): JsonResponse
-{
-    try {
-        $cemetery = Cemetery::with([
-            'city' => function($q) {
-                $q->select('id', 'title', 'area_id');
-            },
-            'city.area' => function($q) {
-                $q->select('id', 'title', 'edge_id');
-            },
-            'city.area.edge' => function($q) {
-                $q->select('id', 'title');
-            }
-        ])->find($id);
-
-        if (!$cemetery) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Кладбище не найдено'
-            ], 404);
+                'message' => 'Ошибка при получении информации о кладбище',
+                'error'   => $e->getMessage()
+            ], 500);
         }
-
-        // Создаем преобразованный массив вручную
-        $transformedCemetery = [
-            'id' => (string)$cemetery->id,
-            'title' => $cemetery->title,
-            'city_id' => (string)$cemetery->city_id,
-            'adres' => $cemetery->adres,
-            'priority' => $cemetery->priority,
-            'city' => $cemetery->city ? [
-                'id' => (string)$cemetery->city->id,
-                'title' => $cemetery->city->title,
-                'area_id' => $cemetery->city->area_id ? (string)$cemetery->city->area_id : null,
-                'area' => $cemetery->city->area ? [
-                    'id' => (string)$cemetery->city->area->id,
-                    'title' => $cemetery->city->area->title,
-                    'edge_id' => $cemetery->city->area->edge_id ? (string)$cemetery->city->area->edge_id : null,
-                    'edge' => $cemetery->city->area->edge ? [
-                        'id' => (string)$cemetery->city->area->edge->id,
-                        'title' => $cemetery->city->area->edge->title,
-                    ] : null
-                ] : null
-            ] : null
-        ];
-
-        return response()->json([
-            'success' => true,
-            'data' => $transformedCemetery,
-            'message' => 'Информация о кладбище успешно получена'
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Ошибка при получении информации о кладбище',
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
 
 
     public function changeOrganization(Request $request): JsonResponse
@@ -2061,7 +2355,7 @@ public function getCemetery(int $id): JsonResponse
             ]);
 
             $user = auth()->user();
-            
+
             // Проверяем, принадлежит ли организация пользователю
             $organization = Organization::where('id', $request->organization_id)
                 ->where('user_id', $user->id)
@@ -2080,8 +2374,8 @@ public function getCemetery(int $id): JsonResponse
             return response()->json([
                 'success' => true,
                 'message' => 'Организация успешно изменена',
-                'data' => [
-                    'organization_id' => (string)$user->organization_id,
+                'data'    => [
+                    'organization_id'   => (string)$user->organization_id,
                     'organization_name' => $organization->title
                 ]
             ]);
@@ -2090,23 +2384,23 @@ public function getCemetery(int $id): JsonResponse
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибка валидации',
-                'errors' => $e->errors()
+                'errors'  => $e->errors()
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибка при изменении организации',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
 
 
-   public function getUserOrganizations(): JsonResponse
+    public function getUserOrganizations(): JsonResponse
     {
         try {
             $user = auth()->user();
-            
+
             $organizations = Organization::where('user_id', $user->id)
                 ->orderBy('title')
                 ->get(['id', 'slug', 'title', 'created_at']);
@@ -2119,8 +2413,8 @@ public function getCemetery(int $id): JsonResponse
 
             return response()->json([
                 'success' => true,
-                'data' => $organizations,
-                'count' => $organizations->count(),
+                'data'    => $organizations,
+                'count'   => $organizations->count(),
                 'message' => 'Организации пользователя успешно получены'
             ]);
 
@@ -2128,7 +2422,7 @@ public function getCemetery(int $id): JsonResponse
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибка при получении организаций',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
@@ -2137,7 +2431,7 @@ public function getCemetery(int $id): JsonResponse
     {
         try {
             $user = auth()->user();
-            
+
             if (!$user->organization_id) {
                 return response()->json([
                     'success' => false,
@@ -2164,7 +2458,7 @@ public function getCemetery(int $id): JsonResponse
 
             return response()->json([
                 'success' => true,
-                'data' => $organization,
+                'data'    => $organization,
                 'message' => 'Текущая организация успешно получена'
             ]);
 
@@ -2172,32 +2466,154 @@ public function getCemetery(int $id): JsonResponse
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибка при получении организации',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
 
 
-    public static function users(){
+    public function getOrderProducts(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'organization_id' => 'required|string|exists:organizations,id',
+            'status'          => 'nullable|integer|in:0,1,2',
+            'category_id'     => 'nullable|integer|exists:category_products,id',
+            'page'            => 'nullable|integer|min:1',
+            'limit'           => 'nullable|integer|min:1|max:100'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        $user = auth()->user();
+        $organization = Organization::find($request->organization_id);
+
+        if (!$organization) {
+            return response()->json(['success' => false, 'message' => 'Организация не найдена'], 404);
+        }
+
+        if ($organization->user_id !== $user->id) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа'], 403);
+        }
+
+        $query = OrderProduct::query()
+            ->where('organization_id', $organization->id)
+            ->with([
+                'product',
+                'product.category',
+                'user',
+                'cemetery',
+                'mortuary'
+            ]);
+
+        if ($request->has('status') && $request->status !== null) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('category_id')) {
+            $query->whereHas('product', function ($q) use ($request) {
+                $q->where('category_id', $request->category_id)
+                    ->orWhere('category_parent_id', $request->category_id);
+            });
+        }
+
+        $query->orderBy('created_at', 'desc');
+
+        $limit = $request->limit ?? 10;
+        $orders = $query->paginate($limit);
+
+        $data = $orders->getCollection()->map(function ($order) {
+            return [
+                'id'               => $order->id,
+                'status'           => $order->status,
+                'status_text'      => match ($order->status) {
+                    0 => 'Новый',
+                    1 => 'В работе',
+                    2 => 'Архив',
+                    default => 'Неизвестно'
+                },
+                'count'            => $order->count,
+                'price'            => $order->price,
+                'all_price'        => $order->all_price,
+                'customer_comment' => $order->customer_comment,
+
+                'size'       => $order->size,
+                'additional' => $order->additional,
+                'date'       => $order->date,
+                'time'       => $order->time,
+
+                'city_from' => $order->city_from,
+                'city_to'   => $order->city_to,
+
+
+                'cemetery' => $order->cemetery ? [
+                    'id'    => $order->cemetery->id,
+                    'title' => $order->cemetery->title,
+                ] : null,
+
+
+                'mortuary' => $order->mortuary ? [
+                    'id'    => $order->mortuary->id,
+                    'title' => $order->mortuary->title,
+                ] : null,
+
+                'product' => [
+                    'id'       => $order->product->id,
+                    'title'    => $order->product->title,
+                    'slug'     => $order->product->slug,
+                    'category' => $order->product->category->title,
+                    'image'    => $order->product->getImages->first()->title ?? null,
+                ],
+
+                'user' => [
+                    'id'    => $order->user->id,
+                    'name'  => trim($order->user->surname . ' ' . $order->user->name . ' ' . $order->user->patronymic),
+                    'phone' => $order->user->phone,
+                    'email' => $order->user->email,
+                ],
+
+                'created_at' => $order->created_at->format('Y-m-d H:i'),
+            ];
+        });
+
+        return response()->json([
+            'success'    => true,
+            'data'       => $data,
+            'pagination' => [
+                'total'        => $orders->total(),
+                'current_page' => $orders->currentPage(),
+                'per_page'     => $orders->perPage(),
+                'last_page'    => $orders->lastPage(),
+            ]
+        ]);
+    }
+
+    public static function users()
+    {
         $users = auth()->user()->users()->with('organizationBranch')->get();
 
-        $formattedUsers = $users->map(function($user) {
+        $formattedUsers = $users->map(function ($user) {
             return [
-                'id' => $user->id,
-                'name' => $user->name,
-                'surname' => $user->surname,
-                'patronymic' => $user->patronymic,
-                'phone' => $user->phone,
-                'email' => $user->email,
+                'id'                => $user->id,
+                'name'              => $user->name,
+                'surname'           => $user->surname,
+                'patronymic'        => $user->patronymic,
+                'phone'             => $user->phone,
+                'email'             => $user->email,
                 'organization_name' => $user->organizationBranch->organization->title ?? null,
-                'branch_name' => $user->organizationBranch->title ?? null,
+                'branch_name'       => $user->organizationBranch->title ?? null,
             ];
         });
 
         return response()->json([
             'success' => true,
             'message' => 'Пользователи успешно получены',
-            'data' => $formattedUsers,
+            'data'    => $formattedUsers,
         ], 200);
     }
 
@@ -2206,10 +2622,10 @@ public function getCemetery(int $id): JsonResponse
         try {
             // Валидация
             $validator = Validator::make($request->all(), [
-                'surname' => 'required|string|max:255',
-                'name' => 'required|string|max:255',
-                'email' => 'nullable|email|unique:users',
-                'phone' => 'required|string',
+                'surname'                => 'required|string|max:255',
+                'name'                   => 'required|string|max:255',
+                'email'                  => 'nullable|email|unique:users',
+                'phone'                  => 'required|string',
                 'organization_id_branch' => 'nullable|exists:organizations,id'
             ]);
 
@@ -2217,18 +2633,18 @@ public function getCemetery(int $id): JsonResponse
                 return response()->json([
                     'success' => false,
                     'message' => 'Ошибка валидации',
-                    'errors' => $validator->errors()
+                    'errors'  => $validator->errors()
                 ], 422);
             }
 
             $users_phone = User::where('phone', normalizePhone($request->phone))->first();
-            if($users_phone != null){
+            if ($users_phone != null) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Пользователь с таким телефоном уже существует'
                 ], 422);
             }
-            
+
             $user = new User();
             $user->surname = $request->surname;
             $user->role = 'cashier';
@@ -2243,9 +2659,9 @@ public function getCemetery(int $id): JsonResponse
             return response()->json([
                 'success' => true,
                 'message' => 'Пользователь успешно создан',
-                'data' => $user
+                'data'    => $user
             ], 201);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -2266,13 +2682,13 @@ public function getCemetery(int $id): JsonResponse
 
         $organization_user = $user->organizationBranch;
         $organizations = auth()->user()->organizations;
-        
+
         return response()->json([
             'success' => true,
-            'data' => [
-                'user' => $user,
+            'data'    => [
+                'user'              => $user,
                 'organization_user' => $organization_user,
-                'organizations' => $organizations
+                'organizations'     => $organizations
             ]
         ]);
     }
@@ -2290,10 +2706,10 @@ public function getCemetery(int $id): JsonResponse
 
             // Валидация
             $validator = Validator::make($request->all(), [
-                'surname' => 'required|string|max:255',
-                'name' => 'required|string|max:255',
-                'email' => 'nullable|email|unique:users,email,' . $user->id,
-                'phone' => 'required|string|unique:users,phone,' . $user->id,
+                'surname'                => 'required|string|max:255',
+                'name'                   => 'required|string|max:255',
+                'email'                  => 'nullable|email|unique:users,email,' . $user->id,
+                'phone'                  => 'required|string|unique:users,phone,' . $user->id,
                 'organization_id_branch' => 'nullable|exists:organizations,id'
             ]);
 
@@ -2301,26 +2717,26 @@ public function getCemetery(int $id): JsonResponse
                 return response()->json([
                     'success' => false,
                     'message' => 'Ошибка валидации',
-                    'errors' => $validator->errors()
+                    'errors'  => $validator->errors()
                 ], 422);
             }
 
             $users_phone = User::where('phone', normalizePhone($request->phone))->first();
-            if($user->phone != $request->phone && $users_phone != null){
+            if ($user->phone != $request->phone && $users_phone != null) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Пользователь с таким телефоном уже существует'
                 ], 422);
             }
-            
+
             $user->update($request->all());
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Данные пользователя обновлены',
-                'data' => $user
+                'data'    => $user
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -2346,7 +2762,7 @@ public function getCemetery(int $id): JsonResponse
                 'success' => true,
                 'message' => 'Пользователь успешно удален'
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -2355,9 +2771,3 @@ public function getCemetery(int $id): JsonResponse
         }
     }
 }
-
-
-
-
-
-

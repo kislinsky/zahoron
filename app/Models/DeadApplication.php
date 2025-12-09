@@ -50,4 +50,18 @@ class DeadApplication extends Model
             }  
         }
     }
+
+
+      protected static function boot()
+    {
+        parent::boot();
+        
+        static::created(function ($beautification) {
+            
+        });
+        
+        static::updated(function ($beautification) {
+            
+        });
+    }
 }

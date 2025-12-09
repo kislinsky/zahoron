@@ -163,11 +163,7 @@ class OrderProductService
              
         }
         
-        sendMessage('soobshhenie-pri-zaiavke-pop-up-oblogorazivanie',['name'=>$user->name],$user);
-        sendMessage('sms-soobshhenie-pri-zaiavke-produkta',[],$product->organization);
-        sendMessage('email-soobshhenie-pri-zaiavke-produkta',[],$product->organization);
-        
-        $message='Ваш заказ успешно оформлен,вы можете оплатить его в личном кабинете';
+        $message='Ваш заказ успешно оформлен,ожидайте звонка менеджера';
         return redirect()->back()->with('message_order_burial',$message);
         
     }

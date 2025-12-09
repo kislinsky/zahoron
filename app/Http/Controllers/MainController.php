@@ -11,6 +11,7 @@ use App\Services\Page\IndexService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Artesaos\SEOTools\Facades\SEOTools;
 
 
 class MainController extends Controller
@@ -48,9 +49,13 @@ function generateUniqueCitySlug($baseSlug, $cityId)
 
 
     public static function contacts(){
+        
         $page=7;
+       SEOTools::setTitle(formatContent(getSeo('page-kontakty','title')));
+        SEOTools::setDescription(formatContent(getSeo('page-kontakty','description')));
+        $title_h1=formatContent(getSeo('page-kontakty','h1'));
         $faqs=Faq::orderBy('id', 'desc')->get();
-        return view('contacts',compact('faqs','page'));
+        return view('contacts',compact('faqs','page','title_h1'));
     }
    
     public static function termsIUser(){
@@ -97,7 +102,12 @@ function generateUniqueCitySlug($baseSlug, $cityId)
             'g-recaptcha-response' => ['required', new RecaptchaRule],
             'theme_feedback' => 'required|string|max:255',
             'faq_feedback' => 'required|string|min:10',
-            'name_feedback' => 'required|string|max:255',
+            'name_feedback' => [
+            'required',
+            'string',
+            'max:255',
+            'regex:/^[а-яА-ЯёЁ\s]+$/u'  // только русские буквы и пробелы
+            ],
             'phone_feedback' => 'required|string|max:20'
         ]);
         return IndexService::store($data);

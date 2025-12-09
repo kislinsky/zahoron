@@ -3,7 +3,7 @@
 <section class="order_page bac_gray">
     <div class="container">
         <div class="content_order_page">
-            <h1 class="index_title">Блог</h1>    
+            <h1 class="index_title">{!! $title_h1 !!}</h1>    
         </div>
         <img class='img_light_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1 (1).svg')}}" alt="">
         <img class='img_black_theme rose_order_page'src="{{asset('storage/uploads/rose-with-stem 1_black.svg')}}" alt="">        
@@ -26,7 +26,7 @@
                         @foreach ($news as $news_one )
                             <div class="li_news">
                                 <img src="{{asset('storage/'. $news_one->img )}}" alt="">
-                                <a href='{{ route('news.single',$news_one->slug) }}' class="title_news">{{ $news_one->title }}</a>
+                                <a href='{{ route('news.single',$news_one->slug) }}' class="title_news">{{ formatContent($news_one->title) }}</a>
                                 <div class="text_li">{{ $news_one->created_at->format('d.m.Y') }}</div>
                             </div>
                         @endforeach

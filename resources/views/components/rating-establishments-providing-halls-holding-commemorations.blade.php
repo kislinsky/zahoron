@@ -30,11 +30,11 @@ $organizations2 = Organization::whereIn('id', $organizationIds2)->get()->keyBy('
                         @if($organization)
                             <tr>
                                 <td class='name_organization'>
-                                    @if($organization->urlImg() == 'default')
+                                    @if($organization->urlImgMain() == 'default')
                                         <img class='white_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[0]}}" alt="">   
                                         <img class='black_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[1]}}" alt="">   
                                     @else
-                                        <img src="{{$organization->urlImg()}}" alt="">   
+                                        <img class='img_logo_organization' src="{{$organization->urlImgMain()}}" alt="">   
                                     @endif
                                     <a href='{{$organization->route()}}' class="title_organization">{{$organization->name_type}}: 
                                         "{{$organization->title}}"
@@ -61,7 +61,14 @@ $organizations2 = Organization::whereIn('id', $organizationIds2)->get()->keyBy('
                                                 </a>
                                             @endif
                                         @else
-                                            {{ $sorted_organization->priceHtml() }}
+                                            <a href='javascript:void(0)' class="mgo-call-button price-link" 
+                                                data-key="{{ 1 }}"
+                                                data-org-id="{{ $organization->id }}"
+                                                data-phone="{{ str_replace('+', '', $organization->phone) }}"
+                                                data-default-number="{{ $organization->phone }}"
+                                                data-calls="{{ $organization->haveCalls() }}">
+                                                {{ $sorted_organization->priceHtml() }}
+                                             </a>
                                         @endif
                                         р
                                     </div>

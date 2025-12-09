@@ -24,8 +24,6 @@ class FuneralServiceService {
                 return redirect()->back()->with('error','Пользователь с таким номером телефона уже существует, войдите в аккаунт.');
             }
         }
-
-        $time=60*30;
         $time_now=convertToCarbon($data['time_now']);
 
         if($data['funeral_service']==1){
@@ -83,25 +81,7 @@ class FuneralServiceService {
             $funeral_service->update([
                 'farewell_hall'=>1,
             ]);
-        }
-        if(isset($data['call_time'])){
-            if($data['call_time']!=null){
-                $funeral_service->update(['call_time'=>$data['call_time']]);
-                $time=secondsUntilAM($data['call_time'],$time_now);
-
-            }
-        }
-        if(isset($data['call_tomorrow'])){
-            $d = strtotime("+1 day");
-            $funeral_service->update(['call_time'=>date("d.m.Y", $d)]);
-            $time=secondsUntilEndOfTomorrow($time_now);
-
-        }
-        
-        sendMessage('soobshhenie-pri-zaiavke-pop-up-ritualnye-uslugi',[],$user);
-        sendMessagesOrganizations(selectCity()->organizations,'sms-soobshhenie-dlia-organizacii-pri-zaiavke-rit-uslug','email-soobshhenie-dlia-organizacii-pri-zaiavke-rit-uslug');
-
-        CloseApplicationJob::dispatch($funeral_service)->delay($time);
+        }            
 
         return redirect()->back()->with("message_words_memory", 'Заявка отправлена');
            

@@ -27,9 +27,10 @@
                 </div>
                 <div class="grid_btn">
                     @if(versionProject())
-                        <a href='{{route('organizations.category','organizacia-pohoron')}}' class="blue_btn border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('organizacia-pohoron')}} руб.</a>
+
+                       <div class="blue_btn open_funeral_arrangements border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('organizacia-pohoron')}} руб.</div> 
                     @else
-                        <div class="blue_btn open_funeral_arrangements border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('organizacia-pohoron')}} руб.</div>
+                       <div class="blue_btn open_funeral_arrangements border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('organizacia-pohoron')}} руб.</div> 
                     @endif
                     <a href='{{route('organizations.category','organizacia-pohoron')}}'class="gray_btn">Каталог</A>
                 </div>
@@ -47,7 +48,8 @@
                     @if(versionProject())
                         <a href='{{route('organizations.category','podgotovka-otpravki-gruza-200')}}' class="blue_btn border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('podgotovka-otpravki-gruza-200')}} руб.</a>
                     @else
-                        <div class="blue_btn open_funeral_arrangements border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('podgotovka-otpravki-gruza-200')}} руб.</div>
+                     <a href='{{route('organizations.category','podgotovka-otpravki-gruza-200')}}' class="blue_btn border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('podgotovka-otpravki-gruza-200')}} руб.</a>
+                        <!-- <div class="blue_btn open_funeral_arrangements border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('podgotovka-otpravki-gruza-200')}} руб.</div> -->
                     @endif
                     <a href='{{route('organizations.category','podgotovka-otpravki-gruza-200')}}'class="gray_btn">Каталог</A>
                 </div>

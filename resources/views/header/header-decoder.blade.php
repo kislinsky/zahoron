@@ -11,6 +11,7 @@
 
         <title>Главная</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="icon" type="image/x-icon" href="{{ asset('storage/uploads/favicon.ico') }}">
 
         <!-- Fonts -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"

@@ -26,7 +26,7 @@
         </div>
         <img src="{{ asset('storage/uploads/Закрыть.svg') }}" class="btn_add_children_cat">
     </div>
-    
+
     <div class="ul_info_settings_organization cats_organization">
         @foreach ($categories_organization as $category_organization)
             <div class="li_cemetery_agent">
@@ -38,13 +38,13 @@
             </div>
         @endforeach
     </div>
-    
+
 </div>
 
 
 <div class="block_inpit_form_search">
     <div class="title_middle">Дополнительные условия</div>
-    
+
     <label class='flex_input_checkbox '>
         <label class="switch">
             <input type="checkbox" name='available_installments' value='1' <?php if($organization->available_installments=='1'){ echo'checked';}?>>
@@ -79,7 +79,7 @@
     @foreach($categories_organization as $category_organization)
         <div class="block_input">
             <label for="">{{  $category_organization->categoryProduct->title ?? 'Default Title' }}</label>
-            <input type="text" name='price_cats_organization[]' value='{{$category_organization->price}}'>
+            <input type="text" placeholder="{{ __('Укажите минимальную стоимость') }}" name='price_cats_organization[]' value='{{$category_organization->price}}'>
         </div>
     @endforeach
 </div>
@@ -91,7 +91,7 @@
         let id=$(this).siblings('.select').children('select').children('option:checked').val()
         $('.ul_price_organizations_settings').append("<div class='block_input'><label >"+title_cat+"</label><input type='text' name='price_cats_organization[]' ></div>")
         $('.cats_organization').append("<div class='li_cemetery_agent'><div class='mini_flex_li_product'><input type='hidden' value='"+ id +"' name='categories_organization[]'><div class='title_label'>"+ title_cat +"</div></div><div  class='delete_cart delete_organization'><img src='{{asset('storage/uploads/Закрыть (1).svg')}}'' ></div></div>")
-    
+
     })
     $('.delete_cat_organization').on('click',function() {
         let title_cat=$(this).siblings('.mini_flex_li_product').children('.title_label').html()
@@ -102,7 +102,7 @@
         });
         $(this).parent('.li_cemetery_agent').remove()
     })
-    
+
 
     $('select[name="cat"]').on( "change", function() {
         let cat_id=$(this).children('option:checked').val()
@@ -113,7 +113,7 @@
                 "_token": "{{ csrf_token() }}",
                 'cat_id': cat_id,
             }, success: function (result) {
-                
+
                 $('select[name="cat_children"]').html(result)
             },
             error: function () {

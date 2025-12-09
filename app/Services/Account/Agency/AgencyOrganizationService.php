@@ -30,7 +30,7 @@ class AgencyOrganizationService {
         if($organization->cemetery_ids!=null){
             $cemeteries=Cemetery::whereIn('id',array_filter(explode(',',$organization->cemetery_ids)))->get();
         }
-        
+
         $categories=CategoryProduct::where('parent_id',null)->get();
         $categories_children=childrenCategoryProducts($categories[0]);
         $categories_organization=ActivityCategoryOrganization::where('organization_id',$organization->id)->get();
@@ -49,48 +49,55 @@ class AgencyOrganizationService {
         $categories_children=childrenCategoryProducts($categories[0]);
         return view('account.agency.organization.create',compact('cemeteries','categories_children','categories'));
 
-    } 
+    }
 
-    public static function create($data){
-
+    public static function create($data)
+    {
         if (isset($data['cemetery_ids']) && is_array($data['cemetery_ids'])) {
             $data['cemetery_ids'] = implode(",", $data['cemetery_ids']) . ',';
         }
 
+        if (isset($data['img']) && $data['img']) {
+            $directory = 'uploads_organization';
+            $filename = generateRandomString() . ".jpeg";
+            $data['img']->storeAs($directory, $filename, "public");
+            $path_img = $directory . '/' . $filename;
+        }
 
-        $filename=generateRandomString().".jpeg";
-        $data['img']->storeAs("uploads_organization", $filename, "public");
-        
-        $filename_main=generateRandomString().".jpeg";
-        $data['img_main']->storeAs("uploads_organization", $filename, "public");
+        if (isset($data['img_main']) && $data['img_main']) {
+            $directory = 'uploads_organization';
+            $filename_main = generateRandomString() . ".jpeg";
+            $data['img_main']->storeAs($directory, $filename_main, "public");
+            $path_img_main = $directory . '/' . $filename_main;
+        }
 
         // Создаем организацию
         $organization = Organization::create([
-            'title' => $data['title'],
-            'status'=>0,
-            'content' => $data['content'],
-            'cemetery_ids' => $data['cemetery_ids'],
-            'phone' => $data['phone'],
-            'telegram' => $data['telegram'],
-            'user_id'=>user()->id,
-            'img_file'=>'uploads_organization/'.$filename,
-            'img_main_file'=>'uploads_organization/'.$filename_main,
-            'whatsapp' => $data['whatsapp'],
-            'email' => $data['email'],
-            'city_id' => $data['city_id'],
-            'slug'=>slugOrganization($data['title']),
-            'next_to' => $data['next_to'],
-            'underground' => $data['underground'],
-            'adres' => $data['adres'],
-            'width' => $data['width'],
-            'longitude' => $data['longitude'],
+            'title'                  => $data['title'],
+            'status'                 => 0,
+            'content'                => $data['content'],
+            'cemetery_ids'           => $data['cemetery_ids'],
+            'phone'                  => $data['phone'],
+            'telegram'               => $data['telegram'],
+            'user_id'                => user()->id,
+            'img_file'               => $path_img ?? NULL,
+            'img_main_file'          => $path_img_main ?? NULL,
+            'whatsapp'               => $data['whatsapp'],
+            'email'                  => $data['email'],
+            'city_id'                => $data['city_id'],
+            'slug'                   => slugOrganization($data['title']),
+            'next_to'                => $data['next_to'],
+            'underground'            => $data['underground'],
+            'adres'                  => $data['adres'],
+            'width'                  => $data['width'],
+            'longitude'              => $data['longitude'],
             'available_installments' => $data['available_installments'] ?? false,
-            'found_cheaper' => $data['found_cheaper'] ?? false,
-            'state_compensation' => $data['state_compensation'] ?? false,
+            'found_cheaper'          => $data['found_cheaper'] ?? false,
+            'state_compensation'     => $data['state_compensation'] ?? false,
         ]);
 
 
-        
+
         // Создаем связи с категориями
         if (isset($data['categories_organization']) && isset($data['price_cats_organization'])) {
             foreach ($data['categories_organization'] as $key => $category_organization) {
@@ -144,7 +151,7 @@ class AgencyOrganizationService {
             }else{
                 return redirect()->back()->with('error','Превышено допустимое количество файлов');
             }
-            
+
         }
 
         return redirect()->route('home')->with('message_cart', 'Организация отправлена на модерацию');
@@ -172,27 +179,25 @@ class AgencyOrganizationService {
             'adres'=>$data['adres'],
             'width'=>$data['width'],
             'longitude'=>$data['longitude'],
-        
         ]);
 
-        if(isset($data['img'])){
-            $filename=generateRandomString().".jpeg";
+        if (isset($data['img']) && $data['img']) {
+            $filename = generateRandomString() . ".jpeg";
             $data['img']->storeAs("uploads_organization", $filename, "public");
             $organization->update([
-                'img_file'=>'uploads_organization/'.$filename,
-                'href_img'=>0,
+                'img_file' => 'uploads_organization/' . $filename,
+                'href_img' => 0,
             ]);
         }
 
-        if(isset($data['img_main'])){
-            $filename_main=generateRandomString().".jpeg";
-            $data['img']->storeAs("uploads_organization", $filename_main, "public");
+        if (isset($data['img_main']) && $data['img_main']) {
+            $filename_main = generateRandomString() . ".jpeg";
+            $data['img_main']->storeAs("uploads_organization", $filename_main, "public");
             $organization->update([
-                'img_main_file'=>'uploads_organization/'.$filename_main,
-                'href_main_img'=>0,
+                'img_main_file' => 'uploads_organization/' . $filename_main,
+                'href_main_img' => 0,
 
             ]);
-
         }
 
 
@@ -209,7 +214,7 @@ class AgencyOrganizationService {
                 ]);
             }
         }
-      
+
 
         WorkingHoursOrganization::where('organization_id',$organization->id)->delete();
 
@@ -226,10 +231,10 @@ class AgencyOrganizationService {
         if(isset($data['holiday_day'])){
             $holidays=$data['holiday_day'];
         }
-        
+
         $working_days=$data['working_day'];
         foreach($days as $key=>$day){
-            
+
             if(in_array($day,$holidays)){
                 $workings_hours=WorkingHoursOrganization::create([
                     'day'=>$day,
@@ -267,8 +272,8 @@ class AgencyOrganizationService {
                 'found_cheaper'=>1
             ]);
         }
-        
-        
+
+
 
         if(!isset($data['state_compensation'])){
             $organization->update([
@@ -287,13 +292,13 @@ class AgencyOrganizationService {
                 foreach ($organization->images as $image) {
                     $image->delete();
                 }
-        
+
                 foreach ($data['images'] as $image) {
                     if ($image instanceof \Illuminate\Http\UploadedFile) {
                         // Если это файл, сохраняем его на сервер
                         $filename = uniqid() . '.' . $image->getClientOriginalExtension();
                         $path = $image->storeAs('uploads_organization', $filename, 'public');
-        
+
                         ImageOrganization::create([
                             'img_file' => $path, // Путь к файлу
                             'href_img' => 0, // 0 означает, что это файл
@@ -304,10 +309,10 @@ class AgencyOrganizationService {
                         $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $image));
                         $filename = uniqid() . '.jpg'; // Предполагаем формат JPEG
                         $path = 'uploads_organization/' . $filename;
-        
+
                         // Сохраняем файл на сервер
                         file_put_contents(public_path('storage/' . $path), $imageData);
-        
+
                         ImageOrganization::create([
                             'img_file' => $path, // Путь к файлу
                             'href_img' => 0, // 0 означает, что это файл
@@ -349,7 +354,7 @@ class AgencyOrganizationService {
         }
         return view('account.agency.organization.add-organization',compact('organizations','city','s'));
     }
-    
+
 
 
     public static function aplications(){
@@ -380,13 +385,13 @@ class AgencyOrganizationService {
     }
 
 
-    public static function addProduct(){  
+    public static function addProduct(){
         $categories=CategoryProduct::where('parent_id',null)->get();
         $categories_children=childrenCategoryProducts($categories[0]);
         return view('account.agency.organization.product.add-product',compact('categories','categories_children'));
     }
 
-    public static function allProducts($data){  
+    public static function allProducts($data){
         $city=selectCity();
         $categories=CategoryProduct::where('parent_id',null)->get();
         $categories_children=childrenCategoryProducts($categories[0]);
@@ -448,7 +453,7 @@ class AgencyOrganizationService {
     }
 
     public static function createProduct($data){
-        
+
         $organization=user()->organization();
 
         $slug=slugCheckProduct(slug($data['title']));
@@ -504,19 +509,19 @@ class AgencyOrganizationService {
                     ]);
                 }
             }
-            
+
         }
-        
+
         elseif($cat->type=='organization-commemorations'){
             if(isset($data['width'])){
                 $product->update([
                     'location_width'=>$data['width']
-                ]);  
+                ]);
             }
             if(isset($data['longitude'])){
                 $product->update([
                     'location_longitude'=>$data['longitude']
-                ]);  
+                ]);
             }
             if(isset($data['menus'])){
                 foreach(explode('|',$data['menus']) as $menu_item){
@@ -544,13 +549,14 @@ class AgencyOrganizationService {
             }else{
                 return redirect()->back()->with('error','Превышено допустимое количество файлов');
             }
-            
+
         }
         return redirect()->back()->with('message_cart','Товар успешно добавлен');
     }
 
     public static function reviewsOrganization(){
         $organization=user()->organization();
+        deleteNotifications('review',null,$organization->id);
         $reviews=collect();
         if($organization!=null){
             $reviews=ReviewsOrganization::orderBy('id','desc')->where('organization_id',$organization->id)->paginate(10);
@@ -560,10 +566,11 @@ class AgencyOrganizationService {
 
     public static function reviewsProduct(){
         $organization=user()->organization();
+        deleteNotifications('comment',null,$organization->id);
         $reviews=collect();
         if($organization!=null){
             $reviews=CommentProduct::orderBy('id','desc')->where('organization_id',$organization->id)->paginate(10);
-        }   
+        }
         return view('account.agency.organization.reviews.reviews-product',compact('reviews'));
     }
 
@@ -572,7 +579,6 @@ class AgencyOrganizationService {
         $review=ReviewsOrganization::find($id);
         $organization=$review->organization();
         $review->delete();
-        $organization->updateRating();
         return redirect()->back()->with('message_cart','Отзыв успешно удален');
 
     }
@@ -583,7 +589,7 @@ class AgencyOrganizationService {
         return redirect()->back()->with('message_cart','Отзыв успешно удален');
 
     }
-    
+
 
     public static function reviewOrganizationAccept($id){
         $review=ReviewsOrganization::find($id);
@@ -623,6 +629,7 @@ class AgencyOrganizationService {
 
     public static function ordersNew(){
         $organization=user()->organization();
+        deleteNotifications('order_product',null,$organization->id);
         $orders=collect();
         if($organization!=null){
             $orders=$organization->ordersNew;
@@ -676,10 +683,11 @@ class AgencyOrganizationService {
         $description="Покупка заявок {$type_service->title_ru}";
 
         $balance=user()->currentWallet()->withdraw($price,[],$description);
+
         if($balance==false){
             return redirect()->back()->with('error','Недостаточно средств на балансе');
         }
-        
+
         $count_requests=UserRequestsCount::where('organization_id',user()->organization()->id)->where('type_service_id',$type_service->id)->get();
         if(isset($count_requests[0])){
              $count_requests->first()->update(['count'=>$count_requests->first()->count+$count]);
@@ -692,10 +700,10 @@ class AgencyOrganizationService {
             ]);
         }
 
-        return redirect()->back()->with('message_cart','Заявки успешно куплены'); 
+        return redirect()->back()->with('message_cart','Заявки успешно куплены');
 
 
-        
+
     }
 
     public static function pageBuyPriority(){
@@ -722,7 +730,7 @@ class AgencyOrganizationService {
             return redirect()->back()->with('message_cart','Ваш приоритет обновлен');
         }
     }
-    
+
 
     public static function wallets(){
         $wallets=user()->wallets;
@@ -732,15 +740,27 @@ class AgencyOrganizationService {
     public static function walletDelete($wallet){
         if($wallet->user_id==user()->id){
             $wallet->delete();
-            return redirect()->back()->with('message_cart','Кошелек успешно удален'); 
+            return redirect()->back()->with('message_cart','Кошелек успешно удален');
         }
-        return redirect()->back()->with('error','Кошелек не принадлежит вам'); 
+        return redirect()->back()->with('error','Кошелек не принадлежит вам');
     }
 
-    public static function walletUpdateBalance($data){
-        $data['type']='wallet_update';
-        $object=new YooMoneyService();
-        return $object->createPayment($data['count'],route('account.agency.organization.wallets'),'Пополнение баланса',$data);
+   public static function walletUpdateBalance($data){
+        $data['type'] = 'wallet_update';
+        $object = new YooMoneyService();
+        
+        // Проверяем, есть ли контакт в данных пользователя
+        $email =  auth()->user()->email ;
+        $phone = auth()->user()->phone;
+        
+        return $object->createPayment(
+            $data['count'],
+            route('account.agency.organization.wallets'),
+            'Пополнение баланса',
+            $data,
+            $email,
+            $phone
+        );
     }
 
 
@@ -749,38 +769,38 @@ class AgencyOrganizationService {
         $organization=user()->organization();
         // Получаем статистику через модель
         $calls = Organization::getCallStats($data);
-        
+
         if ($request->ajax()) {
         $html = view('account.agency.components.calls.calls_table_body', compact('calls'))->render();
         $pagination = $calls->appends($request->except('page'))->links()->toHtml();
-        
+
         return response()->json([
             'success' => true,
             'html' => $html,
             'pagination' => $pagination
         ]);
     }
-    
+
         return view('account.agency.organization.calls.stats', compact('calls','organization'));
     }
 
 public static function sessions()
 {
     $entityId = auth()->user()->organization_id;
-    
+
     $statistics = self::getSessionStatistics($entityId);
     $chartData = self::getChartData($entityId);
-    
+
     // Получаем статистику по товарам
     $productStatistics = self::getProductStatistics($entityId);
     $productChartData = self::getProductChartData($entityId);
-    
+
     // Получаем все данные просмотров для передачи в JS
     $views = self::getAllViewsData($entityId);
-    
+
     return view('account.agency.organization.statistics.sessions', compact(
-        'statistics', 
-        'chartData', 
+        'statistics',
+        'chartData',
         'views',
         'productStatistics',
         'productChartData'
@@ -791,7 +811,7 @@ public static function sessions()
     {
         $now = Carbon::now();
         $startDate = $now->copy()->subYear()->startOfMonth();
-        
+
         return DB::table('views')
             ->where('entity_type', 'organization')
             ->where('entity_id', $entityId)
@@ -801,7 +821,7 @@ public static function sessions()
                 'created_at',
                 'updated_at',
                 'entity_type',
-                'entity_id', 
+                'entity_id',
                 'user_id',
                 'session_id',
                 'timestamp',
@@ -819,7 +839,7 @@ public static function sessions()
     {
         $now = Carbon::now();
         $startDate = $now->copy()->subYear()->startOfMonth();
-        
+
         $monthlyData = DB::table('views')
             ->where('entity_type', 'organization')
             ->where('entity_id', $entityId)
@@ -839,19 +859,19 @@ public static function sessions()
         $labels = [];
         $totalViews = [];
         $uniqueViews = [];
-        
+
         $currentDate = $startDate->copy();
-        
+
         for ($i = 0; $i < 12; $i++) {
             $labels[] = self::getMonthName($currentDate->month);
-            
+
             $monthData = $monthlyData->first(function ($item) use ($currentDate) {
                 return $item->year == $currentDate->year && $item->month == $currentDate->month;
             });
-            
+
             $totalViews[] = $monthData ? $monthData->total_views : 0;
             $uniqueViews[] = $monthData ? $monthData->unique_views : 0;
-            
+
             $currentDate->addMonth();
         }
 
@@ -865,18 +885,18 @@ public static function sessions()
     private static function getMonthName($monthNumber)
     {
         $months = [
-            1 => 'Янв', 2 => 'Фев', 3 => 'Март', 4 => 'Апр', 
+            1 => 'Янв', 2 => 'Фев', 3 => 'Март', 4 => 'Апр',
             5 => 'Май', 6 => 'Июнь', 7 => 'Июль', 8 => 'Авг',
             9 => 'Сен', 10 => 'Окт', 11 => 'Ноя', 12 => 'Дек'
         ];
-        
+
         return $months[$monthNumber] ?? '';
     }
 
     private static function getSessionStatistics($entityId)
     {
         $now = Carbon::now();
-        
+
         return [
             'year' => self::getPeriodStatistics($entityId, $now->copy()->subYear(), $now),
             'month' => self::getPeriodStatistics($entityId, $now->copy()->subMonth(), $now),
@@ -895,7 +915,7 @@ public static function sessions()
 
         $previousStart = $startDate->copy()->sub($endDate->diff($startDate));
         $previousEnd = $startDate;
-        
+
         $previousCount = DB::table('views')
             ->where('entity_type', 'organization')
             ->where('entity_id', $entityId)
@@ -903,7 +923,7 @@ public static function sessions()
             ->count();
 
         $percentageChange = self::calculatePercentageChange($previousCount, $currentCount);
-        
+
         return [
             'count' => $currentCount,
             'percentage' => $percentageChange,
@@ -916,14 +936,14 @@ public static function sessions()
         if ($previous == 0) {
             return $current > 0 ? 100 : 0;
         }
-        
+
         return round((($current - $previous) / $previous) * 100, 1);
     }
 
     private static function getProductStatistics($organizationId)
 {
     $now = Carbon::now();
-    
+
     return [
         'year' => self::getProductPeriodStatistics($organizationId, $now->copy()->subYear(), $now),
         'month' => self::getProductPeriodStatistics($organizationId, $now->copy()->subMonth(), $now),
@@ -956,7 +976,7 @@ private static function getProductPeriodStatistics($organizationId, $startDate, 
 
     $previousStart = $startDate->copy()->sub($endDate->diff($startDate));
     $previousEnd = $startDate;
-    
+
     $previousCount = DB::table('views')
         ->where('entity_type', 'product')
         ->whereIn('entity_id', $productIds)
@@ -964,7 +984,7 @@ private static function getProductPeriodStatistics($organizationId, $startDate, 
         ->count();
 
     $percentageChange = self::calculatePercentageChange($previousCount, $currentCount);
-    
+
     return [
         'count' => $currentCount,
         'percentage' => $percentageChange,
@@ -976,7 +996,7 @@ private static function getProductChartData($organizationId)
 {
     $now = Carbon::now();
     $startDate = $now->copy()->subYear()->startOfMonth();
-    
+
     // Получаем ID всех товаров организации
     $productIds = DB::table('products')
         ->where('organization_id', $organizationId)
@@ -1011,19 +1031,19 @@ private static function getProductChartData($organizationId)
     $labels = [];
     $totalViews = [];
     $uniqueViews = [];
-    
+
     $currentDate = $startDate->copy();
-    
+
     for ($i = 0; $i < 12; $i++) {
         $labels[] = self::getMonthName($currentDate->month);
-        
+
         $monthData = $monthlyData->first(function ($item) use ($currentDate) {
             return $item->year == $currentDate->year && $item->month == $currentDate->month;
         });
-        
+
         $totalViews[] = $monthData ? $monthData->total_views : 0;
         $uniqueViews[] = $monthData ? $monthData->unique_views : 0;
-        
+
         $currentDate->addMonth();
     }
 
@@ -1038,12 +1058,12 @@ private static function generateMonthLabels($startDate)
 {
     $labels = [];
     $currentDate = $startDate->copy();
-    
+
     for ($i = 0; $i < 12; $i++) {
         $labels[] = self::getMonthName($currentDate->month);
         $currentDate->addMonth();
     }
-    
+
     return $labels;
 }
 }

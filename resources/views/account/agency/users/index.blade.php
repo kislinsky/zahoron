@@ -49,7 +49,7 @@
                             <select class="form-select" name="organization_id_branch" style="border-color: #e0e0e0;">
                                 <option value="">Выберите организацию</option>
                                 @foreach($organizations as $org)
-                                    <option value="{{ $org->id }}">{{ $org->title }}</option>
+                                    <option value="{{ $org->id }}">{{ $org->title }}-{{ $org->adres }}</option>
                                 @endforeach
                             </select>
                         </div>

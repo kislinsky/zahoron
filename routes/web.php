@@ -96,15 +96,15 @@ use Illuminate\Support\Facades\Storage;
 */
 
 
-#убирать die когда нужно использовать artisan 
+#убирать die когда нужно использовать artisan
 $city = selectCity()->slug; // Более безопасный и понятный способ получить первый сегмент URL
 
 // if($city!='livewire' && $city!='api' ){
-//     if (!request()->is('storage/*') && !request()->is('css/*') && !request()->is('js/*') && !request()->is('admin/*') && !request()->is('livewire/*') && !request()->is('filament*') && $city!='admin' ) {    
+//     if (!request()->is('storage/*') && !request()->is('css/*') && !request()->is('js/*') && !request()->is('admin/*') && !request()->is('livewire/*') && !request()->is('filament*') && $city!='admin' ) {
 //         if(city_by_slug($city) == null){
 //             setcookie('city', '', -1, '/');
 //             setcookie("city", defaultCity()->id, time()+20*24*60*60,'/');
-//             header("location: /".defaultCity()->slug);      
+//             header("location: /".defaultCity()->slug);
 
 //         } else{
 //             $c_b_s__ = city_by_slug($city);
@@ -112,19 +112,19 @@ $city = selectCity()->slug; // Более безопасный и понятны
 //                 if(!isset($_COOKIE['city'])){
 //                     setcookie("city", first_city_id(), time()+20*24*60*60,'/');
 //                     header("Refresh:0");
-                    
+
 //                 }
 //                 if(isset($_COOKIE['city']) && $_COOKIE['city'] != $c_b_s__->id){
 //                     setcookie('city', '', -1, '/');
 //                     setcookie("city", $c_b_s__->id, time()+20*24*60*60,'/');
 //                     header("Refresh:0");
-                    
+
 //                 }
 //             }else{
 //                 setcookie('city', '', -1, '/');
 //                 setcookie("city", defaultCity()->id, time()+20*24*60*60,'/');
-//                 header("location: /".defaultCity()->slug);   
-//                 die;     
+//                 header("location: /".defaultCity()->slug);
+//                 die;
 //             }
 //         }
 //     }
@@ -150,7 +150,7 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
     Route::post('/verificate-code/phone/send', [ForgotPasswordController::class, 'verificateCode'])->name('reset-password.phone.verify.code.send');
     Route::get('/new-password/phone', [ForgotPasswordController::class, 'passwordNewPhone'])->name('reset-password.phone.new');
     Route::post('/accept-new-password/phone', [ForgotPasswordController::class, 'acceptPasswordNewPhone'])->name('reset-password.phone.new.accept');
-    
+
 
 
     Route::group(['prefix'=>'yoomoney'], function() {
@@ -160,8 +160,8 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
     });
 
     Auth::routes();
-    
-    
+
+
     Route::get('/ai-message/send', [MainController::class, 'sendAiMessage'])->name('ai-message.send');
 
     Route::get('/accept-cookie', [MainController::class, 'acceptCookie'])->name('cookie.accept');
@@ -187,15 +187,15 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
     Route::post('/accept-inn-information', [RegisterController::class, 'acceptInnInformation'])->name('accept.inn.information');
     Route::post('/create-user-organization-email', [RegisterController::class, 'createUserOrganizationEmail'])->name('create.user.organization.email');
 
-    
+
 
     Route::get('/verify-code', [RegisterController::class, 'verifyCode'])->name('register.verify.code');
     Route::post('/verify-code-send', [RegisterController::class, 'verifyCodeSend'])->name('register.verify.code.send');
     Route::post('/login-with-phone', [LoginController::class, 'loginWithPhone'])->name('login.phone');
 
-    
 
-    
+
+
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 
@@ -204,11 +204,13 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
 
 
         Route::get('/geo', [CityController::class, 'ajaxGeo'])->name('geo.ajax');
-
+        Route::get('geo/ajax/edges', [CityController::class, 'ajaxGetEdges'])->name('geo.ajax.edges');
+        Route::get('geo/ajax/areas', [CityController::class, 'ajaxGetAreas'])->name('geo.ajax.areas');
+        Route::get('geo/ajax/cemeteries', [CityController::class, 'ajaxGetCemeteries'])->name('geo.ajax.cemeteries');
 
         Route::get('category/children/ul', [CategoryProductController::class, 'ajaxCategoryChildrenUl'])->name('category.product.children.ul');
         Route::get('category/children/ul/filter', [CategoryProductController::class, 'ajaxCategoryChildrenUlForFilter'])->name('category.product.children.ul.filter');
-                
+
         Route::post('/add-cemetery-setings', [AgentController::class, 'addCemetery'])->name('add.cemetery.settings');
 
 
@@ -217,7 +219,7 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
         Route::get('/organizations/title', [OrganizationController::class, 'ajaxTitlePage'])->name('organizations.ajax.title');
         Route::get('/organizations/map', [OrganizationController::class, 'ajaxMapOrganizations'])->name('organizations.ajax.map');
 
-        
+
 
         Route::get('/organizations-provider/filters', [OrganizationController::class, 'ajaxFilterCatalogProvider'])->name('organizations.provider.ajax.filters');
         Route::get('/organizations-provider/category-prices', [OrganizationController::class, 'ajaxCategoryPricesProvider'])->name('organizations.provider.ajax.category-prices');
@@ -225,7 +227,7 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
         Route::get('/organizations-provider/search', [OrganizationController::class, 'ajaxSearchCatalogProvider'])->name('organizations.provider.ajax.search');
         Route::get('/organizations-provider/rating', [OrganizationController::class, 'ajaxRatingOrganizationProvider'])->name('organizations.provider.ajax.rating');
 
-        
+
         Route::get('/filters', [ProductController::class, 'filterShow'])->name('marketplace.ajax.filters');
         Route::get('/cat', [ProductController::class, 'ajaxProductCat'])->name('marketplace.ajax.cat');
         Route::get('/cemetery', [ProductController::class, 'ajaxCemeteryCat'])->name('marketplace.ajax.cemetery');
@@ -234,7 +236,7 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
         Route::get('/cat/reviews', [ProductController::class, 'ajaxCatReviews'])->name('marketplace.ajax.cat.reviews');
         Route::get('/marketplace/title', [ProductController::class, 'ajaxTitle'])->name('marketplace.ajax.title');
 
-        
+
 
 
         Route::get('/beautification/cemetery', [CemeteriesController::class, 'ajaxCemetery'])->name('beautification.ajax.cemetery');
@@ -254,15 +256,15 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
 
         Route::post('/city/search', [CityController::class, 'ajaxCitySearchInInput'])->name('ajax.cities.search.input');
 
-        
+
 
         Route::get('/category/children', [OrganizationController::class, 'ajaxProductsChildrenCat'])->name('organization.category.ajax.children');
         Route::get('/category/main', [OrganizationController::class, 'ajaxProductsMainCat'])->name('organization.category.ajax.main');
         Route::get('/categories/children', [OrganizationController::class, 'ajaxProductsMainCatUlChildren'])->name('organization.categories.ajax.children');
 
-   
-   
-        
+
+
+
     });
 
     Route::group(['prefix'=>'marketplace','middlware'=>'cacheResponse'], function() {
@@ -354,7 +356,7 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
     Route::get('/search-filter', [MainController::class, 'searchProductFilter'])->name('page.search.burial.filter');
     Route::get('/search-filter-who', [BurialController::class, 'searchProductFilter'])->name('search.burial.filter');
     Route::get('/search-request', [BurialController::class, 'searchProductRequest'])->name('page.search.burial.request');
-    Route::get('/search-request/add', [BurialController::class, 'searchProductRequestAdd'])->name('search.burial.request');
+    Route::post('/search-request/add', [BurialController::class, 'searchProductRequestAdd'])->name('search.burial.request');
 
 
     Route::get('/our-works', [MainController::class, 'ourWorks'])->name('our.products');
@@ -403,7 +405,7 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
         Route::post('/product/add', [OrderProductController::class, 'orderAdd'])->name('order.product.add');
         Route::post('/service/add', [OrderServiceController::class, 'orderAdd'])->name('order.service.add');
         Route::post('/product/add/details', [OrderProductController::class, 'addOrderOne'])->name('order.product.add.details');
-        
+
     });
 
 
@@ -411,17 +413,17 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
     Route::group(['prefix'=>'checkout'], function() {
         Route::get('/burial', [BasketBurialContoller::class, 'checkout'])->name('checkout.burial');
         Route::get('/service', [BasketServiceContoller::class, 'checkout'])->name('checkout.service');
-        Route::get('/product', [BasketProductController::class, 'cartItems'])->name('product.checkout');    
+        Route::get('/product', [BasketProductController::class, 'cartItems'])->name('product.checkout');
     });
 
 
 
-    
+
 
 
     Route::group(['middleware'=>'auth'],function(){
 
-        
+
 
 
         Route::post('/organization/send-code', [OrganizationController::class, 'sendCode'])->name('organization.send-code');
@@ -430,13 +432,13 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
 
 
             Route::group(['prefix'=>'account'], function() {
-            
+
 
                 Route::group(['prefix'=>'user'], function() {
 
                     Route::group(['middleware'=>'user.role.check'],function(){
 
-                        
+
                         Route::group(['prefix'=>'tickets'], function() {
                             Route::get('/', [TicketController::class, 'index'])->name('account.tickets.index');
                             Route::get('/create', [TicketController::class, 'create'])->name('account.tickets.create');
@@ -451,22 +453,22 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                         Route::delete('wallet/{wallet}/delete', [AccountController::class, 'walletDelete'])->name('account.user.wallet.delete');
                         Route::post('wallet/update/balance', [AccountController::class, 'walletUpdateBalance'])->name('account.user.wallet.update.balance');
 
-                       
+
                         Route::group(['prefix'=>'products'], function() {
                             Route::get('/', [AccountController::class, 'products'])->name('account.user.products');
-                            Route::delete('/{order}/delete', [AccountController::class, 'productDelete'])->name('account.user.product.delete');        
-                        }); 
-                        
-                        Route::get('/services', [AccountController::class, 'services'])->name('account.user.services.index');       
-                        Route::get('/service/{order}/pay', [AccountController::class, 'payService'])->name('account.user.service.pay');       
+                            Route::delete('/{order}/delete', [AccountController::class, 'productDelete'])->name('account.user.product.delete');
+                        });
+
+                        Route::get('/services', [AccountController::class, 'services'])->name('account.user.services.index');
+                        Route::get('/service/{order}/pay', [AccountController::class, 'payService'])->name('account.user.service.pay');
 
                         Route::get('/burials', [AccountController::class, 'burials'])->name('account.user.burial');
 
                         Route::get('/burial-requests', [AccountController::class, 'burialRequestIndex'])->name('account.user.burial-request.index');
-                        Route::get('/burial-request/{order}/pay', [AccountController::class, 'payBurialRequest'])->name('account.user.burial-request.pay');            
+                        Route::get('/burial-request/{order}/pay', [AccountController::class, 'payBurialRequest'])->name('account.user.burial-request.pay');
 
                         Route::delete('/burial-request/{burial_request}/delete', [AccountController::class, 'burialRequestDelete'])->name('account.user.burial-request.delete');
-                        Route::get('/burial/{order}/pay', [AccountController::class, 'payBurial'])->name('account.user.burial.pay');            
+                        Route::get('/burial/{order}/pay', [AccountController::class, 'payBurial'])->name('account.user.burial.pay');
                         Route::get('/burial/{id}/delete', [AccountController::class, 'burialDelete'])->name('account.burial.delete');
                         Route::get('/burials/favorite', [AccountController::class, 'favoriteProduct'])->name('account.user.burial.favorite');
                     });
@@ -475,14 +477,14 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                     Route::post('/update', [AccountController::class, 'userSettingsUpdate'])->name('account.user.settings.update');
 
                 });
-            
+
             });
 
 
 
         Route::get('/organization/like/add/{id}', [OrganizationController::class, 'addLikeOrganization'])->name('organization.like.add');
-        
-       
+
+
 
         Route::post('/burial-info/image-personal/add', [InfoEditBurialController::class, 'imagePersonalBurialEdit'])->name('burial.image-personal.add');
         Route::post('/burial-info/image-monument/add', [InfoEditBurialController::class, 'imageMonumentBurialEdit'])->name('burial.image-monument.add');
@@ -491,25 +493,25 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
         Route::get('/life-story/{id}/add', [LifeStoryBurialController::class, 'lifeStoryAdd'])->name('life-story.add');
         Route::get('/burial-info/{id}/edit', [InfoEditBurialController::class, 'infoBurialEdit'])->name('info-burial.edit');
 
-       
+
 
         Route::get('/favorite/{id}/add', [BurialController::class, 'favoriteAdd'])->name('favorite.add');
         Route::get('/favorite/{id}/delete', [BurialController::class, 'favoriteDelete'])->name('favorite.delete');
 
-      
+
     });
 
 
 
     Route::group(['middleware'=>['auth','agent']],function(){
-        
+
         Route::group(['middleware'=>'user.role.check'],function(){
 
-            Route::get('/services', [AgentController::class, 'services'])->name('account.agent.services.index');       
+            Route::get('/services', [AgentController::class, 'services'])->name('account.agent.services.index');
             Route::post('/account/agent/services/rent', [AgentController::class, 'rentService'])->name('account.agent.services.rent');
             Route::patch('/account/agent/service/{id}/accept', [AgentController::class, 'acceptService'])->name('account.agent.service.accept');
             Route::patch('/account/agent/service/{id}/get-to-work', [AgentController::class, 'getToWorkService'])->name('account.agent.service.get-to-work');
-        
+
         });
 
         Route::get('/account/agent/settings', [AgentController::class, 'agentSettings'])->name('account.agent.settings');
@@ -520,26 +522,26 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
 
 
 
-        
-        
+
+
     });
 
 
-    Route::group(['middleware'=>['auth','catalog.provider']],function(){   
+    Route::group(['middleware'=>['auth','catalog.provider']],function(){
         Route::get('/organizations-provider', [OrganizationController::class, 'catalogOrganizationProvider'])->name('organizations.provider');
     });
-    
+
 
     Route::group(['middleware'=>['auth','organization']],function(){
 
         Route::group(['prefix'=>'account'], function() {
-            
+
             Route::group(['prefix'=>'agency'], function() {
 
 
                 Route::group(['middleware'=>'user.role.check'],function(){
 
-                    
+
                     Route::group(['prefix'=>'tickets'], function() {
                         Route::get('/', [TicketController::class, 'index'])->name('account.agency.tickets.index');
                         Route::get('/create', [TicketController::class, 'create'])->name('account.agency.tickets.create');
@@ -570,8 +572,8 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                             Route::get('in-work', [AgencyOrganizationAplicationDeadController::class, 'inWork'])->name('account.agency.organization.aplication.dead.in-work');
                             Route::get('completed', [AgencyOrganizationAplicationDeadController::class, 'completed'])->name('account.agency.organization.aplication.dead.completed');
                             // Route::get('not-completed', [AgencyOrganizationAplicationDeadController::class, 'Notcompleted'])->name('account.agency.organization.aplication.dead.not-completed');
-                            Route::patch('{aplication}/complete', [AgencyOrganizationAplicationDeadController::class, 'complete'])->name('account.agency.organization.aplication.dead.complete');     
-                            Route::patch('{aplication}/accept', [AgencyOrganizationAplicationDeadController::class, 'accept'])->name('account.agency.organization.aplication.dead.accept');     
+                            Route::patch('{aplication}/complete', [AgencyOrganizationAplicationDeadController::class, 'complete'])->name('account.agency.organization.aplication.dead.complete');
+                            Route::patch('{aplication}/accept', [AgencyOrganizationAplicationDeadController::class, 'accept'])->name('account.agency.organization.aplication.dead.accept');
 
                         });
 
@@ -580,8 +582,8 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                             Route::get('in-work', [AgencyOrganizationAplicationMemorialController::class, 'inWork'])->name('account.agency.organization.aplication.memorial.in-work');
                             Route::get('completed', [AgencyOrganizationAplicationMemorialController::class, 'completed'])->name('account.agency.organization.aplication.memorial.completed');
                             Route::get('not-completed', [AgencyOrganizationAplicationMemorialController::class, 'Notcompleted'])->name('account.agency.organization.aplication.memorial.not-completed');
-                            Route::patch('{aplication}/complete', [AgencyOrganizationAplicationMemorialController::class, 'complete'])->name('account.agency.organization.aplication.memorial.complete');     
-                            Route::patch('{aplication}/accept', [AgencyOrganizationAplicationMemorialController::class, 'accept'])->name('account.agency.organization.aplication.memorial.accept');     
+                            Route::patch('{aplication}/complete', [AgencyOrganizationAplicationMemorialController::class, 'complete'])->name('account.agency.organization.aplication.memorial.complete');
+                            Route::patch('{aplication}/accept', [AgencyOrganizationAplicationMemorialController::class, 'accept'])->name('account.agency.organization.aplication.memorial.accept');
 
                         });
 
@@ -591,8 +593,8 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                             Route::get('in-work', [AgencyOrganizationAplicationBeautificationController::class, 'inWork'])->name('account.agency.organization.aplication.beautification.in-work');
                             Route::get('completed', [AgencyOrganizationAplicationBeautificationController::class, 'completed'])->name('account.agency.organization.aplication.beautification.completed');
                             Route::get('not-completed', [AgencyOrganizationAplicationBeautificationController::class, 'Notcompleted'])->name('account.agency.organization.aplication.beautification.not-completed');
-                            Route::patch('{aplication}/accept', [AgencyOrganizationAplicationBeautificationController::class, 'accept'])->name('account.agency.organization.aplication.beautification.accept');     
-                            Route::patch('{aplication}/complete', [AgencyOrganizationAplicationBeautificationController::class, 'complete'])->name('account.agency.organization.aplication.beautification.complete');     
+                            Route::patch('{aplication}/accept', [AgencyOrganizationAplicationBeautificationController::class, 'accept'])->name('account.agency.organization.aplication.beautification.accept');
+                            Route::patch('{aplication}/complete', [AgencyOrganizationAplicationBeautificationController::class, 'complete'])->name('account.agency.organization.aplication.beautification.complete');
 
                         });
 
@@ -602,12 +604,12 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                             Route::get('completed', [AgencyOrganizationAplicationFuneralServiceController::class, 'completed'])->name('account.agency.organization.aplication.funeral-service.completed');
                             Route::get('not-completed', [AgencyOrganizationAplicationFuneralServiceController::class, 'Notcompleted'])->name('account.agency.organization.aplication.funeral-service.not-completed');
                             Route::get('filter-service', [AgencyOrganizationAplicationFuneralServiceController::class, 'filterService'])->name('account.agency.organization.aplication.funeral-service.filter');
-                            Route::patch('{aplication}/accept', [AgencyOrganizationAplicationFuneralServiceController::class, 'accept'])->name('account.agency.organization.aplication.funeral-service.accept');     
-                            Route::patch('{aplication}/complete', [AgencyOrganizationAplicationFuneralServiceController::class, 'complete'])->name('account.agency.organization.aplication.funeral-service.complete');     
+                            Route::patch('{aplication}/accept', [AgencyOrganizationAplicationFuneralServiceController::class, 'accept'])->name('account.agency.organization.aplication.funeral-service.accept');
+                            Route::patch('{aplication}/complete', [AgencyOrganizationAplicationFuneralServiceController::class, 'complete'])->name('account.agency.organization.aplication.funeral-service.complete');
                         });
-                        
+
                     });
-                        
+
                     Route::get('wallets', [AgencyOrganizationController::class, 'wallets'])->name('account.agency.organization.wallets');
                     Route::delete('wallet/{wallet}/delete', [AgencyOrganizationController::class, 'walletDelete'])->name('account.agency.organization.wallet.delete');
                     Route::post('wallet/update/balance', [AgencyOrganizationController::class, 'walletUpdateBalance'])->name('account.agency.organization.wallet.update.balance');
@@ -618,75 +620,75 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                     Route::get('organization/settings/{id}', [AgencyOrganizationController::class, 'settings'])->name('account.agency.organization.settings');
                     Route::get('choose-organization/{id}', [AgencyController::class, 'chooseOrganization'])->name('account.agency.choose.organization');
                     Route::post('organization/settings/update', [AgencyOrganizationController::class, 'update'])->name('account.agency.organization.settings.update');
-    
-                    Route::get('add-organization', [AgencyOrganizationController::class, 'searchOrganizations'])->name('account.agency.add.organization');     
-                    
-                    Route::get('applications', [AgencyOrganizationController::class, 'aplications'])->name('account.agency.applications');     
-                    Route::get('applications/{type_service}/pay', [AgencyOrganizationController::class, 'payApplication'])->name('account.agency.applications.pay');     
-                    
+
+                    Route::get('add-organization', [AgencyOrganizationController::class, 'searchOrganizations'])->name('account.agency.add.organization');
+
+                    Route::get('applications', [AgencyOrganizationController::class, 'aplications'])->name('account.agency.applications');
+                    Route::get('applications/{type_service}/pay', [AgencyOrganizationController::class, 'payApplication'])->name('account.agency.applications.pay');
+
                     Route::get('priority/buy', [AgencyOrganizationController::class, 'pageBuyPriority'])->name('account.agency.priority.buy');
                     Route::post('priority/buy', [AgencyOrganizationController::class, 'buyPriority'])->name('account.agency.priority.pay');
-    
-                    Route::get('products', [AgencyOrganizationController::class, 'allProducts'])->name('account.agency.products');     
-                    Route::get('add-product', [AgencyOrganizationController::class, 'addProduct'])->name('account.agency.add.product');     
-                    Route::get('delete-product/{id}', [AgencyOrganizationController::class, 'deleteProduct'])->name('account.agency.delete.product');     
-                    Route::get('update-product-price', [AgencyOrganizationController::class, 'updatePriceProduct'])->name('account.agency.update.product.price');     
-                    Route::get('search-product', [AgencyOrganizationController::class, 'searchProduct'])->name('account.agency.search.product');     
-                    Route::get('filters-product', [AgencyOrganizationController::class, 'filtersProduct'])->name('account.agency.filters.product');     
-                    Route::post('create-product', [AgencyOrganizationController::class, 'createProduct'])->name('account.agency.create.product');     
-                    Route::get('product/orders/new', [AgencyOrganizationController::class, 'ordersNew'])->name('account.agency.product.orders.new');  
-                    Route::get('product/orders/in-work', [AgencyOrganizationController::class, 'ordersInWork'])->name('account.agency.product.orders.in-work');  
-                    Route::get('product/orders/completed', [AgencyOrganizationController::class, 'ordersCompleted'])->name('account.agency.product.orders.completed');     
-                    Route::patch('product/order/{order}/complete', [AgencyOrganizationController::class, 'orderComplete'])->name('account.agency.product.order.complete');     
-                    Route::patch('product/order/{order}/accept', [AgencyOrganizationController::class, 'orderAccept'])->name('account.agency.product.order.accept');     
-    
-                    
-    
-    
-    
-                    Route::get('reviews-organization', [AgencyOrganizationController::class, 'reviewsOrganization'])->name('account.agency.reviews.organization');     
-                    Route::get('reviews-products', [AgencyOrganizationController::class, 'reviewsProduct'])->name('account.agency.reviews.product');     
-                    Route::get('review-organization/{id}/delete', [AgencyOrganizationController::class, 'reviewOrganizationDelete'])->name('account.agency.review.organization.delete');     
-                    Route::get('review-product/{id}/delete', [AgencyOrganizationController::class, 'reviewProductDelete'])->name('account.agency.review.product.delete');     
-                    Route::get('review-organization/{id}/accept', [AgencyOrganizationController::class, 'reviewOrganizationAccept'])->name('account.agency.review.organization.accept');     
-                    Route::get('review-product/{id}/accept', [AgencyOrganizationController::class, 'reviewProductAccept'])->name('account.agency.review.product.accept');     
-                    Route::get('review-organization/update', [AgencyOrganizationController::class, 'updateReviewOrganization'])->name('account.agency.review.organization.update');     
-                    Route::get('review-product/update', [AgencyOrganizationController::class, 'updateReviewProduct'])->name('account.agency.review.product.update');     
-                    Route::get('review-organization/update/organization-response', [AgencyOrganizationController::class, 'updateOrganizationResponseReviewOrganization'])->name('account.agency.review.organization.update.organization-response');     
-                    Route::get('review-product/update/organization-response', [AgencyOrganizationController::class, 'updateOrganizationResponseReviewProduct'])->name('account.agency.review.product.update.organization-response');     
-                    
-                    Route::get('provider/requests/products/add', [AgencyOrganizationProviderController::class, 'requestsCostProductSuppliers'])->name('account.agency.provider.requests.products.add');     
-                    Route::get('provider/requests/products/create', [AgencyOrganizationProviderController::class, 'addRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.create');     
-                    Route::get('provider/requests/products/created', [AgencyOrganizationProviderController::class, 'createdRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.created');     
-                    Route::get('provider/requests/products/answer', [AgencyOrganizationProviderController::class, 'answerRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.answer');     
-                    Route::delete('provider/request/products/{request}/delete', [AgencyOrganizationProviderController::class, 'deletRequest'])->name('account.agency.provider.request.delete');     
-    
-                    
-                    
-    
-                    Route::get('like-organizations', [AgencyOrganizationProviderController::class, 'likeOrganizations'])->name('account.agency.provider.like.organizations');     
-    
-                    Route::get('provider/stocks', [AgencyOrganizationProviderController::class, 'stocksOrganizationProviders'])->name('account.agency.provider.stocks');     
-                    Route::get('provider/discounts', [AgencyOrganizationProviderController::class, 'discountsOrganizationProviders'])->name('account.agency.provider.discounts');     
-    
-                    Route::get('provider/offer/add', [AgencyOrganizationProviderController::class, 'addOfferToProvider'])->name('account.agency.provider.offer.add');     
-                    Route::post('provider/offer/add', [AgencyOrganizationProviderController::class, 'createOfferToProvider'])->name('account.agency.provider.offer.create');     
-    
-                    Route::get('provider/offers/created', [AgencyOrganizationProviderController::class, 'createdOfferToProvider'])->name('account.agency.provider.offer.created');     
-                    Route::get('provider/offers/answers', [AgencyOrganizationProviderController::class, 'answerOfferToProvider'])->name('account.agency.provider.offer.answers'); 
-    
-    
-                    Route::get('provider/offers/created/category', [AgencyOrganizationProviderController::class, 'filterCategoryCreatedOfferToProvider'])->name('account.agency.provider.offer.created.category');     
-                    Route::get('provider/offers/answers/category', [AgencyOrganizationProviderController::class, 'filterCategoryAnswerOfferToProvider'])->name('account.agency.provider.offer.answers.category'); 
-    
-    
-                    Route::delete('provider/offer/{offer}/delete', [AgencyOrganizationProviderController::class, 'deleteOffer'])->name('account.agency.provider.offer.delete');     
+
+                    Route::get('products', [AgencyOrganizationController::class, 'allProducts'])->name('account.agency.products');
+                    Route::get('add-product', [AgencyOrganizationController::class, 'addProduct'])->name('account.agency.add.product');
+                    Route::get('delete-product/{id}', [AgencyOrganizationController::class, 'deleteProduct'])->name('account.agency.delete.product');
+                    Route::get('update-product-price', [AgencyOrganizationController::class, 'updatePriceProduct'])->name('account.agency.update.product.price');
+                    Route::get('search-product', [AgencyOrganizationController::class, 'searchProduct'])->name('account.agency.search.product');
+                    Route::get('filters-product', [AgencyOrganizationController::class, 'filtersProduct'])->name('account.agency.filters.product');
+                    Route::post('create-product', [AgencyOrganizationController::class, 'createProduct'])->name('account.agency.create.product');
+                    Route::get('product/orders/new', [AgencyOrganizationController::class, 'ordersNew'])->name('account.agency.product.orders.new');
+                    Route::get('product/orders/in-work', [AgencyOrganizationController::class, 'ordersInWork'])->name('account.agency.product.orders.in-work');
+                    Route::get('product/orders/completed', [AgencyOrganizationController::class, 'ordersCompleted'])->name('account.agency.product.orders.completed');
+                    Route::patch('product/order/{order}/complete', [AgencyOrganizationController::class, 'orderComplete'])->name('account.agency.product.order.complete');
+                    Route::patch('product/order/{order}/accept', [AgencyOrganizationController::class, 'orderAccept'])->name('account.agency.product.order.accept');
+
+
+
+
+
+                    Route::get('reviews-organization', [AgencyOrganizationController::class, 'reviewsOrganization'])->name('account.agency.reviews.organization');
+                    Route::get('reviews-products', [AgencyOrganizationController::class, 'reviewsProduct'])->name('account.agency.reviews.product');
+                    Route::get('review-organization/{id}/delete', [AgencyOrganizationController::class, 'reviewOrganizationDelete'])->name('account.agency.review.organization.delete');
+                    Route::get('review-product/{id}/delete', [AgencyOrganizationController::class, 'reviewProductDelete'])->name('account.agency.review.product.delete');
+                    Route::get('review-organization/{id}/accept', [AgencyOrganizationController::class, 'reviewOrganizationAccept'])->name('account.agency.review.organization.accept');
+                    Route::get('review-product/{id}/accept', [AgencyOrganizationController::class, 'reviewProductAccept'])->name('account.agency.review.product.accept');
+                    Route::get('review-organization/update', [AgencyOrganizationController::class, 'updateReviewOrganization'])->name('account.agency.review.organization.update');
+                    Route::get('review-product/update', [AgencyOrganizationController::class, 'updateReviewProduct'])->name('account.agency.review.product.update');
+                    Route::get('review-organization/update/organization-response', [AgencyOrganizationController::class, 'updateOrganizationResponseReviewOrganization'])->name('account.agency.review.organization.update.organization-response');
+                    Route::get('review-product/update/organization-response', [AgencyOrganizationController::class, 'updateOrganizationResponseReviewProduct'])->name('account.agency.review.product.update.organization-response');
+
+                    Route::get('provider/requests/products/add', [AgencyOrganizationProviderController::class, 'requestsCostProductSuppliers'])->name('account.agency.provider.requests.products.add');
+                    Route::get('provider/requests/products/create', [AgencyOrganizationProviderController::class, 'addRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.create');
+                    Route::get('provider/requests/products/created', [AgencyOrganizationProviderController::class, 'createdRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.created');
+                    Route::get('provider/requests/products/answer', [AgencyOrganizationProviderController::class, 'answerRequestsCostProductSuppliers'])->name('account.agency.provider.requests.products.answer');
+                    Route::delete('provider/request/products/{request}/delete', [AgencyOrganizationProviderController::class, 'deletRequest'])->name('account.agency.provider.request.delete');
+
+
+
+
+                    Route::get('like-organizations', [AgencyOrganizationProviderController::class, 'likeOrganizations'])->name('account.agency.provider.like.organizations');
+
+                    Route::get('provider/stocks', [AgencyOrganizationProviderController::class, 'stocksOrganizationProviders'])->name('account.agency.provider.stocks');
+                    Route::get('provider/discounts', [AgencyOrganizationProviderController::class, 'discountsOrganizationProviders'])->name('account.agency.provider.discounts');
+
+                    Route::get('provider/offer/add', [AgencyOrganizationProviderController::class, 'addOfferToProvider'])->name('account.agency.provider.offer.add');
+                    Route::post('provider/offer/add', [AgencyOrganizationProviderController::class, 'createOfferToProvider'])->name('account.agency.provider.offer.create');
+
+                    Route::get('provider/offers/created', [AgencyOrganizationProviderController::class, 'createdOfferToProvider'])->name('account.agency.provider.offer.created');
+                    Route::get('provider/offers/answers', [AgencyOrganizationProviderController::class, 'answerOfferToProvider'])->name('account.agency.provider.offer.answers');
+
+
+                    Route::get('provider/offers/created/category', [AgencyOrganizationProviderController::class, 'filterCategoryCreatedOfferToProvider'])->name('account.agency.provider.offer.created.category');
+                    Route::get('provider/offers/answers/category', [AgencyOrganizationProviderController::class, 'filterCategoryAnswerOfferToProvider'])->name('account.agency.provider.offer.answers.category');
+
+
+                    Route::delete('provider/offer/{offer}/delete', [AgencyOrganizationProviderController::class, 'deleteOffer'])->name('account.agency.provider.offer.delete');
 
                 });
-                
-                
+
+
                 Route::get('settings', [AgencyController::class, 'settings'])->name('account.agency.settings');
-                
+
             });
 
         });
@@ -721,23 +723,23 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
     Route::group(['middleware'=>['auth','decoder']],function(){
 
         Route::group(['prefix'=>'account'], function() {
-            
+
             Route::group(['prefix'=>'decoder'], function() {
-                
+
                 Route::group(['middleware'=>'user.role.check'],function(){
-                
+
                     Route::get('training-material/video', [DecoderController::class, 'trainingMaterialVideo'])->name('account.decoder.training-material.video');
                     Route::get('training-material/file', [DecoderController::class, 'trainingMaterialFile'])->name('account.decoder.training-material.file');
-                    
+
                     Route::get('payments/payd', [DecoderController::class, 'paymentsPaid'])->name('account.decoder.payments.paid');
                     Route::get('payments/verification', [DecoderController::class, 'paymentsOnVerification'])->name('account.decoder.payments.verification');
-                    
+
                     Route::post('icon/add', [DecoderController::class, 'iconUpdateUser'])->name('account.decoder.upload-icon.add');
-               
+
                     Route::get('view-edit-burial', [DecoderController::class, 'viewEditBurial'])->name('account.decoder.burial.edit');
-    
+
                     Route::get('burial/add/comment', [DecoderController::class, 'addCommentBurial'])->name('account.decoder.burial.add.comment');
-                    
+
                     Route::get('burial/update', [DecoderController::class, 'updateBurial'])->name('account.decoder.burial.update');
 
                     Route::get('withdraw/{id}', [DecoderController::class, 'withdraw'])->name('account.decoder.withdraw');
@@ -747,7 +749,7 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                 Route::get('settings', [DecoderController::class, 'settings'])->name('account.decoder.settings');
                 Route::get('settings/update', [DecoderController::class, 'settingsUpdate'])->name('account.decoder.settings.update');
 
-            });    
+            });
 
         });
 
@@ -777,11 +779,11 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                     Route::get('/object/{page}', [AdminSEOController::class, 'object'])->name('account.admin.seo.object');
                     Route::post('/object/{page}/update', [AdminSEOController::class, 'updateSeo'])->name('account.admin.seo.object.update');
                 });
-                
+
                 Route::group(['prefix'=>'geo'], function() {
                     Route::get('/parser', [AdminGeoController::class, 'parser'])->name('account.admin.parser.geo');
                     Route::post('/import', [AdminGeoController::class, 'import'])->name('account.admin.parsing.geo');
-                    
+
                 });
 
                 Route::group(['prefix'=>'organization'], function() {
@@ -789,27 +791,27 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                     Route::post('/import', [AdminOrganizationController::class, 'import'])->name('account.admin.parsing.organization');
                     Route::post('/import/reviews', [AdminOrganizationController::class, 'importReviews'])->name('account.admin.parsing.organization.reviews');
                     Route::post('/import/prices', [AdminOrganizationController::class, 'importPrices'])->name('account.admin.parsing.organization.prices');
-                    
+
                 });
-                
+
 
 
                 Route::group(['prefix'=>'burial'], function() {
                     Route::get('/parser', [AdminBurialController::class, 'parser'])->name('account.admin.burial.parser');
                     Route::post('/import', [AdminBurialController::class, 'import'])->name('account.admin.burial.import');
-                    
+
                 });
 
                 Route::group(['prefix'=>'cemetery'], function() {
                     Route::get('/', [AdminRitualObjectsController::class, 'cemetery'])->name('account.admin.cemetery');
                     Route::get('/delete/{id}', [AdminRitualObjectsController::class, 'cemeteryDelete'])->name('account.admin.cemetery.delete');
-                   
+
                     Route::get('/parser', [AdminRitualObjectsController::class, 'cemeteryParser'])->name('account.admin.parser.cemetery');
                     Route::post('/import', [AdminRitualObjectsController::class, 'cemeteryImport'])->name('account.admin.parsing.cemetery');
                     Route::post('/import/reviews', [AdminRitualObjectsController::class, 'cemeteryReviewsImport'])->name('account.admin.parsing.cemetery.reviews');
-                    
+
                 });
-              
+
                 Route::group(['prefix'=>'mortuary'], function() {
                     Route::get('/', [AdminRitualObjectsController::class, 'mortuary'])->name('account.admin.mortuary');
                     Route::get('/delete/{id}', [AdminRitualObjectsController::class, 'mortuaryDelete'])->name('account.admin.mortuary.delete');
@@ -850,9 +852,9 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                     Route::post('/import/reviews', [AdminRitualObjectsController::class, 'churchReviewsImport'])->name('account.admin.parsing.church.reviews');
 
                 });
-              
+
             });
-    
+
         });
 
     });

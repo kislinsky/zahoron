@@ -183,11 +183,7 @@ class OrganizationService
             'name'=>$data['name'],
             'organization_id'=>$data['organization_id']
         ]);
-
-
-        $message="ID организации:".$data['organization_id']."n Рейтинг:".$rating." \n Сообщение:".$data['content_review'];
-
-        sendMail(admin()->email, 'Новый отзыв с сайта zahoron.ru', $message); 
+ 
 
         return redirect()->back()->with('message_words_memory','Сообщение отправлено на проверку.');
     }

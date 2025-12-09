@@ -6,8 +6,8 @@
     @foreach ($organizations_category as $key=>$organization_category)
 
         <?php $organization=$organization_category->organization;?>
-    
-        
+
+
 
         <div class="li_organization <?php if($organization->priority){echo 'priority';}?>">
 
@@ -15,10 +15,10 @@
 
 
             <div class="info_li_org_mobile li_org_mobile">
-                
+
                 @if($organization->urlImgMain()=='default')
-                    <a href='{{ $organization->route() }}' ><img class='white_img_org img_logo_organization' src="{{$organization->defaultMainImg()[0]}}" alt=""></a>   
-                    <a href='{{ $organization->route() }}' ><img class='black_img_org img_logo_organization' src="{{$organization->defaultMainImg()[1]}}" alt=""> </a>  
+                    <a href='{{ $organization->route() }}' ><img class='white_img_org img_logo_organization' src="{{$organization->defaultMainImg()[0]}}" alt=""></a>
+                    <a href='{{ $organization->route() }}' ><img class='black_img_org img_logo_organization' src="{{$organization->defaultMainImg()[1]}}" alt=""> </a>
                 @else
                     <a href='{{ $organization->route() }}' ><img class='img_logo_organization' src="{{$organization->urlImgMain()}}" alt=""></a>
                 @endif
@@ -40,11 +40,11 @@
 
 
             <div class="li_logo_organization li_org_dekstop">
-                @if($organization->urlImg()=='default')
-                     <a href='{{ $organization->route() }}' ><img class='white_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[0]}}" alt="">   </a>
-                     <a href='{{ $organization->route() }}' ><img class='black_img_org img_logo_organization' src="{{$organization->defaultLogoImg()[1]}}" alt="">  </a> 
+                @if($organization->urlImgMain()=='default')
+                     <a href='{{ $organization->route() }}' ><img class='white_img_org img_logo_organization' src="{{$organization->defaultMainImg()[0]}}" alt="">   </a>
+                     <a href='{{ $organization->route() }}' ><img class='black_img_org img_logo_organization' src="{{$organization->defaultMainImg()[1]}}" alt="">  </a>
                 @else
-                     <a href='{{ $organization->route() }}' ><img class='img_logo_organization' src="{{$organization->urlImg()}}" alt="">   </a>
+                     <a href='{{ $organization->route() }}' ><img class='img_logo_organization' src="{{$organization->urlImgMain()}}" alt="">   </a>
                 @endif
                 <div class="flex_stars">
                     <img src="{{asset('storage/uploads/Frame 334.svg')}}" alt=""> <div class="text_black">{{$organization->rating}}</div>
@@ -75,7 +75,7 @@
                     <a href="{{route('organization.like.add',$organization->id)}}"><img src="{{asset('storage/uploads/VectorLike.svg')}}" alt=""></a>
                   @else
                     <a href="{{route('organization.like.add',$organization->id)}}"><img src="{{asset('storage/uploads/Vector_not_like.svg')}}" alt=""></a>
-                  @endif                    
+                  @endif
                   <div val='{{ $organization->route() }}' class='share_button'><img src="{{asset('storage/uploads/Vector (8).svg')}}" alt=""></div>
                 </div>
             </div>
@@ -87,19 +87,19 @@
 
             <div class="li_flex_btn_organization">
                 @if($organization->city->edge->call_mango_office)
-                  <a id='{{ $organization->id }}' href='javascript:void(0)' class="blue_btn mgo-call-button" 
+                  <a id='{{ $organization->id }}' href='javascript:void(0)' class="blue_btn mgo-call-button"
                     data-key="{{ $key }}"
                     data-org-id="{{ $organization->id }}"
                     data-phone="{{ str_replace('+', '', $organization->phone) }}"
                     data-default-number="{{ $organization->phone }}"
                     data-calls="{{ $organization->haveCalls() }}"
-                  > 
+                  >
                     Позвонить
                   </a>
                 @else
                   <a href="tel:{{ $organization->phone }}" class="blue_btn" >Позвонить</a>
                 @endif
-                 
+
                 <a href='{{$organization->route()}}' class="btn_border_blue">Подробнее</a>
             </div>
 
@@ -152,7 +152,7 @@
 
       // Проверяем мобильное устройство и поддержку Web Share API
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      
+
       if (isMobile && navigator.share) {
         // Пытаемся использовать нативный API для мобильных устройств
         try {
@@ -199,10 +199,10 @@
       textArea.style.opacity = 0;
       document.body.appendChild(textArea);
       textArea.select();
-      
+
       const successful = document.execCommand('copy');
       document.body.removeChild(textArea);
-      
+
       if (successful) {
         showNotification('Ссылка скопирована!');
       } else {
@@ -219,7 +219,7 @@
     notification.textContent = message;
     notification.style.display = 'block';
     notification.style.background = type === 'error' ? '#f44336' : '#4CAF50';
-    
+
     setTimeout(() => {
       notification.style.display = 'none';
     }, 3000);
@@ -264,7 +264,7 @@
       }
     });
 
-    
+
     // Запрашиваем номер
     mgo.getNumber({
       hash: uniqueHash,
@@ -278,7 +278,7 @@
     });
 
 // Инициализируем Mango Office с уникальными параметрами для каждого вызова
-   
+
   }
 
   // Функция для проверки мобильного устройства
@@ -324,7 +324,7 @@
     notification.style.zIndex = '10000';
     notification.textContent = message;
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
       document.body.removeChild(notification);
     }, 2000);
@@ -334,10 +334,10 @@
   const modalOverlay = document.createElement('div');
   modalOverlay.className = 'mgo-modal-overlay';
   modalOverlay.style.display = 'none';
-  
+
   const modal = document.createElement('div');
   modal.className = 'mgo-modal';
-  
+
   modal.innerHTML = `
     <button class="mgo-modal-close">&times;</button>
     <div class="mgo-modal-header">Позвонить</div>
@@ -345,14 +345,14 @@
     <div class="mgo-modal-number" id="mgo-modal-number"></div>
     <button class="mgo-modal-button" id="mgo-call-button">Позвонить</button>
   `;
-  
+
   document.body.appendChild(modalOverlay);
   document.body.appendChild(modal);
 
   // Обработчики закрытия модального окна
   modalOverlay.addEventListener('click', closeModal);
   modal.querySelector('.mgo-modal-close').addEventListener('click', closeModal);
-  
+
   function closeModal() {
     modal.classList.remove('active');
     setTimeout(() => {
@@ -362,7 +362,7 @@
 
   function showModal(number) {
     document.getElementById('mgo-modal-number').textContent = formatPhoneNumber(number);
-    
+
     const callButton = document.getElementById('mgo-call-button');
     if (isMobileDevice()) {
       callButton.textContent = 'Позвонить';
@@ -377,7 +377,7 @@
         closeModal();
       };
     }
-    
+
     modalOverlay.style.display = 'block';
     setTimeout(() => {
       modal.classList.add('active');
@@ -396,13 +396,13 @@
     let calls = parseInt(button.getAttribute('data-calls'));
     let orgId = button.getAttribute('data-org-id');
     let phone = button.getAttribute('data-phone');
-    
+
 
     // Показываем загрузку
     const originalText = button.innerHTML;
     button.innerHTML = 'Загрузка...';
     button.style.pointerEvents = 'none';
-    
+
     if (calls == 1) {
       // Получаем номер через Mango Office (инициализация + запрос каждый раз)
       getMangoNumberOnClick(orgId, phone, function(mangoNumber) {
@@ -411,7 +411,7 @@
         } else {
           showModal(phone);
         }
-        
+
         // Восстанавливаем кнопку
         button.innerHTML = originalText;
         button.style.pointerEvents = 'auto';
@@ -433,7 +433,7 @@
         handleCallButtonClick(this);
       });
     });
-    
+
     // Для динамически добавляемых кнопок через AJAX
     const observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
@@ -449,7 +449,7 @@
         });
       });
     });
-    
+
     observer.observe(document.body, {
       childList: true,
       subtree: true
@@ -460,10 +460,10 @@
   const altModalOverlay = document.createElement('div');
   altModalOverlay.className = 'mgo-modal-overlay';
   altModalOverlay.style.display = 'none';
-  
+
   const altModal = document.createElement('div');
   altModal.className = 'mgo-alternatives-modal';
-  
+
   const alternativeOrgs = [
     // Ваш массив альтернативных организаций
   ];
@@ -474,7 +474,7 @@
       <div class="mgo-alternatives-header">У фирмы нет связи с абонентом</div>
       <div class="mgo-alternatives-note">Мы можем предложить вам проверенные ритуальные услуги</div>
     `;
-    
+
     alternativeOrgs.forEach(org => {
       html += `
         <div class="mgo-alternative-item">
@@ -484,22 +484,22 @@
           </div>
           <div class="mgo-alternative-actions">
             <a href="${org.url}" class="mgo-alternative-btn mgo-alternative-details">Подробнее</a>
-            <button class="mgo-alternative-btn mgo-alternative-call" 
+            <button class="mgo-alternative-btn mgo-alternative-call"
               data-phone="${org.phone}"
               data-org-id="${org.id}">Позвонить</button>
           </div>
         </div>
       `;
     });
-    
+
     altModal.innerHTML = html;
-    
+
     altModal.querySelectorAll('.mgo-alternative-call').forEach(btn => {
       btn.addEventListener('click', function() {
         const phone = this.getAttribute('data-phone');
         const orgId = this.getAttribute('data-org-id');
         closeAltModal();
-        
+
         // Создаем временную кнопку для обработки вызова
         const tempButton = document.createElement('button');
         tempButton.setAttribute('data-calls', '1');
@@ -508,7 +508,7 @@
         handleCallButtonClick(tempButton);
       });
     });
-    
+
     altModal.querySelector('.mgo-alternatives-close').addEventListener('click', closeAltModal);
   }
 

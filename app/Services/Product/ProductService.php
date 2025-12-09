@@ -93,7 +93,7 @@ class ProductService
             return view('product.single.single-cremation',compact('title_h1','product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
 
-        if($category->slug=='otpravka-gruz-200'){
+        if($category->slug=='podgotovka-otpravki-gruza-200'){
             return view('product.single.single-shipment-200-cargo',compact('title_h1','product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
         

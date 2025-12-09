@@ -13,13 +13,14 @@ class IndexNews
 {
     public static function index(){
 
-        SEOTools::setTitle("Новости");
-        SEOTools::setDescription("Новости");
+        SEOTools::setTitle(formatContent(getSeo('page-news','title')));
+        SEOTools::setDescription(formatContent(getSeo('page-news','description')));
+        $title_h1=formatContent(getSeo('page-news','h1'));
 
         $page=6;
         $news=News::orderBy('id', 'desc')->where('type',1)->get();
         $cats=CategoryNews::orderBy('id', 'desc')->get();
-        return view('news.index',compact('news','cats','page'));
+        return view('news.index',compact('news','cats','page','title_h1'));
     }
 
     public static function singleNews($slug){

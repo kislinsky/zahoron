@@ -54,6 +54,8 @@ class User extends Authenticatable implements JWTSubject
         'ogrn',
         'in_face',
         'regulation',
+        'parent_id',
+        'organization_id_branch'
     ];
 
     /**
@@ -202,5 +204,5 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->role === 'admin';
     }
-     
+
 }

@@ -11,13 +11,12 @@ class OurWorkService
     public static function index(){
         $page=4;
 
-        $seo="Наши работы";
-
-        SEOTools::setTitle($seo);
-        SEOTools::setDescription($seo);
+        SEOTools::setTitle(formatContent(getSeo('page-our-works','title')));
+        SEOTools::setDescription(formatContent(getSeo('page-our-works','description')));
+        $title_h1=formatContent(getSeo('page-our-works','h1'));
 
         $cats=CategoryOurWork::orderBy('id', 'desc')->get();
-        return view('our-works.index',compact('cats','page'));
+        return view('our-works.index',compact('cats','page','title_h1'));
     }
 
    

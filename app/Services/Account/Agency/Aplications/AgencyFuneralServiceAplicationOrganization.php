@@ -8,6 +8,7 @@ class AgencyFuneralServiceAplicationOrganization {
 
     public static function new($data){
         $organization=user()->organization();
+        deleteNotifications('funeral_service_new',null,$organization->id);
         $aplications=collect();
         if($organization!=null){
         if(isset($data['service'])){

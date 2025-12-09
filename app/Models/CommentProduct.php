@@ -29,4 +29,22 @@ class CommentProduct extends Model
         }
     }
 
+
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::created(function ($comment) {
+            // Для организации о новом комментарии
+            Notification::create([
+                'user_id' => null,
+                'organization_id' => $comment->organization_id,
+                'type' => 'comment',
+                'title' => 'Новый комментарий',
+                'message' => "Поступил новый комментарий к товару",
+                'is_read' => false
+            ]);
+        
+        });
+    }
 }

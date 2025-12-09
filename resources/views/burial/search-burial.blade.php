@@ -3,7 +3,7 @@
 <section class="order_page bac_gray">
     <div class="container order_page_search">
         <div class="content_order_page">
-            <h1 class="index_title">Поиск могил по фамилии в г. {{ selectCity()->title }}</h1>    
+            <h1 class="index_title">{!! $title_h1 !!}</h1>    
             <form method='get' action="{{route('search.burial.result')}}" class="search_application">
                 @csrf
                 <div class="grid_3">
