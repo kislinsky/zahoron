@@ -23,6 +23,33 @@ let rewies_swiper = new Swiper(".rewies_swiper", {
 });
   
 
+
+let our_works_swiper = new Swiper(".our_works_swiper", {
+    loop: true,
+    spaceBetween: 20,
+  
+    breakpoints: {
+      450: {
+        slidesPerView: 2,
+      },
+      840: {
+        slidesPerView: 3,
+      },
+      1040: {
+        slidesPerView: 4,
+      },
+     
+    },
+    navigation: {
+      nextEl: ".swiper_button_next_our_works",
+      prevEl: ".swiper_button_prev_our_works",
+    },
+    
+});
+  
+
+
+
 let memorial_dinners_swiper = new Swiper(".memorial_dinners_swiper", {
   spaceBetween: 20,
 

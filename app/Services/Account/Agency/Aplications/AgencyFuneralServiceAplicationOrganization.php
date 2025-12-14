@@ -3,6 +3,7 @@
 namespace App\Services\Account\Agency\Aplications;
 
 use App\Models\FuneralService;
+use App\Models\TypeService;
 
 class AgencyFuneralServiceAplicationOrganization {
 
@@ -91,24 +92,38 @@ class AgencyFuneralServiceAplicationOrganization {
     public static function accept($aplication){
         $organization=user()->organization();
         if($aplication->service==1){
-            $service=getTypeService('sending_cargo_200');
+            $type_service=TypeService::where('title','sending_cargo_200')->first();
         }elseif($aplication->service==3){
-            $service=getTypeService('funeral_arrangements');
+            $type_service=TypeService::where('title','funeral_arrangements')->first();
         }elseif($aplication->service==2){
-            $service=getTypeService('organization_cremation');
+            $type_service=TypeService::where('title','organization_cremation')->first();
         }
-        if($service!=null){
-            if($service->count()>0 && $aplication->status==0){
+        // if($service!=null){
+        //     if($service->count()>0 && $aplication->status==0){
+        //         $aplication->update([
+        //             'status'=>1,
+        //             'organization_id'=>$organization->id
+        //         ]);
+        //         $service->updateCount($service->count()-1);
+        //         return redirect()->back()->with('message_cart','Заявка успешно принята');
+        //     }
+        // }
+
+        if($type_service!=null  && $aplication->status==0){
+
+            $description="Покупка заявок {$type_service->title_ru}";
+            $balance=user()->currentWallet()->withdraw($type_service->price,[],$description);
+            if($balance!=false){
                 $aplication->update([
                     'status'=>1,
                     'organization_id'=>$organization->id
                 ]);
-                $service->updateCount($service->count()-1);
                 return redirect()->back()->with('message_cart','Заявка успешно принята');
             }
+            return redirect()->back()->with('error','Пополните счет, недостаточно средств');
         }
-        return redirect()->back()->with('error','Закончились заявки');
-
+        return redirect()->back()->with('error','Ошибка, обратитесь в тех поддержку.');
     }
+
 
 }

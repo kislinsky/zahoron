@@ -28,9 +28,10 @@
                 <div class="grid_btn">
                     @if(versionProject())
 
-                       <div class="blue_btn open_funeral_arrangements border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('organizacia-pohoron')}} руб.</div> 
+                        <a href='{{route('organizations.category','organizacia-pohoron')}}' class="blue_btn border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('organizacia-pohoron')}} руб.</a>
                     @else
-                       <div class="blue_btn open_funeral_arrangements border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('organizacia-pohoron')}} руб.</div> 
+                        <a href='{{route('organizations.category','organizacia-pohoron')}}' class="blue_btn border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('organizacia-pohoron')}} руб.</a>
+                        <!-- <div class="blue_btn open_funeral_arrangements border_radius_btn">Стоимость от {{minPriceCategoryProductOrganization('organizacia-pohoron')}} руб.</div> -->
                     @endif
                     <a href='{{route('organizations.category','organizacia-pohoron')}}'class="gray_btn">Каталог</A>
                 </div>

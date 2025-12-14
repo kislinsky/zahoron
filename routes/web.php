@@ -31,6 +31,7 @@ use App\Http\Controllers\BasketProductController;
 use App\Http\Controllers\BasketServiceContoller;
 use App\Http\Controllers\BeautificationController;
 use App\Http\Controllers\BurialController;
+use App\Http\Controllers\CapturePages;
 use App\Http\Controllers\CategoryProductController;
 use App\Http\Controllers\CemeteriesController;
 use App\Http\Controllers\ChurchController;
@@ -70,6 +71,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+
 
 
 
@@ -143,6 +145,13 @@ Route::get('/call-callback', [MangoOfficeController::class, 'callback'])->name('
 Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
 
     Route::get('/', [MainController::class, 'index'])->name('index');
+
+    Route::get('/beatification', [CapturePages::class, 'beatification'])->name('beatification');
+    Route::get('/dead', [CapturePages::class, 'dead'])->name('dead');
+    Route::get('/wake', [CapturePages::class, 'wake'])->name('wake');
+    Route::get('/organization-funeral', [CapturePages::class, 'organizationFuneral'])->name('organization-funeral');
+    Route::get('/organization-cremation', [CapturePages::class, 'organizationCremation'])->name('organization-cremation');
+    Route::get('/cargo-200', [CapturePages::class, 'cargo'])->name('cargo');
 
 
     Route::post('/reset-password/phone', [ForgotPasswordController::class, 'resetPasswordWithPhone'])->name('reset-password.phone');

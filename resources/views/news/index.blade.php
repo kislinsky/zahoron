@@ -21,7 +21,6 @@
     <div class="container grid_two_page">
         <div class="">
             <div class="ul_news_page">
-                @if (isset($news))
                     @if (isset($news))
                         @foreach ($news as $news_one )
                             <div class="li_news">
@@ -31,7 +30,6 @@
                             </div>
                         @endforeach
                     @endif
-                @endif
             </div>
         </div>
         <div class="sidebar">

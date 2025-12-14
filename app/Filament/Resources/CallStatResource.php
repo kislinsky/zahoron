@@ -17,6 +17,7 @@ use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class CallStatResource extends Resource
 {
@@ -45,6 +46,8 @@ class CallStatResource extends Resource
                         Forms\Components\TextInput::make('uid')
                             ->label('UID клиента')
                             ->maxLength(255),
+
+                            
                     ])
                     ->columns(2),
 
@@ -152,79 +155,151 @@ class CallStatResource extends Resource
                     ->columns(3),
 
                 Forms\Components\Section::make('Данные звонка')
-                    ->schema([
-                        Forms\Components\TextInput::make('call_id')
-                            ->label('ID звонка')
-                            ->required()
-                            ->unique(ignoreRecord: true)
-                            ->maxLength(255),
+    ->schema([
+        Forms\Components\TextInput::make('call_id')
+            ->label('ID звонка')
+            ->required()
+            ->unique(ignoreRecord: true)
+            ->maxLength(255),
+        
+        Forms\Components\Select::make('webhook_type')
+            ->label('Тип вебхука')
+            ->options([
+                // Добавьте возможные типы вебхуков
+            ]),
+        
+        Forms\Components\TextInput::make('last_group')
+            ->label('Группа')
+            ->maxLength(255),
+        
+        Forms\Components\TextInput::make('record_url')
+            ->label('Запись звонка')
+            ->url()
+            ->maxLength(500),
+        
+        // Аудиоплеер для прослушивания записи
+        Forms\Components\Placeholder::make('audio_player')
+            ->label('Прослушивание записи')
+            ->content(function ($record) {
+                // Проверяем, есть ли запись звонка
+                if (!$record || !$record->record_url) {
+                    return 'Запись звонка отсутствует';
+                }
+                
+                // Проверяем, является ли это локальным файлом
+                if (strpos($record->record_url, 'files_calls/') !== false || 
+                    strpos($record->record_url, '.mp3') !== false) {
+                    
+                    // Если это относительный путь
+                    if (strpos($record->record_url, 'http') !== 0) {
+                        // Генерируем URL для файла в storage
+                        $filePath = $record->record_url;
                         
-                        Forms\Components\Select::make('webhook_type')
-                            ->label('Тип вебхука')
-                            ->options([
-                                // Добавьте возможные типы вебхуков
-                            ]),
+                        // Проверяем существование файла
+                        if (Storage::exists($filePath)) {
+                            $url = Storage::url($filePath);
+                            $filename = basename($filePath);
+                            
+                            return \Illuminate\Support\HtmlString::make("
+                                <div style='margin-top: 10px; padding: 15px; background: #f8fafc; border-radius: 8px;'>
+                                    <div style='margin-bottom: 10px; font-weight: 500; color: #334155;'>
+                                        Запись звонка: <span style='font-size: 12px; color: #64748b;'>$filename</span>
+                                    </div>
+                                    <audio controls style='width: 100%; height: 40px;'>
+                                        <source src='$url' type='audio/mpeg'>
+                                        Ваш браузер не поддерживает аудиоэлемент.
+                                    </audio>
+                                    <div style='margin-top: 10px;'>
+                                        <a href='$url' target='_blank' 
+                                           style='display: inline-flex; align-items: center; 
+                                                  padding: 6px 12px; background: #3b82f6; 
+                                                  color: white; border-radius: 6px; 
+                                                  text-decoration: none; font-size: 14px;'>
+                                           <svg style='width: 16px; height: 16px; margin-right: 6px;' 
+                                                fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                             <path stroke-linecap='round' stroke-linejoin='round' 
+                                                   stroke-width='2' d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'/>
+                                           </svg>
+                                           Скачать запись
+                                        </a>
+                                    </div>
+                                </div>
+                            ");
+                        } else {
+                            return "Файл не найден: {$filePath}";
+                        }
+                    } else {
+                        // Если это внешний URL
+                        $url = $record->record_url;
                         
-                        Forms\Components\TextInput::make('last_group')
-                            ->label('Группа')
-                            ->maxLength(255),
-                        
-                        Forms\Components\TextInput::make('record_url')
-                            ->label('Запись звонка')
-                            ->url()
-                            ->maxLength(500),
-                        
-                        Forms\Components\DateTimePicker::make('date_start')
-                            ->label('Время начала'),
-                        
-                        Forms\Components\TextInput::make('caller_number')
-                            ->label('Номер звонящего')
-                            ->tel()
-                            ->maxLength(20),
-                        
-                        Forms\Components\Select::make('call_type')
-                            ->label('Тип звонка')
-                            ->options([
-                                '1' => 'динамический',
-                                '2' => 'статический',
-                                '3' => 'дефолтный',
-                            ]),
-                        
-                        Forms\Components\DateTimePicker::make('date_end')
-                            ->label('Время окончания'),
-                        
-                        Forms\Components\Select::make('call_status')
-    ->label('Статус')
-    ->options([
-        '1100' => 'Принят (1100)',
-        '1101' => 'Принят (1101)', 
-        '1110' => 'Принят (1110)',
-        '1111' => 'Принят (1111)',
-        '400' => 'Отклонен (400)',
-        '404' => 'Отклонен (404)',
-        '486' => 'Отклонен (486)',
-        // добавьте другие нужные статусы
+                        return \Illuminate\Support\HtmlString::make("
+                            <div style='margin-top: 10px; padding: 15px; background: #f8fafc; border-radius: 8px;'>
+                                <div style='margin-bottom: 10px; font-weight: 500; color: #334155;'>
+                                    Внешняя запись звонка
+                                </div>
+                                <audio controls style='width: 100%; height: 40px;'>
+                                    <source src='$url' type='audio/mpeg'>
+                                    Ваш браузер не поддерживает аудиоэлемент.
+                                </audio>
+                            </div>
+                        ");
+                    }
+                }
+                
+                return 'Неверный формат записи звонка';
+            })
+            ->visible(fn ($record) => $record && $record->record_url),
+        
+        Forms\Components\DateTimePicker::make('date_start')
+            ->label('Время начала'),
+        
+        Forms\Components\TextInput::make('caller_number')
+            ->label('Номер звонящего')
+            ->tel()
+            ->maxLength(20),
+        
+        Forms\Components\Select::make('call_type')
+            ->label('Тип звонка')
+            ->options([
+                '1' => 'динамический',
+                '2' => 'статический',
+                '3' => 'дефолтный',
+            ]),
+        
+        Forms\Components\DateTimePicker::make('date_end')
+            ->label('Время окончания'),
+        
+        Forms\Components\Select::make('call_status')
+            ->label('Статус')
+            ->options([
+                '1100' => 'Принят (1100)',
+                '1101' => 'Принят (1101)', 
+                '1110' => 'Принят (1110)',
+                '1111' => 'Принят (1111)',
+                '400' => 'Отклонен (400)',
+                '404' => 'Отклонен (404)',
+                '486' => 'Отклонен (486)',
+            ])
+            ->default(''),
+        
+        Forms\Components\TextInput::make('duration')
+            ->label('Длительность (сек)')
+            ->numeric(),
+        
+        Forms\Components\TextInput::make('number_hash')
+            ->label('Хеш номера')
+            ->maxLength(255),
+        
+        Forms\Components\TextInput::make('wait_time')
+            ->label('Время ожидания (сек)')
+            ->numeric(),
+        
+        Forms\Components\TextInput::make('called_number')
+            ->label('Номер назначения')
+            ->tel()
+            ->maxLength(20),
     ])
-    ->default(''),
-                        
-                        Forms\Components\TextInput::make('duration')
-                            ->label('Длительность (сек)')
-                            ->numeric(),
-                        
-                        Forms\Components\TextInput::make('number_hash')
-                            ->label('Хеш номера')
-                            ->maxLength(255),
-                        
-                        Forms\Components\TextInput::make('wait_time')
-                            ->label('Время ожидания (сек)')
-                            ->numeric(),
-                        
-                        Forms\Components\TextInput::make('called_number')
-                            ->label('Номер назначения')
-                            ->tel()
-                            ->maxLength(20),
-                    ])
-                    ->columns(2),
+    ->columns(2),
             ]);
     }
 

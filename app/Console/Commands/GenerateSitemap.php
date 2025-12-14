@@ -153,6 +153,12 @@ class GenerateSitemap extends Command
             '/kontakty' => ['priority' => 0.8, 'freq' => Url::CHANGE_FREQUENCY_MONTHLY],
             '/terms-of-use' => ['priority' => 0.7, 'freq' => Url::CHANGE_FREQUENCY_YEARLY],
             '/our-works' => ['priority' => 0.8, 'freq' => Url::CHANGE_FREQUENCY_MONTHLY],
+            '/beatification' => ['priority' => 0.8, 'freq' => Url::CHANGE_FREQUENCY_MONTHLY],
+            '/dead' => ['priority' => 0.8, 'freq' => Url::CHANGE_FREQUENCY_MONTHLY],
+            '/wake' => ['priority' => 0.8, 'freq' => Url::CHANGE_FREQUENCY_MONTHLY],
+            '/organization-funeral' => ['priority' => 0.8, 'freq' => Url::CHANGE_FREQUENCY_MONTHLY],
+            '/organization-cremation' => ['priority' => 0.8, 'freq' => Url::CHANGE_FREQUENCY_MONTHLY],
+            '/cargo-200' => ['priority' => 0.8, 'freq' => Url::CHANGE_FREQUENCY_MONTHLY],
         ];
 
         foreach ($staticRoutes as $route => $params) {
@@ -200,17 +206,7 @@ class GenerateSitemap extends Command
             ->distinct()
             ->pluck('city_id');
             
-        foreach ($cityIdsWithOrgs as $cityId) {
-            if (isset($this->citySlugs[$cityId])) {
-                $this->addUrlWithStrictCounting(
-                    Url::create($this->baseUrl . "/{$this->citySlugs[$cityId]}/organization")
-                        ->setLastModificationDate($this->now)
-                        ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                        ->setPriority(0.8)
-                );
-            }
-        }
-        
+       
 
         // Organization category routes
         $categories = CategoryProduct::where('display', 1)

@@ -86,15 +86,15 @@
         <div class="sidebar">
             <div class="btn_border_blue"  data-bs-toggle="modal" data-bs-target="#beautification_form"><img src="{{asset('storage/uploads/Frame (20).svg')}}" alt="">Облагородить могилу</div>
             <div class="ul_news_sidebar">
-                @if ($news->count()>0)                
+                 @if (isset($news))
                         @foreach ($news as $news_one )
                             <div class="li_news">
                                 <img src="{{asset('storage/'. $news_one->img )}}" alt="">
-                                <a href='{{ route('news.single',$news_one->id) }}' class="title_news">{{ $news_one->title }}</a>
+                                <a href='{{ route('news.single',$news_one->slug) }}' class="title_news">{{ formatContent($news_one->title) }}</a>
                                 <div class="text_li">{{ $news_one->created_at->format('d.m.Y') }}</div>
                             </div>
-                        @endforeach                    
-                @endif
+                        @endforeach
+                    @endif
             </div>
         </div>
     </div>

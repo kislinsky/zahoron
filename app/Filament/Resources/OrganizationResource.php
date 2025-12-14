@@ -223,6 +223,10 @@ class OrganizationResource extends Resource
                 Forms\Components\TextInput::make('phone')
                     ->label('Телефон')
                 ,
+
+                Forms\Components\TextInput::make('inn')
+                    ->label('Инн')
+                ,
                 Forms\Components\TextInput::make('adres')
                     ->label('Адрес')
                     ->required()

@@ -3,20 +3,21 @@
 namespace App\Services\Account\Agency;
 
 
-use App\Models\User;
-use App\Models\Burial;
-use App\Models\Service;
-use App\Models\Cemetery;
-use App\Models\ImageAgent;
-use App\Models\OrderBurial;
-use App\Models\OrderService;
-use App\Models\SearchBurial;
-use Illuminate\Http\Request;
 use App\Models\Beautification;
+use App\Models\Burial;
+use App\Models\Cemetery;
 use App\Models\City;
 use App\Models\Edge;
-
+use App\Models\ImageAgent;
+use App\Models\Notification;
+use App\Models\OrderBurial;
+use App\Models\OrderService;
 use App\Models\Organization;
+use App\Models\SearchBurial;
+use App\Models\Service;
+
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -28,7 +29,16 @@ class AgencyService {
         if($user->cemetery_ids!=null){
             $last_orders_services=OrderService::orderBy('id', 'desc')->where('worker_id',null)->where('status',0)->whereIn('cemetery_id',json_decode($user->cemetery_ids))->get();
         }
-        return view('account.agency.index',compact('user','last_orders_services'));
+        $notifications = Notification::where('user_id', $user->id)
+            ->orWhere('organization_id', $user->organization_id)
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+        $unreadCount = Notification::where(function($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->orWhere('organization_id', $user->organization_id);
+            })->where('is_read', 0)->count();
+        return view('account.agency.index',compact('user','last_orders_services','notifications','unreadCount'));
     }
 
     public static function settings(){

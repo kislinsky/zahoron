@@ -26,6 +26,7 @@ class TicketController extends Controller
         $tickets = $this->ticketService->getTicketsByUser(auth()->id());
         
         if(auth()->user()->role=='organization'){
+            deleteNotifications('ticket_status',auth()->user()->id);
             return view('account.agency.tickets.index', compact('tickets'));
         }
         return view('account.user.tickets.index', compact('tickets'));

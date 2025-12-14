@@ -3,6 +3,7 @@
 namespace App\Services\Account\Agency\Aplications;
 
 use App\Models\Beautification;
+use App\Models\TypeService;
 
 class AgencyBeautificationAplicationOrganization {
 
@@ -52,18 +53,36 @@ class AgencyBeautificationAplicationOrganization {
 
     public static function accept($aplication){
         $organization=user()->organization();
-        $service=getTypeService('beatification');
-        if($service!=null){
-            if($service->count()>0 && $aplication->status==0){
+        // $service=getTypeService('beatification');
+        // if($service!=null){
+        //     if($service->count()>0 && $aplication->status==0){
+        //         $aplication->update([
+        //             'status'=>1,
+        //             'organization_id'=>$organization->id
+        //         ]);
+        //         $service->updateCount($service->count()-1);
+        //         return redirect()->back()->with('message_cart','Заявка успешно принята');
+        //     }
+        // }
+        // return redirect()->back()->with('error','Закончились заявки');
+
+
+        $type_service=TypeService::where('title','beatification')->first();
+
+        if($type_service!=null  && $aplication->status==0){
+
+            $description="Покупка заявок {$type_service->title_ru}";
+            $balance=user()->currentWallet()->withdraw($type_service->price,[],$description);
+            if($balance!=false){
                 $aplication->update([
                     'status'=>1,
                     'organization_id'=>$organization->id
                 ]);
-                $service->updateCount($service->count()-1);
                 return redirect()->back()->with('message_cart','Заявка успешно принята');
             }
+            return redirect()->back()->with('error','Пополните счет, недостаточно средств');
         }
-        return redirect()->back()->with('error','Закончились заявки');
+        return redirect()->back()->with('error','Ошибка, обратитесь в тех поддержку.');
 
     }
 

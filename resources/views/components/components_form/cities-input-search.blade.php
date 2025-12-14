@@ -25,6 +25,7 @@
                     data:  data,
                     success: function (result) {
                         $( "#dead_form select[name='mortuary_dead']" ).html(result)
+                        $( ".capture_form select[name='mortuary_dead']" ).html(result)
                     },
                     error: function () {
                         alert('Ошибка');
@@ -36,6 +37,7 @@
                     data:  data,
                     success: function (result) {
                         $( "#beautification_form select[name='cemetery_beautification']" ).html(result)
+                        $( ".capture_form select[name='cemetery_beautification']" ).html(result)
                     },
                     error: function () {
                         alert('Ошибка');
@@ -47,6 +49,8 @@
                     data:  data,
                     success: function (result) {
                         $( "#funeral_services_form select[name='mortuary_funeral_service']" ).html(result)
+                        $( ".capture_form select[name='mortuary_funeral_service']" ).html(result)
+                        
                     },
                     error: function () {
                         alert('Ошибка');
@@ -58,6 +62,7 @@
                     data:  data,
                     success: function (result) {
                         $( "#funeral_services_form select[name='cemetery_funeral_service']" ).html(result)
+                        $( ".capture_form select[name='cemetery_funeral_service']" ).html(result)
                     },
                     error: function () {
                         alert('Ошибка');
@@ -69,6 +74,7 @@
                     data:  data,
                     success: function (result) {
                         $( "#memorial_form select[name='district_memorial']" ).html(result)
+                        $( ".capture_form select[name='district_memorial']" ).html(result)
                     },
                     error: function () {
                         alert('Ошибка');
