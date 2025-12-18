@@ -7,7 +7,7 @@
         <div class="content_order_page">
             <h1 data-bs-toggle="modal" data-bs-target="#cemetery_choose_form" class="title">{{ $title_h1 }}</h1>
             <div class="text_page_marketplace">от {{ selectCity()->organizations->count() ?? 0 }} ритуальных агенств</div>
-            <form action="{{ route('beautification.send') }}" method="get" class='form_popup capture_form beautification_form_capture'>
+            <form action="{{ route('beautification.send') }}" method="get" id='beautification_form_capture' class='form_popup capture_form beautification_form_capture'>
                     @csrf
                     @if(isset($product))
                         <input type="hidden" name="burial_id_beautification" value={{$product->id}}>
@@ -116,9 +116,10 @@
 
         {{view('capture-pages.components.how-work')}}
 
-        <div class="blue_btn" style="max-width: 600px;width:100%;">Сделать заявку!</div>
+        <a href='#beautification_form_capture' class="blue_btn" style="max-width: 600px;width:100%;">Сделать заявку!</a>
 
-        @include('components.rewies')
+        {{view('capture-pages.components.reviews',compact('reviews'))}}
+
     </div>
 </section>
 @include('footer.footer') 

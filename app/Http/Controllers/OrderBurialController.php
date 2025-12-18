@@ -30,4 +30,14 @@ class OrderBurialController extends Controller
         }
         return OrderBurialService::orderAddWithPay($burial);
     }
+
+    public static function sendCode(Request $request){
+        return OrderBurialService::sendCode($request);
+    }
+
+    public static function verifyCode(Request $request){
+        return OrderBurialService::verifyCode($request);
+    }
+    
+
 }

@@ -1,6 +1,6 @@
 <?php         
 use App\Models\Review;
-$reviews = Review::orderBy('id', 'desc')->get();
+$reviews = Review::orderBy('id', 'desc')->where('review_category_id',7)->get();
 
 ?>
 @if (isset($reviews) && $reviews->count()>0)

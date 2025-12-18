@@ -5721,8 +5721,118 @@ margin: 0 auto;
     z-index: 10;
     cursor: pointer;
 }
+.open_contact_form {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0080D7 0%, #0069B3 100%);
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0, 128, 215, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    animation: floatAnimation 3s ease-in-out infinite;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
+.open_contact_form:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(0, 128, 215, 0.6);
+    background: linear-gradient(135deg, #0090F0 0%, #0079D9 100%);
+    animation-play-state: paused;
+}
 
+.open_contact_form:active {
+    transform: scale(0.95);
+    box-shadow: 0 4px 15px rgba(0, 128, 215, 0.3);
+}
+
+/* Анимация плавания */
+@keyframes floatAnimation {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+/* Пульсация для привлечения внимания */
+.open_contact_form.pulse {
+    animation: pulseAnimation 2s ease-in-out infinite;
+}
+
+@keyframes pulseAnimation {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 128, 215, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(0, 128, 215, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 128, 215, 0);
+    }
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .open_contact_form {
+        width: 60px;
+        height: 60px;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    @keyframes floatAnimation {
+        0% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-8px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
+    }
+}
+
+/* Таймер обратного отсчета */
+.countdown-notification {
+    position: fixed;
+    bottom: 110px;
+    right: 30px;
+    background: #0080D7;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.5s ease-out;
+    z-index: 999;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.open_contact_form svg{
+    width: 40px;
+    height: 40px;
+}
 .chat-widget {
     position: fixed;
     bottom: 30px;
@@ -8323,9 +8433,11 @@ text-decoration-skip-ink: none;
 .mobile_header .children_pages_mobile_header.children_pages_mobile_header_active{
     display: flex;
 }
-
+.capture_container .reviews_organizations .li_review_organization{
+    min-height: 380px;
+}
 .capture_container video{
-    width: 100vh;
+    width: 100%;
     height: 677px;
 }
 .capture_container .video_service{
@@ -9297,6 +9409,8 @@ color: white;
 }
 .capture_block section{
     padding-top: 0px;
+    position: relative;
+    width: 100%;
 }
 .capture_block .ul_advanyages_service,.capture_block .gos_block{
     width: 100%;
@@ -9899,6 +10013,7 @@ color: white;
 }
 
 @media(max-width:760px){
+
     .cookie_consent{
         gap: 15px;
         flex-direction: column;
@@ -10190,6 +10305,9 @@ color: white;
 }
 
 @media(max-width:560px){
+    .capture_container video{
+        height: auto;
+    }
 
     .mgo-alternative-item{
         flex-direction: column;
@@ -10207,7 +10325,76 @@ color: white;
     .flex_404_page{
         min-width: 100%;
     }
+/* Плавающая кнопка обратной связи */
+.floating-feedback-btn {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 9999;
+}
 
+.floating-feedback-btn button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.floating-feedback-btn button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+    background: linear-gradient(135deg, #0056b3 0%, #003d82 100%);
+}
+
+.floating-feedback-btn button:active {
+    transform: scale(0.95);
+}
+
+.floating-feedback-btn svg {
+    stroke: white;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .floating-feedback-btn {
+        right: 15px;
+        bottom: 15px;
+    }
+    
+    .floating-feedback-btn button {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .floating-feedback-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Стили для формы в модальном окне */
+#feedback_modal .form_popup {
+    padding: 10px 0;
+}
+
+#feedback_modal textarea {
+    resize: vertical;
+    min-height: 120px;
+    max-height: 200px;
+}
+
+#feedback_modal .flex_btn {
+    margin-top: 20px;
+    justify-content: flex-end;
+}
     .ul_variants{
         grid-template-columns:   1fr;
     }

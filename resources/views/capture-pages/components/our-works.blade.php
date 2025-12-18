@@ -4,7 +4,7 @@
     <section class="our_works_slider">
         <div class="container">
             <div class="flex_block">
-                <h2 class="title">Фото работ</h2>
+                <h2 class="title">Фото</h2>
             </div>
 
             <div class="swiper our_works_swiper">
@@ -12,7 +12,7 @@
                     @foreach ($our_works as $our_work )
                         <div class="swiper-slide">
                             <div class="li_our_work only_after_img">
-                                <img src="{{asset('storage/'.$our_work->img_after) }}" alt="">
+                                <img src="{{asset('storage/'.$our_work->file) }}" alt="">
                             </div>
                         </div>
                     @endforeach
@@ -26,3 +26,4 @@
     </section>
 
 @endif
+

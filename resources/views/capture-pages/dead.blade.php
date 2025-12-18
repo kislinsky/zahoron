@@ -6,7 +6,7 @@
     <div class="container">
         <div class="content_order_page">
             <h1 data-bs-toggle="modal" data-bs-target="#cemetery_choose_form" class="title">{{ $title_h1 }}</h1>
-            <form action="{{ route('dead.send') }}" method="get" class='form_popup capture_form'>
+            <form action="{{ route('dead.send') }}" method="get" id='capture_form' class='form_popup capture_form'>
                     @csrf
                     <input type="hidden" name="time_now" class='input_time_now'>
 
@@ -109,10 +109,13 @@
             </div>      
         </div>
 
+        <a href='#capture_form' class="blue_btn" style="max-width: 600px;width:100%;">Сделать заявку!</a>
+
+        {{view('capture-pages.components.our-works',compact('our_works'))}}
 
         {{view('capture-pages.components.how-work')}}
 
-        @include('components.rewies')
+        {{view('capture-pages.components.reviews',compact('reviews'))}}
     </div>
 </section>
 @include('footer.footer') 

@@ -214,6 +214,9 @@ use Artesaos\SEOTools\Facades\SEOTools;
 @endif
 <script>
 
+
+
+
 $( ".change_theme" ).on( "click", function() {
     $('body').toggleClass('black_theme')
 

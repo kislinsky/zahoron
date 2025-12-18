@@ -178,77 +178,45 @@ class CallStatResource extends Resource
             ->maxLength(500),
         
         // Аудиоплеер для прослушивания записи
-        Forms\Components\Placeholder::make('audio_player')
-            ->label('Прослушивание записи')
-            ->content(function ($record) {
-                // Проверяем, есть ли запись звонка
-                if (!$record || !$record->record_url) {
-                    return 'Запись звонка отсутствует';
-                }
-                
-                // Проверяем, является ли это локальным файлом
-                if (strpos($record->record_url, 'files_calls/') !== false || 
-                    strpos($record->record_url, '.mp3') !== false) {
-                    
-                    // Если это относительный путь
-                    if (strpos($record->record_url, 'http') !== 0) {
-                        // Генерируем URL для файла в storage
-                        $filePath = $record->record_url;
-                        
-                        // Проверяем существование файла
-                        if (Storage::exists($filePath)) {
-                            $url = Storage::url($filePath);
-                            $filename = basename($filePath);
-                            
-                            return \Illuminate\Support\HtmlString::make("
-                                <div style='margin-top: 10px; padding: 15px; background: #f8fafc; border-radius: 8px;'>
-                                    <div style='margin-bottom: 10px; font-weight: 500; color: #334155;'>
-                                        Запись звонка: <span style='font-size: 12px; color: #64748b;'>$filename</span>
-                                    </div>
-                                    <audio controls style='width: 100%; height: 40px;'>
-                                        <source src='$url' type='audio/mpeg'>
-                                        Ваш браузер не поддерживает аудиоэлемент.
-                                    </audio>
-                                    <div style='margin-top: 10px;'>
-                                        <a href='$url' target='_blank' 
-                                           style='display: inline-flex; align-items: center; 
-                                                  padding: 6px 12px; background: #3b82f6; 
-                                                  color: white; border-radius: 6px; 
-                                                  text-decoration: none; font-size: 14px;'>
-                                           <svg style='width: 16px; height: 16px; margin-right: 6px;' 
-                                                fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                             <path stroke-linecap='round' stroke-linejoin='round' 
-                                                   stroke-width='2' d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'/>
-                                           </svg>
-                                           Скачать запись
-                                        </a>
-                                    </div>
-                                </div>
-                            ");
-                        } else {
-                            return "Файл не найден: {$filePath}";
-                        }
-                    } else {
-                        // Если это внешний URL
-                        $url = $record->record_url;
-                        
-                        return \Illuminate\Support\HtmlString::make("
-                            <div style='margin-top: 10px; padding: 15px; background: #f8fafc; border-radius: 8px;'>
-                                <div style='margin-bottom: 10px; font-weight: 500; color: #334155;'>
-                                    Внешняя запись звонка
-                                </div>
-                                <audio controls style='width: 100%; height: 40px;'>
-                                    <source src='$url' type='audio/mpeg'>
-                                    Ваш браузер не поддерживает аудиоэлемент.
-                                </audio>
-                            </div>
-                        ");
-                    }
-                }
-                
-                return 'Неверный формат записи звонка';
-            })
-            ->visible(fn ($record) => $record && $record->record_url),
+Forms\Components\Placeholder::make('audio_player')
+    ->label('Прослушивание записи')
+    ->content(function ($record) {
+        // Проверяем, есть ли запись звонка
+        if (!$record || !$record->record_url) {
+            return 'Запись звонка отсутствует';
+        }
+        
+        $filePath = $record->record_url;
+        $url = 'https://zahoron.ru/storage/' . $filePath;
+        $filename = basename($filePath);
+        
+        // Используем Illuminate\Support\HtmlString для безопасного вывода HTML
+        return new \Illuminate\Support\HtmlString("
+            <div style='margin-top: 10px; padding: 15px; background: #f8fafc; border-radius: 8px;'>
+                <div style='margin-bottom: 10px; font-weight: 500; color: #334155;'>
+                    Запись звонка: <span style='font-size: 12px; color: #64748b;'>$filename</span>
+                </div>
+                <audio controls style='width: 100%; height: 40px;'>
+                    <source src='$url' type='audio/mpeg'>
+                    Ваш браузер не поддерживает аудиоэлемент.
+                </audio>
+                <div style='margin-top: 10px;'>
+                    <a href='$url' target='_blank' 
+                       style='display: inline-flex; align-items: center; 
+                              padding: 6px 12px; background: #3b82f6; 
+                              color: white; border-radius: 6px; 
+                              text-decoration: none; font-size: 14px;'>
+                       <svg style='width: 16px; height: 16px; margin-right: 6px;' 
+                            fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                         <path stroke-linecap='round' stroke-linejoin='round' 
+                               stroke-width='2' d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'/>
+                       </svg>
+                       Скачать запись
+                    </a>
+                </div>
+            </div>
+        ");
+    }),
         
         Forms\Components\DateTimePicker::make('date_start')
             ->label('Время начала'),

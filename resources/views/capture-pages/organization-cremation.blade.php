@@ -144,9 +144,9 @@
 
         {{view('capture-pages.components.how-work')}}
 
-        <div class="blue_btn" style="max-width: 600px;width:100%;">Сделать заявку!</div>
+        <a href='#capture_form' class="blue_btn" style="max-width: 600px;width:100%;">Сделать заявку!</a>
 
-        @include('components.rewies')
+        {{view('capture-pages.components.reviews',compact('reviews'))}}
     </div>
 </section>
 @include('footer.footer') 

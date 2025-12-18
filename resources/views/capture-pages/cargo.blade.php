@@ -7,7 +7,7 @@
         <div class="content_order_page">
             <h1 data-bs-toggle="modal" data-bs-target="#cemetery_choose_form" class="title">{{ $title_h1 }}</h1>
             <div class="text_page_marketplace">от {{ selectCity()->organizations->count() ?? 0 }} ритуальных агенств</div>
-            <form action="{{ route('funeral-service.send') }}" method="get" class='form_popup capture_form'>
+            <form action="{{ route('funeral-service.send') }}" id='capture_form' шmethod="get" class='form_popup capture_form'>
                     @csrf
                     <input type="hidden" name="time_now" class='input_time_now'>
 
@@ -154,9 +154,9 @@
 
         {{view('capture-pages.components.how-work')}}
 
-        <div class="blue_btn" style="max-width: 600px;width:100%;">Сделать заявку!</div>
+        <a href='#capture_form' class="blue_btn" style="max-width: 600px;width:100%;">Сделать заявку!</a>
 
-        @include('components.rewies')
+        {{view('capture-pages.components.reviews',compact('reviews'))}}
     </div>
 </section>
 @include('footer.footer') 

@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\OurWork;
+use App\Models\Review;
+use App\Models\Acf;
 use Artesaos\SEOTools\Facades\SEOTools;
 
 class CapturePagesService
@@ -14,8 +16,9 @@ class CapturePagesService
         $cemeteries_beatification=selectCity()->cemeteries;
         $categories_product_price_list=childrenCategoryPriceList();
         $user=null;
-        $our_works=OurWork::all();
-        return view('capture-pages.beatification',compact('cemeteries_beatification','categories_product_price_list','user','our_works','title_h1'));
+        $our_works=Acf::where('page_id',26)->where('name','img')->get();
+        $reviews=Review::where('review_category_id',1)->get();
+        return view('capture-pages.beatification',compact('reviews','cemeteries_beatification','categories_product_price_list','user','our_works','title_h1'));
     }
 
     public static function dead(){
@@ -26,7 +29,9 @@ class CapturePagesService
         $mortuaries=selectCity()->mortuaries;
         $categories_product_price_list=childrenCategoryPriceList();
         $user=null;
-        return view('capture-pages.dead',compact('cemeteries_beatification','categories_product_price_list','user','mortuaries','title_h1'));
+        $our_works=Acf::where('page_id',27)->where('name','img')->get();
+        $reviews=Review::where('review_category_id',6)->get();
+        return view('capture-pages.dead',compact('our_works','reviews','cemeteries_beatification','categories_product_price_list','user','mortuaries','title_h1'));
     }
 
     public static function wake(){
@@ -37,7 +42,9 @@ class CapturePagesService
         $categories_product_price_list=childrenCategoryPriceList();
         $user=null;
         $our_works=OurWork::all();
-        return view('capture-pages.wake',compact('categories_product_price_list','user','districts','our_works','title_h1'));
+        $our_works=Acf::where('page_id',25)->where('name','img')->get();
+        $reviews=Review::where('review_category_id',5)->get();
+        return view('capture-pages.wake',compact('our_works','reviews','categories_product_price_list','user','districts','our_works','title_h1'));
     }
 
     public static function organizationFuneral(){
@@ -49,7 +56,9 @@ class CapturePagesService
         $categories_product_price_list=childrenCategoryPriceList();
         $user=null;
         $our_works=OurWork::all();
-        return view('capture-pages.organization-funeral',compact('cemeteries_beatification','categories_product_price_list','user','mortuaries','our_works','title_h1'));
+        $our_works=Acf::where('page_id',23)->where('name','img')->get();
+        $reviews=Review::where('review_category_id',2)->get();
+        return view('capture-pages.organization-funeral',compact('our_works','reviews','cemeteries_beatification','categories_product_price_list','user','mortuaries','our_works','title_h1'));
     }
 
     public static function organizationCremation(){
@@ -60,7 +69,9 @@ class CapturePagesService
         $categories_product_price_list=childrenCategoryPriceList();
         $user=null;
         $our_works=OurWork::all();
-        return view('capture-pages.organization-cremation',compact('categories_product_price_list','user','mortuaries','our_works','title_h1'));
+        $our_works=Acf::where('page_id',24)->where('name','img')->get();
+        $reviews=Review::where('review_category_id',3)->get();
+        return view('capture-pages.organization-cremation',compact('our_works','reviews','categories_product_price_list','user','mortuaries','our_works','title_h1'));
     }
 
     public static function cargo(){
@@ -70,7 +81,9 @@ class CapturePagesService
         $mortuaries=selectCity()->mortuaries;
         $categories_product_price_list=childrenCategoryPriceList();
         $user=null;
+        $our_works=Acf::where('page_id',22)->where('name','img')->get();
         $our_works=OurWork::all();
-        return view('capture-pages.cargo',compact('categories_product_price_list','user','mortuaries','our_works','title_h1'));
+        $reviews=Review::where('review_category_id',4)->get();
+        return view('capture-pages.cargo',compact('our_works','reviews','categories_product_price_list','user','mortuaries','our_works','title_h1'));
     }
 }

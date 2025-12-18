@@ -154,6 +154,12 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
     Route::get('/cargo-200', [CapturePages::class, 'cargo'])->name('cargo');
 
 
+
+    Route::post('/auth/send-code', [OrderBurialController::class, 'sendCode'])->name('auth.send-code');
+    
+    Route::post('/auth/verify-code', [OrderBurialController::class, 'verifyCode'])->name('auth.verify-code');
+
+
     Route::post('/reset-password/phone', [ForgotPasswordController::class, 'resetPasswordWithPhone'])->name('reset-password.phone');
     Route::get('/verificate-code/phone', [ForgotPasswordController::class, 'pageVerificateCode'])->name('reset-password.phone.verify.code');
     Route::post('/verificate-code/phone/send', [ForgotPasswordController::class, 'verificateCode'])->name('reset-password.phone.verify.code.send');

@@ -26,7 +26,7 @@ class YooMoneyService
      * @return array Возвращает массив с результатом и информацией о платеже.
      */
     
-  public function createPayment($value, $redirect_url = 'https://zahoron.ru/elizovo', $description, $metadata = [], $customerEmail = null, $customerPhone = null)
+  public function createPayment($value, $redirect_url = 'https://zahoron.ru/elizovo', $description, $metadata = [], $customerEmail = null, $customerPhone = null,$redirect=true)
 {
     // Базовые параметры платежа
     $paymentData = [
@@ -75,7 +75,11 @@ class YooMoneyService
         uniqid('', true)
     );
 
+    if($redirect!=true){
+        return $payment->getConfirmation()->getConfirmationUrl();
+    }
     return redirect($payment->getConfirmation()->getConfirmationUrl());
+
 }
 
     /**
