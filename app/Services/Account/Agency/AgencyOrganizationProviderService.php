@@ -99,21 +99,31 @@ class AgencyOrganizationProviderService {
     }
 
     public static function createdOfferToProvider($data){
-        $user=user();
-        $city=selectCity();
-        $categories_products_provider=CategoryProductProvider::where('parent_id','!=',null)->get();
-        $requests=collect();
-        $category_choose=0;
-        if($user->organization()!=null){
-            $requests_to_provider=ProductRequestToSupplier::orderBy('id','desc')->where($user->organization()->id)->where('status',0);
-            if(isset($data['category']) && $data['category']!=0){
-                $requests_to_provider=$requests_to_provider->where('category_id',$data['category']);
-                $category_choose=$data['category'];
+        $user = user();
+        $city = selectCity();
+        $categories_products_provider = CategoryProductProvider::where('parent_id', '!=', null)->get();
+        $requests = collect();
+        $category_choose = 0;
+        
+        if($user->organization() != null){
+            // Получаем ID организации пользователя
+            $organizationId = $user->organization()->id;
+            
+            // Запрос с правильным условием WHERE
+            $requests_to_provider = ProductRequestToSupplier::orderBy('id', 'desc')
+                ->where('organization_id', $organizationId)  // Фильтруем по организации
+                ->where('status', 0);  // Только со статусом 0
+            
+            // Дополнительный фильтр по категории, если указан
+            if(isset($data['category']) && $data['category'] != 0){
+                $requests_to_provider = $requests_to_provider->where('category_id', $data['category']);
+                $category_choose = $data['category'];
             }
-            $requests=$requests_to_provider->paginate(10);
+            
+            $requests = $requests_to_provider->paginate(10);
         }
             
-        return view('account.agency.organization.provider.offers.created',compact('city','requests','category_choose','categories_products_provider'));
+        return view('account.agency.organization.provider.offers.created', compact('city', 'requests', 'category_choose', 'categories_products_provider'));
     }
 
     public static function deleteOffer($offer){   

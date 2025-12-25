@@ -147,7 +147,7 @@
 
         
 
-        <div class="">
+        <div class="container">
             <h2 class='title_our_works'>Похожие {{ $product->title }}</h2>
             {{view('product.components.single.category-products',compact('category_products'))}}
         </div>    </div>

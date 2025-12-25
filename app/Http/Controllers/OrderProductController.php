@@ -52,7 +52,7 @@ class OrderProductController extends Controller
 
             return OrderProductService::addOrderOne($data);
         }
-        if($category->slug=='otpravka-gruz-200'){
+        if($category->slug=='podgotovka-otpravki-gruza-200'){
             $data=request()->validate([
                 'g-recaptcha-response' => ['required', new RecaptchaRule],
                 'city_from'=>['required','string'],

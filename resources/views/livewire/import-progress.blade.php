@@ -43,12 +43,31 @@
             <div class="flex items-center">
                 Импортировано: {{ $createdCount }} записей
             </div>
+            @if($updatedCount > 0)
+                <div class="flex items-center">
+                    Обновлено: {{ $updatedCount }} записей
+                </div>
+            @endif
             <div class="flex items-center">
                 Пропущено: {{ $skippedCount }} строк
             </div>
             @if (count($errors) > 0)
-                <div class="flex items-center">
-                    Пропущено с ошибками: {{ count($errors) }}шт.
+                <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <div class="font-medium text-yellow-800 dark:text-yellow-200 mb-2">
+                        Детали пропущенных строк ({{ count($errors) }}):
+                    </div>
+                    <div class="max-h-60 overflow-y-auto space-y-1 text-sm text-yellow-700 dark:text-yellow-300">
+                        @foreach(array_slice($errors, 0, 20) as $error)
+                            <div class="py-1 border-b border-yellow-200 dark:border-yellow-800 last:border-0">
+                                {{ $error }}
+                            </div>
+                        @endforeach
+                        @if(count($errors) > 20)
+                            <div class="text-xs text-yellow-600 dark:text-yellow-400 italic pt-2">
+                                ... и ещё {{ count($errors) - 20 }} ошибок. Проверьте логи Laravel для полного списка.
+                            </div>
+                        @endif
+                    </div>
                 </div>
             @endif
         </div>

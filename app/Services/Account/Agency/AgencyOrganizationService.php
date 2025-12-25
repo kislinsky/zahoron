@@ -767,6 +767,7 @@ class AgencyOrganizationService {
       public static function callStats($data,$request)
     {
         $organization=user()->organization();
+        deleteNotifications('call',null,$organization->id);
         // Получаем статистику через модель
         $calls = Organization::getCallStats($data);
 

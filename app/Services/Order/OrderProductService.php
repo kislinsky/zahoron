@@ -104,7 +104,7 @@ class OrderProductService
            ]);
             
         }
-        if($product->category->slug=='organizacia-kremacii'){
+        elseif($product->category->slug=='organizacia-kremacii'){
             $order=OrderProduct::create([
              'product_id'=>$product->id,
              'user_id'=>$user->id,
@@ -118,7 +118,7 @@ class OrderProductService
             ]);
              
         }
-        if($product->category->slug=='podgotovka-otpravki-gruza-200'){
+        elseif($product->category->slug=='podgotovka-otpravki-gruza-200'){
             $order=OrderProduct::create([
              'product_id'=>$product->id,
              'user_id'=>$user->id,
@@ -134,7 +134,7 @@ class OrderProductService
             ]);
              
         }
-        if($product->category->slug=='knopka-mogil' || $product->category->slug=='pominal-nye-zaly'){
+        elseif($product->category->slug=='knopka-mogil' || $product->category->slug=='pominal-nye-zaly'){
             $order=OrderProduct::create([
              'product_id'=>$product->id,
              'user_id'=>$user->id,

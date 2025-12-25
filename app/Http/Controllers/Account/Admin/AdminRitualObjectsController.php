@@ -33,7 +33,7 @@ class AdminRitualObjectsController extends Controller
     public static function cemeteryReviewsImport(Request $request){
         
         $request->validate([
-            'file_reviews' => 'required|mimes:xlsx,xls,csv'
+            'file_reviews' => 'required'
         ]);
         return AdminCemeteryService::importReviews($request);
     }

@@ -2702,7 +2702,7 @@ function contentCart($content, $model) {
     return str_replace('[Населённый пункт]', $model->city->title ?? '', $content);
 }
 
-function sendMail($to, $subject, $body) {
+function sendMail($to, $subject, $body, $isHTML = false) {
     $mail = new PHPMailer(true);
     try {
         // Настройки SMTP
@@ -2713,29 +2713,33 @@ function sendMail($to, $subject, $body) {
         $mail->Password = 'chel192_top';
         $mail->SMTPSecure = 'tls';
         $mail->Port = 587;
-        $mail->CharSet = 'UTF-8'; // Устанавливаем кодировку UTF-8
+        $mail->CharSet = 'UTF-8';
         
         // Отправитель
-        $mail->setFrom('main@zahoron.ru', 'zahoron.ru', 'UTF-8');
+        $mail->setFrom('main@zahoron.ru', 'zahoron.ru');
         
         // Получатель
         $mail->addAddress($to);
         
-        // Тема письма с поддержкой кириллицы
-        $mail->Subject = '=?UTF-8?B?'.base64_encode($subject).'?=';
+        // Тема письма
+        $mail->Subject = $subject;
+        
+        // Указываем, что письмо содержит HTML
+        $mail->isHTML($isHTML);
         
         // Тело письма
         $mail->Body = $body;
-        $mail->Encoding = 'base64'; // Кодировка содержимого
         
-        // Альтернативное текстовое тело для старых почтовых клиентов
+        // Альтернативное текстовое тело (для почтовых клиентов без поддержки HTML)
         $mail->AltBody = strip_tags($body);
+        
+        // Кодировка
+        $mail->Encoding = 'base64';
         
         // Отправка
         $mail->send();
         return true;
     } catch (Exception $e) {
-        // Логирование ошибки (рекомендуется)
         error_log('Mailer Error: '.$mail->ErrorInfo);
         return false;
     }
@@ -2978,4 +2982,123 @@ function deleteNotifications($type, $user_id = null, $organization_id = null) {
     $notifications->delete();
     
     return $count;
+}
+
+function addSeo(){
+    $x = 82;
+    
+    while ($x <= 87){
+        $objectName = [
+            82 => 'Ритуальные объекты',
+            83 => 'Памятники', 
+            84 => 'Ограды',
+            85 => 'Цветники',
+            86 => 'Столы',
+            87 => 'Скамейки'
+        ][$x] ?? "Объект {$x}";
+        
+        // Преимущество 1
+        SEO::create([
+            'name' => 'h2_1',
+            'title' => 'Заголовок преимущества 1',
+            'content' => 'Анонимность и конфиденциальность',
+            'seo_object_id' => $x
+        ]);
+        SEO::create([
+            'name' => 'p_1',
+            'title' => 'Текст преимущества 1',
+            'content' => 'Ваш номер скрыт — никто не будет беспокоить лишними звонками. Мы заботимся о вашей приватности.',
+            'seo_object_id' => $x
+        ]);
+        
+        // Преимущество 2
+        SEO::create([
+            'name' => 'h2_2',
+            'title' => 'Заголовок преимущества 2',
+            'content' => 'Оперативность и прозрачность',
+            'seo_object_id' => $x
+        ]);
+        SEO::create([
+            'name' => 'p_2',
+            'title' => 'Текст преимущества 2',
+            'content' => 'Получите предложения сразу от нескольких агентств, с кристально чистыми ценами и условиями.',
+            'seo_object_id' => $x
+        ]);
+        
+        // Преимущество 3
+        SEO::create([
+            'name' => 'h2_3',
+            'title' => 'Заголовок преимущества 3',
+            'content' => 'Выбор на основе открытых условий',
+            'seo_object_id' => $x
+        ]);
+        SEO::create([
+            'name' => 'p_3',
+            'title' => 'Текст преимущества 3',
+            'content' => 'Вам доступны все агентства — выбирайте то, которое вам подходит, без давления и скрытых условий.',
+            'seo_object_id' => $x
+        ]);
+        
+        // Шаг 1
+        SEO::create([
+            'name' => 'h2_4',
+            'title' => 'Заголовок шага 1',
+            'content' => '1. Оформите заказ',
+            'seo_object_id' => $x
+        ]);
+        SEO::create([
+            'name' => 'p_4',
+            'title' => 'Текст шага 1',
+            'content' => 'Ваш номер будет скрыт для ритуальных агентств — никакие посторонние звонки вам не поступят.',
+            'seo_object_id' => $x
+        ]);
+        
+        // Шаг 2
+        SEO::create([
+            'name' => 'h2_5',
+            'title' => 'Заголовок шага 2',
+            'content' => '2. Получите четыре звонка',
+            'seo_object_id' => $x
+        ]);
+        SEO::create([
+            'name' => 'p_5',
+            'title' => 'Текст шага 2',
+            'content' => 'После оформления заказа, вам поступят четыре звонка от различных ритуальных агентств, где они расскажут о стоимости и условий облагораживания могил.',
+            'seo_object_id' => $x
+        ]);
+        
+        // Шаг 3
+        SEO::create([
+            'name' => 'h2_6',
+            'title' => 'Заголовок шага 3',
+            'content' => '3. Выберите агентство',
+            'seo_object_id' => $x
+        ]);
+        SEO::create([
+            'name' => 'p_6',
+            'title' => 'Текст шага 3',
+            'content' => 'Все номера ритуальных агентств будут видны, однако ваш номер будет скрыт. Вы можете выбрать подходящее агентство и перезвонить им для дальнейшего сотрудничества.',
+            'seo_object_id' => $x
+        ]);
+        
+        // Текстовый блок
+        SEO::create([
+            'name' => 'h2_7',
+            'title' => 'Текстовый блок заголовок',
+            'content' => 'Текстовый блок заголовок',
+            'seo_object_id' => $x
+        ]);
+        
+        SEO::create([
+            'name' => 'p_7',
+            'title' => 'Текстовый блок параграф',
+            'content' => 'Выбор ритуальных услуг — это важный и ответственный шаг. Мы предлагаем вам уникальную возможность сравнить предложения от различных ритуальных агентств, не раскрывая ваши личные данные.',
+            'seo_object_id' => $x
+        ]);
+        
+      
+        $x++;
+    }
+    
+    return "Добавлено записей для объектов 82-87";
 }

@@ -316,13 +316,13 @@ class Organization extends Model
         $callsQuery = $organization->calls();
         
         $sortOrder = $filters['sort'] ?? 'desc';
-        $callsQuery->orderBy('created_at', $sortOrder);
+        $callsQuery->orderBy('date_start', $sortOrder);
         
         // Применяем фильтры
         self::applyCallFilters($callsQuery, $filters);
         
         // Сортировка и пагинация
-        return $callsQuery->orderBy('created_at', 'desc')->paginate(13);
+        return $callsQuery->orderBy('date_start', 'desc')->paginate(13);
     }
 
     /**
@@ -336,44 +336,44 @@ class Organization extends Model
     
     switch ($filters['period']) {
         case 'month':
-            $query->whereBetween('created_at', [
+            $query->whereBetween('date_start', [
                 now()->startOfMonth(),
                 now()->endOfMonth()
             ]);
             break;
             
         case 'last_month':
-            $query->whereBetween('created_at', [
+            $query->whereBetween('date_start', [
                 now()->subMonth()->startOfMonth(),
                 now()->subMonth()->endOfMonth()
             ]);
             break;
             
         case 'week':
-            $query->whereBetween('created_at', [
+            $query->whereBetween('date_start', [
                 now()->startOfWeek(),
                 now()->endOfWeek()
             ]);
             break;
             
         case 'last_week':
-            $query->whereBetween('created_at', [
+            $query->whereBetween('date_start', [
                 now()->subWeek()->startOfWeek(),
                 now()->subWeek()->endOfWeek()
             ]);
             break;
             
         case 'today':
-            $query->whereDate('created_at', now()->toDateString());
+            $query->whereDate('date_start', now()->toDateString());
             break;
             
         case 'yesterday':
-            $query->whereDate('created_at', now()->subDay()->toDateString());
+            $query->whereDate('date_start', now()->subDay()->toDateString());
             break;
             
         case 'custom':
             if (!empty($filters['date_from']) && !empty($filters['date_to'])) {
-                $query->whereBetween('created_at', [
+                $query->whereBetween('date_start', [
                     $filters['date_from'] . ' 00:00:00',
                     $filters['date_to'] . ' 23:59:59'
                 ]);

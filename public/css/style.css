@@ -8447,6 +8447,82 @@ text-decoration-skip-ink: none;
     display: none;
 }
 
+.li_buy_aplication.simple-view{
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.block_buy_aplication .title_middle{
+    margin-bottom: 20px;
+}
+
+.li_buy_aplication.simple-view .text_black{
+    margin-right: auto;
+}
+
+
+.pricing-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.pricing-table th {
+    background-color: #f8f9fa;
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #e0e0e0;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.pricing-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 15px;
+}
+
+.pricing-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.pricing-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.service-name {
+    font-weight: 500;
+    color: #333;
+}
+
+.standard-price {
+    color: #007bff;
+    font-weight: 600;
+}
+
+.premium-price {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.service-category {
+    margin-bottom: 40px;
+}
+
+.service-category:last-child {
+    margin-bottom: 0;
+}
+.service-name
+
+.li_buy_aplication.simple-view
+
 .gray_circle{
     width: 48px;
     height: 48px;
@@ -9403,6 +9479,7 @@ color: white;
 .capture_container{
     display: flex;
     flex-direction: column;
+    padding-bottom: 20px;
     gap: 50px;
     align-items: center;
     margin-top: 50px;
@@ -9412,6 +9489,11 @@ color: white;
     position: relative;
     width: 100%;
 }
+
+.capture_block .reviews_organizations{
+    padding-bottom: 0px;
+}
+
 .capture_block .ul_advanyages_service,.capture_block .gos_block{
     width: 100%;
 }

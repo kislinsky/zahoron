@@ -1967,12 +1967,11 @@ class AgencyController extends Controller
         $applicationTypes = TypeApplication::where('buy_for_organization', 1)
             ->with(['typeService' => function ($query) {
                 $query->where('is_show', 1)
-                    ->select('id', 'type_application_id', 'title', 'title_ru');
+                    ->select('id', 'type_application_id', 'title', 'title_ru', 'price', 'premium_price');
             }])
             ->select('id', 'title', 'title_ru')
             ->get();
 
-        $organization = auth()->organization();
         $result = [];
 
         foreach ($applicationTypes as $appType) {
@@ -1984,17 +1983,12 @@ class AgencyController extends Controller
             ];
 
             foreach ($appType->typeService as $service) {
-                // Проверяем купленные заявки пользователя
-                $purchased = UserRequestsCount::where('organization_id', $organization->id)
-                    ->where('type_service_id', $service->id)
-                    ->first();
-
                 $typeData['services'][] = [
-                    'id'                => $service->id,
-                    'title'             => $service->title,
-                    'title_ru'          => $service->title_ru,
-                    'purchased_count'   => $purchased ? $purchased->count : 0,
-                    'last_purchased_at' => $purchased ? $purchased->created_at->toDateTimeString() : null
+                    'id'            => $service->id,
+                    'title'         => $service->title,
+                    'title_ru'      => $service->title_ru,
+                    'price'         => $service->price ?? 0,
+                    'premium_price' => $service->premium_price ?? 0
                 ];
             }
 

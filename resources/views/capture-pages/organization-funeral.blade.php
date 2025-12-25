@@ -6,7 +6,10 @@
     <div class="container">
         <div class="content_order_page">
             <h1 data-bs-toggle="modal" data-bs-target="#cemetery_choose_form" class="title">{{ $title_h1 }}</h1>
-            <div class="text_page_marketplace">от {{ selectCity()->organizations->count() ?? 0 }} ритуальных агенств</div>
+            <div class="video_service">
+                <img class='btn_play_video' src="{{asset('storage/uploads/Group 34.svg')}}" alt="">
+                <video controls src="{{asset('storage/'.get_acf(23,"video")) }}"></video>
+            </div>
             <form action="{{ route('funeral-service.send') }}" method="get" id='capture_form' class='form_popup capture_form'>
                     @csrf
                     <input type="hidden" name="time_now" class='input_time_now'>
@@ -151,20 +154,32 @@
 <section class="capture_block">
     <div class="container capture_container">
 
-        {{view('capture-pages.components.advantages')}}
-        
-        <div class="video_service">
-            <img class='btn_play_video' src="{{asset('storage/uploads/Group 34.svg')}}" alt="">
-            <video controls src="{{asset('storage/'.get_acf(23,"video")) }}"></video>
-        </div>
+         {{view('capture-pages.components.advantages',compact('advantages_1_title',
+            'advantages_1_text',
+            'advantages_2_title',
+            'advantages_2_text',
+            'advantages_3_title',
+            'advantages_3_text'))
+        }}
 
         {{view('capture-pages.components.our-works',compact('our_works'))}}
 
-        {{view('capture-pages.components.how-work')}}
+        {{view('capture-pages.components.how-work',compact('instruction_1_title',
+            'instruction_1_text',
+            'instruction_2_title',
+            'instruction_2_text',
+            'instruction_3_title',
+            'instruction_3_text'))
+        }}
 
         <a href='#capture_form' class="blue_btn" style="max-width: 600px;width:100%;">Сделать заявку!</a>
 
         {{view('capture-pages.components.reviews',compact('reviews'))}}
+
+         <div>
+            <h2 class="title">{{ $text_block_title }}</h2>
+            <div class="text_black">{{ $text_block_text }}</div>    
+        </div>
     </div>
 </section>
 @include('footer.footer') 

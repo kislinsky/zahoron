@@ -57,7 +57,7 @@
                             </td>
                             <td>
                                 <div class="text_black">
-                                    {{ $call->created_at->translatedFormat('d M Y') }}
+                                    {{ $call->date_start->translatedFormat('d M Y') }}
                                 </div>
                             </td>
                             <td>

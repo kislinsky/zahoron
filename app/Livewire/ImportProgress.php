@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Filament\Pages\BurialImport;
+use App\Filament\Pages\CemeteryImport;
 use Illuminate\Support\Facades\Redis;
 use Livewire\Component;
 
@@ -17,6 +18,7 @@ class ImportProgress extends Component
     public bool $isFinished = false;
     public bool $eventDispatched = false;
     public int $createdCount = 0;
+    public int $updatedCount = 0;
     public int $skippedCount = 0;
     protected $polling = 1000;
 
@@ -56,16 +58,29 @@ class ImportProgress extends Component
 
             // Получаем финальные цифры
             $this->createdCount = (int) Redis::get("import_progress:{$this->jobId}:created") ?? 0;
+            $this->updatedCount = (int) Redis::get("import_progress:{$this->jobId}:updated") ?? 0;
             $this->skippedCount = (int) Redis::get("import_progress:{$this->jobId}:skipped") ?? 0;
 
             // Отправляем событие в родительский компонент Filament Page для уведомления
             if (!$this->eventDispatched) {
+                // Для импорта захоронений (без updated)
+                if ($this->updatedCount === 0) {
+                    $this->dispatch('importFinished',
+                        status: $this->status,
+                        created: $this->createdCount,
+                        skipped: $this->skippedCount,
+                        errors: $this->errors
+                    )->to(BurialImport::class);
+                }
+
+                // Для импорта кладбищ (с updated)
                 $this->dispatch('importFinished',
                     status: $this->status,
                     created: $this->createdCount,
+                    updated: $this->updatedCount,
                     skipped: $this->skippedCount,
                     errors: $this->errors
-                )->to(BurialImport::class);
+                )->to(CemeteryImport::class);
 
                 $this->eventDispatched = true;
             }
@@ -75,6 +90,7 @@ class ImportProgress extends Component
             Redis::expire("import_progress:{$this->jobId}:current", 300);
             Redis::expire("import_progress:{$this->jobId}:status", 300);
             Redis::expire("import_progress:{$this->jobId}:created", 300);
+            Redis::expire("import_progress:{$this->jobId}:updated", 300);
             Redis::expire("import_progress:{$this->jobId}:skipped", 300);
             Redis::expire("import_progress:{$this->jobId}:errors", 300);
         }

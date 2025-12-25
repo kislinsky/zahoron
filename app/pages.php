@@ -339,7 +339,7 @@ function organizationPages(){
         ['Оплаты', 'storage/uploads/Icon_pay_aplication.svg',
             [
                 ['Кошельки', 'account.agency.organization.wallets'],
-                //['Заявки', 'account.agency.applications'],
+                ['Заявки', 'account.agency.applications'],
                 ['Приоритет', 'account.agency.priority.buy']
             ]
         ],

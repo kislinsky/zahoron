@@ -127,7 +127,7 @@
             <div id="map_organization_single" style="width: 100%; height: 600px"></div>
 
         </div>
-        <div class="">
+        <div class="container">
             <h2 class='title_our_works'>Похожие {{ $product->title }}</h2>
             {{view('product.components.single.category-products',compact('category_products'))}}
         </div>
