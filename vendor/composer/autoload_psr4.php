@@ -145,6 +145,8 @@ return array(
     'GrahamCampbell\\ResultType\\' => array($vendorDir . '/graham-campbell/result-type/src'),
     'GeoIp2\\' => array($vendorDir . '/geoip2/geoip2/src'),
     'Fruitcake\\Cors\\' => array($vendorDir . '/fruitcake/php-cors/src'),
+    'Flowframe\\Trend\\Database\\Factories\\' => array($vendorDir . '/flowframe/laravel-trend/database/factories'),
+    'Flowframe\\Trend\\' => array($vendorDir . '/flowframe/laravel-trend/src'),
     'Filament\\Widgets\\' => array($vendorDir . '/filament/widgets/src'),
     'Filament\\Tables\\' => array($vendorDir . '/filament/tables/src'),
     'Filament\\Support\\' => array($vendorDir . '/filament/support/src'),

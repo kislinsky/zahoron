@@ -10,9 +10,9 @@ use Artesaos\SEOTools\Facades\SEOTools;
 class CapturePagesService
 {
     public static function beatification(){
-        SEOTools::setTitle(formatContent(getSeo('page-dead','title')));
-        SEOTools::setDescription(formatContent(getSeo('page-dead','description')));
-        $title_h1=formatContent(getSeo('page-dead','h1'));
+        SEOTools::setTitle(formatContent(getSeo('page-beatification','title')));
+        SEOTools::setDescription(formatContent(getSeo('page-beatification','description')));
+        $title_h1=formatContent(getSeo('page-beatification','h1'));
         $cemeteries_beatification=selectCity()->cemeteries;
         $categories_product_price_list=childrenCategoryPriceList();
         $user=null;
@@ -20,20 +20,20 @@ class CapturePagesService
         $reviews=Review::where('review_category_id',1)->get();
         
         // Новые SEO блоки
-        $advantages_1_title=formatContent(getSeo('page-dead','h2_1'));
-        $advantages_1_text=formatContent(getSeo('page-dead','p_1'));
-        $advantages_2_title=formatContent(getSeo('page-dead','h2_2'));
-        $advantages_2_text=formatContent(getSeo('page-dead','p_2'));
-        $advantages_3_title=formatContent(getSeo('page-dead','h2_3'));
-        $advantages_3_text=formatContent(getSeo('page-dead','p_3'));
-        $instruction_1_title=formatContent(getSeo('page-dead','h2_4'));
-        $instruction_1_text=formatContent(getSeo('page-dead','p_4'));
-        $instruction_2_title=formatContent(getSeo('page-dead','h2_5'));
-        $instruction_2_text=formatContent(getSeo('page-dead','p_5'));
-        $instruction_3_title=formatContent(getSeo('page-dead','h2_6'));
-        $instruction_3_text=formatContent(getSeo('page-dead','p_6'));
-        $text_block_title=formatContent(getSeo('page-dead','h2_7'));
-        $text_block_text=formatContent(getSeo('page-dead','p_7'));
+        $advantages_1_title=formatContent(getSeo('page-beatification','h2_1'));
+        $advantages_1_text=formatContent(getSeo('page-beatification','p_1'));
+        $advantages_2_title=formatContent(getSeo('page-beatification','h2_2'));
+        $advantages_2_text=formatContent(getSeo('page-beatification','p_2'));
+        $advantages_3_title=formatContent(getSeo('page-beatification','h2_3'));
+        $advantages_3_text=formatContent(getSeo('page-beatification','p_3'));
+        $instruction_1_title=formatContent(getSeo('page-beatification','h2_4'));
+        $instruction_1_text=formatContent(getSeo('page-beatification','p_4'));
+        $instruction_2_title=formatContent(getSeo('page-beatification','h2_5'));
+        $instruction_2_text=formatContent(getSeo('page-beatification','p_5'));
+        $instruction_3_title=formatContent(getSeo('page-beatification','h2_6'));
+        $instruction_3_text=formatContent(getSeo('page-beatification','p_6'));
+        $text_block_title=formatContent(getSeo('page-beatification','h2_7'));
+        $text_block_text=formatContent(getSeo('page-beatification','p_7'));
         
         return view('capture-pages.beatification',compact(
             'reviews',
@@ -60,9 +60,9 @@ class CapturePagesService
     }
 
     public static function dead(){
-        SEOTools::setTitle(formatContent(getSeo('page-beatification','title')));
-        SEOTools::setDescription(formatContent(getSeo('page-beatification','description')));
-        $title_h1=formatContent(getSeo('page-beatification','h1'));
+        SEOTools::setTitle(formatContent(getSeo('page-dead','title')));
+        SEOTools::setDescription(formatContent(getSeo('page-dead','description')));
+        $title_h1=formatContent(getSeo('page-dead','h1'));
         $cemeteries_beatification=selectCity()->cemeteries;
         $mortuaries=selectCity()->mortuaries;
         $categories_product_price_list=childrenCategoryPriceList();
@@ -71,20 +71,20 @@ class CapturePagesService
         $reviews=Review::where('review_category_id',6)->get();
         
         // Новые SEO блоки
-        $advantages_1_title=formatContent(getSeo('page-beatification','h2_1'));
-        $advantages_1_text=formatContent(getSeo('page-beatification','p_1'));
-        $advantages_2_title=formatContent(getSeo('page-beatification','h2_2'));
-        $advantages_2_text=formatContent(getSeo('page-beatification','p_2'));
-        $advantages_3_title=formatContent(getSeo('page-beatification','h2_3'));
-        $advantages_3_text=formatContent(getSeo('page-beatification','p_3'));
-        $instruction_1_title=formatContent(getSeo('page-beatification','h2_4'));
-        $instruction_1_text=formatContent(getSeo('page-beatification','p_4'));
-        $instruction_2_title=formatContent(getSeo('page-beatification','h2_5'));
-        $instruction_2_text=formatContent(getSeo('page-beatification','p_5'));
-        $instruction_3_title=formatContent(getSeo('page-beatification','h2_6'));
-        $instruction_3_text=formatContent(getSeo('page-beatification','p_6'));
-        $text_block_title=formatContent(getSeo('page-beatification','h2_7'));
-        $text_block_text=formatContent(getSeo('page-beatification','p_7'));
+        $advantages_1_title=formatContent(getSeo('page-dead','h2_1'));
+        $advantages_1_text=formatContent(getSeo('page-dead','p_1'));
+        $advantages_2_title=formatContent(getSeo('page-dead','h2_2'));
+        $advantages_2_text=formatContent(getSeo('page-dead','p_2'));
+        $advantages_3_title=formatContent(getSeo('page-dead','h2_3'));
+        $advantages_3_text=formatContent(getSeo('page-dead','p_3'));
+        $instruction_1_title=formatContent(getSeo('page-dead','h2_4'));
+        $instruction_1_text=formatContent(getSeo('page-dead','p_4'));
+        $instruction_2_title=formatContent(getSeo('page-dead','h2_5'));
+        $instruction_2_text=formatContent(getSeo('page-dead','p_5'));
+        $instruction_3_title=formatContent(getSeo('page-dead','h2_6'));
+        $instruction_3_text=formatContent(getSeo('page-dead','p_6'));
+        $text_block_title=formatContent(getSeo('page-dead','h2_7'));
+        $text_block_text=formatContent(getSeo('page-dead','p_7'));
         
         return view('capture-pages.dead',compact(
             'our_works',

@@ -99,6 +99,20 @@ class FuneralService extends Model
                     'status' => 'created'
                 ])
             ]);
+
+            // Уведомление для админа
+            \App\Models\Notification::create([
+                'user_id' => admin()->id,
+                'organization_id' => null,
+                'type' => 'funeral_service_created_admin',
+                'title' => 'Заявка на ритуальную услугу создана',
+                'message' => "Новая заявка на ритуальную услугу #{$funeralService->id} ",
+                'is_read' => false,
+                'data' => json_encode([
+                    'funeral_service_id' => $funeralService->id,
+                    'status' => 'created'
+                ])
+            ]);
             
             // РАСЧЕТ ВРЕМЕНИ УДАЛЕНИЯ ЗАЯВКИ
             $delayTime = now()->addMinutes(30); // По умолчанию 30 минут
@@ -136,6 +150,7 @@ class FuneralService extends Model
                 'sms-soobshhenie-dlia-organizacii-pri-zaiavke-rit-uslug',
                 'email-soobshhenie-dlia-organizacii-pri-zaiavke-rit-uslug'
             );
+            sendSms(admin()->phone, "Новая заявка на ритуальную услугу #{$funeralService->id} ");
             
             \Illuminate\Support\Facades\Log::info("FuneralService #{$funeralService->id} created. Will expire at: " . $delayTime->format('Y-m-d H:i:s'));
         });

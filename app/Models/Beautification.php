@@ -108,6 +108,22 @@ class Beautification extends Model
                 ])
                
             ]);
+
+
+            // Уведомление для пользователя
+            \App\Models\Notification::create([
+                'user_id' => admin()->id,
+                'organization_id' => null,
+                'type' => 'beautification_created_admin',
+                'title' => 'Заявка на благоустройство создана',
+                'message' => "Новая заявка на благоустройство #{$beautification->id}",
+                'is_read' => false,
+                'data' => json_encode([
+                    'beautification_id' => $beautification->id,
+                    'status' => 'created'
+                ])
+               
+            ]);
             
             // РАСЧЕТ ВРЕМЕНИ УДАЛЕНИЯ ЗАЯВКИ
             $delayTime = now()->addMinutes(30); // По умолчанию 30 минут
@@ -140,8 +156,18 @@ class Beautification extends Model
             CloseApplicationJob::dispatch($beautification)->delay($delayTime);
 
             sendMessage('soobshhenie-pri-zaiavke-pop-up-oblogorazivanie',[],$beautification->user);
-            sendMessagesOrganizations(selectCity()->organizations,'sms-soobshhenie-dlia-organizacii-pri-zaiavke-oblagorazivaniia','email-soobshhenie-dlia-organizacii-pri-zaiavke-oblagorazivaniia');
-        
+            sendMessagesOrganizations(selectCity()->organizations,
+                'sms-soobshhenie-dlia-organizacii-pri-zaiavke-oblagorazivaniia',
+                'email-soobshhenie-dlia-organizacii-pri-zaiavke-oblagorazivaniia',
+                ["client_name"=>$beautification->user->name],
+                [
+                    "client_name"=>$beautification->user->name,
+                    "phone"=>$beautification->user->phone,
+                    "desired_services"=>$beautification->products()->pluck('title')->implode(', '),
+                ]
+            );
+            sendSms(admin()->phone,"Новая заявка на благоустройство #{$beautification->id}");
+
             
         });
         

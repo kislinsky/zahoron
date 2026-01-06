@@ -409,7 +409,18 @@ private static function detectFileExtension(string $url): ?string
                     'message' => "Зафиксирован новый входящий звонок",
                     'is_read' => false
                 ]);
+
+                Notification::create([
+                    'user_id' => admin()->id,
+                    'organization_id' => $call->organization_id,
+                    'type' => 'call_admin',
+                    'title' => 'Новый звонок',
+                    'message' => "Зафиксирован новый входящий звонок",
+                    'is_read' => false
+                ]);
             }
+
+            
         });
     }
 

@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="container mt-4">
+
+   {{ view('account.agency.components.message-not-organizations',compact('haveOrganizations')) }}
     <h2 class="mb-4">Уведомления</h2>
     
     @if($notifications && $notifications->count() > 0)

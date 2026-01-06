@@ -14,4 +14,24 @@ class ReviewCemetery extends Model
     function cemetery(){
         return $this->belongsTo(Cemetery::class);
     }
+    
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::created(function ($review) {
+
+            
+            // Для админа
+            Notification::create([
+                'user_id' => admin()->id,
+                'organization_id' => null,
+                'type' => 'review_cemetery_admin',
+                'title' => 'Новый отзыв о кладбище',
+                'message' => "Создан новый отзыв о кладбище",
+                'is_read' => false
+            ]);
+        });
+        
+    }
 }

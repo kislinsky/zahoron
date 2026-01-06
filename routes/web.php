@@ -4,9 +4,10 @@ use App\Http\Controllers\Account\Admin\AdminBurialController;
 use App\Http\Controllers\Account\Admin\AdminController;
 use App\Http\Controllers\Account\Admin\AdminGeoController;
 use App\Http\Controllers\Account\Admin\AdminOrganizationController;
+use App\Http\Controllers\Account\Admin\AdminProductController;
+
+
 use App\Http\Controllers\Account\Admin\AdminRitualObjectsController;
-
-
 use App\Http\Controllers\Account\Admin\AdminSEOController;
 use App\Http\Controllers\Account\Agency\AgencyController;
 use App\Http\Controllers\Account\Agency\AgencyOrganizationController;
@@ -20,9 +21,9 @@ use App\Http\Controllers\Account\DecoderController;
 use App\Http\Controllers\Account\HomeController;
 use App\Http\Controllers\Account\TicketController;
 use App\Http\Controllers\Account\User\AccountController;
+
+
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-
-
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -71,6 +72,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+
 
 
 
@@ -798,6 +800,12 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
                 Route::group(['prefix'=>'geo'], function() {
                     Route::get('/parser', [AdminGeoController::class, 'parser'])->name('account.admin.parser.geo');
                     Route::post('/import', [AdminGeoController::class, 'import'])->name('account.admin.parsing.geo');
+
+                });
+
+                Route::group(['prefix'=>'product'], function() {
+                    Route::get('/parser', [AdminProductController::class, 'parser'])->name('account.admin.parser.product');
+                    Route::post('/import', [AdminProductController::class, 'import'])->name('account.admin.parsing.product');
 
                 });
 

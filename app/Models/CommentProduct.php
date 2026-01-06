@@ -44,6 +44,15 @@ class CommentProduct extends Model
                 'message' => "Поступил новый комментарий к товару",
                 'is_read' => false
             ]);
+
+            Notification::create([
+                'user_id' => admin()->id,
+                'organization_id' => $comment->organization_id,
+                'type' => 'comment_admin',
+                'title' => 'Новый комментарий',
+                'message' => "Поступил новый комментарий к товару",
+                'is_read' => false
+            ]);
         
         });
     }

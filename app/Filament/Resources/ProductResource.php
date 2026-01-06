@@ -25,6 +25,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\MultiSelect;
 use Rap2hpoutre\FastExcel\FastExcel;
 
 class ProductResource extends Resource
@@ -227,6 +228,28 @@ class ProductResource extends Resource
 
     public static function table(Table $table): Table
     {
+        // Карта колонок для экспорта (русские названия)
+        $columnsMap = [
+            'id' => 'ID',
+            'title' => 'Название',
+            'slug' => 'Слаг',
+            'view' => 'Отображение',
+            'organization_id' => 'Организация',
+            'price' => 'Цена',
+            'price_sale' => 'Цена со скидкой',
+            'total_price' => 'Итоговая цена',
+            'content' => 'Описание',
+            'category_id' => 'Подкатегория',
+            'category_parent_id' => 'Категория',
+            'material' => 'Материал',
+            'color' => 'Цвет',
+            'layering' => 'Тип продукта',
+            'size' => 'Размеры',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
+            'organization.city.title' => 'Город',
+        ];
+        
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
@@ -293,9 +316,14 @@ class ProductResource extends Resource
             ->headerActions([
                 \Filament\Tables\Actions\Action::make('export')
                     ->label('Экспорт в Excel')
-                    ->action(function (HasTable $livewire) {
-                        $query = Product::query();
+                    ->action(function ($livewire, array $data) use ($columnsMap) {
+                        $fileName = 'products_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
                         
+                        // Получаем отфильтрованный запрос
+                        $query = $livewire->getFilteredTableQuery()
+                            ->with(['organization.city', 'parentCategory', 'category']);
+                        
+                        // Применяем права доступа для deputy-admin
                         if (auth()->user()->role === 'deputy-admin') {
                             $cityIds = static::getUserCityIds();
                             if (!empty($cityIds)) {
@@ -304,61 +332,52 @@ class ProductResource extends Resource
                                 });
                             }
                         }
-
-                        // Применяем фильтры
-                        if (property_exists($livewire, 'tableFilters') && !empty($livewire->tableFilters)) {
-                            foreach ($livewire->tableFilters as $filterName => $filterValue) {
-                                if (!empty($filterValue)) {
-                                    switch ($filterName) {
-                                        case 'city_id':
-                                            $query->whereHas('organization.city', function ($q) use ($filterValue) {
-                                                $q->where('id', $filterValue);
-                                            });
-                                            break;
-                                        case 'category_parent_id':
-                                            $query->whereHas('parentCategory', function ($q) use ($filterValue) {
-                                                $q->where('id', $filterValue);
-                                            });
-                                            break;
-                                        case 'category_id':
-                                            $query->whereHas('category', function ($q) use ($filterValue) {
-                                                $q->where('id', $filterValue);
-                                            });
-                                            break;
-                                    }
+                        
+                        // Выбранные колонки или все по умолчанию
+                        $columns = $data['columns'] ?: array_keys($columnsMap);
+                        
+                        $collection = $query->get()->map(function ($item) use ($columns, $columnsMap) {
+                            return collect($columns)->mapWithKeys(function ($col) use ($item, $columnsMap) {
+                                $value = '';
+                                
+                                // Обработка специальных полей
+                                if ($col === 'id') {
+                                    $value = (string) $item->id;
+                                } elseif ($col === 'view') {
+                                    $value = match ((int)$item->view) {
+                                        0 => 'Не показывать',
+                                        1 => 'Показывать',
+                                        default => 'Не указано',
+                                    };
+                                } elseif ($col === 'organization_id') {
+                                    $value = optional($item->organization)->title;
+                                } elseif ($col === 'organization.city.title') {
+                                    $value = optional($item->organization)->city ? $item->organization->city->title : '';
+                                } elseif ($col === 'category_parent_id') {
+                                    $value = optional($item->parentCategory)->title;
+                                } elseif ($col === 'category_id') {
+                                    $value = optional($item->category)->title;
+                                } elseif (in_array($col, ['created_at', 'updated_at'])) {
+                                    $value = $item->{$col} ? $item->{$col}->format('d.m.Y H:i:s') : '';
+                                } else {
+                                    // Обычные поля модели
+                                    $value = $item->{$col} ?? '';
                                 }
-                            }
-                        }
-
-                        // Применяем сортировку
-                        if (property_exists($livewire, 'tableSortColumn') && $livewire->tableSortColumn) {
-                            $query->orderBy($livewire->tableSortColumn, $livewire->tableSortDirection ?? 'asc');
-                        }
-
-                        $products = $query->with(['parentCategory', 'category', 'organization.city'])
-                            ->get()
-                            ->map(function ($product) {
-                                return [
-                                    'ID' => $product->id,
-                                    'Название' => $product->title,
-                                    'Ссылка на товар' => $product->map_link,
-                                    'Организация' => $product->organization->title ?? 'Не указано',
-                                    'Город' => $product->organization->city->title ?? 'Не указано',
-                                    'Цена' => $product->price,
-                                    'Цена со скидкой' => $product->price_sale,
-                                    'Slug' => $product->slug,
-                                    'Описание' => $product->content,
-                                    'Категория' => $product->parentCategory->title ?? 'Не указано',
-                                    'Подкатегория' => $product->category->title ?? 'Не указано',
-                                    'Материал' => $product->material,
-                                    'Цвет' => $product->color,
-                                    'Тип продукта' => $product->layering,
-                                    'Размеры' => $product->size,
-                                ];
-                            });
-
-                        return (new FastExcel($products))->download('products.xlsx');
-                    }),
+                                
+                                return [$columnsMap[$col] ?? $col => $value];
+                            })->toArray();
+                        });
+                        
+                        return (new FastExcel($collection))->download($fileName);
+                    })
+                    ->form([
+                        MultiSelect::make('columns')
+                            ->label('Выберите колонки для экспорта')
+                            ->options($columnsMap)
+                            ->helperText('Если ничего не выбрано, будут экспортированы все колонки')
+                    ])
+                    ->modalAutofocus(false)
+                    ->modalSubmitActionLabel('Скачать Excel')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

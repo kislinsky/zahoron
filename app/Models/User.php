@@ -205,4 +205,26 @@ class User extends Authenticatable implements JWTSubject
         return $this->role === 'admin';
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::created(function ($user) {
+
+            Notification::create([
+                'user_id' => admin()->id,
+                'organization_id' => null,
+                'type' => 'new_user_admin',
+                'title' => 'Новый пользователь',
+                'message' => "Зарегестрировался новый пользователь",
+                'is_read' => false
+            ]);
+
+            Wallet::create([
+                'user_id'=>$user->id,
+            ]);
+        
+        });
+    }
+
 }

@@ -38,7 +38,12 @@ class AgencyService {
                 $query->where('user_id', $user->id)
                     ->orWhere('organization_id', $user->organization_id);
             })->where('is_read', 0)->count();
-        return view('account.agency.index',compact('user','last_orders_services','notifications','unreadCount'));
+
+        $haveOrganizations=0;
+        if($user->organizations){
+            $haveOrganizations=1;
+        }
+        return view('account.agency.index',compact('user','last_orders_services','notifications','unreadCount','haveOrganizations'));
     }
 
     public static function settings(){

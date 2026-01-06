@@ -194,65 +194,76 @@ function insert_city_into_url($url, $kzn){
 }
 
 function filterProducts($data){
-    $city=selectCity();
-    $products=Product::orderBy('id','desc')->where('city_id',$city->id);
+    $city = selectCity();
+    
+    // Начинаем запрос
+    $products = Product::where('city_id', $city->id);
+    
+    // Сортировка - ДОБАВЛЯЕМ к существующему запросу
     if(isset($data['sort'])){
-        if($data['sort']!='Сортировка' && $data['sort']!='undefined'){
-            if($data['sort']=='price_down'){
-                $products=Product::orderBy('total_price','desc');
+        if($data['sort'] != 'Сортировка' && $data['sort'] != 'undefined'){
+            if($data['sort'] == 'price_down'){
+                $products = $products->orderBy('total_price', 'desc');
             }
-            if($data['sort']=='price_up'){
-                $products=Product::orderBy('total_price','asc');
+            elseif($data['sort'] == 'price_up'){
+                $products = $products->orderBy('total_price', 'asc');
             }
-            if($data['sort']=='date'){
-                $products=Product::orderBy('id','desc');
+            elseif($data['sort'] == 'date'){
+                $products = $products->orderBy('id', 'desc');
             }
-            if($data['sort']=='sale'){
-                $products=Product::where('status','sale');
+            elseif($data['sort'] == 'sale'){
+                $products = $products->where('status', 'sale');
+            }
+        }
+    } else {
+        // Сортировка по умолчанию
+        $products = $products->orderBy('id', 'desc');
+    }
+    
+    $category = categoryProductChoose();
+    
+    if(isset($data['category'])){
+        if($data['category'] != 'undefined'){
+            $category = CategoryProduct::findOrFail($data['category']);
+        }
+    }
+    
+    // Фильтр по категории
+    $products = $products->where('category_id', $category->id);
+    
+    if($category->parent->slug == 'oblagorazivanie-mogil'){
+        if(isset($data['cemetery_id']) && $data['cemetery_id'] != 'undefined'){
+            $products = $products->whereHas('organization', function ($query) use ($data) {
+                $query->whereRaw("FIND_IN_SET(?, cemetery_ids)", [$data['cemetery_id']]);
+            });
+        }
+        
+        if(isset($data['size'])){
+            if($data['size'] != 'Размер' && $data['size'] != 'undefined'){
+                $products = $products->where('size', 'like', '%'.$data['size'].'%');
+            }
+        }
+        
+        if(isset($data['material'])){
+            if($data['material'] != 'Материал' && $data['material'] != 'undefined'){
+                $products = $products->where('material', $data['material']);
+            }
+        }
+        
+        if(isset($data['layering'])){
+            if($data['layering'] != null && $data['layering'] != 'undefined'){
+                $products = $products->where('layering', $data['layering']);
             }
         }
     }
     
-    $category=categoryProductChoose();
-    if(isset($data['category'])){
-        if($data['category']!='undefined'){
-            $category=CategoryProduct::findOrFail($data['category']);
+    if($category->parent->slug == 'organizacia-pominok'){
+        if(isset($data['district_id']) && $data['district_id'] != 'undefined'){
+            $products = $products->where('district_id', $data['district_id']);
         }
     }
-    $products=$products->where('category_id',$category->id);
-    if($category->parent->slug=='oblagorazivanie-mogil'){
-        if(isset($data['cemetery_id'])  && $data['cemetery_id']!='undefined'){
-            $products=$products->whereHas('organization', function ($query) use ($data) {
-                $query->whereRaw("FIND_IN_SET(?, cemetery_ids)", [$data['cemetery_id']]);
-            });
-         }
-
-         if(isset($data['size'])){
-             if($data['size']!='Размер'  && $data['size']!='undefined'){
-                 $products=$products->where('size','like','%'.$data['size'].'%');
-             }
-             
-         }
-
-         if(isset($data['material'])){
-             if($data['material']!='Материал' && $data['material']!='undefined'){
-                 $products=$products->where('material',$data['material']);
-             }
-         }
-
-         if(isset($data['layering'])){
-            if($data['layering']!=null && $data['layering']!='undefined'){
-                $products=$products->where('layering',$data['layering']);
-            }
-        }
-    }
-    if($category->parent->slug=='organizacia-pominok'){
-        if(isset($data['district_id'])  && $data['district_id']!='undefined'){
-            $products=$products->where('district_id',$data['district_id']);
-         }
-    }
-    return $products->paginate(getSeo('marketplace','count'));
-
+    
+    return $products->paginate(getSeo('marketplace', 'count'));
 }
 
     function faqCatsProduct($data){
@@ -2224,6 +2235,8 @@ function generateSixDigitCode() {
 
 function createUserWithPhone($phone,$name='',$role='user',$inn='',$organization_form='',$orgainization_ids=[]){
 
+
+    $phone=normalizePhone($phone);
     $user=User::where('phone',$phone)->get();
 
     if(isset($user[0])){
@@ -2247,7 +2260,7 @@ function createUserWithPhone($phone,$name='',$role='user',$inn='',$organization_
         'inn'=>$inn,
     ]);
 
-    Wallet::create(['user_id'=>$userCreate->id]);
+   
 
     if (!empty($organization_ids)) {
         Organization::whereIn('id', $organization_ids)
@@ -2858,13 +2871,13 @@ function generateBreadcrumbMicrodata($pages_navigation)
 }
 
 
-function sendMessagesOrganizations($organizations,$template_for_sms,$template_for_email,){
+function sendMessagesOrganizations($organizations,$template_for_sms,$template_for_email,$variables_sms=[],$variables_email=[]){
     if($organizations!=null && $organizations->count()>0){
         foreach ($organizations as $organization){
             if($organization->user==null){
-                sendMessage($template_for_sms,[],$organization);
+                sendMessage($template_for_sms,$variables_sms,$organization);
                 if($organization->email!=null){
-                    sendMessage($template_for_email,[],$organization);
+                    sendMessage($template_for_email,$variables_email,$organization);
                 }
             }   
         }
@@ -3101,4 +3114,8 @@ function addSeo(){
     }
     
     return "Добавлено записей для объектов 82-87";
+}
+
+function htmlMessageForOrganizations(){
+    
 }

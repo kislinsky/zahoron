@@ -47,6 +47,17 @@ class ReviewsOrganization extends Model
                 'message' => "Поступил новый отзыв об организации",
                 'is_read' => false
             ]);
+
+            // Для админа
+            Notification::create([
+                'user_id' => admin()->id,
+                'organization_id' =>  $review->organization_id,
+                'type' => 'review_cemetery_admin',
+                'title' => 'Новый отзыв об организации',
+                'message' => "Создан новый отзыв об организации",
+                'is_read' => false
+            ]);
+            
         });
         
         static::updated(function ($review) {

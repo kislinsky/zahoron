@@ -2,6 +2,7 @@
 
 namespace App\Services\Account\Agency;
 
+use App\Jobs\UpdatePriorityOrganization;
 use App\Models\ActivityCategoryOrganization;
 use App\Models\CategoryProduct;
 use App\Models\Cemetery;
@@ -727,6 +728,9 @@ class AgencyOrganizationService {
                 $priority=2;
             }
             $organization->update(['priority'=>$priority]);
+
+            $delayTime = now()->addMonth(); // Добавляет 1 месяц к текущей дате
+            UpdatePriorityOrganization::dispatch($organization)->delay($delayTime);
             return redirect()->back()->with('message_cart','Ваш приоритет обновлен');
         }
     }

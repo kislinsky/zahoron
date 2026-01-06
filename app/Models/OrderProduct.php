@@ -47,7 +47,7 @@ class OrderProduct extends Model
         static::created(function ($order) {
 
 
-            sendMessage('soobshhenie-pri-zaiavke-pop-up-oblogorazivanie',['name'=>$order->user->name],$order->user);
+            sendMessage('sms-soobshhenie-user-pri-zaiavke-produkta',['name'=>$order->user->name],$order->user);
             sendMessage('sms-soobshhenie-pri-zaiavke-produkta',[],$order->organization);
             sendMessage('email-soobshhenie-pri-zaiavke-produkta',[],$order->organization);
 
@@ -68,6 +68,17 @@ class OrderProduct extends Model
                 'type' => 'order_product',
                 'title' => 'Заказ товара создан',
                 'message' => "Ваш заказ товара успешно создан",
+                'is_read' => false
+            ]);
+
+              
+            // Для админа
+            Notification::create([
+                'user_id' => admin()->id,
+                'organization_id' => null,
+                'type' => 'order_product_admin',
+                'title' => 'Заказ товара создан',
+                'message' => "заказ товара успешно создан",
                 'is_read' => false
             ]);
         });

@@ -15,4 +15,23 @@ class FeedbackForm extends Model
         'name',
         'phone'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::created(function ($feedback) {
+
+            Notification::create([
+                'user_id' => admin()->id,
+                'organization_id' => null,
+                'type' => 'feedback_admin',
+                'title' => 'Новый заявка обратной связи',
+                'message' => "Поступила новая заявка обратной связи",
+                'is_read' => false
+            ]);
+        
+        });
+        
+    }
 }

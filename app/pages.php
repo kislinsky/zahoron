@@ -54,6 +54,12 @@ function adminPages(){
                 ['Импортировать','account.admin.parser.geo'],
             ],
         ],
+
+        ['Продукты','storage/uploads/mdi_grave-stone (2).svg',
+            [
+                ['Импортировать','account.admin.parser.product'],
+            ],
+        ],
         
         ['Церкви','storage/uploads/mdi_grave-stone (2).svg',
             [

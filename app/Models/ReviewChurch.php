@@ -13,5 +13,6 @@ class ReviewChurch extends Model
     function church(){
         return $this->belongsTo(Church::class);
     }
+    
 
 }

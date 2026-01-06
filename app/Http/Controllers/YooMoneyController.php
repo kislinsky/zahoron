@@ -84,6 +84,7 @@ class YooMoneyController extends Controller
         if ($event === 'payment.succeeded' && $paymentStatus === 'succeeded') {
             if (isset($metadata['type'])) {
                 switch ($metadata['type']) {
+                    
                     case 'wallet_update':
                         if (!empty($metadata['wallet_id'])) {
                             $wallet = Wallet::find($metadata['wallet_id']);

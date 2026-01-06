@@ -70,6 +70,18 @@ class Ticket extends Model
         parent::boot();
         
         static::created(function ($ticket) {
+
+            // Для админа
+            Notification::create([
+                'user_id' => admin()->id,
+                'organization_id' => null,
+                'type' => 'new_ticket_admin',
+                'title' => 'Новый тикет',
+                'message' => "Создан новый тикет",
+                'is_read' => false
+            ]);
+
+            
             // Уведомление для назначенного сотрудника о новом тикете
             if ($ticket->assigned_to) {
                 \App\Models\Notification::create([

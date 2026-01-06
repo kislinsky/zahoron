@@ -13,6 +13,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Hash;
@@ -198,12 +199,11 @@ class UserResource extends Resource
                     ->label('email')
                     ->searchable()
                     ->sortable(),
-                    Tables\Columns\TextColumn::make('phone')
+                Tables\Columns\TextColumn::make('phone')
                     ->label('phone')
                     ->searchable()
                     ->sortable(),
-
-                    TextColumn::make('role')
+                TextColumn::make('role')
                     ->label('Роль')
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'admin' => 'Админ', 
@@ -218,12 +218,44 @@ class UserResource extends Resource
                         'seo-specialist' => 'Seo-специалист', 
                         default => 'Неизвестно',
                     }),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Дата создания')
+                    ->dateTime('d.m.Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Дата обновления')
+                    ->dateTime('d.m.Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                // Фильтр по дате создания
+                Filter::make('created_at')
+                    ->label('Дата создания')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')
+                            ->label('С даты'),
+                        Forms\Components\DatePicker::make('created_until')
+                            ->label('По дату'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when($data['created_from'],
+                                fn ($query, $date) => $query->whereDate('created_at', '>=', $date)
+                            )
+                            ->when($data['created_until'],
+                                fn ($query, $date) => $query->whereDate('created_at', '<=', $date)
+                            );
+                    }),
+                
+            
+                
+                // Существующие фильтры
                 SelectFilter::make('role')
-                ->label('Роль')
-                ->options([
-                    'admin' => 'Админ', 
+                    ->label('Роль')
+                    ->options([
+                        'admin' => 'Админ', 
                         'decoder' => 'Расшифровщик', 
                         'organization' => 'Организация', 
                         'organization-provider' => 'Организация-поставщик', 
@@ -233,17 +265,15 @@ class UserResource extends Resource
                         'deputy-admin' => 'Зам. админ', 
                         'manager' => 'Менеджер', 
                         'seo-specialist' => 'Seo-специалист', 
-                ]),
+                    ]),
                 SelectFilter::make('city_id')
-                ->label('Город')
-                ->relationship('city', 'title') // Используем вложенное отношение
-                ->searchable(),
-
+                    ->label('Город')
+                    ->relationship('city', 'title')
+                    ->searchable(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(), // Удалить продукт
-
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

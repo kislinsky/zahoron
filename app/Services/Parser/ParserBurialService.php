@@ -304,10 +304,20 @@ class ParserBurialService
                             ->first();
 
                         if (!$cemetery) {
-                            Log::warning("Skipped row: cemetery '{$cemeteryTitle}' not found for city '{$city->title}'");
-                            $skippedRows++;
-                            Redis::incr("import_progress:{$jobId}:current");
-                            return;
+
+                            $cemetery=Cemetery::create([
+                                'title'=>$cemeteryTitle,
+                                'slug'=>slug($cemeteryTitle),
+                                'img_url'=>'default',
+                                'width'=>$getFieldValue('width'),
+                                'longitude'=>$getFieldValue('longitude'),
+                                'rating'=>5,
+                                'href_img'=>1,
+                                'city_id'=>$city->id,
+                                'area_id'=>$city->area_id
+                            ]);
+
+                         
                         }
 
                         $cemeteryId = $cemetery->id;
