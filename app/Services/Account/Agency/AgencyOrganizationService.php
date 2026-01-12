@@ -22,6 +22,7 @@ use App\Models\WorkingHoursOrganization;
 use App\Services\YooMoneyService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AgencyOrganizationService {
 
@@ -50,6 +51,135 @@ class AgencyOrganizationService {
         $categories_children=childrenCategoryProducts($categories[0]);
         return view('account.agency.organization.create',compact('cemeteries','categories_children','categories'));
 
+    }
+
+     public static function editProduct(Product $product){
+        $categories = CategoryProduct::where('parent_id', null)->get();
+        $categories_children = childrenCategoryProducts($product->parentCategory);
+        $category_choose_main=$product->parentCategory;
+        $category_choose_children=$product->category;
+        $images=$product->getImages;
+        return view('account.agency.organization.product.edit-product', compact(
+            'product',
+            'categories',
+            'categories_children',
+            'category_choose_main',
+            'category_choose_children',
+            'images'
+        ));
+    }
+
+    public static function updateProduct( $data, $product){
+        if (isset($data['price_sale']) && $data['price_sale'] > $data['price']) {
+            return redirect()->back()->with('error', 'Скидочная цена не может быть больше обычной');
+        }
+
+        // Обновляем основные данные товара
+        $product->update([
+            'title' => $data['title'],
+            'content' => $data['content'],
+            'price' => $data['price'],
+            'category_id' => $data['cat_children'],
+            'category_parent_id' => $data['cat'],
+        ]);
+
+        // Обновляем цену со скидкой
+        if (isset($data['price_sale'])) {
+            $product->update([
+                'price_sale' => $data['price_sale'],
+                'total_price' => $data['price_sale'],
+            ]);
+        } else {
+            $product->update([
+                'price_sale' => null,
+                'total_price' => $data['price'],
+            ]);
+        }
+
+        // Получаем категорию для определения типа
+        $cat = CategoryProduct::find($data['cat_children']);
+
+        // Обрабатываем дополнительные поля в зависимости от типа категории
+        if ($cat->type == 'beatification') {
+            if (isset($data['material'])) {
+                $product->update(['material' => $data['material']]);
+            }
+            if (isset($data['size'])) {
+                $product->update(['size' => $data['size']]);
+            }
+            if (isset($data['your_size'])) {
+                $product->update(['size' => $product->size . '|' . $data['your_size']]);
+            }
+        } elseif ($cat->type == 'funeral-service') {
+            // Удаляем старые параметры
+            ProductParameters::where('product_id', $product->id)->delete();
+            
+            if (isset($data['parameters'])) {
+                foreach (explode('|', $data['parameters']) as $parameter) {
+                    if (!empty(trim($parameter))) {
+                        ProductParameters::create([
+                            'title' => trim($parameter),
+                            'product_id' => $product->id
+                        ]);
+                    }
+                }
+            }
+        } elseif ($cat->type == 'organization-commemorations') {
+            if (isset($data['width'])) {
+                $product->update(['location_width' => $data['width']]);
+            }
+            if (isset($data['longitude'])) {
+                $product->update(['location_longitude' => $data['longitude']]);
+            }
+            
+            // Удаляем старое меню
+            MemorialMenu::where('product_id', $product->id)->delete();
+            
+            if (isset($data['menus'])) {
+                foreach (explode('|', $data['menus']) as $menu_item) {
+                    $items_menu = explode(':', $menu_item);
+                    if (count($items_menu) == 2) {
+                        MemorialMenu::create([
+                            'title' => trim($items_menu[0]),
+                            'product_id' => $product->id,
+                            'content' => trim($items_menu[1]),
+                        ]);
+                    }
+                }
+            }
+        }
+      // Обрабатываем загрузку новых изображений
+        if (isset($data['images']) && count($data['images']) > 0) {
+            // Удаляем все старые изображения из БД и файловой системы
+            $oldImages = ImageProduct::where('product_id', $product->id)->get();
+            
+            foreach ($oldImages as $oldImage) {
+                // Удаляем файл с сервера
+                if (Storage::disk('public')->exists($oldImage->title)) {
+                    Storage::disk('public')->delete($oldImage->title);
+                }
+                // Удаляем запись из БД
+                $oldImage->delete();
+            }
+            
+            // Проверяем количество новых изображений
+            if (count($data['images']) > 5) {
+                return redirect()->back()->with('error', 'Превышено допустимое количество файлов');
+            }
+            
+            // Сохраняем новые изображения
+            foreach ($data['images'] as $image) {
+                $filename = generateRandomString() . "." . $image->getClientOriginalExtension();
+                $image->storeAs("uploads_product", $filename, "public");
+                
+                ImageProduct::create([
+                    'title' => 'uploads_product/' . $filename,
+                    'product_id' => $product->id,
+                ]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Товар успешно обновлен');
     }
 
     public static function create($data)

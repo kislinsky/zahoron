@@ -41,8 +41,13 @@
                             <label class="text_black">Организация</label>
                             <select class="form-select" name="organization_id_branch" style="border-color: #e0e0e0;">
                                 <option value="">Выберите организацию</option>
-                                @foreach($organizations as $org)
-                                    <option value="{{ $org->id }}" @if($organization_user->id==$org->id) selected @endif>{{ $org->title }}</option>
+                               @foreach($organizations as $org)
+                                    <option value="{{ $org->id }}" 
+                                        @if(isset($organization_user) && $organization_user->id == $org->id) 
+                                            selected 
+                                        @endif>
+                                        {{ $org->title }} {{ $org->adres }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>

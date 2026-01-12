@@ -146,13 +146,15 @@ class OrderBurialService
         if (!$user) {
             // Генерируем случайный email для пользователя
             $email = "user_" . substr($request->phone, -6) . "@zahoron.ru";
-            
+            $password = Hash::make(Str::random(12));
             $user = User::create([
                 'phone' => normalizePhone($request->phone),
                 'email' => $email,
-                'password' => Hash::make(Str::random(12)),
+                'password' => $password,
                 'name' => 'Пользователь ' . substr($request->phone, -4)
             ]);
+
+            sendSms($user->phone,"Ваш пароль".$password);
             
             // Если у вас есть поле для подтверждения email
             $user->email_verified_at = now();

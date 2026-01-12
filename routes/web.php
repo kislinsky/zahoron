@@ -141,10 +141,42 @@ $city = selectCity()->slug; // Более безопасный и понятны
 
 
 
+
 Route::get('/', [MainController::class, 'index'])->name('index');
 Route::get('/call-callback', [MangoOfficeController::class, 'callback'])->name('index');
+// В routes/web.php
+Route::get('/download-latest-export', function () {
+    $exportsPath = storage_path('app/public/exports/');
+    
+    if (!file_exists($exportsPath)) {
+        abort(404, 'Директория с файлами не найдена');
+    }
+    
+    // Получаем все файлы .xlsx из директории
+    $files = glob($exportsPath . 'products_*.xlsx');
+    
+    if (empty($files)) {
+        abort(404, 'Файлы для скачивания не найдены');
+    }
+    
+    // Сортируем по времени изменения (последние сначала)
+    usort($files, function($a, $b) {
+        return filemtime($b) - filemtime($a);
+    });
+    
+    // Берем самый свежий файл
+    $latestFile = $files[0];
+    $filename = basename($latestFile);
+    
+    return response()->download($latestFile, $filename);
+})->name('download.latest.export')->middleware('auth');
+
 
 Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
+
+    Route::get('/organizations/search', [OrganizationController::class, 'search'])->name('organizations.search');
+    Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
+    Route::get('/organizations/{organization}/products/search', [ProductController::class, 'search'])->name('organization.products.search');
 
     Route::get('/', [MainController::class, 'index'])->name('index');
 
@@ -315,6 +347,7 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
         Route::get('/{id}', [CrematoriumController::class, 'single'])->name('crematorium.single');
         Route::get('/review/add', [CrematoriumController::class, 'addReview'])->name('crematorium.review.add');
     });
+    
 
     Route::get('/columbariums', [ColumbariumController::class, 'index'])->name('columbariums');
 
@@ -648,6 +681,8 @@ Route::group(['prefix' => $city, 'middleware' => ['check.city']], function () {
 
                     Route::get('products', [AgencyOrganizationController::class, 'allProducts'])->name('account.agency.products');
                     Route::get('add-product', [AgencyOrganizationController::class, 'addProduct'])->name('account.agency.add.product');
+                    Route::get('product/edit/{product}', [AgencyOrganizationController::class, 'editProduct'])->name('account.agency.edit.product');
+                    Route::put('product/update/{product_id}', [AgencyOrganizationController::class, 'updateProduct'])->name('account.agency.update.product');
                     Route::get('delete-product/{id}', [AgencyOrganizationController::class, 'deleteProduct'])->name('account.agency.delete.product');
                     Route::get('update-product-price', [AgencyOrganizationController::class, 'updatePriceProduct'])->name('account.agency.update.product.price');
                     Route::get('search-product', [AgencyOrganizationController::class, 'searchProduct'])->name('account.agency.search.product');

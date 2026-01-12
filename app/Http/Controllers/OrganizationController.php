@@ -207,7 +207,8 @@ class OrganizationController extends Controller
     }
 
 
-    
-    
+    public static function search(Request $request){
+        return OrganizationService::search($request);
+    }
     
 }

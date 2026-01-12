@@ -38,22 +38,49 @@
                 <div class="title_news">Категории статей</div>
                 <div class="ul_cats_news">
                     @if (isset($cats))
-                        @if (count($cats)>0)
-                            @if (isset($id_cat))
-                                @foreach ($cats as $cat )
-                                        @if($cat->id==$id_cat)
-                                            <a href='{{ route('news.category',$cat->id) }}'class="li_cat_news active_cat"><img src="{{asset('storage/'. $cat->icon )}}" alt="{{ $cat->title }}"> {{ $cat->title }}</a>
+                    @if (count($cats) > 0)
+                        @if (isset($id_cat))
+                            @foreach ($cats as $cat)
+                                @if($cat->id == $id_cat)
+                                    <a href='{{ route('news.category', $cat->id) }}' class="li_cat_news active_cat">
+                                        @if (!empty($cat->icon) && Storage::exists($cat->icon))
+                                            <img src="{{ asset('storage/' . $cat->icon) }}" alt="{{ $cat->title }}">
                                         @else
-                                            <a href='{{ route('news.category',$cat->id) }}'class="li_cat_news"><img src="{{asset('storage/'. $cat->icon )}}" alt="{{ $cat->title }}"> {{ $cat->title }}</a>
+                                            <div class="icon-placeholder">
+                                                <!-- Можно добавить иконку-заглушку или оставить пустым -->
+                                            </div>
                                         @endif
-                                    @endforeach 
-                            @else
-                                @foreach ($cats as $cat )
-                                    <a href='{{ route('news.category',$cat->id) }}'class="li_cat_news"><img src="{{asset('storage/'. $cat->icon )}}" alt="{{ $cat->title }}"> {{ $cat->title }}</a>
-                                @endforeach
-                            @endif
+                                        {{ $cat->title }}
+                                    </a>
+                                @else
+                                    <a href='{{ route('news.category', $cat->id) }}' class="li_cat_news">
+                                        @if (!empty($cat->icon) && Storage::exists($cat->icon))
+                                            <img src="{{ asset('storage/' . $cat->icon) }}" alt="{{ $cat->title }}">
+                                        @else
+                                            <div class="icon-placeholder">
+                                                <!-- Можно добавить иконку-заглушку или оставить пустым -->
+                                            </div>
+                                        @endif
+                                        {{ $cat->title }}
+                                    </a>
+                                @endif
+                            @endforeach
+                        @else
+                            @foreach ($cats as $cat)
+                                <a href='{{ route('news.category', $cat->id) }}' class="li_cat_news">
+                                    @if (!empty($cat->icon) && Storage::exists($cat->icon))
+                                        <img src="{{ asset('storage/' . $cat->icon) }}" alt="{{ $cat->title }}">
+                                    @else
+                                        <div class="icon-placeholder">
+                                            <!-- Можно добавить иконку-заглушку или оставить пустым -->
+                                        </div>
+                                    @endif
+                                    {{ $cat->title }}
+                                </a>
+                            @endforeach
                         @endif
                     @endif
+                @endif
                 </div>
             </div>
         </div>

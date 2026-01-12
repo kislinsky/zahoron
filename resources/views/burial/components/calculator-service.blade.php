@@ -1,5 +1,5 @@
 <div class="block_calculator_price_service">
-    <div class="title_middle">Выберите размер участка</div>
+    <div class="title_middle">Калькулятор ухода за могилой в {{ selectCity()->title }}</div>
     <form   method='get' class='form_services_add'>
         @csrf
        @php

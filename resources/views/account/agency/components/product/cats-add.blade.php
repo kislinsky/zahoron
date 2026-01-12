@@ -1,21 +1,27 @@
 <div class="block_input">
     <div class="text_middle_index">Категория</div>
     <div class="select">
-        <select name="cat" >
+        <select name="cat">
             @foreach ($categories as $categories_one)
-                <option type='{{$categories_one->type}}' value="{{$categories_one->id}}">{{$categories_one->title}}</option>
+                <option type='{{ $categories_one->type }}' 
+                        value="{{ $categories_one->id }}"
+                        {{ isset($category_choose_main) && $category_choose_main->id == $categories_one->id ? 'selected' : '' }}>
+                    {{ $categories_one->title }}
+                </option>
             @endforeach
         </select>
     </div>
 </div>
 
-
 <div class="block_input">
     <div class="text_middle_index">Подкатегория</div>
     <div class="select">
-        <select name="cat_children" >
+        <select name="cat_children">
             @foreach ($categories_children as $categories_one)
-                <option value="{{$categories_one->id}}">{{$categories_one->title}}</option>
+                <option value="{{ $categories_one->id }}"
+                        {{ isset($category_choose_children) && $category_choose_children->id == $categories_one->id ? 'selected' : '' }}>
+                    {{ $categories_one->title }}
+                </option>
             @endforeach
         </select>
     </div>

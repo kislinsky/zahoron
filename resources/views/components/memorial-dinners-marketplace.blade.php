@@ -15,7 +15,12 @@
                             <div class="flex_info_memorial_dinner">
                                 <?php $organization=$product_memorial_dinner->organization;?>
 
-                                <img src="{{$organization->urlImg()}}" alt="">
+                                 <?php $images=$product_memorial_dinner->getImages;?>
+                                @if (isset($images))
+                                    @if (count($images)>0)
+                                        <img  src="{{ $images[0]->url() }}" alt="">
+                                    @endif
+                                @endif
                                 <div class="content_memorial_dinner">
                                     <div class="title_organization">{{$product_memorial_dinner->title_institution}}</div>
                                     <div class="raiting_memorial_dinner">

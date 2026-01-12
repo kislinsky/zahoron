@@ -21,7 +21,7 @@
         
 
                 <div class="grid_two_btn">
-                    <div class="blue_btn">Редактировать</div>
+                    <a href='{{ route('account.agency.edit.product',$product->id) }}' class="blue_btn">Редактировать</a>
                     <a  href='{{$product->route()}}' class="gray_btn">Посмотреть</a>
                 </div>
             </div>

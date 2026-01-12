@@ -64,7 +64,7 @@ class SearchBurialService
         SEOTools::setDescription($seo);
         $page=11;
         if($products->count()!==0){
-            $products=$products->get();
+            $products=$products->paginate(10);
         }
         return view('burial.search-burial-result',compact('products','news','page'));
     }

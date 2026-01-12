@@ -313,6 +313,65 @@ class OrganizationService
     }
 
 
-  
+  public static function search( $request)
+    {
+        $query = $request->get('query', '');
+        
+        if (strlen($query) < 2) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Минимум 2 символа для поиска'
+            ]);
+        }
+        
+        // Проверяем, есть ли город
+        $cityId = selectCity()->id ?? null;
+        
+        if (!$cityId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Город не выбран'
+            ]);
+        }
+        
+       $organizations = Organization::where('city_id', $cityId)
+        ->where('title', 'LIKE', "%{$query}%")
+        ->with(['city', 'reviews'])
+        ->limit(20)
+        ->get()
+        ->map(function ($organization) {
+            // Получаем URL основного изображения
+            $imgUrl = $organization->urlImgMain();
+            
+            // Если изображение по умолчанию, берем первое изображение из массива
+            if ($imgUrl == 'default') {
+                $defaultImgs = $organization->defaultMainImg();
+                $image_url = $defaultImgs[0]; // берем только первое изображение для светлой темы
+            } else {
+                $image_url = $imgUrl;
+            }
+            
+            return [
+                'id' => $organization->id,
+                'name' => $organization->title,
+                'slug' => $organization->slug,
+                'rating' => $organization->rating ?? 0,
+                'address' => $organization->adres ?? ($organization->city->title ?? ''),
+                'image_url' => $image_url, // передаем одно изображение
+                'route' => $organization->route(),
+                'open_or_not' => $organization->openOrNot(),
+                'reviews_count' => $organization->countReviews(),
+                'city_name' => $organization->city->title ?? '',
+            ];
+        });
+        
+        return response()->json([
+            'success' => true,
+            'data' => $organizations,
+            'count' => $organizations->count(),
+            'city_id' => $cityId,
+            'query' => $query
+        ]);
+    }
     
 }

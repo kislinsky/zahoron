@@ -155,6 +155,10 @@
     <div class="filter_block_organization filter_work">
         <label class='checkbox <?php if(isset($filter_work) && $filter_work=='on'){echo 'active_checkbox';}?>'><input required value='1'  <?php if(isset($filter_work) && $filter_work=='on'){echo 'checked';}?> class='filter_work' type="checkbox" name="filter_work" id="filter_work">работает сейчас</label>
     </div>
-</div>
 
+</div>
+ @include('components.organization-search', [
+        'placeholder' => 'Найти организацию...',
+        'containerClass' => 'filter_block_organization',
+    ])
 

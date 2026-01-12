@@ -38,143 +38,119 @@ class SearchBurialResource extends Resource
     
 
     public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Основная информация')
-                    ->schema([
-                        Forms\Components\TextInput::make('surname')
-                            ->label('Фамилия')
-                            ->required()
-                            ->maxLength(255),
-                            
-                        Forms\Components\TextInput::make('name')
-                            ->label('Имя')
-                            ->required()
-                            ->maxLength(255),
-                            
-                        Forms\Components\TextInput::make('patronymic')
-                            ->label('Отчество')
-                            ->maxLength(255),
-                            
-                        Forms\Components\DatePicker::make('date_birth')
-                            ->label('Дата рождения')
-                            ->displayFormat('d.m.Y')
-                            ->format('d.m.Y'),
-                            
-                        Forms\Components\DatePicker::make('date_death')
-                            ->label('Дата смерти')
-                            ->displayFormat('d.m.Y')
-                            ->format('d.m.Y'),
-                    ])->columns(2),
-                    
-                Forms\Components\Section::make('Местоположение')
-                    ->schema([
-                        Forms\Components\Textarea::make('location')
-                            ->label('Местоположение')
-                            ->columnSpanFull(),
-                            
-                        Forms\Components\Textarea::make('landmark')
-                            ->label('Ориентир')
-                            ->columnSpanFull(),
-                    ]),
-                    
-                Forms\Components\Section::make('Фотографии')
-                    ->schema([
-                        Forms\Components\FileUpload::make('image_attachments')
-                            ->label('Фотографии захоронения')
-                            ->multiple()
-                            ->directory('burial_search')
-                            ->image()
-                            ->maxFiles(5)
-                            ->maxSize(5120) // 5MB
-                            ->preserveFilenames()
-                            ->downloadable()
-                            ->openable()
-                            ->previewable()
-                            ->reorderable()
-                            ->columnSpanFull(),
-                            
-                        Forms\Components\Placeholder::make('existing_photos')
-                            ->label('Загруженные фотографии')
-                            ->content(function ($record) {
-                                if (!$record || empty($record->image_attachments)) {
-                                    return 'Нет загруженных фотографий';
-                                }
-                                
-                                $html = '<div class="grid grid-cols-4 gap-2">';
-                                foreach ($record->image_attachments as $attachment) {
-                                    if (isset($attachment['path'])) {
-                                        $url = Storage::url($attachment['path']);
-                                        $filename = $attachment['original_name'] ?? $attachment['filename'] ?? 'Фото';
-                                        $html .= '
-                                            <div class="relative">
-                                                <a href="' . $url . '" target="_blank" class="block">
-                                                    <img src="' . $url . '" alt="' . $filename . '" class="w-full h-24 object-cover rounded">
-                                                </a>
-                                                <div class="text-xs truncate mt-1">' . $filename . '</div>
-                                            </div>
-                                        ';
-                                    }
-                                }
-                                $html .= '</div>';
-                                
-                                return $html;
-                            })
-                            ->columnSpanFull()
-                            ->visible(fn ($record) => $record && !empty($record->image_attachments)),
-                    ]),
-                    
-                Forms\Components\Section::make('Пользователь и статус')
-                    ->schema([
-                        Forms\Components\Select::make('user_id')
-                            ->label('Пользователь')
-                            ->relationship(
-                                name: 'user',
-                                titleAttribute: 'name',
-                                modifyQueryUsing: fn ($query) => $query->whereNotNull('name')
-                            )
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->name ?? 'Без имени')
-                            ->required()
-                            ->searchable()
-                            ->preload(),
-                            
-                        Forms\Components\Select::make('status')
-                            ->label('Статус')
-                            ->options([
-                                0 => 'Новая',
-                                1 => 'В обработке',
-                                2 => 'Выполнена',
-                                3 => 'Отклонена',
-                            ])
-                            ->default(0)
-                            ->required(),
-                            
-                        Forms\Components\Toggle::make('paid')
-                            ->label('Оплачено')
-                            ->default(false),
-                            
-                        Forms\Components\TextInput::make('price')
-                            ->label('Цена')
-                            ->numeric()
-                            ->default(0)
-                            ->prefix('₽'),
-                            
-                        Forms\Components\Textarea::make('reason_failure')
-                            ->label('Причина отказа')
-                            ->columnSpanFull(),
-                            
-                        Forms\Components\Textarea::make('additional_info')
-                            ->label('Дополнительная информация')
-                            ->columnSpanFull(),
-                            
-                        Forms\Components\DatePicker::make('completed_at')
-                            ->label('Дата выполнения')
-                            ->displayFormat('d.m.Y')
-                            ->format('d.m.Y'),
-                    ])->columns(2),
-            ]);
-    }
+{
+    return $form
+        ->schema([
+            Forms\Components\Section::make('Основная информация')
+                ->schema([
+                    Forms\Components\TextInput::make('surname')
+                        ->label('Фамилия')
+                        ->required()
+                        ->maxLength(255),
+                        
+                    Forms\Components\TextInput::make('name')
+                        ->label('Имя')
+                        ->required()
+                        ->maxLength(255),
+                        
+                    Forms\Components\TextInput::make('patronymic')
+                        ->label('Отчество')
+                        ->maxLength(255),
+                        
+                    Forms\Components\DatePicker::make('date_birth')
+                        ->label('Дата рождения')
+                        ->displayFormat('d.m.Y')
+                        ->format('d.m.Y'),
+                        
+                    Forms\Components\DatePicker::make('date_death')
+                        ->label('Дата смерти')
+                        ->displayFormat('d.m.Y')
+                        ->format('d.m.Y'),
+                ])->columns(2),
+                
+            Forms\Components\Section::make('Местоположение')
+                ->schema([
+                    Forms\Components\Textarea::make('location')
+                        ->label('Местоположение')
+                        ->columnSpanFull(),
+                        
+                    Forms\Components\Textarea::make('landmark')
+                        ->label('Ориентир')
+                        ->columnSpanFull(),
+                ]),
+                
+            Forms\Components\Section::make('Фотографии')
+                ->schema([
+                    Forms\Components\FileUpload::make('image_attachments')
+                        ->label('Фотографии захоронения')
+                        ->multiple()
+                        ->directory('burial_search')
+                        ->image()
+                        ->maxFiles(5)
+                        ->maxSize(5120) // 5MB
+                        ->preserveFilenames()
+                        ->downloadable()
+                        ->openable()
+                        ->previewable()
+                        ->reorderable()
+                        ->columnSpanFull(),
+                        
+               Forms\Components\View::make('filament.forms.components.photos-gallery')
+    ->label('Загруженные фотографии')
+    ->columnSpanFull()
+    ->visible(fn ($record) => $record && !empty($record->image_attachments)),
+                ]),
+                
+            Forms\Components\Section::make('Пользователь и статус')
+                ->schema([
+                    Forms\Components\Select::make('user_id')
+                        ->label('Пользователь')
+                        ->relationship(
+                            name: 'user',
+                            titleAttribute: 'name',
+                            modifyQueryUsing: fn ($query) => $query->whereNotNull('name')
+                        )
+                        ->getOptionLabelFromRecordUsing(fn ($record) => $record->name ?? 'Без имени')
+                        ->required()
+                        ->searchable()
+                        ->preload(),
+                        
+                    Forms\Components\Select::make('status')
+                        ->label('Статус')
+                        ->options([
+                            0 => 'Новая',
+                            1 => 'В обработке',
+                            2 => 'Выполнена',
+                            3 => 'Отклонена',
+                        ])
+                        ->default(0)
+                        ->required(),
+                        
+                    Forms\Components\Toggle::make('paid')
+                        ->label('Оплачено')
+                        ->default(false),
+                        
+                    Forms\Components\TextInput::make('price')
+                        ->label('Цена')
+                        ->numeric()
+                        ->default(0)
+                        ->prefix('₽'),
+                        
+                    Forms\Components\Textarea::make('reason_failure')
+                        ->label('Причина отказа')
+                        ->columnSpanFull(),
+                        
+                    Forms\Components\Textarea::make('additional_info')
+                        ->label('Дополнительная информация')
+                        ->columnSpanFull(),
+                        
+                    Forms\Components\DatePicker::make('completed_at')
+                        ->label('Дата выполнения')
+                        ->displayFormat('d.m.Y')
+                        ->format('d.m.Y'),
+                ])->columns(2),
+        ]);
+}
 
     public static function table(Table $table): Table
     {
@@ -248,15 +224,25 @@ class SearchBurialResource extends Resource
                     ->sortable(),
                     
                 Tables\Columns\TextColumn::make('photos_count')
-                    ->label('Фото')
-                    ->getStateUsing(function ($record) {
-                        if (empty($record->image_attachments)) {
-                            return '0';
-                        }
-                        return count($record->image_attachments) . ' шт.';
-                    })
-                    ->badge()
-                    ->color(fn ($state): string => str_contains($state, '0') ? 'gray' : 'success'),
+    ->label('Фото')
+    ->getStateUsing(function ($record) {
+        if (empty($record->image_attachments)) {
+            return '0';
+        }
+        
+        // Декодируем JSON строку в массив
+        $attachments = json_decode($record->image_attachments, true);
+        
+        // Если декодирование не удалось или результат пустой
+        if (!$attachments || !is_array($attachments)) {
+            return '0';
+        }
+        
+        return count($attachments) . ' шт.';
+    })
+    ->badge()
+    ->color(fn ($state): string => str_contains($state, '0') ? 'gray' : 'success'),
+
                     
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Создано')
@@ -311,36 +297,43 @@ class SearchBurialResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('view_photos')
-                    ->label('Фото')
-                    ->icon('heroicon-o-photo')
-                    ->modalHeading('Фотографии захоронения')
-                    ->modalContent(function ($record) {
-                        if (empty($record->image_attachments)) {
-                            return '<p class="p-4">Нет загруженных фотографий</p>';
-                        }
-                        
-                        $html = '<div class="grid grid-cols-3 gap-4 p-4">';
-                        foreach ($record->image_attachments as $attachment) {
-                            if (isset($attachment['path'])) {
-                                $url = Storage::url($attachment['path']);
-                                $filename = $attachment['original_name'] ?? $attachment['filename'] ?? 'Фото';
-                                $html .= '
-                                    <div class="border rounded p-2">
-                                        <a href="' . $url . '" target="_blank" class="block mb-2">
-                                            <img src="' . $url . '" alt="' . $filename . '" class="w-full h-48 object-cover rounded">
-                                        </a>
-                                        <div class="text-sm text-gray-600 truncate">' . $filename . '</div>
-                                    </div>
-                                ';
-                            }
-                        }
-                        $html .= '</div>';
-                        
-                        return $html;
-                    })
-                    ->modalSubmitAction(false)
-                    ->modalCancelAction(false)
-                    ->hidden(fn ($record) => empty($record->image_attachments)),
+    ->label('Фото')
+    ->icon('heroicon-o-photo')
+    ->modalHeading('Фотографии захоронения')
+    ->modalContent(function ($record) {
+        if (empty($record->image_attachments)) {
+            return '<p class="p-4">Нет загруженных фотографий</p>';
+        }
+        
+        // Декодируем JSON строку в массив
+        $attachments = json_decode($record->image_attachments, true);
+        
+        if (!$attachments || !is_array($attachments)) {
+            return '<p class="p-4">Нет загруженных фотографий</p>';
+        }
+        
+        $html = '<div class="grid grid-cols-3 gap-4 p-4">';
+        foreach ($attachments as $attachment) {
+            if (isset($attachment['path'])) {
+                $url = Storage::url($attachment['path']);
+                $filename = $attachment['original_name'] ?? $attachment['filename'] ?? 'Фото';
+                $html .= '
+                    <div class="border rounded p-2">
+                        <a href="' . $url . '" target="_blank" class="block mb-2">
+                            <img src="' . $url . '" alt="' . $filename . '" class="w-full h-48 object-cover rounded">
+                        </a>
+                        <div class="text-sm text-gray-600 truncate">' . $filename . '</div>
+                    </div>
+                ';
+            }
+        }
+        $html .= '</div>';
+        
+        return $html;
+    })
+    ->modalSubmitAction(false)
+    ->modalCancelAction(false)
+    ->hidden(fn ($record) => empty($record->image_attachments)),
                     
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Account\Agency;
 
 use App\Http\Controllers\Controller;
 use App\Models\OrderProduct;
+use App\Models\Product;
 use App\Models\TypeService;
 use App\Models\Wallet;
 use App\Services\Account\Agency\AgencyOrganizationService;
@@ -184,6 +185,35 @@ class AgencyOrganizationController extends Controller
     }
 
 
+    public static function editProduct(Product $product){
+        return AgencyOrganizationService::editProduct($product);
+    }
+
+    public static function updateProduct(Request $request, $product_id){
+        $product = Product::where('id', $product_id)
+            ->where('organization_id', user()->organization()->id)
+            ->firstOrFail();
+
+        $data = request()->validate([
+            'title' => ['required', 'string', 'max:120'],
+            'content' => ['required', 'string', 'max:1000'],
+            'price' => ['required', 'numeric', 'min:1'],
+            'price_sale' => ['nullable', 'numeric', 'min:1'],
+            'material' => ['nullable', 'string'],
+            'size' => ['nullable', 'string'],
+            'your_size' => ['nullable', 'string'],
+            'parameters' => ['nullable', 'string'],
+            'width' => ['nullable', 'string'],
+            'longitude' => ['nullable', 'string'],
+            'menus' => ['nullable', 'string'],
+            'images' => 'nullable|array|max:5',
+            'images.*' => 'image|mimes:jpeg,jpg,png,gif,svg,webp,bmp,tiff,ico,heic,heif|max:2048',
+            'cat' => ['required', 'integer'],
+            'cat_children' => ['required', 'integer'],
+        ]);
+        return AgencyOrganizationService::updateProduct( $data, $product);
+    }
+    
     public static function reviewsOrganization(){
         return AgencyOrganizationService::reviewsOrganization();
     }

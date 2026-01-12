@@ -105,4 +105,8 @@ class ProductController extends Controller
         return ProductService::addReview($data);
     }
     
+    public static function search(Request $request){
+        return ProductService::search($request);
+    }
+    
 }

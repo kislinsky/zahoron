@@ -104,7 +104,8 @@
                 {{view('product.components.single.additionals',compact('additionals'))}}
                 
            
-                {{view('product.components.single.user-inputs')}}
+                {{view('product.components.single.user-inputs',compact('product','random_organizations_with_calls'))}}
+
 
                 @if(count($parameters)>0)
                 <div class="cats_news product_sidebar_block">

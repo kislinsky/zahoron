@@ -21,8 +21,8 @@
         <div class="">
             <div class="ul_services">
                 @if(isset($products))
-                    @if($products->count()>0)
-                        <div class="title_our_works">Найдено {{ $products->count() }} захоронения</div>
+                    @if($products->total()>0)
+                        <div class="title_our_works">Найдено {{ $products->total() }} захоронения</div>
                         @foreach ($products as $product)
                             <div class="li_product">
                                 <div class="one_block_li_product">
@@ -70,6 +70,8 @@
                                 </div>
                             </div>
                         @endforeach
+                        {{ $products->withPath(route('search.burial.result'))->appends($_GET)->links() }}
+
                     @else
                         <div class="block_no_search">
                             <div class="title">Результаты поиска по запросу:</div>

@@ -73,40 +73,46 @@ class ProductService
             $title_h1=formatContent(getSeo('product-single','h1'),$product);
         }
 
+        $random_organizations_with_calls=Organization::where('city_id', $product->organization->city_id)
+            ->where('id', '!=', $product->organization_id) // если нужно исключить текущую
+            ->where('calls', '>', 0) // если haveCalls() проверяет это поле
+            ->inRandomOrder()
+            ->limit(3)
+            ->get();
 
         if($category->slug=='pominal-nyh-obedy'){
             $district=$product->district;
             $memorial_menu=$product->memorialMenu;
-            return view('product.single.single-menu',compact('title_h1','product','sales','agent','city','district','images','organization','memorial_menu','category','additionals','comments','category_products'));
+            return view('product.single.single-menu',compact('random_organizations_with_calls','title_h1','product','sales','agent','city','district','images','organization','memorial_menu','category','additionals','comments','category_products'));
         }
 
         if($category->slug=='pominal-nye-zaly'){
             $district=$product->district;
-            return view('product.single.single-hall',compact('title_h1','product','sales','agent','city','district','images','organization','category','additionals','comments','category_products'));
+            return view('product.single.single-hall',compact('random_organizations_with_calls','title_h1','product','sales','agent','city','district','images','organization','category','additionals','comments','category_products'));
         }
 
         if($category->slug=='organizacia-pohoron'){
-            return view('product.single.single-organization-funeral',compact('title_h1','mortuaries','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+            return view('product.single.single-organization-funeral',compact('random_organizations_with_calls','title_h1','mortuaries','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
 
         if($category->slug=='organizacia-kremacii'){
-            return view('product.single.single-cremation',compact('title_h1','product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+            return view('product.single.single-cremation',compact('random_organizations_with_calls','title_h1','product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
 
         if($category->slug=='podgotovka-otpravki-gruza-200'){
-            return view('product.single.single-shipment-200-cargo',compact('title_h1','product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+            return view('product.single.single-shipment-200-cargo',compact('random_organizations_with_calls','title_h1','product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
         
         if($category->slug=='knopka-mogil'){
-            return view('product.single.single-button-grave',compact('title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+            return view('product.single.single-button-grave',compact('random_organizations_with_calls','title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
 
         if($category->slug=='knopka-mogil'){
-            return view('product.single.single-button-grave',compact('title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+            return view('product.single.single-button-grave',compact('random_organizations_with_calls','title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
         }
         
 
-        return view('product.single.single',compact('cemeteries','title_h1','agent','product','organization','sales','images','parameters','category','size','additionals','comments','category_products'));
+        return view('product.single.single',compact('random_organizations_with_calls','cemeteries','title_h1','agent','product','organization','sales','images','parameters','category','size','additionals','comments','category_products'));
     }
 
 
@@ -269,6 +275,86 @@ class ProductService
         return redirect()->back()->with("message_words_memory", 'Отзыв отправлен на проверку');
 
     }
-  
     
+  public static function search($request)
+    {
+        $query = $request->get('query', '');
+        
+        if (strlen($query) < 2) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Минимум 2 символа для поиска'
+            ]);
+        }
+        
+        // Базовый запрос
+        $productsQuery = Product::query()
+            ->where('title', 'LIKE', "%{$query}%");
+        
+        // Фильтр по городу (если используется)
+        $cityId = selectCity()->id ?? null;
+        if ($cityId) {
+            $productsQuery->where('city_id', $cityId);
+        }
+        
+        // Фильтр по организации (если передан)
+        if ($request->has('organization_id') && $request->organization_id) {
+            $productsQuery->where('organization_id', $request->organization_id);
+        }
+        
+        // Загружаем связи и выполняем запрос
+        $products = $productsQuery
+            ->with(['organization', 'category', 'getImages'])
+            ->where('view', 1) // используйте ваше поле view вместо status
+            ->limit(20)
+            ->get()
+            ->map(function ($product) {
+                
+                // Проверяем наличие (адаптируйте под вашу логику)
+                $inStock = true; // по умолчанию, адаптируйте под вашу логику
+                
+                // Расчет скидки (используем статический вызов)
+                $discountPercent = self::calculateDiscountPercent($product->price, $product->old_price);
+                
+                // Проверяем новинку
+                $isNew = false;
+                if ($product->created_at) {
+                    $isNew = $product->created_at->gt(now()->subDays(30));
+                }
+                
+                return [
+                    'id' => $product->id,
+                    'title' => $product->title,
+                    'slug' => $product->slug,
+                    'price' => $product->price,
+                    'old_price' => $product->old_price,
+                    'rating' => $product->rating ?? 0,
+                    'image_url' => $product->getImages->first()->url(),
+                    'route' => $product->route(),
+                    'reviews_count' => $product->reviewsAccept()->count(), // используйте ваш метод
+                    'category_name' => $product->category->title ?? '',
+                    'organization_name' => $product->organization->title ?? '',
+                    'in_stock' => $inStock,
+                    'quantity' => $product->quantity ?? 0,
+                    'discount_percent' => $discountPercent,
+                    'is_new' => $isNew,
+                ];
+            });
+        
+        return response()->json([
+            'success' => true,
+            'data' => $products,
+            'count' => $products->count()
+        ]);
+    }
+
+    private static function calculateDiscountPercent($price, $oldPrice)
+    {
+        if (!$oldPrice || $oldPrice <= 0 || $price >= $oldPrice) {
+            return null;
+        }
+        
+        $discount = (($oldPrice - $price) / $oldPrice) * 100;
+        return round($discount);
+    }
 }

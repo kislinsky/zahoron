@@ -326,18 +326,20 @@ function selectCity()
     
     // 1. Проверяем город из URL (самый быстрый способ)
     $slug = request()->segment(1);
+
+
     if (!empty($slug)) {
 
         try {
             $city = Cache::remember("city_slug_{$slug}", 3600, function() use ($slug) {
-                
+
                 return City::where('slug', $slug)->first();
             });
         } catch (\Exception $e) {
             // Если Redis недоступен, ищем без кэша
             $city = City::where('slug', $slug)->first();
         }
-        
+
         if ($city) {
             setcookie('city', $city->id, time() + (20 * 24 * 60 * 60), '/');
             return $city;
@@ -1944,9 +1946,8 @@ function formatCityName($cityName, $content) {
             }
     }
 }
-
 function formatContent($content, $model = null) {
-    $city = formatCityName(selectCity()->title,$content);
+    $city = formatCityName(selectCity()->title, $content);
     $title = '';
     $adres = '';
     $type_organization = '';
@@ -1954,18 +1955,80 @@ function formatContent($content, $model = null) {
     if ($model != null) {
         $title = $model->title;
         $adres = $model->adres;
-        $type_organization=$model->name_type;
+        $type_organization = $model->name_type;
         if ($model->city != null) {
-            $city = formatCityName($model->city->title,$content);
+            $city = formatCityName($model->city->title, $content);
         }
     }
     
     $time = date('H:i');
     $date = date('Y-m-d');
     $year = date('Y');
+    
+    // Получаем цены с кэшированием на 1 час
+    $cityPricesKey = 'city_prices_' . (selectCity()->id ?? 0);
+    $prices = Cache::remember($cityPricesKey, 3600, function () {
+        $cityId = selectCity()->id ?? null;
+        
+        if (!$cityId) {
+            return [
+                'min' => 0,
+                'avg' => 0,
+                'max' => 0
+            ];
+        }
+        
+        $prices = DB::table('activity_category_organizations as aco')
+            ->join('organizations as org', 'aco.organization_id', '=', 'org.id')
+            ->where('org.city_id', $cityId)
+            ->whereNotNull('aco.price')
+            ->where('aco.price', '>', 0)
+            ->select('aco.price')
+            ->orderBy('aco.price')
+            ->get();
+        
+        if ($prices->isEmpty()) {
+            return [
+                'min' => 0,
+                'avg' => 0,
+                'max' => 0
+            ];
+        }
+        
+        $priceArray = $prices->pluck('price')->toArray();
+        
+        return [
+            'min' => min($priceArray),
+            'max' => max($priceArray),
+            'avg' => round(array_sum($priceArray) / count($priceArray), 2)
+        ];
+    });
+    
     $result = str_replace(
-        ["{title}", "{city}", "{adres}", "{time}", "{date}", "{Year}","{type-org}"],
-        [$title, $city, $adres, $time, $date, $year,$type_organization,],
+        [
+            "{title}", 
+            "{city}", 
+            "{adres}", 
+            "{time}", 
+            "{date}", 
+            "{Year}",
+            "{type-org}",
+            "{price_min}", 
+            "{price_avg}", 
+            "{price_max}"
+        ],
+        [
+            $title, 
+            $city, 
+            $adres, 
+            $time, 
+            $date, 
+            $year,
+            $type_organization,
+            $prices['min'], 
+            $prices['avg'], 
+            $prices['max']
+        ],
         $content
     );
     
@@ -3119,3 +3182,184 @@ function addSeo(){
 function htmlMessageForOrganizations(){
     
 }
+
+function createMissingCategories()
+    {
+        DB::beginTransaction();
+        
+        try {
+            // Получаем ID существующих родительских категорий
+            $parentIds = [
+                'oblagorazivanie' => CategoryProduct::where('slug', 'oblagorazivanie-mogil')->value('id'),
+                'ritual_uslugi' => CategoryProduct::where('slug', 'ritual-nye-uslugi')->value('id'),
+                'ritual_tovary' => null, // Будем создавать
+                'ritual_animals' => CategoryProduct::where('slug', 'ritual-nye-uslugi-dla-zivotnyh')->value('id'),
+                'pominok' => CategoryProduct::where('slug', 'organizacia-pominok')->value('id'),
+            ];
+            
+            // 1. Создаем категорию "Ритуальные товары" (родительскую)
+            if (!$parentIds['ritual_tovary']) {
+                $ritualTovary = CategoryProduct::create([
+                    'title' => 'Ритуальные товары',
+                    'parent_id' => null,
+                    'type' => 'beautification',
+                    'slug' => 'ritual-nye-tovary',
+                    'display' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                $parentIds['ritual_tovary'] = $ritualTovary->id;
+            }
+            
+            // 2. Создаем все недостающие категории
+            $categoriesToCreate = [
+                // Облагораживание могил -> Прочее
+                [
+                    'title' => 'Прочее',
+                    'slug' => 'prochee-oblagorazivanie',
+                    'parent_id' => $parentIds['oblagorazivanie'],
+                    'type' => 'beatification'
+                ],
+                
+                // Ритуальные услуги -> Аренда катафалка
+                [
+                    'title' => 'Аренда катафалка',
+                    'slug' => 'arenda-katafalka',
+                    'parent_id' => $parentIds['ritual_uslugi'],
+                    'type' => 'funeral-service'
+                ],
+                
+                // Ритуальные услуги -> Ритуальные товары (ссылка на категорию)
+                [
+                    'title' => 'Ритуальные товары',
+                    'slug' => 'ritual-nye-tovary-link',
+                    'parent_id' => $parentIds['ritual_uslugi'],
+                    'type' => 'funeral-service'
+                ],
+                
+                // Ритуальные услуги -> Прощальный зал
+                [
+                    'title' => 'Прощальный зал',
+                    'slug' => 'proschalnyj-zal',
+                    'parent_id' => $parentIds['ritual_uslugi'],
+                    'type' => 'funeral-service'
+                ],
+                
+                // Ритуальные услуги -> Прочее
+                [
+                    'title' => 'Прочее',
+                    'slug' => 'prochee-ritual-uslugi',
+                    'parent_id' => $parentIds['ritual_uslugi'],
+                    'type' => 'funeral-service'
+                ],
+                
+                // Ритуальные товары -> Одежда
+                [
+                    'title' => 'Одежда',
+                    'slug' => 'odezhda',
+                    'parent_id' => $parentIds['ritual_tovary'],
+                    'type' => 'beautification'
+                ],
+                
+                // Ритуальные товары -> Гробы
+                [
+                    'title' => 'Гробы',
+                    'slug' => 'groby',
+                    'parent_id' => $parentIds['ritual_tovary'],
+                    'type' => 'beautification'
+                ],
+                
+                // Ритуальные товары -> Ритуальный текстиль
+                [
+                    'title' => 'Ритуальный текстиль',
+                    'slug' => 'ritualnyj-tekstil',
+                    'parent_id' => $parentIds['ritual_tovary'],
+                    'type' => 'beautification'
+                ],
+                
+                // Ритуальные товары -> Урны для праха
+                [
+                    'title' => 'Урны для праха',
+                    'slug' => 'urny-dlya-praha',
+                    'parent_id' => $parentIds['ritual_tovary'],
+                    'type' => 'beautification'
+                ],
+                
+                // Ритуальные товары -> Прочее
+                [
+                    'title' => 'Прочее',
+                    'slug' => 'prochee-ritual-tovary',
+                    'parent_id' => $parentIds['ritual_tovary'],
+                    'type' => 'beautification'
+                ],
+                
+                // Ритуальные услуги для животных -> Памятники
+                [
+                    'title' => 'Памятники',
+                    'slug' => 'pamyatniki-zhivotnye',
+                    'parent_id' => $parentIds['ritual_animals'],
+                    'type' => 'beautification'
+                ],
+                
+                // Ритуальные услуги для животных -> Урны для праха
+                [
+                    'title' => 'Урны для праха',
+                    'slug' => 'urny-dlya-praha-zhivotnye',
+                    'parent_id' => $parentIds['ritual_animals'],
+                    'type' => 'beautification'
+                ],
+                
+                // Ритуальные услуги для животных -> Прочее
+                [
+                    'title' => 'Прочее',
+                    'slug' => 'prochee-zhivotnye',
+                    'parent_id' => $parentIds['ritual_animals'],
+                    'type' => 'beautification'
+                ],
+            ];
+            
+            // Создаем категории, которых нет
+            $createdCount = 0;
+            foreach ($categoriesToCreate as $categoryData) {
+                if (!CategoryProduct::where('slug', $categoryData['slug'])->exists()) {
+                    CategoryProduct::create(array_merge($categoryData, [
+                        'content' => null,
+                        'manual' => null,
+                        'manual_video' => null,
+                        'additional' => null,
+                        'choose_admin' => 0,
+                        'icon' => null,
+                        'icon_white' => null,
+                        'icon_map' => null,
+                        'display' => 1,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]));
+                    $createdCount++;
+                }
+            }
+            
+            // 3. Перемещаем "Траурные венки" в "Ритуальные товары"
+            $traurnyeVenki = CategoryProduct::where('slug', 'traurnye-venki')->first();
+            if ($traurnyeVenki && $parentIds['ritual_tovary']) {
+                $traurnyeVenki->update([
+                    'parent_id' => $parentIds['ritual_tovary'],
+                    'type' => 'beautification'
+                ]);
+            }
+            
+            DB::commit();
+            
+            return [
+                'success' => true,
+                'message' => "Создано $createdCount новых категорий. 'Траурные венки' перемещены в 'Ритуальные товары'."
+            ];
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return [
+                'success' => false,
+                'message' => 'Ошибка: ' . $e->getMessage()
+            ];
+        }
+    }

@@ -38,11 +38,14 @@ class IndexNews
     }
 
     public static function newsCat($id){
+        SEOTools::setTitle(formatContent(getSeo('page-news','title')));
+        SEOTools::setDescription(formatContent(getSeo('page-news','description')));
+        $title_h1=formatContent(getSeo('page-news','h1'));
         $cat=CategoryNews::findOrFail($id);
         $page=6;
         $news=News::orderBy('id', 'desc')->where('type',1)->where('category_id',$cat->id)->get();
         $cats=CategoryNews::orderBy('id', 'desc')->get();
         $id_cat=$cat->id;
-        return view('news.index',compact('news','cats','page','id_cat'));
+        return view('news.index',compact('news','cats','page','id_cat','title_h1'));
     }
 }

@@ -123,7 +123,8 @@
 
                 {{view('product.components.single.additionals',compact('additionals'))}}
 
-                {{view('product.components.single.user-inputs')}}
+                {{view('product.components.single.user-inputs',compact('product','random_organizations_with_calls'))}}
+
 
  
             </form>

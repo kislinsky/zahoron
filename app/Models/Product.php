@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use App\Models\ImageProduct;
-use App\Models\ProductParameters;
 use App\Models\CategoryProduct;
-use App\Models\District;
-use App\Models\MemorialMenu;
 use App\Models\CommentProduct;
+use App\Models\District;
+use App\Models\ImageProduct;
+use App\Models\MemorialMenu;
+use App\Models\ProductParameters;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -78,6 +79,40 @@ class Product extends Model
 
     public function views(){
         return $this->hasMany(View::class, 'entity_id')->where('entity_type', 'product');
+    }
+
+     protected static function boot()
+    {
+        parent::boot();
+        
+        // Автоматически генерируем slug при создании
+        static::creating(function ($product) {
+            if (empty($product->slug)) {
+                $product->slug = Str::slug($product->title);
+                
+                // Проверяем уникальность slug
+                $count = 1;
+                while (static::where('slug', $product->slug)->exists()) {
+                    $product->slug = Str::slug($product->title) . '-' . $count;
+                    $count++;
+                }
+            }
+        });
+        
+        // Также при обновлении, если title изменился
+        static::updating(function ($product) {
+            if ($product->isDirty('title') && empty($product->slug)) {
+                $product->slug = Str::slug($product->title);
+                
+                $count = 1;
+                while (static::where('slug', $product->slug)
+                    ->where('id', '!=', $product->id)
+                    ->exists()) {
+                    $product->slug = Str::slug($product->title) . '-' . $count;
+                    $count++;
+                }
+            }
+        });
     }
    
 }

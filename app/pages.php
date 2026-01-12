@@ -263,7 +263,7 @@ function organizationPages(){
     $organizations = $user ? $user->organizations : [];
     $ul_organizations = [];
     foreach($organizations as $organization){
-        $ul_organizations[] = [$organization->title, 'account.agency.organization.settings', $organization->id];
+        $ul_organizations[] = [$organization->title.' '.$organization->adres, 'account.agency.organization.settings', $organization->id];
     }
     $ul_organizations[] = ['Привязать организацию', 'account.agency.add.organization'];
     $ul_organizations[] = ['Создать организацию', 'account.agency.organization.create-page'];
@@ -405,14 +405,7 @@ function organizationPages(){
     return $pages;
 }
 
-function mobilePages(){
-    
-   $catalog_organizations = [['Ритуальные агенства', route('organizations')]];
-
-    // if (Auth::user() && (user()->role == 'organization' || user()->role == 'organization-provider' || user()->role == 'admin') && versionProject()) {
-    //     $catalog_organizations[] = ['Каталог поставщиков', route('organizations.provider')];
-    // }
-
+function mobilePages() {
     $pages = [
         [
             ['Главная', route('index')],
@@ -427,54 +420,32 @@ function mobilePages(){
             ],
         ],
         
-        // Блок "Облогораживание" - показываем только если versionProject() != true
-        (!versionProject() ? [
-            ['Облогораживание', ''],
+        [
+            ['Ритуальные услуги', ''],
             [
-                ['Товары и услуги', route('pricelist')],
-                ['Маркетплэйс', route('marketplace')],
+                ['Ритуальные агенства', route('organizations.category', 'organizacia-pohoron')],
+                ['Ритуальные товары, услуги', route('marketplace.category', 'organizacia-pohoron')],
             ],
-        ] : null),
-        
-        (!versionProject() ? [
-            ['Оформление заказа', ''],
-            [
-                ['Захоронений', route('checkout.burial')],
-                ['Услуг', route('checkout.service')],
-            ],
-        ] : null),
+        ],
         
         [
-            ['Ритуальные обьекты', ''],
+            ['Ритуальные объекты', ''],
             [
                 ['Кладбища', route('cemeteries')],
                 ['Морги', route('mortuaries')],
-                
             ],
         ],
         
         [
-            ['Ритуальные услуги', ''],
-            $catalog_organizations,
-        ],
-        
-        // Блок "Информация" - изменяем в зависимости от versionProject()
-        [
             ['Информация', ''],
-           
-            array_filter([
-                (!versionProject() ? ['Наши работы', route('our.products')] : null),
-                (!versionProject() ? ['Статьи', route('news')] : null),
+            [
+                ['Наши работы', route('our.products')],
+                ['Статьи', route('news')],
                 ['Контакты', route('contacts')],
-                 ['Наши работы', route('our.products')],
-            ]),
+            ],
         ],
-        
     ];
 
-    // Удаляем null-элементы, которые могли появиться из-за условных блоков
-    $pages = array_filter($pages);
-    
     return $pages;
 }
 

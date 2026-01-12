@@ -22,6 +22,10 @@
        
         <div class="grid_product_two">
             <div class="one_block_market">
+                @include('components.product-search', [
+                    'placeholder' => 'Поиск товаров...',
+                    'containerClass' => 'filter_block',
+                ])
                 {{ view("product.components.catalog.filters", compact('layerings','sort','materials_filter','category','cemeteries_all','districts_all','cemetery','district')) }}
                 <div class="html_products_wrap">
                     @if(isset($category) && $category!=null )

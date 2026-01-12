@@ -7,10 +7,12 @@ use App\Filament\Resources\ProductResource\RelationManagers\GetImagesRelationMan
 use App\Filament\Resources\ProductResource\RelationManagers\GetParamRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\MemorialMenuRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\ViewsRelationManager;
+use App\Jobs\ProcessProductExport;
 use App\Models\CategoryProduct;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\MultiSelect;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -21,12 +23,13 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Filament\Forms\Components\MultiSelect;
-use Rap2hpoutre\FastExcel\FastExcel;
+use Illuminate\Support\Facades\Log;
 
 class ProductResource extends Resource
 {
@@ -228,28 +231,6 @@ class ProductResource extends Resource
 
     public static function table(Table $table): Table
     {
-        // Карта колонок для экспорта (русские названия)
-        $columnsMap = [
-            'id' => 'ID',
-            'title' => 'Название',
-            'slug' => 'Слаг',
-            'view' => 'Отображение',
-            'organization_id' => 'Организация',
-            'price' => 'Цена',
-            'price_sale' => 'Цена со скидкой',
-            'total_price' => 'Итоговая цена',
-            'content' => 'Описание',
-            'category_id' => 'Подкатегория',
-            'category_parent_id' => 'Категория',
-            'material' => 'Материал',
-            'color' => 'Цвет',
-            'layering' => 'Тип продукта',
-            'size' => 'Размеры',
-            'created_at' => 'Дата создания',
-            'updated_at' => 'Дата обновления',
-            'organization.city.title' => 'Город',
-        ];
-        
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
@@ -260,125 +241,233 @@ class ProductResource extends Resource
                     ->label('Название')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('price')
+                    ->label('Цена')
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('organization.title')
                     ->label('Организация')
                     ->searchable()
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('organization.city.title')
                     ->label('Город')
                     ->searchable()
                     ->sortable(),
             ])
-            ->filters([
-                SelectFilter::make('category_parent_id')
-                    ->label('Категория')
-                    ->relationship('parentCategory', 'title', function (Builder $query) {
-                        $query->whereNull('parent_id');
-                    })
-                    ->searchable()
-                    ->preload(),
-        
-                SelectFilter::make('category_id')
-                    ->label('Подкатегория')
-                    ->relationship('category', 'title', function (Builder $query) {
-                        $query->whereNotNull('parent_id');
-                    })
-                    ->searchable()
-                    ->preload(),
-        
-                SelectFilter::make('city_id')
-                    ->label('Город')
-                    ->relationship('organization.city', 'title')
-                    ->searchable()
-                    ->hidden(auth()->user()->role === 'deputy-admin'),
+           ->filters([
+    SelectFilter::make('category_parent_id')
+        ->label('Категория')
+        ->relationship('parentCategory', 'title', function (Builder $query) {
+            $query->whereNull('parent_id');
+        })
+        ->searchable()
+        ->preload(),
 
-                SelectFilter::make('cemetery_id')
-                    ->form([
-                        Select::make('cemetery_id')
-                            ->label('Кладбище')
-                            ->options(fn () => \App\Models\Cemetery::pluck('title', 'id'))
-                            ->searchable(),
-                    ])
-                    ->query(function (Builder $query, array $data) {
-                        if (!isset($data['cemetery_id']) || empty($data['cemetery_id'])) {
-                            return;
-                        }
+    SelectFilter::make('category_id')
+        ->label('Подкатегория')
+        ->relationship('category', 'title', function (Builder $query) {
+            $query->whereNotNull('parent_id');
+        })
+        ->searchable()
+        ->preload(),
 
-                        $query->whereHas('organization', function ($query) use ($data) {
-                            $query->whereRaw("FIND_IN_SET(?, cemetery_ids)", [$data['cemetery_id']]);
-                        });
-                    }),
-            ])
+    SelectFilter::make('city_id')
+        ->label('Город')
+        ->relationship('organization.city', 'title')
+        ->searchable()
+        ->hidden(auth()->user()->role === 'deputy-admin'),
+
+    SelectFilter::make('cemetery_id')
+        ->form([
+            Select::make('cemetery_id')
+                ->label('Кладбище')
+                ->options(fn () => \App\Models\Cemetery::pluck('title', 'id'))
+                ->searchable(),
+        ])
+        ->query(function (Builder $query, array $data) {
+            if (!isset($data['cemetery_id']) || empty($data['cemetery_id'])) {
+                return;
+            }
+
+            $query->whereHas('organization', function ($query) use ($data) {
+                $query->whereRaw("FIND_IN_SET(?, cemetery_ids)", [$data['cemetery_id']]);
+            });
+        }),
+
+    // Добавляем фильтр цены от и до
+    Filter::make('price_range')
+        ->form([
+            Forms\Components\Grid::make(2)
+                ->schema([
+                    Forms\Components\TextInput::make('price_from')
+                        ->label('Цена от')
+                        ->type('number')
+                        ->minValue(0)
+                        ->placeholder('0'),
+                    Forms\Components\TextInput::make('price_to')
+                        ->label('Цена до')
+                        ->type('number')
+                        ->minValue(0)
+                        ->placeholder('∞'),
+                ]),
+        ])
+        ->query(function (Builder $query, array $data) {
+            return $query
+                ->when(
+                    isset($data['price_from']) && $data['price_from'] !== '' && $data['price_from'] !== null,
+                    fn ($query) => $query->where('price', '>=', (float) $data['price_from'])
+                )
+                ->when(
+                    isset($data['price_to']) && $data['price_to'] !== '' && $data['price_to'] !== null,
+                    fn ($query) => $query->where('price', '<=', (float) $data['price_to'])
+                );
+        })
+        ->indicateUsing(function (array $data): array {
+            $indicators = [];
+
+            if (isset($data['price_from']) && $data['price_from'] !== '' && $data['price_from'] !== null) {
+                $indicators[] = Indicator::make('Цена от: ' . number_format($data['price_from'], 0, ',', ' ') . ' ₽')
+                    ->removeField('price_from');
+            }
+
+            if (isset($data['price_to']) && $data['price_to'] !== '' && $data['price_to'] !== null) {
+                $indicators[] = Indicator::make('Цена до: ' . number_format($data['price_to'], 0, ',', ' ') . ' ₽')
+                    ->removeField('price_to');
+            }
+
+            return $indicators;
+        }),
+])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
-            ->headerActions([
-                \Filament\Tables\Actions\Action::make('export')
-                    ->label('Экспорт в Excel')
-                    ->action(function ($livewire, array $data) use ($columnsMap) {
-                        $fileName = 'products_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
-                        
-                        // Получаем отфильтрованный запрос
-                        $query = $livewire->getFilteredTableQuery()
-                            ->with(['organization.city', 'parentCategory', 'category']);
-                        
-                        // Применяем права доступа для deputy-admin
-                        if (auth()->user()->role === 'deputy-admin') {
-                            $cityIds = static::getUserCityIds();
-                            if (!empty($cityIds)) {
-                                $query->whereHas('organization.city', function($q) use ($cityIds) {
-                                    $q->whereIn('id', $cityIds);
-                                });
-                            }
-                        }
-                        
-                        // Выбранные колонки или все по умолчанию
-                        $columns = $data['columns'] ?: array_keys($columnsMap);
-                        
-                        $collection = $query->get()->map(function ($item) use ($columns, $columnsMap) {
-                            return collect($columns)->mapWithKeys(function ($col) use ($item, $columnsMap) {
-                                $value = '';
-                                
-                                // Обработка специальных полей
-                                if ($col === 'id') {
-                                    $value = (string) $item->id;
-                                } elseif ($col === 'view') {
-                                    $value = match ((int)$item->view) {
-                                        0 => 'Не показывать',
-                                        1 => 'Показывать',
-                                        default => 'Не указано',
-                                    };
-                                } elseif ($col === 'organization_id') {
-                                    $value = optional($item->organization)->title;
-                                } elseif ($col === 'organization.city.title') {
-                                    $value = optional($item->organization)->city ? $item->organization->city->title : '';
-                                } elseif ($col === 'category_parent_id') {
-                                    $value = optional($item->parentCategory)->title;
-                                } elseif ($col === 'category_id') {
-                                    $value = optional($item->category)->title;
-                                } elseif (in_array($col, ['created_at', 'updated_at'])) {
-                                    $value = $item->{$col} ? $item->{$col}->format('d.m.Y H:i:s') : '';
-                                } else {
-                                    // Обычные поля модели
-                                    $value = $item->{$col} ?? '';
-                                }
-                                
-                                return [$columnsMap[$col] ?? $col => $value];
-                            })->toArray();
-                        });
-                        
-                        return (new FastExcel($collection))->download($fileName);
-                    })
-                    ->form([
-                        MultiSelect::make('columns')
-                            ->label('Выберите колонки для экспорта')
-                            ->options($columnsMap)
-                            ->helperText('Если ничего не выбрано, будут экспортированы все колонки')
-                    ])
-                    ->modalAutofocus(false)
-                    ->modalSubmitActionLabel('Скачать Excel')
-            ])
+           ->headerActions([
+    Tables\Actions\Action::make('export')
+        ->label('Экспорт в Excel')
+        ->icon('heroicon-o-arrow-down-tray')
+        ->color('success')
+        ->action(function ($livewire, array $data) {
+    try {
+        // Получаем выбранные колонки
+        $columns = $data['columns'] ?? [];
+        
+        Log::info('Export columns selected', ['columns' => $columns]);
+        
+        // Если ничего не выбрано, используем все колонки по умолчанию
+        if (empty($columns)) {
+            $columns = [
+                'id', 'title', 'slug', 'view', 'organization.title', 
+                'organization.city.title', 'price', 'price_sale', 'total_price',
+                'category.title', 'category.parent.title', 'material', 'color',
+                'layering', 'size', 'created_at', 'updated_at'
+            ];
+        }
+        
+        // Получаем активные фильтры из таблицы
+        $filters = [];
+        
+        // Получаем состояние фильтров из Livewire
+        if (property_exists($livewire, 'tableFilters')) {
+            $filterState = $livewire->tableFilters ?? [];
+            
+            Log::info('Raw filter state', ['filterState' => $filterState]);
+            
+            // Обрабатываем каждый фильтр
+            foreach ($filterState as $filterName => $filterValue) {
+                if (!empty($filterValue)) {
+                    // Для SelectFilter значение приходит как массив с ключом 'value'
+                    if (is_array($filterValue) && isset($filterValue['value'])) {
+                        $filters[$filterName] = $filterValue['value'];
+                    }
+                    // Для простых значений
+                    elseif (!is_array($filterValue)) {
+                        $filters[$filterName] = $filterValue;
+                    }
+                    // Игнорируем пустые массивы
+                }
+            }
+        }
+        
+        // Дополнительно получаем фильтры для кастомных фильтров
+        if (isset($data['cemetery_id']) && !empty($data['cemetery_id'])) {
+            $filters['cemetery_id'] = $data['cemetery_id'];
+        }
+        
+        Log::info('Active filters found', ['filters' => $filters]);
+        
+        // Генерируем имя файла
+        $filename = 'products_export_' . now()->format('Y-m-d_H-i-s') . '_' . auth()->id() . '.xlsx';
+        
+        Log::info('Dispatching export job', [
+            'user_id' => auth()->id(),
+            'filename' => $filename,
+            'columns_count' => count($columns),
+            'filters' => $filters
+        ]);
+        
+        // Запускаем Job с фильтрами
+        ProcessProductExport::dispatch(
+            auth()->id(),
+            $columns,
+            $filters, // Передаем фильтры в Job
+            $filename
+        );
+        
+        // Уведомление
+        \Filament\Notifications\Notification::make()
+            ->title('Экспорт запущен')
+            ->body('Экспорт товаров начался в фоновом режиме. Вы получите уведомление, когда файл будет готов для скачивания.')
+            ->success()
+            ->send();
+            
+    } catch (\Exception $e) {
+        Log::error('Export failed to dispatch', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        \Filament\Notifications\Notification::make()
+            ->title('Ошибка')
+            ->body('Не удалось запустить экспорт: ' . $e->getMessage())
+            ->danger()
+            ->send();
+    }
+})
+        ->form([
+            MultiSelect::make('columns')
+                ->label('Выберите колонки для экспорта')
+                ->options([
+                    'id' => 'ID',
+                    'title' => 'Название',
+                    'slug' => 'Слаг',
+                    'view' => 'Отображение',
+                    'organization.title' => 'Организация',
+                    'organization.city.title' => 'Город',
+                    'price' => 'Цена',
+                    'price_sale' => 'Цена со скидкой',
+                    'total_price' => 'Итоговая цена',
+                    'category.title' => 'Подкатегория',
+                    'category.parent.title' => 'Категория',
+                    'material' => 'Материал',
+                    'color' => 'Цвет',
+                    'layering' => 'Тип продукта',
+                    'size' => 'Размеры',
+                    'created_at' => 'Дата создания',
+                    'updated_at' => 'Дата обновления',
+                ])
+                ->placeholder('Все колонки')
+                ->helperText('Если ничего не выбрано, будут экспортированы все колонки')
+                ->default([])
+                ->searchable()
+        ])
+        ->modalHeading('Экспорт товаров в Excel')
+        ->modalDescription('Выберите колонки для экспорта. Будут применены текущие фильтры таблицы.')
+        ->modalSubmitActionLabel('Запустить экспорт')
+        ->modalWidth('lg')
+        ->requiresConfirmation()
+])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

@@ -25,8 +25,7 @@
                 </div>
             </div>
             
-            <div class="btn_gray margin_left_auto">Осталось звонков: {{ $remaining_calls ?? 0 }}</div>
-            <div class="blue_btn">Добавить звонки</div>
+           
         </form>
 
         <table class='call_stats'>
