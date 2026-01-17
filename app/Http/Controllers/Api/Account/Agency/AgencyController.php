@@ -321,7 +321,6 @@ class AgencyController extends Controller
 
     public static function settingsUserUpdate(Request $request)
     {
-
         // Общие правила валидации
         $commonRules = [
             'user_id'             => 'required|integer',
@@ -344,47 +343,57 @@ class AgencyController extends Controller
             'edge_id'             => 'required|integer',
         ];
 
-        // Правила для ИП
-        $epRules = [
-            'name'       => 'string|nullable',
-            'surname'    => 'string|nullable',
-            'patronymic' => 'string|nullable',
-            'ogrnip'     => 'nullable|string',
-        ];
-
-        // Правила для организаций
-        $orgRules = [
-            'in_face'    => 'required|string',
-            'regulation' => 'required|string',
-            'ogrn'       => 'nullable|string',
-            'kpp'        => 'nullable|string',
-
-        ];
-
-        $user = null;
-        if ($request->user_id != null) {
-            $user = User::find($request->user_id);
-            if ($user == null) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Несуществующий или недействующий пользователь'
-                ], 400);
-            }
-            if ($user->organizational_form == null) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Пользователь не является организацией'
-                ], 400);
-            }
+        // ВАЖНО: Валидируем запрос ДО поиска пользователя
+        $validator = Validator::make($request->all(), $commonRules);
+        
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors'  => $validator->errors()
+            ], 422);
         }
 
-        // Объединяем правила в зависимости от типа организации
-        $validationRules = $user->organizational_form == 'ep'
-            ? array_merge($commonRules, $epRules)
-            : array_merge($commonRules, $orgRules);
+        // Находим пользователя после успешной валидации
+        $user = User::find($request->user_id);
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Несуществующий или недействующий пользователь'
+            ], 400);
+        }
+        
+        // Проверяем, что пользователь является организацией
+        if (!$user->organizational_form) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Пользователь не является организацией'
+            ], 400);
+        }
 
+        // Дополнительные правила в зависимости от типа организации
+        if ($user->organizational_form == 'ep') {
+            $epRules = [
+                'name'       => 'string|nullable',
+                'surname'    => 'string|nullable',
+                'patronymic' => 'string|nullable',
+                'ogrnip'     => 'nullable|string',
+            ];
+            $validationRules = array_merge($commonRules, $epRules);
+        } else {
+            $orgRules = [
+                'in_face'    => 'required|string',
+                'regulation' => 'required|string',
+                'ogrn'       => 'nullable|string',
+                'kpp'        => 'nullable|string',
+            ];
+            $validationRules = array_merge($commonRules, $orgRules);
+        }
+
+        // Валидация с учетом типа организации
         $validator = Validator::make($request->all(), $validationRules);
-
+        
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -395,7 +404,7 @@ class AgencyController extends Controller
 
         $data = $validator->validated();
 
-
+        // Остальная логика остается без изменений...
         // Проверка организации через API, если включено
         if (env('API_WORK') == 'true') {
             $organizationData = checkOrganizationInn($data['inn']);
@@ -448,19 +457,17 @@ class AgencyController extends Controller
             'sms_notifications'   => $data['sms_notifications'] ?? false,
         ];
 
-        // Добавляем специфичные поля для ИП
+        // Добавляем специфичные поля в зависимости от типа организации
         if ($user->organizational_form == 'ep') {
             $updateData['name'] = $data['name'] ?? null;
             $updateData['surname'] = $data['surname'] ?? null;
             $updateData['patronymic'] = $data['patronymic'] ?? null;
             $updateData['ogrnip'] = $data['ogrnip'] ?? null;
-
         } else {
             $updateData['in_face'] = $data['in_face'];
             $updateData['regulation'] = $data['regulation'];
             $updateData['ogrn'] = $data['ogrn'] ?? null;
             $updateData['kpp'] = $data['kpp'] ?? null;
-
         }
 
         // Обновление пароля
@@ -1918,7 +1925,8 @@ class AgencyController extends Controller
         $validator = Validator::make($request->all(), [
             'wallet_id' => 'required|exists:wallets,id',
             'count'     => 'required|integer|min:1',
-            'deep_link' => ['required', 'regex:/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\/.+/'] // Кастомная валидация для deep links
+            'email'     => 'required|email',
+            'deep_link' => ['required', 'regex:/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\/.+/']
         ], [
             'deep_link.regex' => 'Значение поля deep link имеет ошибочный формат URL.'
         ]);
@@ -1933,18 +1941,26 @@ class AgencyController extends Controller
 
         $data = $validator->validated();
         $service = new YooMoneyService();
+        
+        $user = auth()->user();
+        $wallet = Wallet::find($data['wallet_id']);
+        
         $metadata = [
             'wallet_id' => $data['wallet_id'],
             'count'     => $data['count'],
-            'deep_link' => $data['deep_link']
+            'deep_link' => $data['deep_link'],
+            'user_id'   => $user->id
         ];
 
         try {
+            // Передаем email и phone как отдельные параметры
             $payment = $service->createMobilePayment(
-                $data['count'],
-                $data['deep_link'],
-                'Пополнение баланса',
-                $metadata
+                $data['count'],           // amount
+                $data['deep_link'],       // deepLink
+                'Пополнение баланса',     // description
+                $metadata,                // metadata
+                $data['email'],           // customerEmail
+                $user->phone ?? null      // customerPhone
             );
 
             return response()->json([
@@ -2060,7 +2076,7 @@ class AgencyController extends Controller
         $user = auth()->user();
 
         // Проверяем, есть ли у пользователя организация
-        if (!$user->organization) {
+        if (!$user->organization()) {
             return response()->json([
                 'success' => false,
                 'message' => 'У пользователя нет организации'

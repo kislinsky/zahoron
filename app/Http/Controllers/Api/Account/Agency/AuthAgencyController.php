@@ -13,12 +13,14 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use session;
 
 
 class AuthAgencyController extends Controller
 {
+    
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -32,24 +34,22 @@ class AuthAgencyController extends Controller
             return response()->json(['error' => $validator->errors()], 400);
         }
 
+        $phone_check = User::where('phone', normalizePhone($request->phone))->first();
+        $inn_check = User::where('inn', $request->inn)->first();
 
-        $phone_check=User::where('phone',normalizePhone($request->phone))->first();
-        $inn_check=User::where('inn',$request->inn)->first();
-
-        if($phone_check!=null || $inn_check!=null){
+        if ($phone_check != null || $inn_check != null) {
             return response()->json(['error' => 'Пользователь с таким номером телефона или инн уже существует.'], 409);
         }
 
         // Здесь должна быть проверка ИНН через внешний сервис
-        $innInfo=null;
-        if(env('API_WORK')=='true'){
-            $innInfo=checkOrganizationInn($request->inn);
+        $innInfo = null;
+        if (env('API_WORK') == 'true') {
+            $innInfo = checkOrganizationInn($request->inn);
         }
 
-        
-        
-        if($innInfo!=null && $innInfo['state']['status']=='ACTIVE'){
+        if ($innInfo != null && $innInfo['state']['status'] == 'ACTIVE') {
             $regId = Str::uuid();
+            
             RegistrationSession::create([
                 'id' => $regId,
                 'inn' => $request->inn,
@@ -59,15 +59,27 @@ class AuthAgencyController extends Controller
                 'okved' => $innInfo['okved'],
             ]);
 
+            // Ищем организации с таким же ИНН в системе
+            $organizations = Organization::where('inn', $request->inn)
+                ->select('title', 'adres')
+                ->get()
+                ->map(function ($org) {
+                    return [
+                        'title' => $org->title,
+                        'address' => $org->adres
+                    ];
+                });
+
             return response()->json([
                 'reg_id' => $regId,
                 'agent_name' => $innInfo['name']['short_with_opf'],
                 'status' => $innInfo['state']['status'],
                 'okved' => $innInfo['okved'],
+                'organizations' => $organizations
             ]);
         }
+        
         return response()->json(['error' => 'ИНН не найден или неверный'], 404);
-
     }
 
     public function confirmInfo(Request $request)
@@ -315,5 +327,97 @@ class AuthAgencyController extends Controller
         ]);
     }
 
+    public static function checkJwtToken(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Токен обязателен',
+                'errors' => $validator->errors()
+            ], 422); // 422 Unprocessable Entity
+        }
+
+        try {
+            $token = $request->input('token');
+            $user = JWTAuth::setToken($token)->authenticate();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Пользователь не найден'
+                ], 403); // 403 Forbidden
+            }
+
+            // Проверяем срок действия токена
+            $payload = JWTAuth::setToken($token)->getPayload();
+            $expiration = $payload->get('exp');
+            
+            if (time() >= $expiration) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Токен истек'
+                ], 403); // 403 Forbidden
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Токен действителен',
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role
+                ],
+                'expires_at' => date('Y-m-d H:i:s', $expiration)
+            ], 200); // 200 OK
+
+        } catch (JWTException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Недействительный токен: ' . $e->getMessage()
+            ], 403); // 403 Forbidden
+        }
+    }
+
+    /**
+     * Дополнительная функция для проверки токена из заголовка
+     */
+    public static function checkJwtTokenFromHeader(Request $request)
+    {
+        try {
+            $token = $request->bearerToken();
+            
+            if (!$token) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Токен не предоставлен'
+                ], 401); // 401 Unauthorized
+            }
+
+            $user = JWTAuth::setToken($token)->authenticate();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Пользователь не найден'
+                ], 403); // 403 Forbidden
+            }
+
+            return response()->json([
+                'success' => true,
+                'user' => $user
+            ], 200); // 200 OK
+
+        } catch (JWTException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка проверки токена'
+            ], 403); // 403 Forbidden
+        }
+    }
     
 }

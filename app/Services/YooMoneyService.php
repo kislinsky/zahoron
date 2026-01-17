@@ -146,21 +146,55 @@ class YooMoneyService
 
 
  
-    public function createMobilePayment($amount, $deepLink, $description, $metadata = [])
+    public function createMobilePayment($amount, $deepLink, $description, $metadata = [], $customerEmail = null, $customerPhone = null)
     {
-        $payment = $this->client->createPayment([
+        // Базовые параметры платежа
+        $paymentData = [
             'amount' => [
                 'value' => $amount,
                 'currency' => 'RUB',
             ],
             'confirmation' => [
                 'type' => 'redirect',
-                'return_url' => $deepLink, // Deep link для возврата в приложение
+                'return_url' => $deepLink,
             ],
             'metadata' => $metadata,
             'capture' => true,
             'description' => $description,
-        ], uniqid('', true));
+        ];
+        
+        // Добавляем чек, если есть email или телефон
+        if ($customerEmail || $customerPhone) {
+            $paymentData['receipt'] = [
+                'customer' => [],
+                'items' => [
+                    [
+                        'description' => $description,
+                        'quantity' => '1.00', // Важно: строка с двумя знаками
+                        'amount' => [
+                            'value' => $amount,
+                            'currency' => 'RUB'
+                        ],
+                        'vat_code' => 1, // НДС 20%
+                        'payment_mode' => 'full_payment',
+                        'payment_subject' => 'service'
+                    ]
+                ]
+            ];
+            
+            if ($customerEmail) {
+                $paymentData['receipt']['customer']['email'] = $customerEmail;
+            }
+            if ($customerPhone) {
+                $paymentData['receipt']['customer']['phone'] = $customerPhone;
+            }
+        }
+
+        // Создаем платеж
+        $payment = $this->client->createPayment(
+            $paymentData,
+            uniqid('', true)
+        );
 
         return [
             'id' => $payment->getId(),

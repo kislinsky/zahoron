@@ -94,6 +94,7 @@ class BurialImport extends Page implements HasForms
                     ])
                     ->rules(['mimes:csv,xlsx,xls,txt'])
                     ->live()
+                    ->maxSize(102400)
                     ->afterStateUpdated(function (mixed $state) {
                         $this->processUploadedFile($state);
                     }),

@@ -6,10 +6,13 @@ use App\Models\Burial;
 use App\Models\Cemetery;
 use App\Models\City;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use OpenSpout\Reader\Common\Creator\ReaderFactory;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Rap2hpoutre\FastExcel\FastExcel;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -17,8 +20,6 @@ use Illuminate\Support\Facades\Redis;
 
 class ParserBurialService
 {
-    private static $existingSlugs = [];
-
     public static function index($request)
     {
         try {
@@ -33,9 +34,6 @@ class ParserBurialService
                 'files.*'     => 'file|mimes:xlsx,xls',
                 'id_cemetery' => 'nullable|integer',
             ]);
-
-            // Предзагрузка существующих slug для проверки уникальности
-            self::$existingSlugs = Burial::pluck('slug')->toArray();
 
             $files = $request->file('files');
             $createdBurials = 0;
@@ -176,7 +174,6 @@ class ParserBurialService
                             ];
 
                             $burialId = DB::table('burials')->insertGetId($burialData);
-                            self::$existingSlugs[] = $slug;
 
                             $createdBurials++;
 
@@ -220,15 +217,60 @@ class ParserBurialService
         }
     }
 
+    public function getCountRowsInXlsx(string $path): int
+    {
+        $zip = new \ZipArchive();
+        if ($zip->open($path) === true) {
+            $content = $zip->getFromName('xl/worksheets/sheet1.xml');
+            $zip->close();
+
+            if (preg_match('/ref="[A-Z]+\d+:[A-Z]+(\d+)"/', $content, $matches)) {
+                return (int)$matches[1] - 1;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Максимально быстрый подсчет строк в CSV
+     */
+    private function getCountRowsInCsv(string $path): int
+    {
+        if (!file_exists($path)) return 0;
+
+        $count = 0;
+
+        // Если сервер на Linux/Unix
+        if (function_exists('shell_exec') && strpos(strtolower(PHP_OS), 'win') === false) {
+            $output = shell_exec("wc -l < " . escapeshellarg($path));
+            $count = (int)$output;
+        } else {
+            // Фоллбек: потоковое чтение файла, чтобы не "съесть" оперативку
+            $handle = fopen($path, "r");
+            while (!feof($handle)) {
+                fgets($handle);
+                $count++;
+            }
+            fclose($handle);
+        }
+
+        return $count > 0 ? $count - 1 : 0;
+    }
 
     public function importFromFilament(string $file, array $columnMapping, ?int $defaultCemeteryId, string $jobId): array
     {
         try {
-            self::$existingSlugs = Burial::pluck('slug')->toArray();
-
             $createdBurials = 0;
             $skippedRows = 0;
             $errors = [];
+
+            // Переменные для пакетной вставки
+            $batch = [];
+            $batchSlugs = [];
+
+            $logStep = 10000; // Будем выводить отчет каждые 10к строк
+            $totalStartTime = microtime(true);
+            $chunkStartTime = microtime(true);
 
             $realPath = Storage::disk('public')->path($file);
             $fileName = basename($file);
@@ -239,13 +281,15 @@ class ParserBurialService
                 return ['created' => 0, 'skipped' => 0, 'errors' => [$error]];
             }
 
-            $totalRows = (new FastExcel)->import($realPath)->count();
+            $totalRows = $this->getCountRowsInCsv($realPath);
+
+            // Определяем размер пачки динамически
+            $batchSize = $this->calculateBatchSize($totalRows);
 
             Redis::set("import_progress:{$jobId}:total", $totalRows);
             Redis::set("import_progress:{$jobId}:current", 0);
             Redis::set("import_progress:{$jobId}:status", 'В процессе');
 
-            DB::beginTransaction();
 
             (new FastExcel)->import($realPath, function ($row) use (
                 &$createdBurials,
@@ -253,7 +297,15 @@ class ParserBurialService
                 &$errors,
                 $columnMapping,
                 $defaultCemeteryId,
-                $jobId
+                $jobId,
+
+                &$chunkStartTime,
+                $totalStartTime,
+                $logStep,
+
+                &$batch,
+                &$batchSlugs,
+                $batchSize
             ) {
                 try {
                     if (empty(array_filter($row))) {
@@ -278,9 +330,7 @@ class ParserBurialService
 
                     $cleanedCityTitle = self::cleanCityName($cityTitle);
 
-                    $city = City::with('area.edge')
-                        ->where('title', 'like', '%' . $cleanedCityTitle . '%')
-                        ->first();
+                    $city = $this->getCityWithCache($cleanedCityTitle);
 
                     if (!$city) {
                         Log::warning("Skipped row: city not found: {$cityTitle}");
@@ -299,28 +349,12 @@ class ParserBurialService
                             return;
                         }
 
-                        $cemetery = Cemetery::where('city_id', $city->id)
-                            ->where('title', $cemeteryTitle)
-                            ->first();
+                        $cemeteryData = [
+                            'width'     => $getFieldValue('width'),
+                            'longitude' => $getFieldValue('longitude'),
+                        ];
 
-                        if (!$cemetery) {
-
-                            $cemetery=Cemetery::create([
-                                'title'=>$cemeteryTitle,
-                                'slug'=>slug($cemeteryTitle),
-                                'img_url'=>'default',
-                                'width'=>$getFieldValue('width'),
-                                'longitude'=>$getFieldValue('longitude'),
-                                'rating'=>5,
-                                'href_img'=>1,
-                                'city_id'=>$city->id,
-                                'area_id'=>$city->area_id
-                            ]);
-
-                         
-                        }
-
-                        $cemeteryId = $cemetery->id;
+                        $cemeteryId = $this->getCemeteryIdWithCache($city, $cemeteryTitle, $cemeteryData);
                     }
 
                     $edge = $city->area->edge;
@@ -341,10 +375,10 @@ class ParserBurialService
                     $processedWidth = $rawWidth ? str_replace(',', '.', $rawWidth) : null;
                     $processedLongitude = $rawLongitude ? str_replace(',', '.', $rawLongitude) : null;
 
-                    $slug = self::generateOptimizedSlug($surname, $name, $patronymic, $date_birth, $date_death);
+                    $slug = self::generateOptimizedSlug($surname, $name, $patronymic, $date_birth, $date_death, $batchSlugs);
                     $status = 1;
 
-                    $burialData = [
+                    $batch[] = [
                         'surname'          => $surname,
                         'name'             => $name,
                         'patronymic'       => $patronymic,
@@ -364,16 +398,26 @@ class ParserBurialService
                         'updated_at'       => now(),
                     ];
 
-                    DB::table('burials')->insert($burialData);
-                    self::$existingSlugs[] = $slug;
+                    // Если пачка собрана — вставляем
+                    if (count($batch) >= $batchSize) {
+                        DB::table('burials')->insert($batch);
+                        $createdBurials += count($batch);
 
-                    $createdBurials++;
+                        Redis::incrby("import_progress:{$jobId}:current", count($batch));
 
-                    if ($createdBurials % 100 === 0) {
-                        Log::info("Processed {$createdBurials} burials...");
+                        $batch = [];
+                        $batchSlugs = [];
+
+                        // Логирование прогресса
+                        $processed = $createdBurials + $skippedRows;
+                        if ($processed > 0 && $processed % $logStep === 0) {
+                            $now = microtime(true);
+                            $chunkTime = round($now - $chunkStartTime, 2);
+                            $avgSpeed = round($processed / ($now - $totalStartTime), 0);
+                            echo "[PROGRESS] Processed: {$processed} | Batch: {$batchSize} | Last {$logStep} took: {$chunkTime}s | Avg Speed: {$avgSpeed} rows/sec\n";
+                            $chunkStartTime = $now;
+                        }
                     }
-
-                    Redis::incr("import_progress:{$jobId}:current");
                 } catch (\Exception $e) {
                     $skippedRows++;
                     Redis::incr("import_progress:{$jobId}:current");
@@ -381,7 +425,12 @@ class ParserBurialService
                 }
             });
 
-            DB::commit();
+            // Вставка последнего остатка
+            if (!empty($batch)) {
+                DB::table('burials')->insert($batch);
+                $createdBurials += count($batch);
+                Redis::incrby("import_progress:{$jobId}:current", count($batch));
+            }
 
             Redis::set("import_progress:{$jobId}:status", 'Выполнен');
             Redis::set("import_progress:{$jobId}:created", $createdBurials);
@@ -394,10 +443,6 @@ class ParserBurialService
             ];
 
         } catch (\Exception $e) {
-            if (DB::transactionLevel() > 0) {
-                DB::rollBack();
-            }
-
             $error = "Критическая ошибка импорта: {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}";
             Log::error($error);
 
@@ -412,28 +457,107 @@ class ParserBurialService
         }
     }
 
+    // Свойство для хранения кеша в пределах одного процесса импорта
+    private array $localCityCache = [];
 
-    protected static function generateOptimizedSlug($surname, $name, $patronymic, $birthDate, $deathDate)
+    /**
+     * Получить город с использованием ленивого кеша.
+     * @param string $cleanedCityTitle
+     * @return Builder|Model|mixed|object|null
+     */
+    private function getCityWithCache(string $cleanedCityTitle): mixed
+    {
+        // Если мы уже искали этот город (даже если получили null), возвращаем результат из памяти
+        if (array_key_exists($cleanedCityTitle, $this->localCityCache)) {
+            return $this->localCityCache[$cleanedCityTitle];
+        }
+
+        // Если в памяти нет — идем в базу (только 1 раз для каждого названия)
+        $city = City::with('area.edge')
+            ->where('title', 'like', '%' . $cleanedCityTitle . '%')
+            ->first();
+
+        // Сохраняем результат в кеш
+        $this->localCityCache[$cleanedCityTitle] = $city;
+
+        return $city;
+    }
+
+    private array $localCemeteryCache = [];
+
+    /**
+     * Получить ID кладбища (найти или создать) с использованием кеша.
+     * @param City $city
+     * @param string|null $cemeteryTitle
+     * @param array $cemeteryData
+     * @return int|null
+     */
+    private function getCemeteryIdWithCache(City $city, ?string $cemeteryTitle, array $cemeteryData): ?int
+    {
+        if (!$cemeteryTitle) return null;
+
+        // Уникальный ключ для кеша: ID города + название кладбища
+        $cacheKey = "{$city->id}_" . mb_strtolower($cemeteryTitle);
+
+        if (array_key_exists($cacheKey, $this->localCemeteryCache)) {
+            return $this->localCemeteryCache[$cacheKey];
+        }
+
+        // 1. Пытаемся найти существующее
+        $cemetery = Cemetery::where('city_id', $city->id)
+            ->where('title', $cemeteryTitle)
+            ->first();
+
+        // 2. Если не нашли — создаем (Eloquent создаст модель и вернет объект с ID)
+        if (!$cemetery) {
+            $cemetery = Cemetery::create([
+                'title'     => $cemeteryTitle,
+                'slug'      => slug($cemeteryTitle),
+                'img_url'   => 'default',
+                'width'     => $cemeteryData['width'],
+                'longitude' => $cemeteryData['longitude'],
+                'rating'    => 5,
+                'href_img'  => 1,
+                'city_id'   => $city->id,
+                'area_id'   => $city->area_id
+            ]);
+        }
+
+        $this->localCemeteryCache[$cacheKey] = $cemetery->id;
+
+        return $cemetery->id;
+    }
+
+    /**
+     * Динамический расчет размера пачки
+     */
+    private function calculateBatchSize(int $totalRows): int
+    {
+        if ($totalRows <= 1000) return 100;    // Для маленьких файлов
+        if ($totalRows <= 10000) return 500;   // Для средних
+        if ($totalRows <= 100000) return 1000; // Для крупных
+
+        return 2000; // Потолок, чтобы не упереться в лимиты MySQL параметров
+    }
+
+    protected static function generateOptimizedSlug($surname, $name, $patronymic, $birthDate, $deathDate, $batchSlugs)
     {
         $parts = array_filter([$surname, $name, $patronymic, $birthDate, $deathDate]);
         $baseSlug = Str::slug(implode(' ', $parts));
 
-        // Очистка slug от возможных артефактов
         $baseSlug = preg_replace('/-{2,}/', '-', $baseSlug);
         $baseSlug = trim($baseSlug, '-');
 
-        // Если slug уже существует, добавляем суффикс
-        if (in_array($baseSlug, self::$existingSlugs)) {
-            $counter = 1;
-            do {
-                $newSlug = $baseSlug . '-' . $counter;
-                $counter++;
-            } while (in_array($newSlug, self::$existingSlugs));
+        $finalSlug = $baseSlug;
+        $counter = 1;
 
-            return $newSlug;
+        // Вместо проверки в гигантском массиве, спрашиваем у базы: "Есть ли такой слаг?"
+        while (isset($batchSlugs[$finalSlug]) || DB::table('burials')->where('slug', $finalSlug)->exists()) {
+            $finalSlug = $baseSlug . '-' . $counter;
+            $counter++;
         }
 
-        return $baseSlug;
+        return $finalSlug;
     }
 
     protected static function cleanCityName(string $name): string
@@ -460,29 +584,18 @@ class ParserBurialService
      */
     public function getFileHeaders(TemporaryUploadedFile $file): array
     {
-        $fastExcel = new FastExcel();
+        $reader = ReaderFactory::createFromFile($file->getRealPath());
+        $reader->open($file->getRealPath());
 
-        try {
-            $collection = $fastExcel
-                ->withoutHeaders()
-                ->import($file->getRealPath());
-
-            if ($collection->isEmpty()) {
-                throw new Exception('Файл не содержит данных.');
+        $headers = [];
+        foreach ($reader->getSheetIterator() as $sheet) {
+            foreach ($sheet->getRowIterator() as $row) {
+                $headers = $row->toArray();
+                break 2;
             }
-
-            $headers = $collection->first();
-
-            if (!is_array($headers)) {
-                throw new Exception('Некорректный формат данных в первой строке.');
-            }
-
-            return array_filter($headers, function ($header) {
-                return !empty(trim((string)$header));
-            });
-
-        } catch (Exception $e) {
-            throw new Exception("Не удалось прочитать заголовки из файла: " . $e->getMessage());
         }
+        $reader->close();
+
+        return array_filter($headers, fn($h) => !empty(trim((string)$h)));
     }
 }

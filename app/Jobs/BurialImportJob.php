@@ -43,6 +43,28 @@ class BurialImportJob implements ShouldQueue
      */
     public function handle(ParserBurialService $parserService): void
     {
+        $disk = Storage::disk('public');
+        $originalFile = $this->file;
+        $absolutePath = $disk->path($originalFile);
+
+        $extension = pathinfo($absolutePath, PATHINFO_EXTENSION);
+
+        // Если файл XLSX, конвертируем его в CSV перед импортом
+        if (strtolower($extension) === 'xlsx') {
+            $csvFile = preg_replace('/\.xlsx$/i', '.csv', $originalFile);
+            $absoluteCsvPath = $disk->path($csvFile);
+
+            $command = "xlsx2csv " . escapeshellarg($absolutePath) . " " . escapeshellarg($absoluteCsvPath);
+            shell_exec($command);
+
+            // Если конвертация прошла успешно, работаем с новым файлом
+            if (file_exists($absoluteCsvPath)) {
+                // Удаляем старый XLSX сразу, чтобы не плодить файлы
+                $disk->delete($originalFile);
+                $this->file = $csvFile;
+            }
+        }
+
         $parserService->importFromFilament(
             $this->file,
             $this->columnMapping,

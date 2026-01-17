@@ -18,6 +18,10 @@ Route::prefix('app')->group(function () {
     Route::prefix('organization')->group(function () {
 
 
+        Route::post('/validate-token', [AuthAgencyController::class, 'checkJwtToken']);
+        // Проверка JWT токена из заголовка
+        Route::get('/validate-token-header', [AuthAgencyController::class, 'checkJwtTokenFromHeader']);
+
         Route::post('/send-code', [AgencyController::class, 'sendCode']);
         Route::post('/accept-code', [AgencyController::class, 'acceptCode']);
 

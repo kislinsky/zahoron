@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CategoryProductResource\Pages;
 use App\Filament\Resources\CategoryProductResource\RelationManagers;
+use App\Filament\Resources\CategoryResource\RelationManagers\TagsRelationManager;
 use App\Models\CategoryProduct;
 use Filament\Forms;
 use Filament\Forms\Components\Radio;
@@ -130,6 +131,14 @@ class CategoryProductResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(), // Массовое удаление
             ]);
     }
+
+    public static function getRelations(): array
+    {
+        return [
+            TagsRelationManager::class,
+        ];
+    }
+
 
     public static function getPages(): array
     {
