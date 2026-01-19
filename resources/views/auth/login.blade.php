@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
     <form class='form_login form_with_email' method="POST" action="{{ route('login') }}" style="display: none;">
         @csrf
         <div class="title_li">Вход</div>
-        <div class="text_li">Нет аккаунта? <a href="{{route('register')}}">Регистрация</a></div>
+        <div class="text_li">Нет аккаунта? <a style='color:#0080D7' href="{{route('register')}}">Регистрация</a></div>
 
         <div class="block_input">
             <label for="email">Почта</label>
@@ -39,7 +39,7 @@ use Illuminate\Support\Facades\Route;
                 <label class="form-check-label" for="remember">Запомнить меня</label>
             </div>
             @if (Route::has('password.request'))
-                <div class="text_li">Забыли пароль? <a href="{{ route('password.request') }}">Восстановить</a></div>
+                <div class="text_li">Забыли пароль? <a  style='color:#0080D7' href="{{ route('password.request') }}">Восстановить</a></div>
             @endif
         </div> 
         
@@ -54,7 +54,7 @@ use Illuminate\Support\Facades\Route;
     <form class='form_login form_with_phone' method="POST" action="{{ route('login.phone') }}">
         @csrf
         <div class="title_li">Вход</div>
-        <div class="text_li">Нет аккаунта? <a href="{{route('register')}}">Регистрация</a></div>
+        <div class="text_li">Нет аккаунта? <a  style='color:#0080D7' href="{{route('register')}}">Регистрация</a></div>
 
         <div class="block_input">
             <label for="phone">Телефон</label>
@@ -78,7 +78,7 @@ use Illuminate\Support\Facades\Route;
                 <label class="form-check-label" for="remember">Запомнить меня</label>
             </div>
             @if (Route::has('password.request'))
-                <div class="text_li">Забыли пароль? <a href="{{ route('password.request') }}">Восстановить</a></div>
+                <div class="text_li">Забыли пароль? <a  style='color:#0080D7' href="{{ route('password.request') }}">Восстановить</a></div>
             @endif
         </div> 
         

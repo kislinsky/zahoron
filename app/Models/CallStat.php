@@ -361,16 +361,17 @@ private static function detectFileExtension(string $url): ?string
         // Разбиваем путь на части
         $pathParts = explode('/', trim($parsedUrl['path'], '/'));
         
-        $organizationIndex = array_search('organization', $pathParts);
-        
-        if ($organizationIndex !== false && isset($pathParts[$organizationIndex + 1])) {
-            $slug = $pathParts[$organizationIndex + 1];
-            
-            // Ищем организацию по slug
-            $organization = Organization::where('slug', $slug)->first();
-            
-            if ($organization) {
-                return $organization->id;
+        // Ищем 'organization' в любом месте пути
+        foreach ($pathParts as $key => $part) {
+            if ($part === 'organization' && isset($pathParts[$key + 1])) {
+                $slug = $pathParts[$key + 1];
+                
+                // Ищем организацию по slug
+                $organization = Organization::where('slug', $slug)->first();
+                
+                if ($organization) {
+                    return $organization->id;
+                }
             }
         }
 

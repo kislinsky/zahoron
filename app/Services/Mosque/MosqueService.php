@@ -2,6 +2,7 @@
 
 namespace App\Services\Mosque;
 
+use App\Models\Faq;
 use App\Models\FaqRitualObject;
 use App\Models\Mosque;
 use App\Models\Organization;
@@ -21,7 +22,7 @@ class MosqueService {
         $products=randomProductsPlace(32);
         $mosques_map=Mosque::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $mosques=Mosque::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
-        $faqs=FaqRitualObject::where('type_object','mosque')->orderBy('id','desc')->get();
+        $faqs=Faq::where('type_object','mosque')->orderBy('id','desc')->get();
 
         $pages_navigation=[['Главная',route('index')],['Мечети']];
 

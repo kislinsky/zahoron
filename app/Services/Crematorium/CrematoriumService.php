@@ -5,8 +5,7 @@ namespace App\Services\Crematorium;
 
 
 use App\Models\Crematorium;
-use App\Models\FaqCrematorium;
-use App\Models\FaqRitualObject;
+use App\Models\Faq;
 use App\Models\ReviewCrematorium;
 use App\Models\UsefulCrematorium;
 use Artesaos\SEOTools\Facades\SEOTools;
@@ -26,8 +25,7 @@ class CrematoriumService {
         $products=randomProductsPlace(33);
         $crematoriums_map=Crematorium::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $crematoriums=Crematorium::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
-        $faqs=FaqRitualObject::where('type_object','crematorium')->orderBy('id','desc')->get();
-
+        $faqs=Faq::where('type_object','crematorium')->orderBy('id','desc')->get();
         $pages_navigation=[['Главная',route('index')],['Крематории']];
 
         return view('crematorium.index',compact('faqs','pages_navigation','crematoriums','city','products','usefuls','crematoriums_map'));
@@ -46,7 +44,7 @@ class CrematoriumService {
         $city=selectCity();
         $organizations_our=$city->organizations;
         $services=$crematorium->services;
-        $faqs=FaqCrematorium::orderBy('id','desc')->get();
+        $faqs=Faq::where('type_object','crematorium')->orderBy('id','desc')->get();
         $characteristics=json_decode($crematorium->characteristics);
         $images=$crematorium->images;
         $similar_crematoriums=Crematorium::where('city_id',$crematorium->city_id)->where('id','!=',$crematorium->id)->get();

@@ -25,7 +25,7 @@ class IndexService
     public static function index(){      
         $city=selectCity();
         $services=Service::orderBy('id', 'desc')->get();
-        $faqs=Faq::orderBy('id', 'desc')->get();
+        $faqs=Faq::where('type_object','usual')->orderBy('id','desc')->get();
         
         SEOTools::setTitle(formatContent(getSeo('index-page','title'),$model=null));
         SEOTools::setDescription(formatContent(getSeo('index-page','description'),$model=null));

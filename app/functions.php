@@ -13,8 +13,7 @@ use App\Models\City;
 use App\Models\CommentProduct;
 use App\Models\District;
 use App\Models\Edge;
-use App\Models\FaqCategoryProduct;
-use App\Models\FaqService;
+use App\Models\Faq;
 use App\Models\ImageService;
 use App\Models\MessageTemplate;
 use App\Models\Mortuary;
@@ -30,12 +29,9 @@ use App\Models\ServiceReviews;
 use App\Models\StageService;
 use App\Models\TypeService;
 use App\Models\User;
-use App\Models\UserRequestsCount;
 use App\Models\View;
-use App\Models\Wallet;
 use App\Models\WorkingHoursCemetery;
 use App\Services\Auth\SmsService;
-use App\Services\YooMoneyService;
 use App\Services\ZvonokService;
 use Ausi\SlugGenerator\SlugGenerator;
 use Carbon\Carbon;
@@ -50,7 +46,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
-use Stevebauman\Location\Facades\Location;
+
 
 
 
@@ -268,7 +264,7 @@ function filterProducts($data){
 
     function faqCatsProduct($data){
         if(isset($data['category'])){
-            return FaqCategoryProduct::where('category_id',$data['category'])->get();
+            return    Faq::where('type_object','category_product')->orderBy('id','desc')->get();
         }return [];
         
     }
@@ -430,7 +426,7 @@ function servicePaintingFence($service){
     $reviews=ServiceReviews::orderBy('id','asc')->where('service_id',$service->id)->get();
     $imgs_service=ImageService::where('service_id',$service->id)->get();
     $stages_service=StageService::orderBy('id','asc')->where('service_id',$service->id)->get();
-    $faqs=FaqService::orderBy('id','desc')->where('service_id',$service->id)->get();
+        $faqs=Faq::where('type_object','service')->orderBy('id','desc')->get();
     return view('service.single.single-painting-fence',compact('imgs_service','reviews','stages_service','service','faqs','cemetery','edge','city'));
 }
 
@@ -442,7 +438,7 @@ function serviceDepartureBrigadeCalculation($service){
     $reviews=ServiceReviews::orderBy('id','asc')->where('service_id',$service->id)->get();
     $imgs_service=ImageService::where('service_id',$service->id)->get();
     $stages_service=StageService::orderBy('id','asc')->where('service_id',$service->id)->get();
-    $faqs=FaqService::orderBy('id','desc')->where('service_id',$service->id)->get();
+        $faqs=Faq::where('type_object','service')->orderBy('id','desc')->get();
     return view('service.single.single-departure-brigade-calculation',compact('imgs_service','reviews','stages_service','service','faqs','cemetery','edge','city'));
 }
 
@@ -3363,3 +3359,218 @@ function createMissingCategories()
             ];
         }
     }
+
+
+    function formatContentWithCategory($content, $model = null) {
+    $city = formatCityName(selectCity()->title, $content);
+    $title = '';
+    $adres = '';
+    $type_organization = '';
+    
+    if ($model != null) {
+        $title = $model->title;
+        $adres = $model->adres;
+        $type_organization = $model->name_type;
+        if ($model->city != null) {
+            $city = formatCityName($model->city->title, $content);
+        }
+    }
+    
+    $time = date('H:i');
+    $date = date('Y-m-d');
+    $year = date('Y');
+    
+    // Получаем цены с кэшированием на 1 час
+    $cityPricesKey = 'city_prices_' . (selectCity()->id ?? 0);
+    $prices = Cache::remember($cityPricesKey, 3600, function () {
+        $cityId = selectCity()->id ?? null;
+        
+        if (!$cityId) {
+            return [
+                'min' => 0,
+                'avg' => 0,
+                'max' => 0
+            ];
+        }
+        
+        $prices = DB::table('activity_category_organizations as aco')
+            ->join('organizations as org', 'aco.organization_id', '=', 'org.id')
+            ->where('org.city_id', $cityId)
+            ->whereNotNull('aco.price')
+            ->where('aco.price', '>', 0)
+            ->select('aco.price')
+            ->orderBy('aco.price')
+            ->get();
+        
+        if ($prices->isEmpty()) {
+            return [
+                'min' => 0,
+                'avg' => 0,
+                'max' => 0
+            ];
+        }
+        
+        $priceArray = $prices->pluck('price')->toArray();
+        
+        return [
+            'min' => min($priceArray),
+            'max' => max($priceArray),
+            'avg' => round(array_sum($priceArray) / count($priceArray), 2)
+        ];
+    });
+    
+    // Получаем цены услуг для организации из таблицы activity_category_organizations
+    $orgPrices = [];
+    if ($model != null) {
+        // Получаем все цены для данной организации
+        $categoryPrices = DB::table('activity_category_organizations')
+            ->where('organization_id', $model->id)
+            ->whereNotNull('price')
+            ->where('price', '>', 0)
+            ->pluck('price', 'category_children_id')
+            ->toArray();
+        
+        // Маппинг ID категорий к переменным
+        $categoryMapping = [
+            // ID категорий по порядку из примера
+            32 => 'funeral',       // Организация похорон
+            33 => 'cremation',     // Организация кремации
+            34 => 'cargo200',      // Подготовка отправки груза 200
+            9 => 'stonegrave',     // Памятники
+            30 => 'fence',         // Оградки
+            46 => 'dinner',        // Поминальных обеды
+            47 => 'halldinner',    // Поминальные залы
+            43 => 'wreath',        // Траурные венки
+            58 => 'coffin',        // Гробы
+            53 => 'hearse',        // Аренда катафалка
+            39 => 'tiles',         // Плитка на могилу
+            42 => 'vase',          // Вазы на могилу
+            41 => 'cross',         // Кресты на могилу
+            44 => 'photo',         // Фото на памятник
+            55 => 'hall',          // Прощальный зал
+            60 => 'urn',           // Урны для праха (людей)
+            50 => 'euthanasia',    // Усыпление животных
+            49 => 'animalcremation', // Кремация животных
+            62 => 'stonegraveanimal', // Памятники (животные)
+            63 => 'urnanimal',     // Урны для праха (животные)
+        ];
+        
+        // Инициализируем все цены нулями
+        foreach ($categoryMapping as $priceKey) {
+            $orgPrices[$priceKey] = 0;
+        }
+        
+        // Заполняем цены из базы данных
+        foreach ($categoryPrices as $categoryId => $price) {
+            if (isset($categoryMapping[$categoryId])) {
+                $orgPrices[$categoryMapping[$categoryId]] = $price;
+            }
+        }
+    } else {
+        // Если модель не передана, все цены = 0
+        $orgPrices = [
+            'funeral' => 0,
+            'cremation' => 0,
+            'cargo200' => 0,
+            'stonegrave' => 0,
+            'fence' => 0,
+            'dinner' => 0,
+            'halldinner' => 0,
+            'wreath' => 0,
+            'coffin' => 0,
+            'hearse' => 0,
+            'tiles' => 0,
+            'vase' => 0,
+            'cross' => 0,
+            'photo' => 0,
+            'hall' => 0,
+            'urn' => 0,
+            'euthanasia' => 0,
+            'animalcremation' => 0,
+            'stonegraveanimal' => 0,
+            'urnanimal' => 0,
+        ];
+    }
+    
+    // Получаем режим работы и телефон из модели
+    $work_time = ($model && isset($model->work_time)) ? $model->work_time : '';
+    $phone = ($model && isset($model->phone)) ? $model->phone : '';
+    $address = ($model && isset($model->full_address)) ? $model->full_address : ($adres ?? '');
+    
+    // Форматируем телефон для ссылки (если нужно)
+    $phone_link = $phone ? '<a href="tel:' . preg_replace('/[^0-9+]/', '', $phone) . '">' . $phone . '</a>' : '';
+    
+    $result = str_replace(
+        [
+            "{title}", 
+            "{city}", 
+            "{adres}", 
+            "{time}", 
+            "{date}", 
+            "{Year}",
+            "{type-org}",
+            "{price_min}", 
+            "{price_avg}", 
+            "{price_max}",
+            "{adress}",
+            "{phone}",
+            "{funeral}",
+            "{cremation}",
+            "{cargo200}",
+            "{stonegrave}",
+            "{fence}",
+            "{dinner}",
+            "{halldinner}",
+            "{wreath}",
+            "{coffin}",
+            "{hearse}",
+            "{tiles}",
+            "{vase}",
+            "{cross}",
+            "{photo}",
+            "{hall}",
+            "{urn}",
+            "{euthanasia}",
+            "{animalcremation}",
+            "{stonegraveanimal}",
+            "{urnanimal}"
+        ],
+        [
+            $title, 
+            $city, 
+            $adres, 
+            $time, 
+            $date, 
+            $year,
+            $type_organization,
+            $prices['min'], 
+            $prices['avg'], 
+            $prices['max'],
+            $address,
+            $phone_link, // или просто $phone, если не нужно HTML
+            $orgPrices['funeral'],
+            $orgPrices['cremation'],
+            $orgPrices['cargo200'],
+            $orgPrices['stonegrave'],
+            $orgPrices['fence'],
+            $orgPrices['dinner'],
+            $orgPrices['halldinner'],
+            $orgPrices['wreath'],
+            $orgPrices['coffin'],
+            $orgPrices['hearse'],
+            $orgPrices['tiles'],
+            $orgPrices['vase'],
+            $orgPrices['cross'],
+            $orgPrices['photo'],
+            $orgPrices['hall'],
+            $orgPrices['urn'],
+            $orgPrices['euthanasia'],
+            $orgPrices['animalcremation'],
+            $orgPrices['stonegraveanimal'],
+            $orgPrices['urnanimal']
+        ],
+        $content
+    );
+    
+    return $result;
+}

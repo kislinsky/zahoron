@@ -3,6 +3,7 @@
 namespace App\Services\Mortuary;
 
 use App\Models\City;
+use App\Models\Faq;
 use App\Models\FaqMortuary;
 use App\Models\FaqRitualObject;
 use App\Models\Mortuary;
@@ -33,7 +34,7 @@ class MortuaryService {
         $products=randomProductsPlace(32);
         $mortuaries_map=Mortuary::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $mortuaries=Mortuary::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
-        $faqs=FaqRitualObject::where('type_object','mortuary')->orderBy('id','desc')->get();
+        $faqs=Faq::where('type_object','mortuary')->orderBy('id','desc')->get();
 
         $pages_navigation=[['Главная',route('index')],['Морги']];
 
@@ -53,7 +54,7 @@ class MortuaryService {
         $city=selectCity();
         $organizations_our=$city->organizations;
         $services=$mortuary->services;
-        $faqs=FaqMortuary::orderBy('id','desc')->get();
+        $faqs=Faq::where('type_object','mortuary')->orderBy('id','desc')->get();
         $characteristics=json_decode($mortuary->characteristics);
         $images=$mortuary->images;
         $similar_mortuaries=Mortuary::where('city_id',$mortuary->city_id)->where('id','!=',$mortuary->id)->get();

@@ -29,14 +29,6 @@ class CategoryProduct extends Model
     public  function routeCatalog(){
         return route('organizations.category', $this->slug);
     }
-
-    public function tags()
-    {
-        return $this->hasMany(Tag::class, 'entity_id')
-            ->where('entity_type', Tag::ENTITY_CATEGORY_PRODUCT)
-            ->orderBy('priority', 'desc')
-            ->orderBy('search_count', 'desc');
-    }
     
 
 }

@@ -4,8 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\WalletResource\Pages;
 use App\Filament\Resources\WalletResource\RelationManagers;
-use App\Models\Wallet;
+use App\Filament\Resources\WalletResource\RelationManagers\TransactionsRelationManager;
 use App\Models\User;
+use App\Models\Wallet;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -74,7 +75,6 @@ class WalletResource extends Resource
                             ->default(0)
                             ->minValue(0)
                             ->step(0.01)
-                            ->suffixIcon('heroicon-o-currency-ruble')
                             ->helperText('Текущий баланс в рублях'),
                     ])
                     ->columns(1),
@@ -420,7 +420,7 @@ class WalletResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\TransactionsRelationManager::class,
+            TransactionsRelationManager::class,
         ];
     }
 

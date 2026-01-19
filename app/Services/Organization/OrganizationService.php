@@ -89,7 +89,20 @@ class OrganizationService
         if($reviews!=null && count($reviews)>0){
             $rating_reviews=round($reviews->pluck('rating')->sum()/count($reviews));
         }
-        $similar_organizations=Organization::whereIn('id',ActivityCategoryOrganization::whereIn('category_children_id',ActivityCategoryOrganization::where('organization_id',$id)->pluck('category_children_id'))->where('organization_id','!=',$id)->pluck('organization_id'))->where('city_id',$organization->city_id)->get();
+
+        $similar_organizations = Organization::where('city_id', $organization->city_id)
+            ->where('id', '!=', $id)
+            ->whereIn('id', function($query) use ($id) {
+                $query->select('organization_id')
+                    ->from('activity_category_organizations')
+                    ->whereIn('category_children_id', function($subQuery) use ($id) {
+                        $subQuery->select('category_children_id')
+                            ->from('activity_category_organizations')
+                            ->where('organization_id', $id);
+                    });
+            })
+            ->get();
+            
         $reviews_main=$reviews->take(3);
         $products_our=Product::orderBy('id','desc')->where('view',1)->where('organization_id',$organization->id)->where('type','product')->get()->take(8);
 

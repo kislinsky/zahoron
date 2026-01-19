@@ -4,19 +4,20 @@ namespace App\Services\Service;
 
 
 use App\Models\Acf;
-use App\Models\City;
-use App\Models\Edge;
-use App\Models\Page;
-use App\Models\Product;
-use App\Models\Cemetery;
-use App\Models\ImageService;
-use App\Models\OrderProduct;
-use App\Models\StageService;
 use App\Models\AdditionProduct;
 use App\Models\CategoryProduct;
+use App\Models\Cemetery;
+use App\Models\City;
+use App\Models\Edge;
+use App\Models\Faq;
 use App\Models\FaqCategoryProduct;
 use App\Models\FaqService;
+use App\Models\ImageService;
+use App\Models\OrderProduct;
+use App\Models\Page;
+use App\Models\Product;
 use App\Models\ServiceReviews;
+use App\Models\StageService;
 
 class CategoryServiceService {  
     
@@ -37,7 +38,7 @@ class CategoryServiceService {
         $imgs_service=ImageService::where('service_id',$service->id)->get();
         $stages_service=StageService::orderBy('id','asc')->where('product_price_list_id',$service->id)->get();
         $cemetery=Cemetery::find($service->cemetery_id);
-        $faqs=FaqService::orderBy('id','desc')->where('service_id',$service->id)->get();
+        $faqs=Faq::where('type_object','service')->orderBy('id','desc')->get();
         return view('service.single.single-painting-fence',compact('imgs_service','reviews','stages_service','service','faqs','cemetery','edge','city'));
     }
 
@@ -49,7 +50,7 @@ class CategoryServiceService {
         $reviews=ServiceReviews::orderBy('id','asc')->where('service_id',$service->id)->get();
         $imgs_service=ImageService::where('service_id',$service->id)->get();
         $stages_service=StageService::orderBy('id','asc')->where('product_price_list_id',$service->id)->get();
-        $faqs=FaqService::orderBy('id','desc')->where('service_id',$service->id)->get();
+        $faqs=Faq::where('type_object','service')->orderBy('id','desc')->get();
         return view('service.single.single-departure-brigade-calculation',compact('imgs_service','reviews','stages_service','service','faqs','cemetery','edge','city'));
     }
 
@@ -60,7 +61,7 @@ class CategoryServiceService {
         $reviews=ServiceReviews::orderBy('id','asc')->where('service_id',$service->id)->get();
         $imgs_service=ImageService::where('service_id',$service->id)->get();
         $stages_service=StageService::orderBy('id','asc')->where('product_price_list_id',$service->id)->get();
-        $faqs=FaqService::orderBy('id','desc')->where('service_id',$service->id)->get();
+        $faqs=Faq::where('type_object','service')->orderBy('id','desc')->get();
         return view('service.single.single-laying-flowers',compact('imgs_service','reviews','stages_service','service','faqs','cemetery','edge','city'));
     }
 }

@@ -25,48 +25,52 @@ class SearchBurialService
         return view('burial.search-burial-result',compact('products','news'));
     }
 
-    public static function searchBurialResult($data){
-
+    public static function searchBurialResult($data)
+    {
         $cemetery_ids = selectCity()->area->cities->flatMap(function($city) {
             return $city->cemeteries->pluck('id');
         });
-        $news=News::orderBy('id', 'desc')->take(2)->get();
-        $products=collect();
-        $seo='Поиск могил ';
+        
+        $news = News::orderBy('id', 'desc')->take(2)->get();
+        $seo = 'Поиск могил ';
+        $page = 11;
 
-        if(isset($data['surname'])  ){
-            $products=Burial::where('surname',$data['surname'])->whereIn('cemetery_id',$cemetery_ids)->where('status',1);
-            $seo=$seo.' '.$data['surname'];
-        }
-        if(isset($data['name'])  ){
-            $products=$products->where('name',$data['name']);
-            $seo=$seo.' '.$data['name'];
+        // Начинаем с построителя запросов, а не коллекции
+        $query = Burial::whereIn('cemetery_id', $cemetery_ids)
+                    ->where('status', 1);
+
+        if(isset($data['surname']) && !empty($data['surname'])) {
+            $query->where('surname', $data['surname']);
+            $seo = $seo . ' ' . $data['surname'];
         }
         
-        if(isset($data['patronymic'])  ){
-            $products=$products->where('patronymic',$data['patronymic']);
-            $seo=$seo.' '.$data['patronymic'];
+        if(isset($data['name']) && !empty($data['name'])) {
+            $query->where('name', $data['name']);
+            $seo = $seo . ' ' . $data['name'];
         }
         
-        if(isset($data['date_birth'])  ){
-            $products=$products->where('date_birth',$data['date_birth']);
-            $seo=$seo.' '.$data['date_birth'];
+        if(isset($data['patronymic']) && !empty($data['patronymic'])) {
+            $query->where('patronymic', $data['patronymic']);
+            $seo = $seo . ' ' . $data['patronymic'];
         }
         
-        if(isset($data['date_death'])  ){
-            $products=$products->where('date_death',$data['date_death']);
-            $seo=$seo.' '.$data['date_death'];
+        if(isset($data['date_birth']) && !empty($data['date_birth'])) {
+            $query->where('date_birth', $data['date_birth']);
+            $seo = $seo . ' ' . $data['date_birth'];
         }
-
-
+        
+        if(isset($data['date_death']) && !empty($data['date_death'])) {
+            $query->where('date_death', $data['date_death']);
+            $seo = $seo . ' ' . $data['date_death'];
+        }
 
         SEOTools::setTitle($seo);
         SEOTools::setDescription($seo);
-        $page=11;
-        if($products->count()!==0){
-            $products=$products->paginate(10);
-        }
-        return view('burial.search-burial-result',compact('products','news','page'));
+
+        // Получаем результат с пагинацией
+        $products = $query->paginate(10);
+
+        return view('burial.search-burial-result', compact('products', 'news', 'page'));
     }
 
 

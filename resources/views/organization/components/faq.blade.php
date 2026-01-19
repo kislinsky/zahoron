@@ -1,7 +1,7 @@
 
 <?php 
-use App\Models\FaqOrganization;
-$faqs=FaqOrganization::orderBy('id','desc')->where('organization_id',$organization->id)->get();
+use App\Models\Faq;
+$faqs=Faq::orderBy('id','desc')->where('type_object','organization')->get();
 ?>
 @if (isset($faqs))
     @if (count($faqs)>0)

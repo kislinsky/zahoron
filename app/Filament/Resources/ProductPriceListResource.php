@@ -6,7 +6,6 @@ use App\Filament\Resources\ProductPriceListResource\Pages;
 use App\Filament\Resources\ProductPriceListResource\RelationManagers;
 use App\Filament\Resources\ProductPriceListResource\RelationManagers\AdvantagesRelationManager;
 use App\Filament\Resources\ProductPriceListResource\RelationManagers\AdvicesRelationManager;
-use App\Filament\Resources\ProductPriceListResource\RelationManagers\FaqsRelationManager;
 use App\Filament\Resources\ProductPriceListResource\RelationManagers\ImgsServiceRelationManager;
 use App\Filament\Resources\ProductPriceListResource\RelationManagers\PriceProductPriceListRelationManager;
 use App\Filament\Resources\ProductPriceListResource\RelationManagers\StagesRelationManager;
@@ -213,7 +212,6 @@ class ProductPriceListResource extends Resource
             PriceProductPriceListRelationManager::class,
             AdvantagesRelationManager::class,
             AdvicesRelationManager::class,
-            FaqsRelationManager::class,
             ImgsServiceRelationManager::class,
             StagesRelationManager::class,
             VariantsRelationManager::class,

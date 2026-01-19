@@ -6,12 +6,8 @@ namespace App\Services\Columbarium;
 
 use App\Models\City;
 use App\Models\Columbarium;
-use App\Models\FaqColumbarium;
-use App\Models\FaqRitualObject;
-use App\Models\ImageColumbarium;
-use App\Models\Organization;
+use App\Models\Faq;
 use App\Models\ReviewColumbarium;
-use App\Models\ServiceColumbarium;
 use App\Models\UsefulColumbarium;
 use Artesaos\SEOTools\Facades\SEOTools;
 
@@ -30,7 +26,7 @@ class ColumbariumService {
         $usefuls=UsefulColumbarium::orderBy('id','desc')->get();
         $columbariums_map=Columbarium::orderBy('id', 'asc')->where('city_id',$city->id)->get();
         $columbariums=Columbarium::orderBy('id', 'asc')->where('city_id',$city->id)->paginate(6);
-        $faqs=FaqRitualObject::where('type_object','columbarium')->orderBy('id','desc')->get();
+        $faqs=Faq::where('type_object','columbarium')->orderBy('id','desc')->get();
     
         $pages_navigation=[['Главная',route('index')],['Колумбарии']];
 
@@ -56,7 +52,7 @@ class ColumbariumService {
 
         $organizations_our=$city->organizations;
         $services=$columbarium->services;
-        $faqs=FaqColumbarium::orderBy('id','desc')->get();
+        $faqs=Faq::where('type_object','columbarium')->orderBy('id','desc')->get();
         $characteristics=json_decode($columbarium->characteristics);
         $images=$columbarium->images;
         $similar_columbariums=Columbarium::where('city_id',$columbarium->city_id)->where('id','!=',$columbarium->id)->get();

@@ -55,7 +55,7 @@ function generateUniqueCitySlug($baseSlug, $cityId)
        SEOTools::setTitle(formatContent(getSeo('page-kontakty','title')));
         SEOTools::setDescription(formatContent(getSeo('page-kontakty','description')));
         $title_h1=formatContent(getSeo('page-kontakty','h1'));
-        $faqs=Faq::orderBy('id', 'desc')->get();
+        $faqs=Faq::where('type_object','usual')->orderBy('id','desc')->get();
         return view('contacts',compact('faqs','page','title_h1'));
     }
    

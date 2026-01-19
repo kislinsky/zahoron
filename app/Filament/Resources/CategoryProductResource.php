@@ -132,20 +132,20 @@ class CategoryProductResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            TagsRelationManager::class,
-        ];
-    }
-
-
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListCategoryProducts::route('/'),
             'create' => Pages\CreateCategoryProduct::route('/create'),
             'edit' => Pages\EditCategoryProduct::route('/{record}/edit'),
+        ];
+    }
+
+
+    public static function getRelations(): array
+    {
+        return [
+            TagsRelationManager::class,
         ];
     }
     
