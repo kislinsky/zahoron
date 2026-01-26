@@ -79,16 +79,43 @@ class SearchBurialService
 
 
 
-    public static function searchBurial(){
-        SEOTools::setTitle(formatContent(getSeo('page-search-burial','title')));
-        SEOTools::setDescription(formatContent(getSeo('page-search-burial','description')));
-        $title_h1=formatContent(getSeo('page-search-burial','h1'));
-        
-        $services = Service::orderBy('id', 'desc')->get();
-        $burials=Burial::where('date_death', date('d.m'))->whereIn('cemetery_id',selectCity()->cemeteries->pluck('id'))->limit(10)->get();
-        $news=News::orderBy('id', 'desc')->take(2)->get();
-        return view('burial.search-burial',compact('news','services','burials','title_h1'));
+    public static function searchBurial() {
+    SEOTools::setTitle(formatContent(getSeo('page-search-burial','title')));
+    SEOTools::setDescription(formatContent(getSeo('page-search-burial','description')));
+    $title_h1 = formatContent(getSeo('page-search-burial','h1'));
+    
+    // Загрузка данных параллельно
+    $services = Service::orderBy('id', 'desc')->get();
+    $news = News::orderBy('id', 'desc')->take(2)->get();
+    
+    // Оптимизация запроса burials
+    $currentDate = date('d.m');
+    
+    // Кэшируем результат selectCity()
+    $city = cache()->remember('current_city_cemeteries', 3600, function() {
+        return selectCity();
+    });
+    
+    // Получаем ID кладбищ один раз
+    $cemeteryIds = $city->cemeteries->pluck('id')->toArray();
+    
+    // Если кладбищ нет - возвращаем пустую коллекцию
+    if (empty($cemeteryIds)) {
+        $burials = collect();
+    } else {
+        // Используем оптимизированный запрос
+        $burials = Burial::select('id', 'name', 'date_death', 'cemetery_id')
+            ->where('date_death', $currentDate)
+            ->whereIn('cemetery_id', $cemeteryIds)
+            ->limit(10)
+            ->with(['cemetery' => function($query) {
+                $query->select('id', 'name');
+            }])
+            ->get();
     }
+    
+    return view('burial.search-burial', compact('news', 'services', 'burials', 'title_h1'));
+}
     
      public static function searchProductRequestAdd($data)
     {
