@@ -47,10 +47,11 @@ class ProductService
         $category=$product->category;
         $sales=ActivityCategoryOrganization::where('organization_id',$organization->id)->where('category_children_id',$category->id)->where('sales','!=',null)->get();
         $city=selectCity();  
-        $category_products = Product::where('view', 1)
+        $category_products = Product::where('city_id',selectCity()->id)
+            ->where('view', 1)
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
-            ->whereNot('organization_id', $product->organization->id)
+            ->whereNot('organization_id', $product->organization_id)
             ->inRandomOrder()
             ->limit(8)
             ->get();

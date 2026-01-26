@@ -27,6 +27,10 @@ class SearchBurialService
 
     public static function searchBurialResult($data)
     {
+        if(!isset($data['surname']) || empty($data['surname'])) {
+           return redirect()->back()->with('error','Поле фамилия обязательное');
+        }
+
         $cemetery_ids = selectCity()->area->cities->flatMap(function($city) {
             return $city->cemeteries->pluck('id');
         });
@@ -81,7 +85,7 @@ class SearchBurialService
         $title_h1=formatContent(getSeo('page-search-burial','h1'));
         
         $services = Service::orderBy('id', 'desc')->get();
-        $burials=Burial::where('date_death', 'LIKE', date('d.m').'%')->whereIn('cemetery_id',selectCity()->cemeteries->pluck('id'))->get();
+        $burials=Burial::where('date_death', date('d.m'))->whereIn('cemetery_id',selectCity()->cemeteries->pluck('id'))->limit(10)->get();
         $news=News::orderBy('id', 'desc')->take(2)->get();
         return view('burial.search-burial',compact('news','services','burials','title_h1'));
     }

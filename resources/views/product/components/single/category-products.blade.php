@@ -1,5 +1,5 @@
 @if(count($category_products))
-    <div class="ul_products">
+    <div class="ul_products similar_products">
         @foreach($category_products as $category_product)
             <div class="li_product_market">
                 <?php $images=$category_product->getImages;?>

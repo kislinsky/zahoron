@@ -75,6 +75,7 @@ class Import extends Page implements HasForms
                     ->multiple()
                     ->options([
                         'title' => 'Название организации',
+                        'inn' => 'Название организации',
                         'address' => 'Адрес',
                         'coordinates' => 'Координаты',
                         'phone' => 'Телефон',

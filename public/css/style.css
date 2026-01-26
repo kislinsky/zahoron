@@ -2722,7 +2722,13 @@ text-align: left;
 }
 .product_swiper .swiper-slide img{
     width: 100%;
+    object-fit: cover;
 }
+
+.similar_products .title_product_market{
+    height: 83px;
+}
+
 .content_product{
 font-size: 16px;
 font-weight: 400;
@@ -10388,6 +10394,10 @@ color: white;
 }
 
 @media(max-width:560px){
+    .li_product_monuments_grave .title_news{
+        height: 92px;
+    }
+
     .capture_container video{
         height: auto;
     }

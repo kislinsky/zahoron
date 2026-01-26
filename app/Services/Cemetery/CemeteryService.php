@@ -37,6 +37,10 @@ class CemeteryService {
     public static function singleCemetery($slug){
         $cemetery=Cemetery::where('slug',$slug)->first();
 
+        if($cemetery==null){
+            return abort('404');
+        }
+
         addView('cemetery',$cemetery->id,user()->id ?? null,'site');
 
         SEOTools::setTitle(formatContent(getSeo('cemetery-single','title'),$cemetery));

@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Models\ActivityCategoryOrganization;
 use App\Models\Product;
+use App\Models\Tag;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany; 
 
 class CategoryProduct extends Model
 {
@@ -30,5 +32,9 @@ class CategoryProduct extends Model
         return route('organizations.category', $this->slug);
     }
     
-
+    public function tags(): HasMany // Теперь HasMany будет найден
+    {
+        return $this->hasMany(Tag::class, 'entity_id')
+            ->where('entity_type', 'category_product');
+    }
 }
