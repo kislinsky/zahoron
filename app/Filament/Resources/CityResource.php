@@ -16,6 +16,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -132,10 +133,10 @@ class CityResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                ->label('id')
-                ->searchable()
-                ->sortable(),
-                 Tables\Columns\TextColumn::make('title')
+                    ->label('id')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('title')
                     ->label('Название')
                     ->searchable()
                     ->sortable(),
@@ -143,18 +144,32 @@ class CityResource extends Resource
                     ->label('Округ')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('cemeteries_count')
+                    ->label('Кол-во захоронений')
+                    ->counts('cemeteries') // Считаем количество связанных захоронений
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('area_id')
                     ->label('Округ')
-                    ->relationship('area', 'title') // Используем отношение и поле для отображения
-                    ->searchable() // Добавляем поиск
-                    ->preload(), // Предзагрузка данных     
+                    ->relationship('area', 'title')
+                    ->searchable()
+                    ->preload(),
+                    
+                // Добавляем фильтр по наличию захоронений
+                TernaryFilter::make('has_cemeteries')
+                    ->label('Наличие захоронений')
+                    ->placeholder('Все города')
+                    ->trueLabel('С захоронениями')
+                    ->falseLabel('Без захоронений')
+                    ->queries(
+                        true: fn (Builder $query) => $query->has('cemeteries'),
+                        false: fn (Builder $query) => $query->doesntHave('cemeteries'),
+                    ),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(), // Удалить продукт
-
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -72,16 +72,30 @@
                         @endforeach
                         {{ $products->withPath(route('search.burial.result'))->appends($_GET)->links() }}
 
-                    @else
-                        <div class="block_no_search">
-                            <div class="title">Результаты поиска по запросу:</div>
-                            <div class="text_li">По вашему запросу ничего не найдено. Проверьте корректность введённых данных или попробуйте расширить критерии поиска, например, убрав значения из некоторых полей.</div>
-                            <div class="block_content_no_search bac_gray">
-                                <div class="text_no_search">Если Вы не смогли найти в нашей базе интересующее Вас захоронение, Вы можете оставить заявку на его поиск</div>    
-                                <a href='{{ route('page.search.burial.request') }}' class="blue_btn">Найти захоронение</a>
-                            </div>    
-                        </div>    
-                    @endif
+                   @else
+    <div class="block_no_search">
+       <div class="title">
+    Результаты поиска по запросу:
+    @if(isset($searchQuery))
+        <span class="search-query-title">
+            {{ $searchQuery['surname'] ?? '' }}
+            {{ $searchQuery['name'] ?? '' }}
+            {{ $searchQuery['patronymic'] ?? '' }}
+            @if(isset($searchQuery['date_birth']) && !empty($searchQuery['date_birth']))
+                ({{ date('d.m.Y', strtotime($searchQuery['date_birth'])) }})
+            @endif
+        </span>
+    @endif
+</div>
+        
+        <div class="text_li">По вашему запросу ничего не найдено. Проверьте корректность введённых данных или попробуйте расширить критерии поиска, например, убрав значения из некоторых полей.</div>
+        
+        <div class="block_content_no_search bac_gray">
+            <div class="text_no_search">Если Вы не смогли найти в нашей базе интересующее Вас захоронение, Вы можете оставить заявку на его поиск</div>    
+            <a href='{{ route('page.search.burial.request') }}' class="blue_btn">Найти захоронение</a>
+        </div>    
+    </div>    
+@endif
                 @endif
             </div>
         </div>

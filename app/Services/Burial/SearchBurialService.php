@@ -25,57 +25,77 @@ class SearchBurialService
         return view('burial.search-burial-result',compact('products','news'));
     }
 
-    public static function searchBurialResult($data)
-    {
-        if(!isset($data['surname']) || empty($data['surname'])) {
-           return redirect()->back()->with('error','Поле фамилия обязательное');
-        }
-
-        $cemetery_ids = selectCity()->area->cities->flatMap(function($city) {
-            return $city->cemeteries->pluck('id');
-        });
-        
-        $news = News::orderBy('id', 'desc')->take(2)->get();
-        $seo = 'Поиск могил ';
-        $page = 11;
-
-        // Начинаем с построителя запросов, а не коллекции
-        $query = Burial::whereIn('cemetery_id', $cemetery_ids)
-                    ->where('status', 1);
-
-        if(isset($data['surname']) && !empty($data['surname'])) {
-            $query->where('surname', $data['surname']);
-            $seo = $seo . ' ' . $data['surname'];
-        }
-        
-        if(isset($data['name']) && !empty($data['name'])) {
-            $query->where('name', $data['name']);
-            $seo = $seo . ' ' . $data['name'];
-        }
-        
-        if(isset($data['patronymic']) && !empty($data['patronymic'])) {
-            $query->where('patronymic', $data['patronymic']);
-            $seo = $seo . ' ' . $data['patronymic'];
-        }
-        
-        if(isset($data['date_birth']) && !empty($data['date_birth'])) {
-            $query->where('date_birth', $data['date_birth']);
-            $seo = $seo . ' ' . $data['date_birth'];
-        }
-        
-        if(isset($data['date_death']) && !empty($data['date_death'])) {
-            $query->where('date_death', $data['date_death']);
-            $seo = $seo . ' ' . $data['date_death'];
-        }
-
-        SEOTools::setTitle($seo);
-        SEOTools::setDescription($seo);
-
-        // Получаем результат с пагинацией
-        $products = $query->paginate(10);
-
-        return view('burial.search-burial-result', compact('products', 'news', 'page'));
+  public static function searchBurialResult($data)
+{
+    if(!isset($data['surname']) || empty($data['surname'])) {
+        return redirect()->back()->with('error','Поле фамилия обязательное');
     }
+
+    $cemetery_ids = selectCity()->area->cities->flatMap(function($city) {
+        return $city->cemeteries->pluck('id');
+    })->toArray();
+    
+    // Проверяем, есть ли кладбища в выбранном городе
+    if (empty($cemetery_ids)) {
+        return redirect()->back()->with('error','В выбранном городе нет захоронений');
+    }
+
+    $news = News::orderBy('id', 'desc')->take(2)->get();
+    $seo = 'Поиск могил';
+    $page = 11;
+
+    // Начинаем с построителя запросов, а не коллекции
+    $query = Burial::whereIn('cemetery_id', $cemetery_ids)
+                ->where('status', 1);
+
+    // Обязательное поле - фамилия
+    if(isset($data['surname']) && !empty($data['surname'])) {
+        $query->where('surname',$data['surname']);
+        $seo .= ' ' . $data['surname'];
+    }
+    
+    // Остальные поля - опционально
+    if(isset($data['name']) && !empty($data['name'])) {
+        $query->where('name',$data['name']);
+        $seo .= ' ' . $data['name'];
+    }
+    
+    if(isset($data['patronymic']) && !empty($data['patronymic'])) {
+        $query->where('patronymic',$data['patronymic']);
+        $seo .= ' ' . $data['patronymic'];
+    }
+    
+    if(isset($data['date_birth']) && !empty($data['date_birth'])) {
+        $query->where('date_birth', $data['date_birth']);
+        $seo .= ' родился ' . $data['date_birth'];
+    }
+    
+    if(isset($data['date_death']) && !empty($data['date_death'])) {
+        $query->where('date_death', $data['date_death']);
+        $seo .= ' умер ' . $data['date_death'];
+    }
+
+    SEOTools::setTitle($seo);
+    SEOTools::setDescription($seo);
+
+    // Получаем результат с пагинацией
+    $products = $query->paginate(10);
+
+    if ($products->total() === 0) {
+        SEOTools::metatags()->addMeta('robots', 'noindex, nofollow');
+        
+        // Меняем SEO заголовок для пустых результатов
+        SEOTools::setTitle($seo . ' - не найдено');
+        SEOTools::setDescription('По запросу ' . $seo . ' ничего не найдено.');
+    }
+
+    return view('burial.search-burial-result', [
+        'products' => $products,
+        'news' => $news,
+        'page' => $page,
+        'searchQuery' => $data
+    ]);
+}
 
 
 
