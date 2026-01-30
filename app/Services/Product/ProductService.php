@@ -93,44 +93,44 @@ class ProductService
             ->limit(3)
             ->get();
 
-        if($category->slug=='pominal-nyh-obedy'){
-            $district=$product->district;
-            $memorial_menu=$product->memorialMenu;
-            return view('product.single.single-menu',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','sales','agent','city','district','images','organization','memorial_menu','category','additionals','comments','category_products'));
-        }
+        // if($category->slug=='pominal-nyh-obedy'){
+        //     $district=$product->district;
+        //     $memorial_menu=$product->memorialMenu;
+        //     return view('product.single.single-menu',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','sales','agent','city','district','images','organization','memorial_menu','category','additionals','comments','category_products'));
+        // }
 
-        if($category->slug=='pominal-nye-zaly'){
-            $district=$product->district;
-            return view('product.single.single-hall',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','sales','agent','city','district','images','organization','category','additionals','comments','category_products'));
-        }
+        // if($category->slug=='pominal-nye-zaly'){
+        //     $district=$product->district;
+        //     return view('product.single.single-hall',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','sales','agent','city','district','images','organization','category','additionals','comments','category_products'));
+        // }
 
-        if($category->slug=='organizacia-pohoron'){
-            return view('product.single.single-organization-funeral',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','mortuaries','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
-        }
+        // if($category->slug=='organizacia-pohoron'){
+        //     return view('product.single.single-organization-funeral',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','mortuaries','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+        // }
 
-        if($category->slug=='organizacia-kremacii'){
-            return view('product.single.single-cremation',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
-        }
+        // if($category->slug=='organizacia-kremacii'){
+        //     return view('product.single.single-cremation',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+        // }
 
-        if($category->slug=='podgotovka-otpravki-gruza-200'){
-            return view('product.single.single-shipment-200-cargo',compact('sameOrganizationProducts','tags','sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
-        }
+        // if($category->slug=='podgotovka-otpravki-gruza-200'){
+        //     return view('product.single.single-shipment-200-cargo',compact('sameOrganizationProducts','tags','sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','mortuaries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+        // }
         
-        if($category->slug=='knopka-mogil'){
-            return view('product.single.single-button-grave',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
-        }
+        // if($category->slug=='knopka-mogil'){
+        //     return view('product.single.single-button-grave',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+        // }
 
-        if($category->slug=='knopka-mogil'){
-            return view('product.single.single-button-grave',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
-        }
+        // if($category->slug=='knopka-mogil'){
+        //     return view('product.single.single-button-grave',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+        // }
 
-        if($category->slug=='pamatniki'){
-            return view('product.single.single-monument',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
-        }
+        // if($category->slug=='pamatniki'){
+        //     return view('product.single.single-monument',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+        // }
 
-        if($category->slug=='ogradki'){
-            return view('product.single.single-fence',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
-        }
+        // if($category->slug=='ogradki'){
+        //     return view('product.single.single-fence',compact('sameOrganizationProducts','tags','random_organizations_with_calls','title_h1','product','cemeteries','sales','agent','city','images','organization','parameters','category','additionals','comments','category_products'));
+        // }
 
         return view('product.single.single',compact('sameOrganizationProducts','tags','random_organizations_with_calls','cemeteries','title_h1','agent','product','organization','sales','images','parameters','category','size','additionals','comments','category_products'));
     }

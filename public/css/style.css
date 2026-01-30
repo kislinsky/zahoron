@@ -171,8 +171,8 @@ header{
 
 .add_like_product{
 position: absolute;
-    top: 30px;
-    right: 30px;
+    top: 20px;
+    right: 20px;
     cursor: pointer;
     z-index: 2;
 }
@@ -200,7 +200,7 @@ position: absolute;
     position: relative;
 }
 .margin_top_for_header{
-    margin-top: 129px ;
+    margin-top: 102px ;
 }
 header .container{
     display:flex;
@@ -2910,7 +2910,7 @@ text-align: left;
 }
 
 .similar_products .title_product_market{
-    height: 83px;
+    height: 67px;
 }
 
 .content_product{
@@ -3395,16 +3395,16 @@ text-align: left;
 }
 .li_product_market{
     display: flex;
-    min-height: 340px;
+    min-height: 330px;
     background: #F0F0ED;
     flex-direction: column;
     border-radius: 20px;
-    padding: 15px;
+    padding: 10px;
 }
 
 
 .li_product_market .img_market_product{
-    height: 203px;
+    height: 150px;
     width: 100%;    
     object-fit: cover;
     border-radius: 20px;
@@ -3422,10 +3422,10 @@ text-align: left;
 }
 .title_product_market{
     font-family: 'EB Garamond';
-font-size: 18px;
-font-weight: 700;
+font-size: 16px;
+font-weight: 600;
 color: #000000;
-line-height: 27px;
+line-height: 20px;
 text-align: left;
 padding-bottom: 5px;
 
@@ -3710,7 +3710,7 @@ text-align: left;
     gap: 10px;
         font-family: Golos Text;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 400;
     color: white;
     align-items: center;
     position: relative;
@@ -3736,6 +3736,8 @@ text-align: left;
 }
 .children_pages a{
     width: 100%;
+    font-size: 14px;
+    font-weight: 400;
     background: #292929;
     color: white;
 }
@@ -9077,20 +9079,24 @@ color: #0080D7;
 
 
 
-
-
-
-
+ .clearfix{
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 30px;
+ }
 
 .main-content-product-single {
-    width: 60%;
+    width: 50%;
     display: flex;
     flex-direction: column;
     gap: 20px;
     float: left;
     padding-right: 30px;
 }
-
+.banner{
+    width: 25px;
+    float: left;
+}
 .block_border_blue_content{
     border: 2px solid #3681C5;
     border-radius: 20px;
@@ -9138,8 +9144,8 @@ color: #0080D7;
         
 /* Плавающий сайдбар */
 .sidebar_product_single {
-    width: 40%;
     float: left;
+    width: 25%;
     position: sticky;
     top: 130px;
     /* max-height: 100vh; */
@@ -9199,9 +9205,9 @@ form.border_blue_block .blue_btn{
     padding:20px  25px;
 }
 .price_product_single{
-    font-weight: 500;
+    font-weight: 400;
     color: #000000;
-    font-size: 27px;
+    font-size: 23px;
 }
         
 .price_product_single .gray_mini_text{
@@ -9232,11 +9238,13 @@ form.border_blue_block .blue_btn{
     display: none;
 }
 .title_medium{
-    font-weight: 500;
-    font-size: 24px;
+    font-weight: 400;
+    font-size: 20px;
     color: #000000;
     text-decoration: none;
 }
+
+
 
 .logo_org_product_single{
     width: 94px;
@@ -9250,20 +9258,23 @@ form.border_blue_block .blue_btn{
 }
 
 .likes img{
-     width: 25px;
-    height: 25px;
+     width: 20px;
+    height: 20px;
 }
 .black_header .blue_btn{
     border-radius: 10px;
     padding: 7px 20px;
+    font-size: 14px;
+    font-weight: 400;
     background: #0080D7;
 }
 .login_href img{
-    width: 35px;
-    height: 35px;
+    width: 25px;
+    height: 25px;
 }
 .black_header .open_children_pages {
     padding: 0px;
+    font-size: 14px;
 }
 
 .li_wallet .block_input{

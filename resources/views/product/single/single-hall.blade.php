@@ -15,7 +15,7 @@
 
         <h1 class="index_title" style="max-width:100%;"> {{$title_h1}}</h1>    
    </div>
-<div class="container clearfix">
+<div class="container ">
         <!-- Основной контент -->
         <div class="main-content-product-single">
 
