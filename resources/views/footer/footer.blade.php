@@ -1,70 +1,43 @@
 
 
 
-<footer class='bac_gray'>
-    <div class="container">
-      <img src="{{asset('storage/uploads/Frame (19).svg')}}" alt="" class="rose_footer img_light_theme">
-      <img src="{{asset('storage/uploads/Frame (4)_black.svg')}}" alt="" class="rose_footer img_black_theme">
-      
-       <div class="flex_footer">
-          <a class='logo' href='/'>
-            <img class='img_light_theme' src='{{asset('storage/uploads/zahoron.svg')}}'>
-            <img class='img_black_theme' src="{{asset('storage/uploads/РИТУАЛреестр.svg')}}" alt=""> </a>
-         <div class='pages'>
-            <a href='{{ route('index') }}'class="no_bac_btn">Главная </a>
-            <div id_city_selected='{{selectCity()->id }}' class="no_bac_btn city_selected">
-                <img class='img_light_theme'src='{{ asset('storage/uploads/Group (22).svg') }}'>
-                <img class='img_black_theme'src='{{ asset('storage/uploads/Group_black_theme.svg') }}'>
-                {{ selectCity()->title }}
+<footer class='footer_blue'>
+   <div class="container">
+        <div class="ul_pages_footer">
+            <div class="title_page_footer">О нас</div>
+            <div class="li_page_footer">Политика обработки персональных данных</div>
+            <div class="li_page_footer">Пользовательское соглашение</div>
+            <div class="li_page_footer">Партнерам</div>
+            <div class="li_page_footer">Личный кабинет партнера</div>
+            <div class="li_page_footer">Размещение объектов</div>
+            <div class="li_page_footer">Контакты</div>
+        </div>
+        <div class="ul_pages_footer">
+            <div class="title_page_footer">Ритуальные услуги</div>
+            <div class="li_page_footer">Организация похорон</div>
+            <div class="li_page_footer">Цены на кремацию</div>
+            <div class="li_page_footer">Груз 200 Россия</div>
+            <div class="li_page_footer">Эксгумация</div>
+            <div class="li_page_footer">Усыпление животных</div>
+            <div class="li_page_footer">Кремация животных</div>
+        </div>
+        <div class="ul_pages_footer">
+            <div class="title_page_footer">Индивидуальный предприниматель<br>
+Кислинский Александр Валерьевич</div>
+            <div class="li_page_footer">
+                <p>ОГРН: 314410117400027</p><br>
+                <p>ИНН: 370253115213</p>
             </div>
-            <a href='{{ route('search.burial') }}'class="no_bac_btn">Поиск могил </a>
-            <a href='{{route('organizations.category','organizacia-pohoron')}}'class="no_bac_btn">Ритуальные агенства</a>
-            <a href='{{route('pricelist')}}'class="no_bac_btn">Товары и услуги</a>
-
-         </div>
-       </div>
- 
- 
-       <div class="flex_footer">
-          <div class="flex_icons_footer">
-             <a href="#"><img src="{{asset('storage/uploads/socials.svg')}}" alt=""></a>
-             <a href="#"><img src="{{asset('storage/uploads/vk (3).svg')}}" alt=""></a>
-             <a href="#"><img src="{{asset('storage/uploads/socials (1).svg')}}" alt=""></a>
-             <a href="#"><img src="{{asset('storage/uploads/socials (2).svg')}}" alt=""></a>
-          </div>
-          <div class="flex_footer_2">
-             <p>Мы принимаем</p>
-             <img src="{{asset('storage/uploads/image 3.svg')}}" alt="">
-             <img src="{{asset('storage/uploads/visa-secure_blu_2021_dkbg 1.svg')}}" alt="">
-             <img src="{{asset('storage/uploads/image 4.svg')}}" alt="">
-             <img src="{{asset('storage/uploads/image 5 (1).svg')}}" alt="">
-          </div>
-       </div>
-       <div class="block_info_footer">
-          ИНДИВИДУАЛЬНЫЙ ПРЕДПРИНИМАТЕЛЬ КИСЛИНСКИЙ АЛЕКСАНДР ВАЛЕРЬЕВИЧ<br>
-          ОГРН: 314410117400027<br>
-          ИНН: 370253115213<br>
-          Юридический адрес: Россия, Камчатский край , Елизовский район, г. Елизово ул. Рябикова д. 16, 684000
-       </div>
- 
-       <div class="flex_footer">
-          <div class="flex_footer_2">
-             Свяжитесь с нами
-             <div class="flex_mini_icons_footer">
-                <a href="#"><img src="{{asset('storage/uploads/socials (3).svg')}}" alt=""></a>
-                <a href="#"><img src="{{asset('storage/uploads/socials (4).svg')}}" alt=""></a>
-                <a href="#"><img src="{{asset('storage/uploads/socials (5).svg')}}" alt=""></a>
-             </div>
-             <a href='mailto:info@zahoron.ru'>info@zahoron.ru</a>
-          </div>
-          <div class="blue_btn">Напишите нам</div>
-       </div>
-       
-      <div>
-         <div class="block_info_footer">Все права защищены © <?php echo date("Y"); ?> Ритуал.реестр</div>
-         <a href='{{ route('terms-user') }}' class="block_info_footer">Пользовательское соглашение</a>
-         <a href='https://t.me/@chelik_msk' class="block_info_footer">Разработка сайта - @chelik_msk</a>
-      </div>
+            <div class="li_page_footer">info@zahoron.ru</div>
+            <div class="li_page_footer">Россия, Камчатский край, г. Елизово, ул. Рябикова д. 16, 684000</div>
+            <div class="flex_icons_footer">
+                <a href><img src="{{ asset('storage/uploads/Ellipse 23.svg') }}" alt=""></a>
+                <a href=""><img src="{{ asset('storage/uploads/Vector (25).svg') }}" alt=""></a>
+            </div>
+            <div class="btn_white">
+                Задать вопрос
+            </div>
+        </div>
    </div>
  </footer>
  

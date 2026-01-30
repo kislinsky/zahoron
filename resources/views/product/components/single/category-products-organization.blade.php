@@ -1,8 +1,8 @@
-@if(count($category_products))
+@if($sameOrganizationProducts->count()>0)
     <div class="similar_products">
         <div class="swiper category_products_swiper">
             <div class="swiper-wrapper">
-                @foreach($category_products as $category_product)
+                @foreach($sameOrganizationProducts as $category_product)
                     <div class="swiper-slide">
                         <div class="li_product_market">
                             <?php $images = $category_product->getImages; ?>
@@ -22,11 +22,11 @@
                             <div class="flex_btn_li_product_market">
                                 <div class="price_product_market">{{ priceProduct($category_product) }} руб.</div>
                             </div>
-                             <div class="add_like_product">
-                                <img src="{{ asset('storage/uploads/Vector (26).svg') }}" alt="">
+                            <div class="add_like_product">
+                                <img src="{{ asset('storage/uploads/Group 42.svg') }}" alt="">
                             </div>
                             <div class="open_parameters">
-                                <img src="{{ asset('storage/uploads/Group 42.svg') }}" alt="">
+                                <img src="{{ asset('storage/uploads/Vector (26).svg') }}" alt="">
                             </div>
                         </div>
                     </div>

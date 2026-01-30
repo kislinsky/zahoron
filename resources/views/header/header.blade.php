@@ -61,34 +61,21 @@ use Artesaos\SEOTools\Facades\SEOTools;
         </div>
     </div>
 </div>
-
-
-<header class='header_main'>
-   
-    <div class="container">  
-        <a class='logo' href='{{route('index')}}'>
-            <img class='img_light_theme' src='{{asset('storage/uploads/zahoron.svg')}}'>
-            <img class='img_black_theme' src="{{asset('storage/uploads/РИТУАЛреестр.svg')}}" alt="">
-        </a>
-        @if (isset($page))
+ @if (isset($page))
             <?php $page=$page;?>
         @else
             <?php $page=null;?>
         @endif
-        <div class='pages'>
-            <div id_city_selected='{{ $city->id }}' class="btn_bac_gray city_selected">
-                <img class='img_light_theme'src='{{ asset('storage/uploads/Group (22).svg') }}'>
-                <img class='img_black_theme'src='{{ asset('storage/uploads/Group_black_theme.svg') }}'>
-                {{ $city->title }}
-            </div>
 
-            <div class="btn_bac_gray open_children_pages">
+<div class="black_header">
+    <div class="container">
+        <div class="btn_bac_gray open_children_pages">
                Ритуальные услуги
                 <div class='children_pages'>
                     <a href='{{ route('organizations.category','organizacia-pohoron') }}'class="btn_bac_gray">Ритуальные агенства </a>
                     <a href='{{route('marketplace.category','organizacia-pohoron')}}'class="btn_bac_gray">Ритуальные товары, услуги </a>
                 </div>
-                <img class='img_light_theme' src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>
+                <img class='img_light_theme' src='{{asset('storage/uploads/Vector 3.png')}}'>
                 <img class='img_black_theme' src='{{asset('storage/uploads/Vector 9_black.svg')}}'>
             </div>
 
@@ -99,7 +86,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
                     <a href='{{ route('mortuaries') }}'class="btn_bac_gray">Морги </a>
                    
                 </div>
-                <img class='img_light_theme' src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>
+                <img class='img_light_theme' src='{{asset('storage/uploads/Vector 3.png')}}'>
                 <img class='img_black_theme' src='{{asset('storage/uploads/Vector 9_black.svg')}}'>
             </div>
 
@@ -111,7 +98,7 @@ use Artesaos\SEOTools\Facades\SEOTools;
                     <a href='{{ route('page.search.burial.filter') }}'class="btn_bac_gray <?php if($page==1){echo ' active_label_product';}?>">Герои </a>
                     <a href='{{ route('page.search.burial.request') }}'class="btn_bac_gray <?php if($page==3){echo ' active_label_product';}?>">Заявка на поиск</a>
                 </div>
-                <img class='img_light_theme' src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>
+                <img class='img_light_theme' src='{{asset('storage/uploads/Vector 3.png')}}'>
                 <img class='img_black_theme' src='{{asset('storage/uploads/Vector 9_black.svg')}}'>
  
             </div>
@@ -125,18 +112,52 @@ use Artesaos\SEOTools\Facades\SEOTools;
                     <a href='{{ route('contacts') }}'class="btn_bac_gray">Контакты </a>
                    
                 </div>
-                <img class='img_light_theme' src='{{asset('storage/uploads/Vector 9 (1).svg')}}'>
+                <img class='img_light_theme' src='{{asset('storage/uploads/Vector 3.png')}}'>
                 <img class='img_black_theme' src='{{asset('storage/uploads/Vector 9_black.svg')}}'>
             </div>
-           
-        </div> 
-       
-        
-        <div class='flex_icon_header'>
-           <div class='change_theme icon_header'><img class='img_light_theme' src='{{asset('storage/uploads/Group 23.svg')}}'><img class='img_black_theme' src='{{asset('storage/uploads/Group 23_black_theme.svg')}}'></div>
-            <a href='{{ route('login') }}' class='icon_header icon_login'><img class='img_black_theme' src='{{asset('storage/uploads/Group 1_black_theme.svg')}}'><img class='img_light_theme' src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
-        </div>
+
+            <a href='#' class="btn_bac_gray open_children_pages">
+               Вакансии
+            </a>
+            <a class='likes' href="#">
+                <img src="{{ asset('storage/uploads/Vector (23).svg') }}" alt="">
+            </a>
+            <div class="blue_btn">
+                Добавить
+            </div>
+            <a class='login_href' href="{{ route('login') }}">
+                <img src="{{ asset('storage/uploads/gg_profile.svg') }}" alt="">
+            </a>
+    </div>        
+</div>
+<header class='header_main'>
+   
+    <div class="container">  
+    <a class='logo' href='{{route('index')}}'>
+        <img class='img_light_theme' src='{{asset('storage/uploads/zahoron.svg')}}'>
+        <img class='img_black_theme' src="{{asset('storage/uploads/РИТУАЛреестр.svg')}}" alt="">
+    </a>
+   
+ <div class="main-search-container">
+        <input type="text" id="mainSearchInput" class="main-search-input" placeholder="Поиск...">
+        <button type="button" id="mainSearchButton" class="main-search-button">
+            <img class='img_light_theme main-search-icon' src='{{asset('storage/uploads/Vector (24).svg')}}' alt="Поиск">
+        </button>
     </div>
+    
+    <div id_city_selected='{{ $city->id }}' class="btn_bac_gray city_selected">
+            <img class='img_light_theme'src='{{ asset('storage/uploads/Group (22).svg') }}'>
+            <img class='img_black_theme'src='{{ asset('storage/uploads/Group_black_theme.svg') }}'>
+            {{ $city->title }}
+    </div>
+   
+    
+   
+    {{-- <div class='flex_icon_header'>
+       <div class='change_theme icon_header'><img class='img_light_theme' src='{{asset('storage/uploads/Group 23.svg')}}'><img class='img_black_theme' src='{{asset('storage/uploads/Group 23_black_theme.svg')}}'></div>
+        <a href='{{ route('login') }}' class='icon_header icon_login'><img class='img_black_theme' src='{{asset('storage/uploads/Group 1_black_theme.svg')}}'><img class='img_light_theme' src='{{asset('storage/uploads/Group 1 (2).svg')}}'></a>
+    </div> --}}
+</div>
 </header>
 
 

@@ -42,24 +42,20 @@
                         <div class="ul_adv_product">
                             <div class="text_black">
                                 <img src="{{ asset('storage/uploads/Vector (6).png') }}" alt="">
-                                Гроб обитый тканью
+                               Стела памятника
                             </div> 
                              <div class="text_black">
                                 <img src="{{ asset('storage/uploads/Vector (6).png') }}" alt="">
-                                Грузчики
+                              Цветник
                             </div> 
                              <div class="text_black">
                                 <img src="{{ asset('storage/uploads/Vector (6).png') }}" alt="">
-                                Цинк-ящик
+                                Подставка гранитная
                             </div> 
-                             <div class="text_black">
+                                 <div class="text_black">
                                 <img src="{{ asset('storage/uploads/Vector (6).png') }}" alt="">
-                                Катафалки
+                                Установка памятника
                             </div> 
-                             <div class="text_black">
-                                <img src="{{ asset('storage/uploads/Vector (6).png') }}" alt="">
-                                 Подготовка документов для груз 200
-                            </div>      
                         </div>
                         
                     </div>
@@ -167,23 +163,23 @@
 
                 <div class="title_medium">Получить расчет</div>
                
-                <div class="block_input" >
-                    <div class="flex_input"><label for="">Выберите морг</label> <label class='flex_input_checkbox checkbox'><input type="checkbox" name='no_have_mortuary'>Неизвестно</label></div>
+               <div class="block_input" >
+                    <label for="">Выберите кладбище</label>
                     <div class="select">
-                        <select name="mortuary_id" >
-                            @if($mortuaries->count()>0)
-                                @foreach($mortuaries as $mortuary)
-                                    <option value="{{$mortuary->id}}">{{$mortuary->title}}</option>
+                        <select name="cemetery_id" >                   
+                            @if($cemeteries->count()>0)
+                                @foreach($cemeteries as $cemetery)
+                                    <option value="{{$cemetery->id}}">{{$cemetery->title}}</option>
                                 @endforeach
-                        @endif
+                            @endif
                         </select>
                     </div>
-                    @error('mortuary_id')
+                    @error('cemetery_id')
                         <div class='error-text'>{{ $message }}</div>
                     @enderror  
-                </div> 
+                </div>  
 
-
+                
 
                 {{view('product.components.single.user-inputs',compact('product','random_organizations_with_calls'))}}
             </form>

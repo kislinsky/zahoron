@@ -205,6 +205,23 @@ let products_funeral_service = new Swiper(".products_funeral_service_swiper", {
   
 });
 
+let categoryProductsSwiper = new Swiper(".category_products_swiper", {
+    spaceBetween: 20,
+    slidesPerView: 1,
+    breakpoints: {
+        640: {
+            slidesPerView: 2,
+        },
+        992: {
+            slidesPerView: 3,
+        },
+    },
+    navigation: {
+        nextEl: ".swiper_button_next_category_products",
+        prevEl: ".swiper_button_prev_category_products",
+    },
+});
+
 let reviews_funeral_agencies = new Swiper(".reviews_funeral_agencies_swiper", {
   spaceBetween: 20,
  
